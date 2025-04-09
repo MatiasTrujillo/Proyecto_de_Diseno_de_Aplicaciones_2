@@ -13,7 +13,7 @@ public enum Accessibility
     Private,
 
     /// <summary>
-    /// Indicates that the attribute is accessible only within its class or by derived class instances.
+    /// Indicates that the attribute is accessible only within its class or by derived class instances
     /// </summary>
     Protected,
 }
