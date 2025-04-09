@@ -31,4 +31,16 @@ public sealed class AttributeTest
         Assert.AreEqual(attribute.Name, "Updated Name");
         Assert.AreEqual(attribute.Accessibility, Accessibility.Private);
     }
+
+    [TestMethod]
+    public void SetAccessibility_WhenSetToProtected_ShouldUpdateAccessibility()
+    {
+        var attribute = new Attribute
+        {
+            Name = "ProtectedAttr",
+            Accessibility = Accessibility.Protected
+        };
+
+        Assert.AreEqual(Accessibility.Protected, attribute.Accessibility);
+    }
 }
