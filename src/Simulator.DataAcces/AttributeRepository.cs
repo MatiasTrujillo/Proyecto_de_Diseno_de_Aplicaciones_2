@@ -39,5 +39,13 @@ public class AttributeRepository(SqlContext context)
 
     public void Delete(Guid id)
     {
+        Attribute existingAttribute = Find(id);
+        if (existingAttribute == null)
+        {
+            return;
+        }
+
+        context.Attributes.Remove(existingAttribute);
+        context.SaveChanges();
     }
 }
