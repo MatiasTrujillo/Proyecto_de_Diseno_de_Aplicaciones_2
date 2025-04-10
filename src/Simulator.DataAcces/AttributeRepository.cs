@@ -17,6 +17,6 @@ public class AttributeRepository(SqlContext context)
 
     public List<Attribute> FindAll()
     {
-        return null;
+        return context.Attributes.ToList();
     }
 }
