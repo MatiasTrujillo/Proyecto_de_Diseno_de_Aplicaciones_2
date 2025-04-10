@@ -27,5 +27,13 @@ public class AttributeRepository(SqlContext context)
 
     public void Update(Attribute entity)
     {
+        Attribute existingAttribute = Find(entity.Id);
+        if (existingAttribute == null)
+        {
+            return;
+        }
+
+        context.Entry(existingAttribute).CurrentValues.SetValues(entity);
+        context.SaveChanges();
     }
 }
