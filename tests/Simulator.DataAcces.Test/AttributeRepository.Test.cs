@@ -127,5 +127,15 @@ public class AttributeRepositoryTest
         saved.Name.Should().Be("Knowledge");
         saved.Accessibility.Should().Be(Accessibility.Private);
     }
+
+    [TestMethod]
+    public void Update_WhenAttributeDoesNotExist_ShouldDoNothing()
+    {
+        var updated = new Attribute(Guid.NewGuid(), "NonExistent", Accessibility.Public);
+
+        var act = () => _repository.Update(updated);
+
+        act.Should().NotThrow();
+    }
     #endregion
 }
