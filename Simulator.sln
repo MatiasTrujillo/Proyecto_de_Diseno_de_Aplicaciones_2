@@ -17,6 +17,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Simulator.BussinesLogic", "
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Simulator.BussinesLogic.Test", "tests\Simulator.BussinesLogic.Test\Simulator.BussinesLogic.Test.csproj", "{1FC806B7-E5D7-4409-B7DA-1F1B54DC1058}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Simulator.IDataAcces", "src\Simulator.IDataAcces\Simulator.IDataAcces.csproj", "{34E0046A-4D38-40B6-BA0D-377BAF8697F8}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -46,6 +48,10 @@ Global
 		{1FC806B7-E5D7-4409-B7DA-1F1B54DC1058}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1FC806B7-E5D7-4409-B7DA-1F1B54DC1058}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1FC806B7-E5D7-4409-B7DA-1F1B54DC1058}.Release|Any CPU.Build.0 = Release|Any CPU
+		{34E0046A-4D38-40B6-BA0D-377BAF8697F8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{34E0046A-4D38-40B6-BA0D-377BAF8697F8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{34E0046A-4D38-40B6-BA0D-377BAF8697F8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{34E0046A-4D38-40B6-BA0D-377BAF8697F8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{74ED834F-6CB5-4D89-97EF-85D21FDEBB2A} = {8CF08723-921C-4DFB-A674-B2BC40323E7A}
@@ -53,5 +59,6 @@ Global
 		{754BA4AD-1B99-43A9-AD77-22DFD27BA390} = {9A716180-04B7-4662-B740-1DCBA2DEEA3E}
 		{3B0540D2-DF12-468A-BEB6-41DCC71F2CCC} = {8CF08723-921C-4DFB-A674-B2BC40323E7A}
 		{1FC806B7-E5D7-4409-B7DA-1F1B54DC1058} = {9A716180-04B7-4662-B740-1DCBA2DEEA3E}
+		{34E0046A-4D38-40B6-BA0D-377BAF8697F8} = {8CF08723-921C-4DFB-A674-B2BC40323E7A}
 	EndGlobalSection
 EndGlobal

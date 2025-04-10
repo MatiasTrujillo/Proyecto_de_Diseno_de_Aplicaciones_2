@@ -6,4 +6,9 @@
         <Nullable>enable</Nullable>
     </PropertyGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\Simulator.DataAcces\Simulator.DataAcces.csproj" />
+      <ProjectReference Include="..\Simulator.Domain\Simulator.Domain.csproj" />
+    </ItemGroup>
+
 </Project>

@@ -1,8 +1,9 @@
-﻿using Attribute = Simulator.Domain.Attribute;
+﻿using Simulator.IDataAcces;
+using Attribute = Simulator.Domain.Attribute;
 
 namespace Simulator.DataAcces;
 
-public class AttributeRepository(SqlContext context)
+public class AttributeRepository(SqlContext context) : IAttributeRepository
 {
     public void Add(Attribute entity)
     {

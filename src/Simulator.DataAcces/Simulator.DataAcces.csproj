@@ -22,6 +22,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\Simulator.Domain\Simulator.Domain.csproj" />
+      <ProjectReference Include="..\Simulator.IDataAcces\Simulator.IDataAcces.csproj" />
     </ItemGroup>
 
 </Project>
