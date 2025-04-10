@@ -19,4 +19,9 @@ public class AttributeRepository(SqlContext context)
     {
         return context.Attributes.ToList();
     }
+
+    public bool Exist(Guid key)
+    {
+        return false;
+    }
 }

@@ -87,4 +87,18 @@ public class AttributeRepositoryTest
     }
     #endregion
 
+    #region Exist
+    [TestMethod]
+    public void Exist_WhenAttributeExists_ShouldReturnTrue()
+    {
+        var attribute = new Attribute(Guid.NewGuid(), "Charisma", Accessibility.Public);
+        _context.Attributes.Add(attribute);
+        _context.SaveChanges();
+
+        var exists = _repository.Exist(attribute.Id);
+
+        exists.Should().BeTrue();
+    }
+    #endregion
+
 }
