@@ -9,4 +9,9 @@ public class AttributeRepository(SqlContext context)
         context.Attributes.Add(entity);
         context.SaveChanges();
     }
+
+    public Attribute Find(Guid id)
+    {
+        return context.Attributes.Find(id);
+    }
 }
