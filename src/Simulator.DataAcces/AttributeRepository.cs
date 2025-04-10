@@ -24,4 +24,8 @@ public class AttributeRepository(SqlContext context)
     {
         return context.Attributes.Any(a => a.Id == key);
     }
+
+    public void Update(Attribute entity)
+    {
+    }
 }

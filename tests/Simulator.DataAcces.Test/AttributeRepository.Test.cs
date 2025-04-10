@@ -108,5 +108,24 @@ public class AttributeRepositoryTest
         exists.Should().BeFalse();
     }
     #endregion
+    #region Update
+    [TestMethod]
+    public void Update_WhenAttributeExists_ShouldModifyIt()
+    {
+        var attribute = new Attribute(Guid.NewGuid(), "Wisdom", Accessibility.Protected);
+        _context.Attributes.Add(attribute);
+        _context.SaveChanges();
 
+        var updated = new Attribute(attribute.Id, "Knowledge", Accessibility.Private);
+
+        _repository.Update(updated);
+
+        using var refreshedContext = ProgramTest.BuildTestDbContext();
+        var saved = refreshedContext.Attributes.Find(attribute.Id);
+
+        saved.Should().NotBeNull();
+        saved.Name.Should().Be("Knowledge");
+        saved.Accessibility.Should().Be(Accessibility.Private);
+    }
+    #endregion
 }
