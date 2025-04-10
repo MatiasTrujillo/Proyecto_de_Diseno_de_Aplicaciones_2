@@ -16,5 +16,7 @@ public class AttributeService
 
     public void CreateAttribute(AttributeDTO aDTO)
     {
+        var attribute = aDTO.ToEntity();
+        _attributeRepository.Add(attribute);
     }
 }
