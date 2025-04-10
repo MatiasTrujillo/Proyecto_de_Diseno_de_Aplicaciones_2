@@ -153,5 +153,16 @@ public class AttributeRepositoryTest
         var deleted = refreshedContext.Attributes.Find(attribute.Id);
         deleted.Should().BeNull();
     }
+
+    [TestMethod]
+    public void Delete_WhenAttributeDoesNotExist_ShouldDoNothing()
+    {
+        var nonExistentId = Guid.NewGuid();
+
+        var act = () => _repository.Delete(nonExistentId);
+
+        act.Should().NotThrow();
+        _context.Attributes.Count().Should().Be(0);
+    }
     #endregion
 }
