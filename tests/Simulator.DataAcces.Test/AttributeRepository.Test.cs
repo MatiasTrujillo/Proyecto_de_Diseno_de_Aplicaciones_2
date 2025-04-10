@@ -44,4 +44,20 @@ public class AttributeRepositoryTest
         saved[0].Accessibility.Should().Be(attribute.Accessibility);
     }
     #endregion
+    #region Find
+    [TestMethod]
+    public void Find_WhenAttributeExists_ShouldReturnIt()
+    {
+        var attribute = new Attribute(Guid.NewGuid(), "Agility", Accessibility.Protected);
+        _context.Attributes.Add(attribute);
+        _context.SaveChanges();
+
+        var result = _repository.Find(attribute.Id);
+
+        result.Should().NotBeNull();
+        result.Id.Should().Be(attribute.Id);
+        result.Name.Should().Be("Agility");
+    }
+
+    #endregion
 }
