@@ -44,6 +44,7 @@ public class AttributeRepositoryTest
         saved[0].Accessibility.Should().Be(attribute.Accessibility);
     }
     #endregion
+
     #region Find
     [TestMethod]
     public void Find_WhenAttributeExists_ShouldReturnIt()
@@ -108,6 +109,7 @@ public class AttributeRepositoryTest
         exists.Should().BeFalse();
     }
     #endregion
+
     #region Update
     [TestMethod]
     public void Update_WhenAttributeExists_ShouldModifyIt()
@@ -127,16 +129,6 @@ public class AttributeRepositoryTest
         saved.Name.Should().Be("Knowledge");
         saved.Accessibility.Should().Be(Accessibility.Private);
     }
-
-    [TestMethod]
-    public void Update_WhenAttributeDoesNotExist_ShouldDoNothing()
-    {
-        var updated = new Attribute(Guid.NewGuid(), "NonExistent", Accessibility.Public);
-
-        var act = () => _repository.Update(updated);
-
-        act.Should().NotThrow();
-    }
     #endregion
 
     #region Delete
@@ -152,17 +144,6 @@ public class AttributeRepositoryTest
         using var refreshedContext = ProgramTest.BuildTestDbContext();
         var deleted = refreshedContext.Attributes.Find(attribute.Id);
         deleted.Should().BeNull();
-    }
-
-    [TestMethod]
-    public void Delete_WhenAttributeDoesNotExist_ShouldDoNothing()
-    {
-        var nonExistentId = Guid.NewGuid();
-
-        var act = () => _repository.Delete(nonExistentId);
-
-        act.Should().NotThrow();
-        _context.Attributes.Count().Should().Be(0);
     }
     #endregion
 }

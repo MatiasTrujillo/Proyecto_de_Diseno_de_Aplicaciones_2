@@ -10,6 +10,14 @@ public class AttributeRepository(SqlContext context)
         context.SaveChanges();
     }
 
+    public void Update(Attribute entity)
+    {
+        Attribute existingAttribute = Find(entity.Id);
+
+        context.Entry(existingAttribute).CurrentValues.SetValues(entity);
+        context.SaveChanges();
+    }
+
     public Attribute Find(Guid id)
     {
         return context.Attributes.Find(id);
@@ -25,25 +33,9 @@ public class AttributeRepository(SqlContext context)
         return context.Attributes.Any(a => a.Id == key);
     }
 
-    public void Update(Attribute entity)
-    {
-        Attribute existingAttribute = Find(entity.Id);
-        if (existingAttribute == null)
-        {
-            return;
-        }
-
-        context.Entry(existingAttribute).CurrentValues.SetValues(entity);
-        context.SaveChanges();
-    }
-
     public void Delete(Guid id)
     {
         Attribute existingAttribute = Find(id);
-        if (existingAttribute == null)
-        {
-            return;
-        }
 
         context.Attributes.Remove(existingAttribute);
         context.SaveChanges();
