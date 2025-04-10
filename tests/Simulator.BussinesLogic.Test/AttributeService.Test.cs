@@ -1,13 +1,10 @@
-using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
-using Simulator.BussinesLogic;
 using Simulator.BussinesLogic.DTO;
 using Simulator.Domain;
 using Simulator.IDataAcces;
 using Attribute = Simulator.Domain.Attribute;
 
-namespace Simulator.Test;
+namespace Simulator.BussinesLogic.Test;
 
 [TestClass]
 public class AttributeServiceTest
@@ -38,8 +35,6 @@ public class AttributeServiceTest
             It.Is<Attribute>(a =>
                 a.Id == dto.Id &&
                 a.Name == dto.Name &&
-                a.Accessibility == dto.Accessibility
-            )
-        ), Times.Once);
+                a.Accessibility == dto.Accessibility)), Times.Once);
     }
 }

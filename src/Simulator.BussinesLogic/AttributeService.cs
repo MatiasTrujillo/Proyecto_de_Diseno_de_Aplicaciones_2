@@ -1,18 +1,11 @@
 ﻿using Simulator.BussinesLogic.DTO;
-using Simulator.DataAcces;
 using Simulator.IDataAcces;
-using Attribute = Simulator.Domain.Attribute;
 
 namespace Simulator.BussinesLogic;
 
-public class AttributeService
+public class AttributeService(IAttributeRepository attributeRepository)
 {
-    private readonly IAttributeRepository _attributeRepository;
-
-    public AttributeService(IAttributeRepository attributeRepository)
-    {
-        _attributeRepository = attributeRepository;
-    }
+    private readonly IAttributeRepository _attributeRepository = attributeRepository;
 
     public void CreateAttribute(AttributeDTO aDTO)
     {
