@@ -68,4 +68,23 @@ public class AttributeRepositoryTest
     }
 
     #endregion
+
+    #region FindAll
+    [TestMethod]
+    public void FindAll_WhenMultipleAttributesExist_ShouldReturnAll()
+    {
+        var attr1 = new Attribute(Guid.NewGuid(), "Speed", Accessibility.Private);
+        var attr2 = new Attribute(Guid.NewGuid(), "Intelligence", Accessibility.Public);
+
+        _context.Attributes.AddRange(attr1, attr2);
+        _context.SaveChanges();
+
+        var result = _repository.FindAll();
+
+        result.Count.Should().Be(2);
+        result.Should().Contain(a => a.Name == "Speed");
+        result.Should().Contain(a => a.Name == "Intelligence");
+    }
+    #endregion
+
 }

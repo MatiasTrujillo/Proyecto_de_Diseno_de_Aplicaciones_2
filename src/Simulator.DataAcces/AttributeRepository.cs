@@ -14,4 +14,9 @@ public class AttributeRepository(SqlContext context)
     {
         return context.Attributes.Find(id);
     }
+
+    public List<Attribute> FindAll()
+    {
+        return null;
+    }
 }
