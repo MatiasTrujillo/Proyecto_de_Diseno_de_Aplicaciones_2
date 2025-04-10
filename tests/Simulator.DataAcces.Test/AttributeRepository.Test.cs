@@ -99,6 +99,14 @@ public class AttributeRepositoryTest
 
         exists.Should().BeTrue();
     }
+
+    [TestMethod]
+    public void Exist_WhenAttributeDoesNotExist_ShouldReturnFalse()
+    {
+        var exists = _repository.Exist(Guid.NewGuid());
+
+        exists.Should().BeFalse();
+    }
     #endregion
 
 }
