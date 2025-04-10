@@ -36,4 +36,8 @@ public class AttributeRepository(SqlContext context)
         context.Entry(existingAttribute).CurrentValues.SetValues(entity);
         context.SaveChanges();
     }
+
+    public void Delete(Guid id)
+    {
+    }
 }

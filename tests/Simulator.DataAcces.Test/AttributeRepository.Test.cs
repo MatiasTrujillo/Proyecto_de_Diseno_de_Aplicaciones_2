@@ -138,4 +138,20 @@ public class AttributeRepositoryTest
         act.Should().NotThrow();
     }
     #endregion
+
+    #region Delete
+    [TestMethod]
+    public void Delete_WhenAttributeExists_ShouldRemoveItFromDatabase()
+    {
+        var attribute = new Attribute(Guid.NewGuid(), "Dexterity", Accessibility.Public);
+        _context.Attributes.Add(attribute);
+        _context.SaveChanges();
+
+        _repository.Delete(attribute.Id);
+
+        using var refreshedContext = ProgramTest.BuildTestDbContext();
+        var deleted = refreshedContext.Attributes.Find(attribute.Id);
+        deleted.Should().BeNull();
+    }
+    #endregion
 }
