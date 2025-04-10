@@ -59,5 +59,13 @@ public class AttributeRepositoryTest
         result.Name.Should().Be("Agility");
     }
 
+    [TestMethod]
+    public void Find_WhenAttributeDoesNotExist_ShouldReturnNull()
+    {
+        var result = _repository.Find(Guid.NewGuid());
+
+        result.Should().BeNull();
+    }
+
     #endregion
 }
