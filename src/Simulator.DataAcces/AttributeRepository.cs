@@ -22,6 +22,6 @@ public class AttributeRepository(SqlContext context)
 
     public bool Exist(Guid key)
     {
-        return false;
+        return context.Attributes.Any(a => a.Id == key);
     }
 }
