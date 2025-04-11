@@ -6,12 +6,12 @@ public class Method
     public string Name { get; set; }
     public Accessibility Accessibility { get; set; }
     public List<Method> Methods { get; set; }
+    public List<Parameter> Parameters { get; set; }
+    public List<LocalVariable> LocalVariables { get; set; }
+    public KeyWord? Stereotype { get; set; }
     /*
     TODO List:
     public Type ReturnType { get; set; }
-    public KeyWord? Stereotype { get; set; }
-    public List<Parameters> Parameters { get; set; }
-    public List<LocalVariable> LocalVariables { get; set; }
     */
 
     public Method()
@@ -20,13 +20,19 @@ public class Method
         Name = string.Empty;
         Accessibility = Accessibility.Public;
         Methods = new List<Method>();
+        Parameters = new List<Parameter>();
+        LocalVariables = new List<LocalVariable>();
+        Stereotype = null;
     }
 
-    public Method(Guid id, string name, Accessibility accessibility)
+    public Method(Guid id, string name, Accessibility accessibility, KeyWord? stereotype)
     {
         Id = id;
         Name = name;
         Accessibility = accessibility;
         Methods = new List<Method>();
+        Parameters = new List<Parameter>();
+        LocalVariables = new List<LocalVariable>();
+        Stereotype = stereotype;
     }
 }

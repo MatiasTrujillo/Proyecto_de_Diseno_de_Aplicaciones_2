@@ -22,4 +22,3 @@ public class Parameter
         Name = name;
     }
 }
-
