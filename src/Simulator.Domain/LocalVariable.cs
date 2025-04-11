@@ -4,7 +4,6 @@ public class LocalVariable
 {
     public Guid Id { get; set; }
     public string Name { get; set; }
-
     /*
     TODO:
     public Type LocalVariableType { get; set; }

@@ -4,7 +4,6 @@ public class Parameter
 {
     public Guid Id { get; set; }
     public string Name { get; set; }
-
     /*
     TODO:
     public Type ParameterType { get; set; }
