@@ -19,9 +19,9 @@ public class Method
         Id = Guid.NewGuid();
         Name = string.Empty;
         Accessibility = Accessibility.Public;
-        Methods = new List<Method>();
-        Parameters = new List<Parameter>();
-        LocalVariables = new List<LocalVariable>();
+        Methods = [];
+        Parameters = [];
+        LocalVariables = [];
         Stereotype = null;
     }
 
@@ -30,9 +30,9 @@ public class Method
         Id = id;
         Name = name;
         Accessibility = accessibility;
-        Methods = new List<Method>();
-        Parameters = new List<Parameter>();
-        LocalVariables = new List<LocalVariable>();
+        Methods = [];
+        Parameters = [];
+        LocalVariables = [];
         Stereotype = stereotype;
     }
 }
