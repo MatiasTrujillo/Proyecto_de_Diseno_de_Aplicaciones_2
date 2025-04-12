@@ -85,4 +85,15 @@ public class ClassRepositoryTest
         result.Should().Contain(a => a.Name == "juan");
     }
     #endregion
+
+    [TestMethod]
+    public void Exist_WhenClassExists_ShouldReturnTrue()
+    {
+        _context.Classes.Add(aClass);
+        _context.SaveChanges();
+
+        var exists = _repository.Exist(aClass.Id);
+
+        exists.Should().BeTrue();
+    }
 }
