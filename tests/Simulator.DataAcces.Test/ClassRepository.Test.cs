@@ -107,6 +107,7 @@ public class ClassRepositoryTest
     }
     #endregion
 
+    #region Update
     [TestMethod]
     public void Update_WhenClassExists_ShouldModifyIt()
     {
@@ -124,4 +125,5 @@ public class ClassRepositoryTest
         saved.Name.Should().Be("josesito");
         saved.Stereotype.Should().Be(null);
     }
+    #endregion
 }
