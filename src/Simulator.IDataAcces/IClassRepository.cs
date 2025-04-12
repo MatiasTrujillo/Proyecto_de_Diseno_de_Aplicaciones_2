@@ -1,5 +1,4 @@
 using Simulator.Domain;
-using Attribute = Simulator.Domain.Attribute;
 
 namespace Simulator.IDataAcces;
 

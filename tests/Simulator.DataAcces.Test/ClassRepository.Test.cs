@@ -1,6 +1,5 @@
 using FluentAssertions;
 using Simulator.Domain;
-using Attribute = Simulator.Domain.Attribute;
 
 namespace Simulator.DataAcces.Test;
 
@@ -10,14 +9,14 @@ public class ClassRepositoryTest
     private readonly SqlContext _context = ProgramTest.BuildTestDbContext();
 
     private readonly ClassRepository _repository;
-    private Class aClass;
-    private Class anotherClass;
+    private readonly Class aClass;
+    private readonly Class anotherClass;
 
     public ClassRepositoryTest()
     {
         _repository = new ClassRepository(_context);
-        aClass = new Class(Guid.NewGuid(), "jose", KeyWord.Abstract, null, new List<Attribute>());
-        anotherClass = new Class(Guid.NewGuid(), "juan", null, null, new List<Attribute>());
+        aClass = new Class(Guid.NewGuid(), "jose", KeyWord.Abstract, null, []);
+        anotherClass = new Class(Guid.NewGuid(), "juan", null, null, []);
     }
 
     [TestInitialize]
@@ -114,7 +113,7 @@ public class ClassRepositoryTest
         _context.Classes.Add(aClass);
         _context.SaveChanges();
 
-        var updated = new Class(aClass.Id, "josesito", null, null, new List<Attribute>());
+        var updated = new Class(aClass.Id, "josesito", null, null, []);
 
         _repository.Update(updated);
 
