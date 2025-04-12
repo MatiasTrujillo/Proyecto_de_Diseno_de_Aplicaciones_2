@@ -126,4 +126,17 @@ public class ClassRepositoryTest
         saved.Stereotype.Should().Be(null);
     }
     #endregion
+
+    [TestMethod]
+    public void Delete_WhenClassExists_ShouldRemoveItFromDatabase()
+    {
+        _context.Classes.Add(aClass);
+        _context.SaveChanges();
+
+        _repository.Delete(aClass.Id);
+
+        using var refreshedContext = ProgramTest.BuildTestDbContext();
+        var deleted = refreshedContext.Classes.Find(aClass.Id);
+        deleted.Should().BeNull();
+    }
 }
