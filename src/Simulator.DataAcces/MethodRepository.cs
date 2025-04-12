@@ -7,7 +7,8 @@ public class MethodRepository(SqlContext context) : IMethodRepository
 {
     public void Add(Method attribute)
     {
-        var s = context.ToString();
+        context.Methods.Add(attribute);
+        context.SaveChanges();
     }
 
     public void Update(Method attribute)
