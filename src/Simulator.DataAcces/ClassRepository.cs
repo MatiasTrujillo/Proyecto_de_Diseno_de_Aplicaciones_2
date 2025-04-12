@@ -13,7 +13,10 @@ public class ClassRepository(SqlContext context) : IClassRepository
 
     public void Update(Class aClass)
     {
-        throw new NotImplementedException();
+        Class existingClass = Find(aClass.Id);
+
+        context.Entry(existingClass).CurrentValues.SetValues(aClass);
+        context.SaveChanges();
     }
 
     public Class Find(Guid id)
