@@ -10,10 +10,12 @@ public class ClassRepositoryTest
     private readonly SqlContext _context = ProgramTest.BuildTestDbContext();
 
     private readonly ClassRepository _repository;
+    private Class aClass;
 
     public ClassRepositoryTest()
     {
         _repository = new ClassRepository(_context);
+        aClass = new Class(Guid.NewGuid(), "jose", KeyWord.Abstract, null, new List<Attribute>());
     }
 
     [TestInitialize]
@@ -32,8 +34,6 @@ public class ClassRepositoryTest
     [TestMethod]
     public void Add_WhenValidClassProvided_ShouldBeSavedInDatabase()
     {
-        var aClass = new Class(Guid.NewGuid(), "juan", null, null, new List<Attribute>());
-
         _repository.Add(aClass);
 
         using var otherContext = ProgramTest.BuildTestDbContext();
@@ -46,10 +46,10 @@ public class ClassRepositoryTest
     }
     #endregion
 
+    #region Find
     [TestMethod]
     public void Find_WhenClassExists_ShouldReturnIt()
     {
-        var aClass = new Class(Guid.NewGuid(), "jose", KeyWord.Abstract, null, new List<Attribute>());
         _context.Classes.Add(aClass);
         _context.SaveChanges();
 
@@ -57,6 +57,7 @@ public class ClassRepositoryTest
 
         result.Should().NotBeNull();
         result.Id.Should().Be(aClass.Id);
-        result.Name.Should().Be("jose");
+        result.Name.Should().Be(aClass.Name);
     }
+    #endregion
 }
