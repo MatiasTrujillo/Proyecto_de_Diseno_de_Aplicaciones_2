@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
+using Simulator.Domain;
 using Attribute = Simulator.Domain.Attribute;
 
 namespace Simulator.DataAcces;
@@ -13,11 +14,14 @@ public sealed class SqlContext : DbContext
     }
 
     public DbSet<Attribute> Attributes { get; set; }
+    public DbSet<Method> Methods { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Attribute>()
             .HasKey(a => a.Id);
+        modelBuilder.Entity<Method>()
+            .HasKey(m => m.Id);
 
         base.OnModelCreating(modelBuilder);
     }
