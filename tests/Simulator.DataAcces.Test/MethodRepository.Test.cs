@@ -18,6 +18,7 @@ public class MethodRepositoryTest
     private Guid _thirdId;
     private string? _secondMethodName;
     private string? _thirdMethodName;
+    private Method _thirdMethod = new Method();
 
     public MethodRepositoryTest()
     {
@@ -37,6 +38,7 @@ public class MethodRepositoryTest
         _accessibilityPublic = Accessibility.Public;
         _oneMethod = new Method(_oneId, _oneMethodName, _accessibilityPublic, null);
         _secondMethod = new Method(_secondId, _secondMethodName, _accessibilityPrivate, null);
+        _thirdMethod = new Method(_thirdId, _thirdMethodName, Accessibility.Protected, null);
     }
 
     [TestCleanup]
@@ -91,18 +93,19 @@ public class MethodRepositoryTest
     }
     #endregion
 
+    #region FindAll
     [TestMethod]
     public void FindAll_WhenMultipleMethodsExist_ShouldReturnAll()
     {
-        Method _thirdMethod = new Method(_thirdId, _thirdMethodName, Accessibility.Protected, null);
         _context.Methods.AddRange(_oneMethod, _secondMethod, _thirdMethod);
         _context.SaveChanges();
 
         var result = _repositoryTest.FindAll();
 
         result.Count.Should().Be(3);
-        result.Should().Contain(m => m.Name == "Method");
-        result.Should().Contain(a => a.Name == "Second Method");
-        result.Should().Contain(a => a.Name == "Third Method");
+        result.Should().Contain(m => m.Name == _oneMethod.Name);
+        result.Should().Contain(a => a.Name == _secondMethod.Name);
+        result.Should().Contain(a => a.Name == _thirdMethod.Name);
     }
+    #endregion
 }
