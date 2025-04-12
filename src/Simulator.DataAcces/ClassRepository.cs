@@ -36,6 +36,9 @@ public class ClassRepository(SqlContext context) : IClassRepository
 
     public void Delete(Guid id)
     {
-        throw new NotImplementedException();
+        Class existingClass = Find(id);
+
+        context.Classes.Remove(existingClass);
+        context.SaveChanges();
     }
 }
