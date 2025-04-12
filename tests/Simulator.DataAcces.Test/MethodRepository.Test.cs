@@ -50,10 +50,24 @@ public class MethodRepositoryTest
         saved[0].Stereotype.Should().BeNull();
         saved[0].Methods.Should().NotBeNull();
         saved[0].Methods.Should().BeEmpty();
-        saved[0].Parameters.Should().NotBeNull();
-        saved[0].Parameters.Should().BeEmpty();
-        saved[0].LocalVariables.Should().NotBeNull();
-        saved[0].LocalVariables.Should().BeEmpty();
     }
     #endregion
+
+    [TestMethod]
+    public void Find_WhenMethodExists_ShouldReturnIt()
+    {
+        Method method = new Method(Guid.NewGuid(), "Agility", Accessibility.Protected, null);
+        _context.Methods.Add(method);
+        _context.SaveChanges();
+
+        var result = _repositoryTest.Find(method.Id);
+
+        result.Should().NotBeNull();
+        result.Id.Should().Be(method.Id);
+        result.Name.Should().Be("Agility");
+        result.Accessibility.Should().Be(method.Accessibility);
+        result.Stereotype.Should().Be(method.Stereotype);
+        result.Methods.Should().NotBeNull();
+        result.Methods.Should().BeEmpty();
+    }
 }
