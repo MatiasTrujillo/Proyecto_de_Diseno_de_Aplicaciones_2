@@ -71,6 +71,7 @@ public class ClassRepositoryTest
     }
     #endregion
 
+    #region FindAll
     [TestMethod]
     public void FindAll_WhenMultipleClassesExist_ShouldReturnAll()
     {
@@ -83,4 +84,5 @@ public class ClassRepositoryTest
         result.Should().Contain(a => a.Name == "jose");
         result.Should().Contain(a => a.Name == "juan");
     }
+    #endregion
 }
