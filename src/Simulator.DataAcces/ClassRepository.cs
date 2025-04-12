@@ -28,7 +28,7 @@ public class ClassRepository(SqlContext context) : IClassRepository
 
     public bool Exist(Guid id)
     {
-        throw new NotImplementedException();
+        return context.Classes.Any(a => a.Id == id);
     }
 
     public void Delete(Guid id)
