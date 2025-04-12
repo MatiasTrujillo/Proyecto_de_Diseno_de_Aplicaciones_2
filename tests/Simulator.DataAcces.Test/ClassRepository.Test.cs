@@ -97,5 +97,13 @@ public class ClassRepositoryTest
 
         exists.Should().BeTrue();
     }
+
+    [TestMethod]
+    public void Exist_WhenClassDoesNotExist_ShouldReturnFalse()
+    {
+        var exists = _repository.Exist(Guid.NewGuid());
+
+        exists.Should().BeFalse();
+    }
     #endregion
 }
