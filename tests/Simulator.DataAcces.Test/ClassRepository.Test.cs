@@ -59,5 +59,13 @@ public class ClassRepositoryTest
         result.Id.Should().Be(aClass.Id);
         result.Name.Should().Be(aClass.Name);
     }
+
+    [TestMethod]
+    public void Find_WhenClassDoesNotExist_ShouldReturnNull()
+    {
+        var result = _repository.Find(Guid.NewGuid());
+
+        result.Should().BeNull();
+    }
     #endregion
 }
