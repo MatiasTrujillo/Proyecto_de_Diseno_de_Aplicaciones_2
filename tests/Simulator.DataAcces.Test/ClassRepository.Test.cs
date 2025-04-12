@@ -127,6 +127,7 @@ public class ClassRepositoryTest
     }
     #endregion
 
+    #region Delete
     [TestMethod]
     public void Delete_WhenClassExists_ShouldRemoveItFromDatabase()
     {
@@ -139,4 +140,5 @@ public class ClassRepositoryTest
         var deleted = refreshedContext.Classes.Find(aClass.Id);
         deleted.Should().BeNull();
     }
+    #endregion
 }
