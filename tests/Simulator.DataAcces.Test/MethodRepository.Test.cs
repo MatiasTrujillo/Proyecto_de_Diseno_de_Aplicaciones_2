@@ -120,5 +120,13 @@ public class MethodRepositoryTest
 
         exists.Should().BeTrue();
     }
+
+    [TestMethod]
+    public void Exist_WhenMethodDoesNotExist_ShouldReturnFalse()
+    {
+        var exists = _repositoryTest.Exist(Guid.NewGuid());
+
+        exists.Should().BeFalse();
+    }
     #endregion
 }
