@@ -28,6 +28,7 @@ public class ClassRepositoryTest
         _context.Database.EnsureDeleted();
     }
 
+    #region Add
     [TestMethod]
     public void Add_WhenValidClassProvided_ShouldBeSavedInDatabase()
     {
@@ -39,7 +40,9 @@ public class ClassRepositoryTest
         var saved = otherContext.Classes.ToList();
 
         saved.Count.Should().Be(1);
+        saved[0].Id.Should().Be(aClass.Id);
         saved[0].Name.Should().Be(aClass.Name);
         saved[0].Stereotype.Should().Be(aClass.Stereotype);
     }
+    #endregion
 }
