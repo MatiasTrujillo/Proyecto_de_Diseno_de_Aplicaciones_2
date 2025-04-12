@@ -7,7 +7,8 @@ public class ClassRepository(SqlContext context) : IClassRepository
 {
     public void Add(Class aClass)
     {
-        throw new NotImplementedException();
+        context.Classes.Add(aClass);
+        context.SaveChanges();
     }
 
     public void Update(Class aClass)
