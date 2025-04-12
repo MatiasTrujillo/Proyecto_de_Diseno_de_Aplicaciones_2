@@ -28,7 +28,7 @@ public class MethodRepository(SqlContext context) : IMethodRepository
 
     public bool Exist(Guid id)
     {
-        throw new NotImplementedException();
+        return context.Methods.Any(a => a.Id == id);
     }
 
     public void Delete(Guid id)
