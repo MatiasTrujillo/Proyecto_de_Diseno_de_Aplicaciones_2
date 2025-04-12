@@ -86,6 +86,7 @@ public class ClassRepositoryTest
     }
     #endregion
 
+    #region Exist
     [TestMethod]
     public void Exist_WhenClassExists_ShouldReturnTrue()
     {
@@ -96,4 +97,5 @@ public class ClassRepositoryTest
 
         exists.Should().BeTrue();
     }
+    #endregion
 }
