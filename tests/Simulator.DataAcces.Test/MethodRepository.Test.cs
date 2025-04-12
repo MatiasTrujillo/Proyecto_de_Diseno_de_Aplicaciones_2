@@ -8,12 +8,16 @@ public class MethodRepositoryTest
 {
     private readonly SqlContext _context = ProgramTest.BuildTestDbContext();
     private readonly MethodRepository _repositoryTest;
-    private Guid _id;
-    private string? _methodName;
+    private Guid _oneId;
+    private string? _oneMethodName;
     private Accessibility _accessibilityPublic;
     private Method _oneMethod = new Method();
     private Method _secondMethod = new Method();
     private Accessibility _accessibilityPrivate;
+    private Guid _secondId;
+    private Guid _thirdId;
+    private string? _secondMethodName;
+    private string? _thirdMethodName;
 
     public MethodRepositoryTest()
     {
@@ -24,11 +28,15 @@ public class MethodRepositoryTest
     public void Setup()
     {
         _context.Database.EnsureCreated();
-        _id = Guid.NewGuid();
-        _methodName = "Method";
+        _oneId = Guid.NewGuid();
+        _secondId = Guid.NewGuid();
+        _thirdId = Guid.NewGuid();
+        _oneMethodName = "Method";
+        _secondMethodName = "Second Method";
+        _thirdMethodName = "Third Method";
         _accessibilityPublic = Accessibility.Public;
-        _oneMethod = new Method(_id, _methodName, _accessibilityPublic, null);
-        _secondMethod = new Method(_id, _methodName, _accessibilityPrivate, null);
+        _oneMethod = new Method(_oneId, _oneMethodName, _accessibilityPublic, null);
+        _secondMethod = new Method(_secondId, _secondMethodName, _accessibilityPrivate, null);
     }
 
     [TestCleanup]
@@ -77,9 +85,24 @@ public class MethodRepositoryTest
     [TestMethod]
     public void Find_WhenMethodDoesNotExist_ShouldReturnNull()
     {
-        var result = _repositoryTest.Find(_id);
+        var result = _repositoryTest.Find(_oneId);
 
         result.Should().BeNull();
     }
     #endregion
+
+    [TestMethod]
+    public void FindAll_WhenMultipleMethodsExist_ShouldReturnAll()
+    {
+        Method _thirdMethod = new Method(_thirdId, _thirdMethodName, Accessibility.Protected, null);
+        _context.Methods.AddRange(_oneMethod, _secondMethod, _thirdMethod);
+        _context.SaveChanges();
+
+        var result = _repositoryTest.FindAll();
+
+        result.Count.Should().Be(3);
+        result.Should().Contain(m => m.Name == "Method");
+        result.Should().Contain(a => a.Name == "Second Method");
+        result.Should().Contain(a => a.Name == "Third Method");
+    }
 }
