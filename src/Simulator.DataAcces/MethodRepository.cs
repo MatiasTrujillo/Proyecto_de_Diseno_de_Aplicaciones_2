@@ -23,7 +23,7 @@ public class MethodRepository(SqlContext context) : IMethodRepository
 
     public List<Method> FindAll()
     {
-        throw new NotImplementedException();
+        return context.Methods.ToList();
     }
 
     public bool Exist(Guid id)
