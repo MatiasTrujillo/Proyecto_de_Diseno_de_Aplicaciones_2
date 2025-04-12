@@ -23,7 +23,7 @@ public class ClassRepository(SqlContext context) : IClassRepository
 
     public List<Class> FindAll()
     {
-        throw new NotImplementedException();
+        return context.Classes.ToList();
     }
 
     public bool Exist(Guid id)
