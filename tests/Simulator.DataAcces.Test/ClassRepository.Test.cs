@@ -27,4 +27,19 @@ public class ClassRepositoryTest
     {
         _context.Database.EnsureDeleted();
     }
+
+    [TestMethod]
+    public void Add_WhenValidClassProvided_ShouldBeSavedInDatabase()
+    {
+        var aClass = new Class(Guid.NewGuid(), "juan", null, null, new List<Attribute>());
+
+        _repository.Add(aClass);
+
+        using var otherContext = ProgramTest.BuildTestDbContext();
+        var saved = otherContext.Classes.ToList();
+
+        saved.Count.Should().Be(1);
+        saved[0].Name.Should().Be(aClass.Name);
+        saved[0].Stereotype.Should().Be(aClass.Stereotype);
+    }
 }

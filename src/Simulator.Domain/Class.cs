@@ -2,6 +2,7 @@ namespace Simulator.Domain;
 
 public class Class
 {
+    public Guid Id { get; set; }
     public string Name { get; set; }
     public KeyWord? Stereotype { get; set; }
     public Class? HierarchyClass { get; set; }
@@ -11,14 +12,16 @@ public class Class
 
     public Class()
     {
+        Id = Guid.NewGuid();
         Name = string.Empty;
         Stereotype = null;
         HierarchyClass = null;
         Attributes = new List<Attribute>();
     }
 
-    public Class(string name, KeyWord? stereotype, Class? hierarchyClass, List<Attribute> attributes)
+    public Class(Guid id, string name, KeyWord? stereotype, Class? hierarchyClass, List<Attribute> attributes)
     {
+        Id = id;
         Name = name;
         Stereotype = stereotype;
         HierarchyClass = hierarchyClass;

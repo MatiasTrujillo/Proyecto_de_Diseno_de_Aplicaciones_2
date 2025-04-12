@@ -1,26 +1,26 @@
+using Simulator.Domain;
 using Simulator.IDataAcces;
-using Attribute = Simulator.Domain.Attribute;
 
 namespace Simulator.DataAcces;
 
-public class ClassRepository(SqlContext context) : IAttributeRepository
+public class ClassRepository(SqlContext context) : IClassRepository
 {
-    public void Add(Attribute attribute)
+    public void Add(Class aClass)
     {
         throw new NotImplementedException();
     }
 
-    public void Update(Attribute attribute)
+    public void Update(Class aClass)
     {
         throw new NotImplementedException();
     }
 
-    public Attribute Find(Guid id)
+    public Class Find(Guid id)
     {
         throw new NotImplementedException();
     }
 
-    public List<Attribute> FindAll()
+    public List<Class> FindAll()
     {
         throw new NotImplementedException();
     }
