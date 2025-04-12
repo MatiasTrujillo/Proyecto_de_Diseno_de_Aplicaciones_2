@@ -73,5 +73,13 @@ public class MethodRepositoryTest
         result.Methods.Should().NotBeNull();
         result.Methods.Should().BeEmpty();
     }
+
+    [TestMethod]
+    public void Find_WhenMethodDoesNotExist_ShouldReturnNull()
+    {
+        var result = _repositoryTest.Find(_id);
+
+        result.Should().BeNull();
+    }
     #endregion
 }
