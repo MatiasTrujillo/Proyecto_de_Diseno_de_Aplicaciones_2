@@ -109,6 +109,7 @@ public class MethodRepositoryTest
     }
     #endregion
 
+    #region Exist
     [TestMethod]
     public void Exist_WhenMethodExists_ShouldReturnTrue()
     {
@@ -119,4 +120,5 @@ public class MethodRepositoryTest
 
         exists.Should().BeTrue();
     }
+    #endregion
 }
