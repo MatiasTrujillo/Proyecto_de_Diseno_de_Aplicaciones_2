@@ -18,7 +18,7 @@ public class ClassRepository(SqlContext context) : IClassRepository
 
     public Class Find(Guid id)
     {
-        throw new NotImplementedException();
+        return context.Classes.Find(id);
     }
 
     public List<Class> FindAll()
