@@ -10,7 +10,10 @@ public class MethodRepositoryTest
     private readonly MethodRepository _repositoryTest;
     private Guid _id;
     private string? _methodName;
-    private Accessibility _accessibility;
+    private Accessibility _accessibilityPublic;
+    private Method _oneMethod = new Method();
+    private Method _secondMethod = new Method();
+    private Accessibility _accessibilityPrivate;
 
     public MethodRepositoryTest()
     {
@@ -23,7 +26,9 @@ public class MethodRepositoryTest
         _context.Database.EnsureCreated();
         _id = Guid.NewGuid();
         _methodName = "Method";
-        _accessibility = Accessibility.Public;
+        _accessibilityPublic = Accessibility.Public;
+        _oneMethod = new Method(_id, _methodName, _accessibilityPublic, null);
+        _secondMethod = new Method(_id, _methodName, _accessibilityPrivate, null);
     }
 
     [TestCleanup]
@@ -36,17 +41,15 @@ public class MethodRepositoryTest
     [TestMethod]
     public void Add_WhenValidMethodProvided_ShouldBeSavedInDatabase()
     {
-        Method method = new Method(_id, _methodName, _accessibility, null);
-
-        _repositoryTest.Add(method);
+        _repositoryTest.Add(_oneMethod);
 
         using var otherContext = ProgramTest.BuildTestDbContext();
         var saved = otherContext.Methods.ToList();
 
         saved.Count.Should().Be(1);
-        saved[0].Id.Should().Be(method.Id);
-        saved[0].Name.Should().Be(method.Name);
-        saved[0].Accessibility.Should().Be(method.Accessibility);
+        saved[0].Id.Should().Be(_oneMethod.Id);
+        saved[0].Name.Should().Be(_oneMethod.Name);
+        saved[0].Accessibility.Should().Be(_oneMethod.Accessibility);
         saved[0].Stereotype.Should().BeNull();
         saved[0].Methods.Should().NotBeNull();
         saved[0].Methods.Should().BeEmpty();
@@ -57,17 +60,16 @@ public class MethodRepositoryTest
     [TestMethod]
     public void Find_WhenMethodExists_ShouldReturnIt()
     {
-        Method method = new Method(Guid.NewGuid(), "Agility", Accessibility.Protected, null);
-        _context.Methods.Add(method);
+        _context.Methods.Add(_secondMethod);
         _context.SaveChanges();
 
-        var result = _repositoryTest.Find(method.Id);
+        var result = _repositoryTest.Find(_secondMethod.Id);
 
         result.Should().NotBeNull();
-        result.Id.Should().Be(method.Id);
-        result.Name.Should().Be("Agility");
-        result.Accessibility.Should().Be(method.Accessibility);
-        result.Stereotype.Should().Be(method.Stereotype);
+        result.Id.Should().Be(_secondMethod.Id);
+        result.Name.Should().Be(_secondMethod.Name);
+        result.Accessibility.Should().Be(_secondMethod.Accessibility);
+        result.Stereotype.Should().Be(_secondMethod.Stereotype);
         result.Methods.Should().NotBeNull();
         result.Methods.Should().BeEmpty();
     }
