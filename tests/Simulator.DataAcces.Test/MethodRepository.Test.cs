@@ -37,8 +37,8 @@ public class MethodRepositoryTest
         _thirdMethodName = "Third Method";
         _accessibilityPublic = Accessibility.Public;
         _oneMethod = new Method(_oneId, _oneMethodName, _accessibilityPublic, null);
-        _secondMethod = new Method(_secondId, _secondMethodName, _accessibilityPrivate, null);
-        _thirdMethod = new Method(_thirdId, _thirdMethodName, Accessibility.Protected, null);
+        _secondMethod = new Method(_secondId, _secondMethodName, _accessibilityPrivate, KeyWord.Abstract);
+        _thirdMethod = new Method(_thirdId, _thirdMethodName, Accessibility.Protected, KeyWord.Sealed);
     }
 
     [TestCleanup]
@@ -108,4 +108,15 @@ public class MethodRepositoryTest
         result.Should().Contain(a => a.Name == _thirdMethod.Name);
     }
     #endregion
+
+    [TestMethod]
+    public void Exist_WhenMethodExists_ShouldReturnTrue()
+    {
+        _context.Methods.Add(_oneMethod);
+        _context.SaveChanges();
+
+        var exists = _repositoryTest.Exist(_oneId);
+
+        exists.Should().BeTrue();
+    }
 }
