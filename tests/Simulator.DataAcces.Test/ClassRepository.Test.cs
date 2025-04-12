@@ -106,4 +106,22 @@ public class ClassRepositoryTest
         exists.Should().BeFalse();
     }
     #endregion
+
+    [TestMethod]
+    public void Update_WhenClassExists_ShouldModifyIt()
+    {
+        _context.Classes.Add(aClass);
+        _context.SaveChanges();
+
+        var updated = new Class(aClass.Id, "josesito", null, null, new List<Attribute>());
+
+        _repository.Update(updated);
+
+        using var refreshedContext = ProgramTest.BuildTestDbContext();
+        var saved = refreshedContext.Classes.Find(aClass.Id);
+
+        saved.Should().NotBeNull();
+        saved.Name.Should().Be("josesito");
+        saved.Stereotype.Should().Be(null);
+    }
 }
