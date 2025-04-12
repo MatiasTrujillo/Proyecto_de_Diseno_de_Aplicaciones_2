@@ -53,6 +53,7 @@ public class MethodRepositoryTest
     }
     #endregion
 
+    #region Find
     [TestMethod]
     public void Find_WhenMethodExists_ShouldReturnIt()
     {
@@ -70,4 +71,5 @@ public class MethodRepositoryTest
         result.Methods.Should().NotBeNull();
         result.Methods.Should().BeEmpty();
     }
+    #endregion
 }

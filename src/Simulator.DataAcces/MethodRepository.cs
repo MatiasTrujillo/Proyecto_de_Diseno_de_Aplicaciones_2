@@ -18,7 +18,7 @@ public class MethodRepository(SqlContext context) : IMethodRepository
 
     public Method Find(Guid id)
     {
-        throw new NotImplementedException();
+        return context.Methods.Find(id);
     }
 
     public List<Method> FindAll()
