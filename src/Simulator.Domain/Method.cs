@@ -3,7 +3,7 @@
 public class Method
 {
     public Guid Id { get; set; }
-    public string Name { get; set; }
+    public string? Name { get; set; }
     public Accessibility Accessibility { get; set; }
     public List<Method> Methods { get; set; }
     public List<Parameter> Parameters { get; set; }
@@ -25,7 +25,7 @@ public class Method
         Stereotype = null;
     }
 
-    public Method(Guid id, string name, Accessibility accessibility, KeyWord? stereotype)
+    public Method(Guid id, string? name, Accessibility accessibility, KeyWord? stereotype)
     {
         Id = id;
         Name = name;

@@ -8,16 +8,35 @@ public class MethodRepositoryTest
 {
     private readonly SqlContext _context = ProgramTest.BuildTestDbContext();
     private readonly MethodRepository _repositoryTest;
+    private Guid _id;
+    private string? _methodName;
+    private Accessibility _accessibility;
 
     public MethodRepositoryTest()
     {
         _repositoryTest = new MethodRepository(_context);
     }
 
+    [TestInitialize]
+    public void Setup()
+    {
+        _context.Database.EnsureCreated();
+        _id = Guid.NewGuid();
+        _methodName = "Method";
+        _accessibility = Accessibility.Public;
+    }
+
+    [TestCleanup]
+    public void Cleanup()
+    {
+        _context.Database.EnsureDeleted();
+    }
+
+    #region Add
     [TestMethod]
     public void Add_WhenValidMethodProvided_ShouldBeSavedInDatabase()
     {
-        Method method = new Method(Guid.NewGuid(), "Method", Accessibility.Public, null);
+        Method method = new Method(_id, _methodName, _accessibility, null);
 
         _repositoryTest.Add(method);
 
@@ -36,4 +55,5 @@ public class MethodRepositoryTest
         saved[0].LocalVariables.Should().NotBeNull();
         saved[0].LocalVariables.Should().BeEmpty();
     }
+    #endregion
 }
