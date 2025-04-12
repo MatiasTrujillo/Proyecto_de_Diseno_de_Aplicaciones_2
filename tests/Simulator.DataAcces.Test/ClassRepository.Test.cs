@@ -45,4 +45,18 @@ public class ClassRepositoryTest
         saved[0].Stereotype.Should().Be(aClass.Stereotype);
     }
     #endregion
+
+    [TestMethod]
+    public void Find_WhenClassExists_ShouldReturnIt()
+    {
+        var aClass = new Class(Guid.NewGuid(), "jose", KeyWord.Abstract, null, new List<Attribute>());
+        _context.Classes.Add(aClass);
+        _context.SaveChanges();
+
+        var result = _repository.Find(aClass.Id);
+
+        result.Should().NotBeNull();
+        result.Id.Should().Be(aClass.Id);
+        result.Name.Should().Be("jose");
+    }
 }
