@@ -11,11 +11,13 @@ public class ClassRepositoryTest
 
     private readonly ClassRepository _repository;
     private Class aClass;
+    private Class anotherClass;
 
     public ClassRepositoryTest()
     {
         _repository = new ClassRepository(_context);
         aClass = new Class(Guid.NewGuid(), "jose", KeyWord.Abstract, null, new List<Attribute>());
+        anotherClass = new Class(Guid.NewGuid(), "juan", null, null, new List<Attribute>());
     }
 
     [TestInitialize]
@@ -68,4 +70,17 @@ public class ClassRepositoryTest
         result.Should().BeNull();
     }
     #endregion
+
+    [TestMethod]
+    public void FindAll_WhenMultipleClassesExist_ShouldReturnAll()
+    {
+        _context.Classes.AddRange(aClass, anotherClass);
+        _context.SaveChanges();
+
+        var result = _repository.FindAll();
+
+        result.Count.Should().Be(2);
+        result.Should().Contain(a => a.Name == "jose");
+        result.Should().Contain(a => a.Name == "juan");
+    }
 }
