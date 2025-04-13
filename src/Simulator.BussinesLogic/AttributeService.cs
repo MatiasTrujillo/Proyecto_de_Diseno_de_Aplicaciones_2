@@ -36,6 +36,13 @@ public class AttributeService(IAttributeRepository attributeRepository, IClassRe
         _attributeRepository.Update(attributeT);
     }
 
+    public void DeleteAttribute(Guid id)
+    {
+        var attributeT = _attributeRepository.Find(id);
+        ValidateAttributeExist(attributeT);
+        ValidateAttributeIsNotInClass(attributeT);
+    }
+
     private void ValidateAttributeIsNotInClass(Attribute attributeT)
     {
         var classes = _classRepository.FindAll();
@@ -73,10 +80,5 @@ public class AttributeService(IAttributeRepository attributeRepository, IClassRe
         {
             throw new AttributeException($"An attribute with the name '{attribute.Name}' already exists in the class");
         }
-    }
-
-    public void DeleteAttribute(Guid id)
-    {
-        throw new NotImplementedException();
     }
 }

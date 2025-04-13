@@ -273,4 +273,19 @@ public class AttributeServiceTest
 
         Assert.AreEqual("Attribute not found", exception.Message);
     }
+
+    [TestMethod]
+    public void DeleteAttribute_ShouldDeleteAttribute_WhenAttributeIsValidAndNotInClass()
+    {
+        var id = Guid.NewGuid();
+        var attribute = new Attribute { Id = id, Name = "Test", Accessibility = Accessibility.Public };
+
+        _mockAttributeRepository.Setup(r => r.Find(id)).Returns(attribute);
+        _mockClassRepository.Setup(r => r.FindAll()).Returns(new List<Simulator.Domain.Class>()); // No asociado a clases
+        _mockAttributeRepository.Setup(r => r.Delete(id));
+
+        _attributeService.DeleteAttribute(id);
+
+        _mockAttributeRepository.Verify(r => r.Delete(id), Times.Once);
+    }
 }
