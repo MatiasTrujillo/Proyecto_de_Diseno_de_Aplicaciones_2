@@ -1,4 +1,5 @@
 using FluentAssertions;
+using Microsoft.EntityFrameworkCore;
 using Simulator.Domain;
 
 namespace Simulator.DataAcces.Test;
@@ -19,6 +20,8 @@ public class MethodRepositoryTest
     private string? _secondMethodName;
     private string? _thirdMethodName;
     private Method _thirdMethod = new Method();
+    private Parameter _parameter = new Parameter();
+    private LocalVariable _localVariable = new LocalVariable();
 
     public MethodRepositoryTest()
     {
@@ -36,9 +39,11 @@ public class MethodRepositoryTest
         _secondMethodName = "Second Method";
         _thirdMethodName = "Third Method";
         _accessibilityPublic = Accessibility.Public;
-        _oneMethod = new Method(_oneId, _oneMethodName, _accessibilityPublic, null);
         _secondMethod = new Method(_secondId, _secondMethodName, _accessibilityPrivate, KeyWord.Abstract);
         _thirdMethod = new Method(_thirdId, _thirdMethodName, Accessibility.Protected, KeyWord.Sealed);
+        _parameter = new Parameter(Guid.NewGuid(), "Parameter");
+        _localVariable = new LocalVariable(Guid.NewGuid(), "LocalVariable");
+        _oneMethod = new Method(_oneId, _oneMethodName, _accessibilityPublic, null, new List<Method> { _secondMethod, _thirdMethod }, new List<Parameter>{_parameter}, new List<LocalVariable>{_localVariable});
     }
 
     [TestCleanup]
@@ -54,15 +59,21 @@ public class MethodRepositoryTest
         _repositoryTest.Add(_oneMethod);
 
         using var otherContext = ProgramTest.BuildTestDbContext();
-        var saved = otherContext.Methods.ToList();
+        var saved = otherContext.Methods
+            .Include(method => method.Parameters)
+            .Include(method => method.LocalVariables)
+            .Include(method => method.Methods)
+            .Single(m => m.Id == _oneMethod.Id);
 
-        saved.Count.Should().Be(1);
-        saved[0].Id.Should().Be(_oneMethod.Id);
-        saved[0].Name.Should().Be(_oneMethod.Name);
-        saved[0].Accessibility.Should().Be(_oneMethod.Accessibility);
-        saved[0].Stereotype.Should().BeNull();
-        saved[0].Methods.Should().NotBeNull();
-        saved[0].Methods.Should().BeEmpty();
+        saved.Id.Should().Be(_oneMethod.Id);
+        saved.Id.Should().Be(_oneMethod.Id);
+        saved.Name.Should().Be(_oneMethod.Name);
+        saved.Accessibility.Should().Be(_oneMethod.Accessibility);
+        saved.Stereotype.Should().BeNull();
+        saved.Methods.Count.Should().Be(2);
+        saved.Methods[0].Id.Should().Be(_secondMethod.Id);
+        saved.Parameters[0].Id.Should().Be(_parameter.Id);
+        saved.LocalVariables[0].Id.Should().Be(_localVariable.Id);
     }
     #endregion
 
@@ -129,4 +140,16 @@ public class MethodRepositoryTest
         exists.Should().BeFalse();
     }
     #endregion
+    [TestMethod]
+    public void Delete_WhenAttributeExists_ShouldRemoveItFromDatabase()
+    {
+        _context.Methods.Add(_oneMethod);
+        _context.SaveChanges();
+
+        _repositoryTest.Delete(_oneMethod.Id);
+
+        using var refreshedContext = ProgramTest.BuildTestDbContext();
+        var deleted = refreshedContext.Methods.Find(_oneMethod.Id);
+        deleted.Should().BeNull();
+    }
 }
