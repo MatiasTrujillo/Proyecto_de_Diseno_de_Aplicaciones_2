@@ -40,4 +40,18 @@ public class AttributeControllerTest
         Assert.AreEqual(200, result.StatusCode);
         _attributeServiceMock.Verify(service => service.UpdateAttribute(id, attribute), Times.Once);
     }
+
+    [TestMethod]
+    public void DeleteAttribute_ShouldReturnOk_WhenAttributeIsDeleted()
+    {
+        var id = Guid.NewGuid();
+        _attributeServiceMock.Setup(service => service.DeleteAttribute(id))
+            .Verifiable();
+
+        var result = _controller.DeleteAttribute(id) as OkObjectResult;
+
+        Assert.IsNotNull(result);
+        Assert.AreEqual(204, result.StatusCode);
+        _attributeServiceMock.Verify(service => service.DeleteAttribute(id), Times.Once);
+    }
 }
