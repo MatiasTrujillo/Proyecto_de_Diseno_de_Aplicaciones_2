@@ -27,6 +27,7 @@ public class ClassController(IClassService classService) : ControllerBase
     [HttpDelete("{id}")]
     public IActionResult DeleteClass([FromRoute] Guid id)
     {
+        _classService.DeleteClass(id);
         return NoContent();
     }
 }
