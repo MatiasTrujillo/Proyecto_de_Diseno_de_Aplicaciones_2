@@ -11,6 +11,10 @@ public class AttributeService(IAttributeRepository attributeRepository)
     public void CreateAttribute(AttributeDTO aDTO)
     {
         var attribute = aDTO.ToEntity();
+        if(_attributeRepository.Find(attribute.Id) != null)
+        {
+            throw new AttributeException("Attribute already exists");
+        }
 
         _attributeRepository.Add(attribute);
     }
