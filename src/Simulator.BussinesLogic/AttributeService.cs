@@ -23,6 +23,10 @@ public class AttributeService(IAttributeRepository attributeRepository, IClassRe
     private void ValidUniqueName(Guid idClass, Attribute attribute)
     {
         var classT = _classRepository.Find(idClass);
+        if (classT == null)
+        {
+            throw new AttributeException("Class not found");
+        }
 
         if (classT.Attributes.Any(a => a.Name == attribute.Name))
         {
