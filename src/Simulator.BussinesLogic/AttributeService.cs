@@ -22,6 +22,12 @@ public class AttributeService(IAttributeRepository attributeRepository, IClassRe
 
     private void ValidUniqueName(Guid idClass, Attribute attribute)
     {
+        var classT = _classRepository.Find(idClass);
+
+        if (classT.Attributes.Any(a => a.Name == attribute.Name))
+        {
+            throw new AttributeException($"An attribute with the name '{attribute.Name}' already exists in the class");
+        }
     }
 
     public void UpdateAttribute(Guid id, AttributeDTO attribute)
