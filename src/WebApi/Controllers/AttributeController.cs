@@ -1,0 +1,19 @@
+using Microsoft.AspNetCore.Mvc;
+using Simulator.BussinesLogic.DTO;
+using Simulator.IBussinesLogic;
+
+namespace WebApi.Controllers;
+
+[ApiController]
+[Route("[controller]")]
+public class AttributeController(IAttributeService attributeService) : ControllerBase
+{
+    private readonly IAttributeService _attributeService = attributeService;
+
+    [HttpPost]
+    public IActionResult CreateAttribute([FromBody] AttributeDTO attribute)
+    {
+        _attributeService.CreateAttribute(attribute);
+        return Created(string.Empty, new { message = "Attribute created successfully" });
+    }
+}
