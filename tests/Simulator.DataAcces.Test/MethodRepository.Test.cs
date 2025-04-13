@@ -39,6 +39,7 @@ public class MethodRepositoryTest
         _secondMethodName = "Second Method";
         _thirdMethodName = "Third Method";
         _accessibilityPublic = Accessibility.Public;
+        _accessibilityPrivate = Accessibility.Private;
         _secondMethod = new Method(_secondId, _secondMethodName, _accessibilityPrivate, KeyWord.Abstract);
         _thirdMethod = new Method(_thirdId, _thirdMethodName, Accessibility.Protected, KeyWord.Sealed);
         _parameter = new Parameter(Guid.NewGuid(), "Parameter");
