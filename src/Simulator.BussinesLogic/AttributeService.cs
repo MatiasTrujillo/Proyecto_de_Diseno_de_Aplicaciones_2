@@ -6,11 +6,10 @@ using Attribute = Simulator.Domain.Attribute;
 
 namespace Simulator.BussinesLogic;
 
-public class AttributeService(IAttributeRepository attributeRepository, IClassRepository classRepository,IMethodRepository methodRepository) : IAttributeService
+public class AttributeService(IAttributeRepository attributeRepository, IClassRepository classRepository) : IAttributeService
 {
     private readonly IAttributeRepository _attributeRepository = attributeRepository;
     private readonly IClassRepository _classRepository = classRepository;
-    private readonly IMethodRepository _methodRepository = methodRepository;
 
     public void CreateAttribute(AttributeDTO aDTO)
     {
@@ -32,19 +31,14 @@ public class AttributeService(IAttributeRepository attributeRepository, IClassRe
         var attributeT = _attributeRepository.Find(id);
         ValidateAttributeExist(attributeT);
         ValidateAttributeIsNotInClass(attributeT);
-        ValidateAttributeIsNotInAMethod(attributeT);
         attributeT.Name = attribute.Name;
         attributeT.Accessibility = attribute.Accessibility;
         _attributeRepository.Update(attributeT);
     }
 
-    private void ValidateAttributeIsNotInAMethod(Attribute attributeT)
-    {
-        _methodRepository.FindAll();
-    }
-
     private void ValidateAttributeIsNotInClass(Attribute attributeT)
     {
+        var classes = _classRepository.FindAll();
     }
 
     private static void ValidateAttributeExist(Attribute attributeT)

@@ -13,7 +13,6 @@ public class AttributeServiceTest
 {
     private Mock<IAttributeRepository> _mockAttributeRepository = null!;
     private Mock<IClassRepository> _mockClassRepository = null!;
-    private Mock<IMethodRepository> _mockMethodRepository = null!;
     private AttributeService _attributeService = null!;
     private Guid _classId;
 
@@ -22,13 +21,11 @@ public class AttributeServiceTest
     {
         _mockAttributeRepository = new Mock<IAttributeRepository>(MockBehavior.Strict);
         _mockClassRepository = new Mock<IClassRepository>(MockBehavior.Strict);
-        _mockMethodRepository = new Mock<IMethodRepository>(MockBehavior.Strict);
 
         _mockAttributeRepository
             .Setup(repo => repo.Add(It.IsAny<Attribute>()));
 
-        _attributeService = new AttributeService(_mockAttributeRepository.Object, _mockClassRepository.Object,
-            _mockMethodRepository.Object);
+        _attributeService = new AttributeService(_mockAttributeRepository.Object, _mockClassRepository.Object);
         _classId = Guid.NewGuid();
     }
 
@@ -193,7 +190,6 @@ public class AttributeServiceTest
     [TestMethod]
     public void UpdateAttribute_ShouldUpdateAttribute_WhenValid()
     {
-        // Arrange
         var id = Guid.NewGuid();
         var original = new Attribute(id, "OldName", Accessibility.Private);
         var dto = new AttributeDTO
@@ -208,20 +204,50 @@ public class AttributeServiceTest
             .Returns(original);
 
         _mockAttributeRepository
-            .Setup(r => r.Update(It.IsAny<Attribute>())); // <- Agregado para evitar excepción
+            .Setup(r => r.Update(It.IsAny<Attribute>()));
 
         _mockClassRepository.Setup(r => r.FindAll())
             .Returns(new List<Class>());
 
-        _mockMethodRepository.Setup(r => r.FindAll())
-            .Returns(new List<Method>());
-
-        // Act
         _attributeService.UpdateAttribute(id, dto);
 
-        // Assert
         Assert.AreEqual("NewName", original.Name);
         Assert.AreEqual(Accessibility.Public, original.Accessibility);
         _mockAttributeRepository.Verify(r => r.Update(original), Times.Once);
+    }
+
+    [TestMethod]
+    public void UpdateAttribute_ShouldThrowAttributeException_WhenAttributeIsInClass()
+    {
+        var id = Guid.NewGuid();
+        var attribute = new Attribute(id, "SomeName", Accessibility.Private);
+        var dto = new AttributeDTO
+        {
+            Id = id,
+            Name = "UpdatedName",
+            Accessibility = Accessibility.Public
+        };
+
+        var classWithAttribute = new Class
+        {
+            Id = Guid.NewGuid(),
+            Name = "ClassA",
+            Attributes = new List<Attribute> { attribute }
+        };
+
+        _mockAttributeRepository
+            .Setup(r => r.Find(id))
+            .Returns(attribute);
+
+        _mockClassRepository
+            .Setup(r => r.FindAll())
+            .Returns(new List<Class> { classWithAttribute });
+
+        var exception = Assert.ThrowsException<AttributeException>(() =>
+        {
+            _attributeService.UpdateAttribute(id, dto);
+        });
+
+        Assert.AreEqual("Attribute is associated with a class", exception.Message);
     }
 }
