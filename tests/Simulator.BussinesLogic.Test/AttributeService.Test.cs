@@ -57,4 +57,36 @@ public class AttributeServiceTest
         Assert.AreEqual(1, classEntity.Attributes.Count);
         Assert.AreEqual(dto.Name, classEntity.Attributes[0].Name);
     }
+
+    [TestMethod]
+    public void CreateAttribute_ShouldThrowException_WhenAttributeNameAlreadyExistsInSameClass()
+    {
+        var dto = new AttributeDTO
+        {
+            Id = Guid.NewGuid(),
+            Name = "Strength",
+            Accessibility = Accessibility.Public
+        };
+
+        var classEntity = new Class
+        {
+            Id = _classId,
+            Name = "Warrior",
+            Attributes = new List<Attribute>
+            {
+                new Attribute(Guid.NewGuid(), "Strength", Accessibility.Private)
+            }
+        };
+
+        _mockClassRepository
+            .Setup(repo => repo.Find(_classId))
+            .Returns(classEntity);
+
+        var exception = Assert.ThrowsException<AttributeException>(() =>
+        {
+            _attributeService.CreateAttributeForClass(_classId, dto);
+        });
+
+        Assert.AreEqual("An attribute with the name 'Strength' already exists in the class", exception.Message);
+    }
 }
