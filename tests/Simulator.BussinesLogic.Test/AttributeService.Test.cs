@@ -1,6 +1,7 @@
 using Moq;
 using Simulator.BussinesLogic.DTO;
 using Simulator.Domain;
+using Simulator.Domain.Exception;
 using Simulator.IDataAcces;
 using Attribute = Simulator.Domain.Attribute;
 
@@ -36,5 +37,34 @@ public class AttributeServiceTest
                 a.Id == dto.Id &&
                 a.Name == dto.Name &&
                 a.Accessibility == dto.Accessibility)), Times.Once);
+    }
+
+    [TestMethod]
+    public void CreateAttribute_ShouldThrowException_WhenAttributeAlreadyExists()
+    {
+        var existingAttribute = new Attribute
+        {
+            Id = Guid.NewGuid(),
+            Name = "Speed",
+            Accessibility = Accessibility.Public
+        };
+
+        var dto = new AttributeDTO
+        {
+            Id = existingAttribute.Id,
+            Name = existingAttribute.Name,
+            Accessibility = existingAttribute.Accessibility
+        };
+
+        _mockAttributeRepository
+            .Setup(repo => repo.Find(existingAttribute.Id))
+            .Returns(existingAttribute);
+
+        var exception = Assert.ThrowsException<AttributeException>(() =>
+        {
+            _attributeService.CreateAttribute(dto);
+        });
+
+        Assert.AreEqual("Attribute already exists", exception.Message);
     }
 }
