@@ -24,10 +24,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Filters.Test\" />
-    </ItemGroup>
-
-    <ItemGroup>
       <ProjectReference Include="..\..\src\Simulator.IBussinesLogic\Simulator.IBussinesLogic.csproj" />
       <ProjectReference Include="..\..\src\WebApi\WebApi.csproj" />
     </ItemGroup>
