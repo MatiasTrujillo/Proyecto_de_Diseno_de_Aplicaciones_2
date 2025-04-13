@@ -118,7 +118,7 @@ public class AttributeServiceTest
 
         _mockClassRepository
             .Setup(repo => repo.Find(Guid.Empty))
-            .Returns((Class?)null); // Configuración explícita para Guid.Empty
+            .Returns((Class?)null);
 
         var exception = Assert.ThrowsException<AttributeException>(() =>
         {
@@ -249,5 +249,28 @@ public class AttributeServiceTest
         });
 
         Assert.AreEqual("Attribute is associated with a class", exception.Message);
+    }
+
+    [TestMethod]
+    public void UpdateAttribute_ShouldThrowAttributeException_WhenAttributeDoesNotExist()
+    {
+        var id = Guid.NewGuid();
+        var dto = new AttributeDTO
+        {
+            Id = id,
+            Name = "NewName",
+            Accessibility = Accessibility.Private
+        };
+
+        _mockAttributeRepository
+            .Setup(r => r.Find(id))
+            .Returns((Attribute)null);
+
+        var exception = Assert.ThrowsException<AttributeException>(() =>
+        {
+            _attributeService.UpdateAttribute(id, dto);
+        });
+
+        Assert.AreEqual("Attribute not found", exception.Message);
     }
 }
