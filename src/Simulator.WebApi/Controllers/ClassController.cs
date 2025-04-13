@@ -23,4 +23,10 @@ public class ClassController(IClassService classService) : ControllerBase
         _classService.UpdateClass(id, classDto);
         return Ok(new { message = "Class updated successfully" });
     }
+
+    [HttpDelete("{id}")]
+    public IActionResult DeleteClass([FromRoute] Guid id)
+    {
+        return NoContent();
+    }
 }

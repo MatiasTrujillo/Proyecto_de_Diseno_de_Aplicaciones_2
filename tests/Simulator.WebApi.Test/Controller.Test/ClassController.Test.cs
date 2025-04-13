@@ -40,4 +40,18 @@ public class ClassControllerTest
         Assert.AreEqual(200, result.StatusCode);
         _classServiceMock.Verify(service => service.UpdateClass(id, classT), Times.Once);
     }
+
+    [TestMethod]
+    public void DeleteClass_ShouldReturnNoContent_WhenClassIsDeleted()
+    {
+        var id = Guid.NewGuid();
+        _classServiceMock.Setup(service => service.DeleteClass(id))
+            .Verifiable();
+
+        var result = _controller.DeleteClass(id) as NoContentResult;
+
+        Assert.IsNotNull(result);
+        Assert.AreEqual(204, result.StatusCode);
+        _classServiceMock.Verify(service => service.DeleteClass(id), Times.Once);
+    }
 }
