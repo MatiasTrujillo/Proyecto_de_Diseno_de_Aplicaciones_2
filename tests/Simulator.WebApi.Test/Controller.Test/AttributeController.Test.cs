@@ -25,4 +25,19 @@ public class AttributeControllerTest
         Assert.AreEqual(201, result.StatusCode);
         _attributeServiceMock.Verify(service => service.CreateAttribute(attribute), Times.Once);
     }
+
+    [TestMethod]
+    public void UpdateAttribute_ShouldReturnOk_WhenAttributeIsUpdated()
+    {
+        var id = Guid.NewGuid();
+        var attribute = new AttributeDTO();
+        _attributeServiceMock.Setup(service => service.UpdateAttribute(id, attribute))
+            .Verifiable();
+
+        var result = _controller.UpdateAttribute(id, attribute) as OkObjectResult;
+
+        Assert.IsNotNull(result);
+        Assert.AreEqual(200, result.StatusCode);
+        _attributeServiceMock.Verify(service => service.UpdateAttribute(id, attribute), Times.Once);
+    }
 }

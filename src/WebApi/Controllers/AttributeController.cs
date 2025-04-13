@@ -16,4 +16,10 @@ public class AttributeController(IAttributeService attributeService) : Controlle
         _attributeService.CreateAttribute(attribute);
         return Created(string.Empty, new { message = "Attribute created successfully" });
     }
+
+    [HttpPatch("{id}")]
+    public IActionResult UpdateAttribute([FromRoute] Guid id, [FromBody] AttributeDTO attribute)
+    {
+        return Ok(new { message = "Attribute updated successfully" });
+    }
 }
