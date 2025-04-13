@@ -33,6 +33,9 @@ public class MethodRepository(SqlContext context) : IMethodRepository
 
     public void Delete(Guid id)
     {
-        throw new NotImplementedException();
+        Method existingMethod = Find(id);
+
+        context.Methods.Remove(existingMethod);
+        context.SaveChanges();
     }
 }
