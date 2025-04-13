@@ -20,6 +20,7 @@ public class ClassController(IClassService classService) : ControllerBase
     [HttpPatch("{id}")]
     public IActionResult UpdateClass([FromRoute] Guid id, [FromBody] ClassDTO classDto)
     {
+        _classService.UpdateClass(id, classDto);
         return Ok(new { message = "Class updated successfully" });
     }
 }
