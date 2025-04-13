@@ -89,4 +89,26 @@ public class AttributeServiceTest
 
         Assert.AreEqual("An attribute with the name 'Strength' already exists in the class", exception.Message);
     }
+
+    [TestMethod]
+    public void CreateAttribute_ShouldThrowException_WhenClassNotFound()
+    {
+        var dto = new AttributeDTO
+        {
+            Id = Guid.NewGuid(),
+            Name = "Agility",
+            Accessibility = Accessibility.Protected
+        };
+
+        _mockClassRepository
+            .Setup(repo => repo.Find(_classId))
+            .Returns((Class?)null);
+
+        var exception = Assert.ThrowsException<AttributeException>(() =>
+        {
+            _attributeService.CreateAttributeForClass(_classId, dto);
+        });
+
+        Assert.AreEqual("Class not found", exception.Message);
+    }
 }
