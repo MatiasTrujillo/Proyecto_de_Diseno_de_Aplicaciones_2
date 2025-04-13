@@ -18,5 +18,19 @@ public class Attribute
         Id = id;
         Name = name;
         Accessibility = accessibility;
+        ValidateAttributes(name);
+    }
+
+    private void ValidateAttributes(string name)
+    {
+        if (string.IsNullOrWhiteSpace(name))
+        {
+            throw new ArgumentException("Name cannot be null or empty");
+        }
+
+        if (name.Length > 50)
+        {
+            throw new ArgumentException("Name cannot exceed 50 characters");
+        }
     }
 }

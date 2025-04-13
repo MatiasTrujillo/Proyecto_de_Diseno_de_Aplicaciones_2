@@ -16,14 +16,15 @@ public class AttributeControllerTest
     public void CreateAttribute_ShouldReturnCreated_WhenAttributeIsCreated()
     {
         var attribute = new AttributeDTO();
-        _attributeServiceMock.Setup(service => service.CreateAttribute(attribute))
+        var id = Guid.NewGuid();
+        _attributeServiceMock.Setup(service => service.CreateAttributeForClass(id,attribute))
             .Verifiable();
 
-        var result = _controller.CreateAttribute(attribute) as CreatedResult;
+        var result = _controller.CreateAttribute(id,attribute) as CreatedResult;
 
         Assert.IsNotNull(result);
         Assert.AreEqual(201, result.StatusCode);
-        _attributeServiceMock.Verify(service => service.CreateAttribute(attribute), Times.Once);
+        _attributeServiceMock.Verify(service => service.CreateAttributeForClass(id,attribute), Times.Once);
     }
 
     [TestMethod]

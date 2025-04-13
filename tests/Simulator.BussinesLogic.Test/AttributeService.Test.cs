@@ -2,6 +2,7 @@ using Moq;
 using Simulator.BussinesLogic.DTO;
 using Simulator.Domain;
 using Simulator.Domain.Exception;
+using Simulator.IBussinesLogic;
 using Simulator.IDataAcces;
 using Attribute = Simulator.Domain.Attribute;
 
@@ -11,13 +12,17 @@ namespace Simulator.BussinesLogic.Test;
 public class AttributeServiceTest
 {
     private Mock<IAttributeRepository> _mockAttributeRepository = null!;
+    private Mock<IClassRepository> _mockClassRepository = null!;
     private AttributeService _attributeService = null!;
+    private Guid _classId;
 
     [TestInitialize]
     public void Initialize()
     {
         _mockAttributeRepository = new Mock<IAttributeRepository>();
-        _attributeService = new AttributeService(_mockAttributeRepository.Object);
+        _mockClassRepository = new Mock<IClassRepository>();
+        _attributeService = new AttributeService(_mockAttributeRepository.Object, _mockClassRepository.Object);
+        _classId = Guid.NewGuid();
     }
 
     [TestMethod]
@@ -30,41 +35,26 @@ public class AttributeServiceTest
             Accessibility = Accessibility.Public
         };
 
-        _attributeService.CreateAttribute(dto);
+        var classEntity = new Class
+        {
+            Id = _classId,
+            Name = "TestClass",
+            Attributes = new List<Attribute>()
+        };
+
+        _mockClassRepository
+            .Setup(repo => repo.Find(_classId))
+            .Returns(classEntity);
+
+        _attributeService.CreateAttributeForClass(_classId, dto);
 
         _mockAttributeRepository.Verify(repo => repo.Add(
             It.Is<Attribute>(a =>
                 a.Id == dto.Id &&
                 a.Name == dto.Name &&
                 a.Accessibility == dto.Accessibility)), Times.Once);
-    }
 
-    [TestMethod]
-    public void CreateAttribute_ShouldThrowException_WhenAttributeAlreadyExists()
-    {
-        var existingAttribute = new Attribute
-        {
-            Id = Guid.NewGuid(),
-            Name = "Speed",
-            Accessibility = Accessibility.Public
-        };
-
-        var dto = new AttributeDTO
-        {
-            Id = existingAttribute.Id,
-            Name = existingAttribute.Name,
-            Accessibility = existingAttribute.Accessibility
-        };
-
-        _mockAttributeRepository
-            .Setup(repo => repo.Find(existingAttribute.Id))
-            .Returns(existingAttribute);
-
-        var exception = Assert.ThrowsException<AttributeException>(() =>
-        {
-            _attributeService.CreateAttribute(dto);
-        });
-
-        Assert.AreEqual("Attribute already exists", exception.Message);
+        Assert.AreEqual(1, classEntity.Attributes.Count);
+        Assert.AreEqual(dto.Name, classEntity.Attributes[0].Name);
     }
 }
