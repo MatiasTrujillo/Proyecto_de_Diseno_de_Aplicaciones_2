@@ -10,10 +10,10 @@ public class AttributeController(IAttributeService attributeService) : Controlle
 {
     private readonly IAttributeService _attributeService = attributeService;
 
-    [HttpPost("{id}")]
-    public IActionResult CreateAttribute([FromRoute] Guid id,[FromBody] AttributeDTO attribute)
+    [HttpPost]
+    public IActionResult CreateAttribute([FromBody] AttributeDTO attribute)
     {
-        _attributeService.CreateAttributeForClass(id,attribute);
+        _attributeService.CreateAttribute(attribute);
         return Created(string.Empty, new { message = "Attribute created successfully" });
     }
 

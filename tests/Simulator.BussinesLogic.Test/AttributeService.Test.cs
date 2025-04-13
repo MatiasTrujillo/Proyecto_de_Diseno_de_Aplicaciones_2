@@ -13,81 +13,100 @@ public class AttributeServiceTest
 {
     private Mock<IAttributeRepository> _mockAttributeRepository = null!;
     private Mock<IClassRepository> _mockClassRepository = null!;
+    private Mock<IMethodRepository> _mockMethodRepository = null!;
     private AttributeService _attributeService = null!;
     private Guid _classId;
 
     [TestInitialize]
     public void Initialize()
     {
-        _mockAttributeRepository = new Mock<IAttributeRepository>();
-        _mockClassRepository = new Mock<IClassRepository>();
-        _attributeService = new AttributeService(_mockAttributeRepository.Object, _mockClassRepository.Object);
+        _mockAttributeRepository = new Mock<IAttributeRepository>(MockBehavior.Strict);
+        _mockClassRepository = new Mock<IClassRepository>(MockBehavior.Strict);
+        _mockMethodRepository = new Mock<IMethodRepository>(MockBehavior.Strict);
+
+        _mockAttributeRepository
+            .Setup(repo => repo.Add(It.IsAny<Attribute>()));
+
+        _attributeService = new AttributeService(_mockAttributeRepository.Object, _mockClassRepository.Object,
+            _mockMethodRepository.Object);
         _classId = Guid.NewGuid();
     }
 
     [TestMethod]
-    public void CreateAttribute_ShouldCallRepositoryAdd_WithCorrectEntity()
+    public void CreateAttribute_ShouldCallRepositoryAdd_WithValidAttribute()
     {
         var dto = new AttributeDTO
         {
             Id = Guid.NewGuid(),
-            Name = "Speed",
-            Accessibility = Accessibility.Public
+            Name = "Strength",
+            Accessibility = Accessibility.Private
         };
 
-        var classEntity = new Class
-        {
-            Id = _classId,
-            Name = "TestClass",
-            Attributes = new List<Attribute>()
-        };
-
-        _mockClassRepository
-            .Setup(repo => repo.Find(_classId))
-            .Returns(classEntity);
-
-        _attributeService.CreateAttributeForClass(_classId, dto);
+        _attributeService.CreateAttribute(dto);
 
         _mockAttributeRepository.Verify(repo => repo.Add(
             It.Is<Attribute>(a =>
                 a.Id == dto.Id &&
                 a.Name == dto.Name &&
                 a.Accessibility == dto.Accessibility)), Times.Once);
-
-        Assert.AreEqual(1, classEntity.Attributes.Count);
-        Assert.AreEqual(dto.Name, classEntity.Attributes[0].Name);
     }
 
     [TestMethod]
-    public void CreateAttribute_ShouldThrowException_WhenAttributeNameAlreadyExistsInSameClass()
+    public void AsociateAtributeToClass_ShouldAddAttribute_WhenValid()
     {
-        var dto = new AttributeDTO
+        var classId = Guid.NewGuid();
+        var attributeDTO = new AttributeDTO
         {
             Id = Guid.NewGuid(),
-            Name = "Strength",
+            Name = "Agility",
             Accessibility = Accessibility.Public
         };
 
         var classEntity = new Class
         {
-            Id = _classId,
+            Id = classId,
             Name = "Warrior",
-            Attributes = new List<Attribute>
-            {
-                new Attribute(Guid.NewGuid(), "Strength", Accessibility.Private)
-            }
+            Attributes = new List<Attribute>()
         };
 
         _mockClassRepository
-            .Setup(repo => repo.Find(_classId))
+            .Setup(repo => repo.Find(classId))
             .Returns(classEntity);
 
-        var exception = Assert.ThrowsException<AttributeException>(() =>
-        {
-            _attributeService.CreateAttributeForClass(_classId, dto);
-        });
+        _attributeService.AsociateAtributeToClass(classId, attributeDTO);
 
-        Assert.AreEqual("An attribute with the name 'Strength' already exists in the class", exception.Message);
+        Assert.AreEqual(1, classEntity.Attributes.Count);
+        Assert.AreEqual(attributeDTO.Name, classEntity.Attributes[0].Name);
+    }
+
+    [TestMethod]
+    public void AsociateAtributeToClass_ShouldThrowException_WhenAttributeNameAlreadyExistsInClass()
+    {
+        var classId = Guid.NewGuid();
+        var existingAttribute = new Attribute(Guid.NewGuid(), "Intelligence", Accessibility.Private);
+
+        var classEntity = new Class
+        {
+            Id = classId,
+            Name = "Mage",
+            Attributes = new List<Attribute> { existingAttribute }
+        };
+
+        var dto = new AttributeDTO
+        {
+            Id = Guid.NewGuid(),
+            Name = "Intelligence",
+            Accessibility = Accessibility.Public
+        };
+
+        _mockClassRepository
+            .Setup(repo => repo.Find(classId))
+            .Returns(classEntity);
+
+        var ex = Assert.ThrowsException<AttributeException>(() =>
+            _attributeService.AsociateAtributeToClass(classId, dto));
+
+        Assert.AreEqual("An attribute with the name 'Intelligence' already exists in the class", ex.Message);
     }
 
     [TestMethod]
@@ -101,12 +120,12 @@ public class AttributeServiceTest
         };
 
         _mockClassRepository
-            .Setup(repo => repo.Find(_classId))
-            .Returns((Class?)null);
+            .Setup(repo => repo.Find(Guid.Empty))
+            .Returns((Class?)null); // Configuración explícita para Guid.Empty
 
         var exception = Assert.ThrowsException<AttributeException>(() =>
         {
-            _attributeService.CreateAttributeForClass(_classId, dto);
+            _attributeService.AsociateAtributeToClass(Guid.Empty, dto);
         });
 
         Assert.AreEqual("Class not found", exception.Message);
@@ -133,10 +152,9 @@ public class AttributeServiceTest
             .Setup(repo => repo.Find(_classId))
             .Returns(classEntity);
 
-        // Act & Assert
         var ex = Assert.ThrowsException<ArgumentException>(() =>
         {
-            _attributeService.CreateAttributeForClass(_classId, dto);
+            _attributeService.CreateAttribute(dto);
         });
 
         Assert.AreEqual("Name cannot be null or empty", ex.Message);
@@ -145,7 +163,7 @@ public class AttributeServiceTest
     [TestMethod]
     public void CreateAttribute_ShouldThrowArgumentException_WhenNameExceedsMaxLength()
     {
-        var longName = new string('A', 51); // 51 caracteres
+        var longName = new string('A', 51);
         var dto = new AttributeDTO
         {
             Id = Guid.NewGuid(),
@@ -166,9 +184,44 @@ public class AttributeServiceTest
 
         var ex = Assert.ThrowsException<ArgumentException>(() =>
         {
-            _attributeService.CreateAttributeForClass(_classId, dto);
+            _attributeService.CreateAttribute(dto);
         });
 
         Assert.AreEqual("Name cannot exceed 50 characters", ex.Message);
+    }
+
+    [TestMethod]
+    public void UpdateAttribute_ShouldUpdateAttribute_WhenValid()
+    {
+        // Arrange
+        var id = Guid.NewGuid();
+        var original = new Attribute(id, "OldName", Accessibility.Private);
+        var dto = new AttributeDTO
+        {
+            Id = id,
+            Name = "NewName",
+            Accessibility = Accessibility.Public
+        };
+
+        _mockAttributeRepository
+            .Setup(r => r.Find(id))
+            .Returns(original);
+
+        _mockAttributeRepository
+            .Setup(r => r.Update(It.IsAny<Attribute>())); // <- Agregado para evitar excepción
+
+        _mockClassRepository.Setup(r => r.FindAll())
+            .Returns(new List<Class>());
+
+        _mockMethodRepository.Setup(r => r.FindAll())
+            .Returns(new List<Method>());
+
+        // Act
+        _attributeService.UpdateAttribute(id, dto);
+
+        // Assert
+        Assert.AreEqual("NewName", original.Name);
+        Assert.AreEqual(Accessibility.Public, original.Accessibility);
+        _mockAttributeRepository.Verify(r => r.Update(original), Times.Once);
     }
 }

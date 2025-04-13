@@ -17,14 +17,14 @@ public class AttributeControllerTest
     {
         var attribute = new AttributeDTO();
         var id = Guid.NewGuid();
-        _attributeServiceMock.Setup(service => service.CreateAttributeForClass(id,attribute))
+        _attributeServiceMock.Setup(service => service.CreateAttribute(attribute))
             .Verifiable();
 
-        var result = _controller.CreateAttribute(id,attribute) as CreatedResult;
+        var result = _controller.CreateAttribute(attribute) as CreatedResult;
 
         Assert.IsNotNull(result);
         Assert.AreEqual(201, result.StatusCode);
-        _attributeServiceMock.Verify(service => service.CreateAttributeForClass(id,attribute), Times.Once);
+        _attributeServiceMock.Verify(service => service.CreateAttribute(attribute), Times.Once);
     }
 
     [TestMethod]
