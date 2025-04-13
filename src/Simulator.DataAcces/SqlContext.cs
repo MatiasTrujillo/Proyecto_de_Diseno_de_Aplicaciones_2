@@ -14,12 +14,15 @@ public sealed class SqlContext : DbContext
     }
 
     public DbSet<Attribute> Attributes { get; set; }
+    public DbSet<Method> Methods { get; set; }
     public DbSet<Class> Classes { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Attribute>()
             .HasKey(a => a.Id);
+        modelBuilder.Entity<Method>()
+            .HasKey(m => m.Id);
         modelBuilder.Entity<Class>()
             .HasKey(a => a.Id);
 
