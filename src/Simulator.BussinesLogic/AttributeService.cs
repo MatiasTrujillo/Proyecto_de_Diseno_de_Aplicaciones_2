@@ -39,6 +39,13 @@ public class AttributeService(IAttributeRepository attributeRepository, IClassRe
     private void ValidateAttributeIsNotInClass(Attribute attributeT)
     {
         var classes = _classRepository.FindAll();
+        foreach (var classT in classes)
+        {
+            if (classT.Attributes.Contains(attributeT))
+            {
+                throw new AttributeException("Attribute is associated with a class");
+            }
+        }
     }
 
     private static void ValidateAttributeExist(Attribute attributeT)
