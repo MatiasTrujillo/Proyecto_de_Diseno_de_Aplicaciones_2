@@ -20,6 +20,7 @@ public class AttributeController(IAttributeService attributeService) : Controlle
     [HttpPatch("{id}")]
     public IActionResult UpdateAttribute([FromRoute] Guid id, [FromBody] AttributeDTO attribute)
     {
+        _attributeService.UpdateAttribute(id, attribute);
         return Ok(new { message = "Attribute updated successfully" });
     }
 }
