@@ -288,4 +288,18 @@ public class AttributeServiceTest
 
         _mockAttributeRepository.Verify(r => r.Delete(id), Times.Once);
     }
+
+    [TestMethod]
+    public void DeleteAttribute_ShouldThrowAttributeException_WhenAttributeDoesNotExist()
+    {
+        var id = Guid.NewGuid();
+        _mockAttributeRepository.Setup(r => r.Find(id)).Returns((Attribute)null);
+
+        var ex = Assert.ThrowsException<AttributeException>(() =>
+        {
+            _attributeService.DeleteAttribute(id);
+        });
+
+        Assert.AreEqual("Attribute not found", ex.Message);
+    }
 }
