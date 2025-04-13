@@ -111,4 +111,64 @@ public class AttributeServiceTest
 
         Assert.AreEqual("Class not found", exception.Message);
     }
+
+    [TestMethod]
+    public void CreateAttribute_ShouldThrowArgumentException_WhenNameIsEmpty()
+    {
+        var dto = new AttributeDTO
+        {
+            Id = Guid.NewGuid(),
+            Name = string.Empty,
+            Accessibility = Accessibility.Public
+        };
+
+        var classEntity = new Class
+        {
+            Id = _classId,
+            Name = "SomeClass",
+            Attributes = new List<Attribute>()
+        };
+
+        _mockClassRepository
+            .Setup(repo => repo.Find(_classId))
+            .Returns(classEntity);
+
+        // Act & Assert
+        var ex = Assert.ThrowsException<ArgumentException>(() =>
+        {
+            _attributeService.CreateAttributeForClass(_classId, dto);
+        });
+
+        Assert.AreEqual("Name cannot be null or empty", ex.Message);
+    }
+
+    [TestMethod]
+    public void CreateAttribute_ShouldThrowArgumentException_WhenNameExceedsMaxLength()
+    {
+        var longName = new string('A', 51); // 51 caracteres
+        var dto = new AttributeDTO
+        {
+            Id = Guid.NewGuid(),
+            Name = longName,
+            Accessibility = Accessibility.Public
+        };
+
+        var classEntity = new Class
+        {
+            Id = _classId,
+            Name = "SomeClass",
+            Attributes = new List<Attribute>()
+        };
+
+        _mockClassRepository
+            .Setup(repo => repo.Find(_classId))
+            .Returns(classEntity);
+
+        var ex = Assert.ThrowsException<ArgumentException>(() =>
+        {
+            _attributeService.CreateAttributeForClass(_classId, dto);
+        });
+
+        Assert.AreEqual("Name cannot exceed 50 characters", ex.Message);
+    }
 }

@@ -11,11 +11,6 @@ public class AttributeDTO
 
     public Attribute ToEntity()
     {
-        return new Attribute
-        {
-            Id = Id,
-            Name = Name,
-            Accessibility = Accessibility
-        };
+        return new Attribute(Id, Name, Accessibility);
     }
 }

@@ -15,10 +15,10 @@ public class Attribute
 
     public Attribute(Guid id, string name, Accessibility accessibility)
     {
+        ValidateAttributes(name);
         Id = id;
         Name = name;
         Accessibility = accessibility;
-        ValidateAttributes(name);
     }
 
     private void ValidateAttributes(string name)
