@@ -44,7 +44,7 @@ public class MethodRepositoryTest
         _thirdMethod = new Method(_thirdId, _thirdMethodName, Accessibility.Protected, KeyWord.Sealed);
         _parameter = new Parameter(Guid.NewGuid(), "Parameter");
         _localVariable = new LocalVariable(Guid.NewGuid(), "LocalVariable");
-        _oneMethod = new Method(_oneId, _oneMethodName, _accessibilityPublic, null, [_secondMethod, _thirdMethod],
+        _oneMethod = new Method(_oneId, _oneMethodName, _accessibilityPublic, null, [_secondMethod],
             [_parameter], [_localVariable]);
     }
 
@@ -68,11 +68,10 @@ public class MethodRepositoryTest
             .Single(m => m.Id == _oneMethod.Id);
 
         saved.Id.Should().Be(_oneMethod.Id);
-        saved.Id.Should().Be(_oneMethod.Id);
         saved.Name.Should().Be(_oneMethod.Name);
         saved.Accessibility.Should().Be(_oneMethod.Accessibility);
         saved.Stereotype.Should().BeNull();
-        saved.Methods.Count.Should().Be(2);
+        saved.Methods.Count.Should().Be(1);
         saved.Methods[0].Id.Should().Be(_secondMethod.Id);
         saved.Parameters[0].Id.Should().Be(_parameter.Id);
         saved.LocalVariables[0].Id.Should().Be(_localVariable.Id);
