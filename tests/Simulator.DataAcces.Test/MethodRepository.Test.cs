@@ -140,6 +140,8 @@ public class MethodRepositoryTest
         exists.Should().BeFalse();
     }
     #endregion
+
+    #region Delete
     [TestMethod]
     public void Delete_WhenAttributeExists_ShouldRemoveItFromDatabase()
     {
@@ -152,4 +154,5 @@ public class MethodRepositoryTest
         var deleted = refreshedContext.Methods.Find(_oneMethod.Id);
         deleted.Should().BeNull();
     }
+    #endregion
 }
