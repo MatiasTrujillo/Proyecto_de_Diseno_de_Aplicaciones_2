@@ -10,10 +10,10 @@ public class LocalVariable
      */
 
     public LocalVariable()
-	{
+    {
         Id = Guid.NewGuid();
         Name = string.Empty;
-	}
+    }
 
     public LocalVariable(Guid id, string name)
     {

@@ -15,7 +15,7 @@ public class Method
     */
 
     public Method()
-	{
+    {
         Id = Guid.NewGuid();
         Name = string.Empty;
         Accessibility = Accessibility.Public;
