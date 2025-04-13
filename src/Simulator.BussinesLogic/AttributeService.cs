@@ -41,6 +41,7 @@ public class AttributeService(IAttributeRepository attributeRepository, IClassRe
         var attributeT = _attributeRepository.Find(id);
         ValidateAttributeExist(attributeT);
         ValidateAttributeIsNotInClass(attributeT);
+        _attributeRepository.Delete(id);
     }
 
     private void ValidateAttributeIsNotInClass(Attribute attributeT)
