@@ -44,7 +44,8 @@ public class MethodRepositoryTest
         _thirdMethod = new Method(_thirdId, _thirdMethodName, Accessibility.Protected, KeyWord.Sealed);
         _parameter = new Parameter(Guid.NewGuid(), "Parameter");
         _localVariable = new LocalVariable(Guid.NewGuid(), "LocalVariable");
-        _oneMethod = new Method(_oneId, _oneMethodName, _accessibilityPublic, null, new List<Method> { _secondMethod, _thirdMethod }, new List<Parameter>{_parameter}, new List<LocalVariable>{_localVariable});
+        _oneMethod = new Method(_oneId, _oneMethodName, _accessibilityPublic, null, [_secondMethod, _thirdMethod],
+            [_parameter], [_localVariable]);
     }
 
     [TestCleanup]
