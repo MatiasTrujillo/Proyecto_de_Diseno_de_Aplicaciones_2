@@ -18,14 +18,4 @@ public class AttributeDTO
             Accessibility = Accessibility
         };
     }
-
-    public static AttributeDTO FromEntity(Attribute attribute)
-    {
-        return new AttributeDTO
-        {
-            Id = attribute.Id,
-            Name = attribute.Name,
-            Accessibility = attribute.Accessibility
-        };
-    }
 }
