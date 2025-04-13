@@ -16,4 +16,10 @@ public class ClassController(IClassService classService) : ControllerBase
         _classService.CreateClass(classDto);
         return Created(string.Empty, new { message = "Class created successfully" });
     }
+
+    [HttpPatch("{id}")]
+    public IActionResult UpdateClass([FromRoute] Guid id, [FromBody] ClassDTO classDto)
+    {
+        return Ok(new { message = "Class updated successfully" });
+    }
 }
