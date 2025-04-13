@@ -27,6 +27,7 @@ public class AttributeController(IAttributeService attributeService) : Controlle
     [HttpDelete("{id}")]
     public IActionResult DeleteAttribute([FromRoute] Guid id)
     {
-        return Ok(new { message = "Attribute deleted successfully" });
+        _attributeService.DeleteAttribute(id);
+        return NoContent();
     }
 }

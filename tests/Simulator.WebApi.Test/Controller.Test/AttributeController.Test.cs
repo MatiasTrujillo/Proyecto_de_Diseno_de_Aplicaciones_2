@@ -42,13 +42,13 @@ public class AttributeControllerTest
     }
 
     [TestMethod]
-    public void DeleteAttribute_ShouldReturnOk_WhenAttributeIsDeleted()
+    public void DeleteAttribute_ShouldReturnNoContent_WhenAttributeIsDeleted()
     {
         var id = Guid.NewGuid();
         _attributeServiceMock.Setup(service => service.DeleteAttribute(id))
             .Verifiable();
 
-        var result = _controller.DeleteAttribute(id) as OkObjectResult;
+        var result = _controller.DeleteAttribute(id) as NoContentResult;
 
         Assert.IsNotNull(result);
         Assert.AreEqual(204, result.StatusCode);
