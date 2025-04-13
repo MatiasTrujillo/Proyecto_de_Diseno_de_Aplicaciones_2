@@ -1,4 +1,4 @@
-using WebApi.Filters;
+using Simulator.WebApi.Filters;
 
 var builder = WebApplication.CreateBuilder(args);
 

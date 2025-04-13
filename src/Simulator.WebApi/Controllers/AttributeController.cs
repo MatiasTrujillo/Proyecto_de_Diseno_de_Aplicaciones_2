@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Simulator.BussinesLogic.DTO;
 using Simulator.IBussinesLogic;
 
-namespace WebApi.Controllers;
+namespace Simulator.WebApi.Controllers;
 
 [ApiController]
 [Route("[controller]")]

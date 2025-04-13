@@ -21,7 +21,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Simulator.IDataAcces", "src
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Simulator.WebApi.Test", "tests\Simulator.WebApi.Test\Simulator.WebApi.Test.csproj", "{ACC46BAF-39EC-4372-A328-B7C1B5B8B9E5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebApi", "src\WebApi\WebApi.csproj", "{50FE065E-EEB9-4947-AE81-8FF3413FC968}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Simulator.WebApi", "src\Simulator.WebApi\Simulator.WebApi.csproj", "{50FE065E-EEB9-4947-AE81-8FF3413FC968}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Simulator.IBussinesLogic", "src\Simulator.IBussinesLogic\Simulator.IBussinesLogic.csproj", "{75B3482C-70F6-463B-982F-DA62E7B5A814}"
 EndProject

@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Moq;
 using Simulator.BussinesLogic.DTO;
 using Simulator.IBussinesLogic;
-using WebApi.Controllers;
+using Simulator.WebApi.Controllers;
 
 namespace Simulator.WebApi.Test.Controller.Test;
 

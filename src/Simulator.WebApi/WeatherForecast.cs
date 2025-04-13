@@ -1,4 +1,4 @@
-namespace WebApi;
+namespace Simulator.WebApi;
 
 public class WeatherForecast
 {
