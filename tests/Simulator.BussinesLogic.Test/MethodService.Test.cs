@@ -41,4 +41,13 @@ public class MethodServiceTest
                 m.Accessibility == methodDto.Accessibility &&
                 m.Stereotype == null)), Times.Once);
     }
+
+    [TestMethod]
+    public void DeleteMethod_ShouldCallRepositoryDelete_WithValidMethod()
+    {
+        _methodService.CreateMethod(methodDto);
+        _methodService.DeleteMethod(methodDto.Id);
+
+        _mockMethodRepository.Verify(repo => repo.Delete(methodDto.Id), Times.Once);
+    }
 }
