@@ -1,7 +1,6 @@
 using DTO;
 using Moq;
 using Simulator.Domain;
-using Simulator.IBussinesLogic;
 using Simulator.IDataAcces;
 
 namespace Simulator.BussinesLogic.Test;
@@ -27,6 +26,8 @@ public class MethodServiceTest
         _mockMethodRepository
             .Setup(repo => repo.Add(It.IsAny<Method>()));
         _methodService = new MethodService(_mockMethodRepository.Object);
+        _mockMethodRepository
+            .Setup(repo => repo.Delete(It.IsAny<Guid>()));
     }
 
     [TestMethod]

@@ -13,11 +13,6 @@ public class MethodService(IMethodRepository methodRepository) : IMethodService
         _methodRepository.Add(method.ToEntity());
     }
 
-    public void AsociateMethod(Guid idClass, MethodDTO method)
-    {
-        throw new NotImplementedException();
-    }
-
     public void UpdateMethod(Guid id, MethodDTO method)
     {
         throw new NotImplementedException();
@@ -25,6 +20,6 @@ public class MethodService(IMethodRepository methodRepository) : IMethodService
 
     public void DeleteMethod(Guid id)
     {
-        throw new NotImplementedException();
+        _methodRepository.Delete(id);
     }
 }
