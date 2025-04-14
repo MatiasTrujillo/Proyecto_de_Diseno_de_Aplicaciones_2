@@ -1,4 +1,4 @@
-﻿using Simulator.BussinesLogic.DTO;
+﻿using DTO;
 using Simulator.Domain.Exception;
 using Simulator.IBussinesLogic;
 using Simulator.IDataAcces;
@@ -11,13 +11,13 @@ public class AttributeService(IAttributeRepository attributeRepository, IClassRe
     private readonly IAttributeRepository _attributeRepository = attributeRepository;
     private readonly IClassRepository _classRepository = classRepository;
 
-    public void CreateAttribute(AttributeDTO aDTO)
+    public void CreateAttribute(AttributeDto aDTO)
     {
         var attribute = aDTO.ToEntity();
         _attributeRepository.Add(attribute);
     }
 
-    public void AsociateAttribute(Guid idClass, AttributeDTO attribute)
+    public void AsociateAttribute(Guid idClass, AttributeDto attribute)
     {
         var attributeT = attribute.ToEntity();
         var classT = _classRepository.Find(idClass);
@@ -26,7 +26,7 @@ public class AttributeService(IAttributeRepository attributeRepository, IClassRe
         classT.Attributes.Add(attributeT);
     }
 
-    public void UpdateAttribute(Guid id, AttributeDTO attribute)
+    public void UpdateAttribute(Guid id, AttributeDto attribute)
     {
         var attributeT = _attributeRepository.Find(id);
         ValidateAttributeExist(attributeT);
@@ -47,18 +47,16 @@ public class AttributeService(IAttributeRepository attributeRepository, IClassRe
     private void ValidateAttributeIsNotInClass(Attribute attributeT)
     {
         var classes = _classRepository.FindAll();
-        foreach (var classT in classes)
+
+        if(classes.Any(classT => classT.Attributes.Contains(attributeT)))
         {
-            if (classT.Attributes.Contains(attributeT))
-            {
-                throw new AttributeException("Attribute is associated with a class");
-            }
+            throw new AttributeException("Attribute is associated with a class");
         }
     }
 
     private static void ValidateAttributeExist(Attribute attributeT)
     {
-        if (attributeT == null)
+        if(attributeT == null)
         {
             throw new AttributeException("Attribute not found");
         }
@@ -67,7 +65,7 @@ public class AttributeService(IAttributeRepository attributeRepository, IClassRe
     private void ValidateClassExists(Guid idClass)
     {
         var classT = _classRepository.Find(idClass);
-        if (classT == null)
+        if(classT == null)
         {
             throw new AttributeException("Class not found");
         }
@@ -77,7 +75,7 @@ public class AttributeService(IAttributeRepository attributeRepository, IClassRe
     {
         var classT = _classRepository.Find(idClass);
 
-        if (classT.Attributes.Any(a => a.Name == attribute.Name))
+        if(classT.Attributes.Any(a => a.Name == attribute.Name))
         {
             throw new AttributeException($"An attribute with the name '{attribute.Name}' already exists in the class");
         }

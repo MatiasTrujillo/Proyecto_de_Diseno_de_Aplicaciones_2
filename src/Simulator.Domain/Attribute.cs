@@ -23,12 +23,12 @@ public class Attribute
 
     private void ValidateAttributes(string name)
     {
-        if (string.IsNullOrWhiteSpace(name))
+        if(string.IsNullOrWhiteSpace(name))
         {
             throw new ArgumentException("Name cannot be null or empty");
         }
 
-        if (name.Length > 50)
+        if(name.Length > 50)
         {
             throw new ArgumentException("Name cannot exceed 50 characters");
         }

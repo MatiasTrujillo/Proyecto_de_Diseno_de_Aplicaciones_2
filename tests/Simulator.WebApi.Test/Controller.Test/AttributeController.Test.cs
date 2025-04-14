@@ -1,6 +1,6 @@
+using DTO;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
-using Simulator.BussinesLogic.DTO;
 using Simulator.Domain;
 using Simulator.IBussinesLogic;
 using Simulator.WebApi.Controllers;
@@ -10,51 +10,50 @@ namespace Simulator.WebApi.Test.Controller.Test;
 [TestClass]
 public class AttributeControllerTest
 {
-    private static readonly Mock<IAttributeService> _attributeServiceMock = new Mock<IAttributeService>();
-    private readonly AttributeController _controller = new AttributeController(_attributeServiceMock.Object);
+    private static readonly Mock<IAttributeService> AttributeServiceMock = new Mock<IAttributeService>();
+    private readonly AttributeController _controller = new AttributeController(AttributeServiceMock.Object);
 
     [TestMethod]
     public void CreateAttribute_ShouldReturnCreated_WhenAttributeIsCreated()
     {
-        var attribute = new AttributeDTO();
-        var id = Guid.NewGuid();
-        _attributeServiceMock.Setup(service => service.CreateAttribute(attribute))
+        var attribute = new AttributeDto();
+        AttributeServiceMock.Setup(service => service.CreateAttribute(attribute))
             .Verifiable();
 
         var result = _controller.CreateAttribute(attribute) as CreatedResult;
 
         Assert.IsNotNull(result);
         Assert.AreEqual(201, result.StatusCode);
-        _attributeServiceMock.Verify(service => service.CreateAttribute(attribute), Times.Once);
+        AttributeServiceMock.Verify(service => service.CreateAttribute(attribute), Times.Once);
     }
 
     [TestMethod]
     public void UpdateAttribute_ShouldReturnOk_WhenAttributeIsUpdated()
     {
         var id = Guid.NewGuid();
-        var attribute = new AttributeDTO();
-        _attributeServiceMock.Setup(service => service.UpdateAttribute(id, attribute))
+        var attribute = new AttributeDto();
+        AttributeServiceMock.Setup(service => service.UpdateAttribute(id, attribute))
             .Verifiable();
 
         var result = _controller.UpdateAttribute(id, attribute) as OkObjectResult;
 
         Assert.IsNotNull(result);
         Assert.AreEqual(200, result.StatusCode);
-        _attributeServiceMock.Verify(service => service.UpdateAttribute(id, attribute), Times.Once);
+        AttributeServiceMock.Verify(service => service.UpdateAttribute(id, attribute), Times.Once);
     }
 
     [TestMethod]
     public void DeleteAttribute_ShouldReturnNoContent_WhenAttributeIsDeleted()
     {
         var id = Guid.NewGuid();
-        _attributeServiceMock.Setup(service => service.DeleteAttribute(id))
+        AttributeServiceMock.Setup(service => service.DeleteAttribute(id))
             .Verifiable();
 
         var result = _controller.DeleteAttribute(id) as NoContentResult;
 
         Assert.IsNotNull(result);
         Assert.AreEqual(204, result.StatusCode);
-        _attributeServiceMock.Verify(service => service.DeleteAttribute(id), Times.Once);
+        AttributeServiceMock.Verify(service => service.DeleteAttribute(id), Times.Once);
     }
 
     [TestMethod]
@@ -62,7 +61,7 @@ public class AttributeControllerTest
     {
         var mockAttributeService = new Mock<IAttributeService>();
         var controller = new AttributeController(mockAttributeService.Object);
-        var attributeDto = new AttributeDTO
+        var attributeDto = new AttributeDto
         {
             Id = Guid.NewGuid(),
             Name = "TestAttribute",

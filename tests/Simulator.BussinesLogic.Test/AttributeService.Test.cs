@@ -1,8 +1,7 @@
+using DTO;
 using Moq;
-using Simulator.BussinesLogic.DTO;
 using Simulator.Domain;
 using Simulator.Domain.Exception;
-using Simulator.IBussinesLogic;
 using Simulator.IDataAcces;
 using Attribute = Simulator.Domain.Attribute;
 
@@ -32,7 +31,7 @@ public class AttributeServiceTest
     [TestMethod]
     public void CreateAttribute_ShouldCallRepositoryAdd_WithValidAttribute()
     {
-        var dto = new AttributeDTO
+        var dto = new AttributeDto
         {
             Id = Guid.NewGuid(),
             Name = "Strength",
@@ -52,7 +51,7 @@ public class AttributeServiceTest
     public void AsociateAtributeToClass_ShouldAddAttribute_WhenValid()
     {
         var classId = Guid.NewGuid();
-        var attributeDTO = new AttributeDTO
+        var attributeDTO = new AttributeDto
         {
             Id = Guid.NewGuid(),
             Name = "Agility",
@@ -63,7 +62,7 @@ public class AttributeServiceTest
         {
             Id = classId,
             Name = "Warrior",
-            Attributes = new List<Attribute>()
+            Attributes = []
         };
 
         _mockClassRepository
@@ -86,10 +85,10 @@ public class AttributeServiceTest
         {
             Id = classId,
             Name = "Mage",
-            Attributes = new List<Attribute> { existingAttribute }
+            Attributes = [existingAttribute]
         };
 
-        var dto = new AttributeDTO
+        var dto = new AttributeDto
         {
             Id = Guid.NewGuid(),
             Name = "Intelligence",
@@ -109,7 +108,7 @@ public class AttributeServiceTest
     [TestMethod]
     public void CreateAttribute_ShouldThrowException_WhenClassNotFound()
     {
-        var dto = new AttributeDTO
+        var dto = new AttributeDto
         {
             Id = Guid.NewGuid(),
             Name = "Agility",
@@ -118,7 +117,7 @@ public class AttributeServiceTest
 
         _mockClassRepository
             .Setup(repo => repo.Find(Guid.Empty))
-            .Returns((Class?)null);
+            .Returns(((Class?)null)!);
 
         var exception = Assert.ThrowsException<AttributeException>(() =>
         {
@@ -131,7 +130,7 @@ public class AttributeServiceTest
     [TestMethod]
     public void CreateAttribute_ShouldThrowArgumentException_WhenNameIsEmpty()
     {
-        var dto = new AttributeDTO
+        var dto = new AttributeDto
         {
             Id = Guid.NewGuid(),
             Name = string.Empty,
@@ -142,7 +141,7 @@ public class AttributeServiceTest
         {
             Id = _classId,
             Name = "SomeClass",
-            Attributes = new List<Attribute>()
+            Attributes = []
         };
 
         _mockClassRepository
@@ -161,7 +160,7 @@ public class AttributeServiceTest
     public void CreateAttribute_ShouldThrowArgumentException_WhenNameExceedsMaxLength()
     {
         var longName = new string('A', 51);
-        var dto = new AttributeDTO
+        var dto = new AttributeDto
         {
             Id = Guid.NewGuid(),
             Name = longName,
@@ -172,7 +171,7 @@ public class AttributeServiceTest
         {
             Id = _classId,
             Name = "SomeClass",
-            Attributes = new List<Attribute>()
+            Attributes = []
         };
 
         _mockClassRepository
@@ -192,7 +191,7 @@ public class AttributeServiceTest
     {
         var id = Guid.NewGuid();
         var original = new Attribute(id, "OldName", Accessibility.Private);
-        var dto = new AttributeDTO
+        var dto = new AttributeDto
         {
             Id = id,
             Name = "NewName",
@@ -207,7 +206,7 @@ public class AttributeServiceTest
             .Setup(r => r.Update(It.IsAny<Attribute>()));
 
         _mockClassRepository.Setup(r => r.FindAll())
-            .Returns(new List<Class>());
+            .Returns([]);
 
         _attributeService.UpdateAttribute(id, dto);
 
@@ -221,7 +220,7 @@ public class AttributeServiceTest
     {
         var id = Guid.NewGuid();
         var attribute = new Attribute(id, "SomeName", Accessibility.Private);
-        var dto = new AttributeDTO
+        var dto = new AttributeDto
         {
             Id = id,
             Name = "UpdatedName",
@@ -232,7 +231,7 @@ public class AttributeServiceTest
         {
             Id = Guid.NewGuid(),
             Name = "ClassA",
-            Attributes = new List<Attribute> { attribute }
+            Attributes = [attribute]
         };
 
         _mockAttributeRepository
@@ -241,7 +240,7 @@ public class AttributeServiceTest
 
         _mockClassRepository
             .Setup(r => r.FindAll())
-            .Returns(new List<Class> { classWithAttribute });
+            .Returns([classWithAttribute]);
 
         var exception = Assert.ThrowsException<AttributeException>(() =>
         {
@@ -255,7 +254,7 @@ public class AttributeServiceTest
     public void UpdateAttribute_ShouldThrowAttributeException_WhenAttributeDoesNotExist()
     {
         var id = Guid.NewGuid();
-        var dto = new AttributeDTO
+        var dto = new AttributeDto
         {
             Id = id,
             Name = "NewName",
@@ -281,7 +280,7 @@ public class AttributeServiceTest
         var attribute = new Attribute { Id = id, Name = "Test", Accessibility = Accessibility.Public };
 
         _mockAttributeRepository.Setup(r => r.Find(id)).Returns(attribute);
-        _mockClassRepository.Setup(r => r.FindAll()).Returns(new List<Simulator.Domain.Class>()); // No asociado a clases
+        _mockClassRepository.Setup(r => r.FindAll()).Returns([]);
         _mockAttributeRepository.Setup(r => r.Delete(id));
 
         _attributeService.DeleteAttribute(id);
@@ -308,10 +307,10 @@ public class AttributeServiceTest
     {
         var id = Guid.NewGuid();
         var attribute = new Attribute { Id = id, Name = "InUse", Accessibility = Accessibility.Public };
-        var classWithAttribute = new Simulator.Domain.Class { Attributes = new List<Attribute> { attribute } };
+        var classWithAttribute = new Simulator.Domain.Class { Attributes = [attribute] };
 
         _mockAttributeRepository.Setup(r => r.Find(id)).Returns(attribute);
-        _mockClassRepository.Setup(r => r.FindAll()).Returns(new List<Simulator.Domain.Class> { classWithAttribute });
+        _mockClassRepository.Setup(r => r.FindAll()).Returns([classWithAttribute]);
 
         var ex = Assert.ThrowsException<AttributeException>(() =>
         {

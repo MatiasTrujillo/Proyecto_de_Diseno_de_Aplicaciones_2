@@ -1,5 +1,5 @@
+using DTO;
 using Microsoft.AspNetCore.Mvc;
-using Simulator.BussinesLogic.DTO;
 using Simulator.IBussinesLogic;
 
 namespace Simulator.WebApi.Controllers;

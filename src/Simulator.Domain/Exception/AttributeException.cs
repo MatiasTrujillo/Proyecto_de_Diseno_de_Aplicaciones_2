@@ -1,9 +1,5 @@
 namespace Simulator.Domain.Exception;
 
-public class AttributeException : System.Exception
+public class AttributeException(string message) : System.Exception(message)
 {
-    public AttributeException(string message)
-        : base(message)
-    {
-    }
 }
