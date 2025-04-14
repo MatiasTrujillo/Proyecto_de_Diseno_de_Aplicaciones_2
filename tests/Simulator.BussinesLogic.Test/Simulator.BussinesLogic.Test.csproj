@@ -24,6 +24,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\..\src\Simulator.BussinesLogic\Simulator.BussinesLogic.csproj" />
+      <ProjectReference Include="..\..\src\Simulator.IBussinesLogic\Simulator.IBussinesLogic.csproj" />
     </ItemGroup>
 
 </Project>

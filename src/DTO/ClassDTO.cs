@@ -1,6 +1,6 @@
 using Simulator.Domain;
 
-namespace Simulator.BussinesLogic.DTO;
+namespace DTO;
 
 public class ClassDTO
 {

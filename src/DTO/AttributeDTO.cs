@@ -1,9 +1,9 @@
 using Simulator.Domain;
 using Attribute = Simulator.Domain.Attribute;
 
-namespace Simulator.BussinesLogic.DTO;
+namespace DTO;
 
-public class AttributeDTO
+public class AttributeDto
 {
     public Guid Id { get; set; }
     public string Name { get; set; } = string.Empty;
@@ -11,11 +11,6 @@ public class AttributeDTO
 
     public Attribute ToEntity()
     {
-        return new Attribute
-        {
-            Id = Id,
-            Name = Name,
-            Accessibility = Accessibility
-        };
+        return new Attribute(Id, Name, Accessibility);
     }
 }
