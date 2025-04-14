@@ -30,6 +30,7 @@ public class MethodServiceTest
             .Setup(repo => repo.Delete(It.IsAny<Guid>()));
     }
 
+    #region CreateMethod
     [TestMethod]
     public void CreateMethod_ShouldCallRepositoryAdd_WithValidMethod()
     {
@@ -42,7 +43,9 @@ public class MethodServiceTest
                 m.Accessibility == methodDto.Accessibility &&
                 m.Stereotype == null)), Times.Once);
     }
+    #endregion
 
+    #region DeleteMethod
     [TestMethod]
     public void DeleteMethod_ShouldCallRepositoryDelete_WithValidMethod()
     {
@@ -51,4 +54,5 @@ public class MethodServiceTest
 
         _mockMethodRepository.Verify(repo => repo.Delete(methodDto.Id), Times.Once);
     }
+    #endregion
 }
