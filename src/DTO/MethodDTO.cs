@@ -8,4 +8,9 @@ public class MethodDTO
     public string? Name { get; set; }
     public Accessibility Accessibility { get; set; }
     public KeyWord? Stereotype { get; set; }
+
+    public Method ToEntity()
+    {
+        return new Method(Id, Name, Accessibility, Stereotype);
+    }
 }

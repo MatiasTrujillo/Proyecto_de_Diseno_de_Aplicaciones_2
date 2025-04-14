@@ -10,8 +10,7 @@ public class MethodService(IMethodRepository methodRepository) : IMethodService
 
     public void CreateMethod(MethodDTO method)
     {
-        _methodRepository.FindAll();
-        throw new NotImplementedException();
+        _methodRepository.Add(method.ToEntity());
     }
 
     public void AsociateMethod(Guid idClass, MethodDTO method)
