@@ -17,6 +17,13 @@ public class AttributeController(IAttributeService attributeService) : Controlle
         return Created(string.Empty, new { message = "Attribute created successfully" });
     }
 
+    [HttpPost("{id}")]
+    public IActionResult AsociateAttribute(Guid id, [FromBody] AttributeDTO attributes)
+    {
+        _attributeService.AsociateAttribute(id,attributes);
+        return Created(string.Empty, new { message = "Attributes associate successfully" });
+    }
+
     [HttpPatch("{id}")]
     public IActionResult UpdateAttribute([FromRoute] Guid id, [FromBody] AttributeDTO attribute)
     {

@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using Simulator.BussinesLogic.DTO;
+using Simulator.Domain;
 using Simulator.IBussinesLogic;
 using Simulator.WebApi.Controllers;
 
@@ -54,5 +55,30 @@ public class AttributeControllerTest
         Assert.IsNotNull(result);
         Assert.AreEqual(204, result.StatusCode);
         _attributeServiceMock.Verify(service => service.DeleteAttribute(id), Times.Once);
+    }
+
+    [TestMethod]
+    public void AsociateAttribute_ShouldCallServiceAndReturnCreated()
+    {
+        var mockAttributeService = new Mock<IAttributeService>();
+        var controller = new AttributeController(mockAttributeService.Object);
+        var attributeDto = new AttributeDTO
+        {
+            Id = Guid.NewGuid(),
+            Name = "TestAttribute",
+            Accessibility = Accessibility.Public
+        };
+        var classId = Guid.NewGuid();
+
+        var result = controller.AsociateAttribute(classId, attributeDto) as CreatedResult;
+
+        Assert.IsNotNull(result);
+        Assert.AreEqual(201, result.StatusCode);
+
+        var value = result.Value as dynamic;
+        Assert.IsNotNull(value);
+        Assert.AreEqual(201, result.StatusCode);
+
+        mockAttributeService.Verify(service => service.AsociateAttribute(classId, attributeDto), Times.Once);
     }
 }

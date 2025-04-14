@@ -70,7 +70,7 @@ public class AttributeServiceTest
             .Setup(repo => repo.Find(classId))
             .Returns(classEntity);
 
-        _attributeService.AsociateAtributeToClass(classId, attributeDTO);
+        _attributeService.AsociateAttribute(classId, attributeDTO);
 
         Assert.AreEqual(1, classEntity.Attributes.Count);
         Assert.AreEqual(attributeDTO.Name, classEntity.Attributes[0].Name);
@@ -101,7 +101,7 @@ public class AttributeServiceTest
             .Returns(classEntity);
 
         var ex = Assert.ThrowsException<AttributeException>(() =>
-            _attributeService.AsociateAtributeToClass(classId, dto));
+            _attributeService.AsociateAttribute(classId, dto));
 
         Assert.AreEqual("An attribute with the name 'Intelligence' already exists in the class", ex.Message);
     }
@@ -122,7 +122,7 @@ public class AttributeServiceTest
 
         var exception = Assert.ThrowsException<AttributeException>(() =>
         {
-            _attributeService.AsociateAtributeToClass(Guid.Empty, dto);
+            _attributeService.AsociateAttribute(Guid.Empty, dto);
         });
 
         Assert.AreEqual("Class not found", exception.Message);

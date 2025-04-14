@@ -17,7 +17,7 @@ public class AttributeService(IAttributeRepository attributeRepository, IClassRe
         _attributeRepository.Add(attribute);
     }
 
-    public void AsociateAtributeToClass(Guid idClass, AttributeDTO attribute)
+    public void AsociateAttribute(Guid idClass, AttributeDTO attribute)
     {
         var attributeT = attribute.ToEntity();
         var classT = _classRepository.Find(idClass);
