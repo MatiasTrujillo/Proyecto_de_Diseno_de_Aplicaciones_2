@@ -11,4 +11,28 @@ public class ClassDTO
     public List<AttributeDto> Attributes { get; set; } = [];
 
     // public List<MethodDTO> Method { get; set; } = new();
+
+    public Class ToEntity()
+    {
+        Class aClass = new Class();
+        aClass.Id = Id;
+        aClass.Name = Name;
+        aClass.Stereotype = Stereotype;
+
+        if(HirarchyClass != null)
+        {
+            aClass.HierarchyClass = HirarchyClass.ToEntity();
+        }
+        else
+        {
+            aClass.HierarchyClass = null;
+        }
+
+        foreach (var attr in Attributes)
+        {
+            aClass.Attributes.Add(attr.ToEntity());
+        }
+
+        return aClass;
+    }
 }

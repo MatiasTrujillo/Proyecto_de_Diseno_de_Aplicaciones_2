@@ -14,7 +14,8 @@ public class ClassService(IClassRepository classRepository) : IClassService
 
     public void CreateClass(ClassDTO classDto)
     {
-        throw new NotImplementedException();
+        var aClass = classDto.ToEntity();
+        _classRepository.Add(aClass);
     }
 
     public void UpdateClass(Guid id, ClassDTO classDto)

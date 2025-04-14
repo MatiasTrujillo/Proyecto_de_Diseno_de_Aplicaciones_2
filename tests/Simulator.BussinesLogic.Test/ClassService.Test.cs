@@ -6,7 +6,7 @@ using Simulator.IDataAcces;
 namespace Simulator.BussinesLogic.Test;
 
 [TestClass]
-public class ClassService_Test
+public class ClassServiceTest
 {
     private Mock<IClassRepository> _mockClassRepository = null!;
     private ClassService _classService = null!;
