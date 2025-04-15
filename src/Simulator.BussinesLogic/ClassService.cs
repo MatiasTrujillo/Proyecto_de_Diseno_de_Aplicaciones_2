@@ -3,6 +3,7 @@ using Simulator.Domain;
 using Simulator.Domain.Exception;
 using Simulator.IBussinesLogic;
 using Simulator.IDataAcces;
+using Attribute = Simulator.Domain.Attribute;
 
 namespace Simulator.BussinesLogic;
 
@@ -23,7 +24,21 @@ public class ClassService(IClassRepository classRepository) : IClassService
 
     public void UpdateClass(Guid id, ClassDTO classDto)
     {
-        throw new NotImplementedException();
+        var classT = _classRepository.Find(id);
+        classT.Name = classDto.Name;
+        classT.Stereotype = classDto.Stereotype;
+
+        if(classT.HierarchyClass != null)
+        {
+            classT.HierarchyClass = classDto.HirarchyClass.ToEntity();
+        }
+        else
+        {
+            classT.HierarchyClass = null;
+        }
+
+        classT.Attributes = ConvertAttributesToEntity(classDto.Attributes);
+        _classRepository.Update(classT);
     }
 
     public void DeleteClass(Guid id)
@@ -39,5 +54,16 @@ public class ClassService(IClassRepository classRepository) : IClassService
         {
             throw new ClassException("There is already a class with this name");
         }
+    }
+
+    private List<Attribute> ConvertAttributesToEntity(List<AttributeDto> attributeDtos)
+    {
+        List<Attribute> attributes = new List<Attribute>();
+        foreach(var attDto in attributeDtos)
+        {
+            attributes.Add(attDto.ToEntity());
+        }
+
+        return attributes;
     }
 }
