@@ -1,6 +1,7 @@
 using DTO;
 using Moq;
 using Simulator.Domain;
+using Simulator.Domain.Exception;
 using Simulator.IDataAcces;
 
 namespace Simulator.BussinesLogic.Test;
@@ -64,11 +65,17 @@ public class ClassServiceTest
             Attributes = []
         };
 
-        _classService.CreateClass(dto1);
-        _classService.CreateClass(dto2);
+        List<Class> classes = new List<Class>();
+        classes.Add(dto1.ToEntity());
 
-        _mockClassRepository.Verify(repo => repo.Add(
-            It.Is<Class>(a =>
-                a.Id == dto2.Id)), Times.Never);
+        _mockClassRepository.Setup(r => r.FindAll())
+            .Returns(classes);
+
+        var exception = Assert.ThrowsException<ClassException>(() =>
+        {
+            _classService.CreateClass(dto2);
+        });
+
+        Assert.AreEqual("There is already a class with this name", exception.Message);
     }
 }
