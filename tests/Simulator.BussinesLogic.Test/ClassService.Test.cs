@@ -42,4 +42,33 @@ public class ClassServiceTest
                 a.Name == dto.Name &&
                 a.Stereotype == dto.Stereotype)), Times.Once);
     }
+
+    [TestMethod]
+    public void CreateClass_ShouldNotCallRepositoryAdd_WithRepeatedClassName()
+    {
+        var dto1 = new ClassDTO
+        {
+            Id = Guid.NewGuid(),
+            Name = "Pedro",
+            Stereotype = KeyWord.Sealed,
+            HirarchyClass = null,
+            Attributes = []
+        };
+
+        var dto2 = new ClassDTO
+        {
+            Id = Guid.NewGuid(),
+            Name = "Pedro",
+            Stereotype = null,
+            HirarchyClass = null,
+            Attributes = []
+        };
+
+        _classService.CreateClass(dto1);
+        _classService.CreateClass(dto2);
+
+        _mockClassRepository.Verify(repo => repo.Add(
+            It.Is<Class>(a =>
+                a.Id == dto2.Id)), Times.Never);
+    }
 }
