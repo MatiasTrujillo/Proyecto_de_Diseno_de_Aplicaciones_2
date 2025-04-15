@@ -78,4 +78,32 @@ public class ClassServiceTest
 
         Assert.AreEqual("There is already a class with this name", exception.Message);
     }
+
+    [TestMethod]
+    public void UpdateClass_ShouldUpdateClass_WhenValid()
+    {
+        var id = Guid.NewGuid();
+        var original = new Class(id, "OldName", KeyWord.Sealed, null, []);
+        var dto = new ClassDTO
+        {
+            Id = id,
+            Name = "NewName",
+            Stereotype = KeyWord.Sealed,
+            HirarchyClass = null,
+            Attributes = []
+        };
+
+        _mockClassRepository
+            .Setup(r => r.Find(id))
+            .Returns(original);
+
+        _mockClassRepository
+            .Setup(r => r.Update(It.IsAny<Class>()));
+
+        _classService.UpdateClass(id, dto);
+
+        Assert.AreEqual("NewName", original.Name);
+        Assert.AreEqual(KeyWord.Sealed, original.Stereotype);
+        _mockClassRepository.Verify(r => r.Update(original), Times.Once);
+    }
 }
