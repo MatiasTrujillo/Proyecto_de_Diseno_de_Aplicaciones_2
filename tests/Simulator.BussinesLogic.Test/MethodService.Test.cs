@@ -83,4 +83,15 @@ public class MethodServiceTest
             _methodService.AssociateMethodWithClass(Guid.NewGuid(), Guid.NewGuid()));
         Assert.AreEqual("Method not found.", exception.Message);
     }
+
+    [TestMethod]
+    public void AssociateMethodWithClass_ShouldThrowException_WhenClassNotFound()
+    {
+        _mockMethodRepository.Setup(repo => repo.Find(It.IsAny<Guid>())).Returns(new Method());
+        _mockClassRepository.Setup(repo => repo.Find(It.IsAny<Guid>())).Returns((Class)null!);
+
+        var exception = Assert.ThrowsException<Exception>(() =>
+            _methodService.AssociateMethodWithClass(Guid.NewGuid(), Guid.NewGuid()));
+        Assert.AreEqual("Class not found.", exception.Message);
+    }
 }
