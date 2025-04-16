@@ -39,6 +39,10 @@ public class MethodService(IMethodRepository methodRepository, IClassRepository 
 
     public void AddAMethod(Guid id, Guid idToAdd)
     {
+        var method = _methodRepository.Find(id);
+        var methodToAdd = _methodRepository.Find(idToAdd);
+        method.Methods.Add(methodToAdd);
+        _methodRepository.Update(method);
     }
 
     private void ValidateMehodIsNotInClass(Guid id)
