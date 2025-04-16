@@ -35,6 +35,9 @@ public class ClassServiceTest
             Attributes = []
         };
 
+        _mockClassRepository.Setup(r => r.FindAll())
+            .Returns([]);
+
         _classService.CreateClass(dto);
 
         _mockClassRepository.Verify(repo => repo.Add(
@@ -93,6 +96,12 @@ public class ClassServiceTest
             Attributes = []
         };
 
+        List<Class> classes = new List<Class>();
+        classes.Add(original);
+
+        _mockClassRepository.Setup(r => r.FindAll())
+            .Returns(classes);
+
         _mockClassRepository
             .Setup(r => r.Find(id))
             .Returns(original);
@@ -129,6 +138,13 @@ public class ClassServiceTest
         _mockClassRepository
             .Setup(r => r.Find(id2))
             .Returns(original2);
+
+        List<Class> classes = new List<Class>();
+        classes.Add(original1);
+        classes.Add(original2);
+
+        _mockClassRepository.Setup(r => r.FindAll())
+            .Returns(classes);
 
         _mockClassRepository
             .Setup(r => r.Update(It.IsAny<Class>()));

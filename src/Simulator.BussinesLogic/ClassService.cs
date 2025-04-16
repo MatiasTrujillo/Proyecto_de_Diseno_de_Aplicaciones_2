@@ -24,6 +24,7 @@ public class ClassService(IClassRepository classRepository) : IClassService
 
     public void UpdateClass(Guid id, ClassDTO classDto)
     {
+        ValidateClassNameIsUnique(classDto.ToEntity());
         var classT = _classRepository.Find(id);
         classT.Name = classDto.Name;
         classT.Stereotype = classDto.Stereotype;
@@ -50,7 +51,7 @@ public class ClassService(IClassRepository classRepository) : IClassService
     {
         var classes = _classRepository.FindAll();
 
-        if(classes.Any(classT => classT.Name == aClass.Name))
+        if(classes.Any(classT => classT.Name == aClass.Name && classT.Id != aClass.Id))
         {
             throw new ClassException("There is already a class with this name");
         }
