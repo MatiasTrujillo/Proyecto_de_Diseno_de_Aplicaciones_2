@@ -29,11 +29,28 @@ public class MethodService(IMethodRepository methodRepository,IClassRepository c
         _classRepository.Update(classT);
     }
 
+    public void DeleteMethod(Guid id)
+    {
+        var method = _methodRepository.Find(id);
+        ValidateMethodExist(method);
+        ValidateMehodIsNotInClass(id);
+        _methodRepository.Delete(id);
+    }
+
+    private void ValidateMehodIsNotInClass(Guid id)
+    {
+        var classes = _classRepository.FindAll();
+        if(classes.Any(classT => classT.Methods.Any(method => method.Id == id)))
+        {
+            throw new Exception("Method is associated with a class.");
+        }
+    }
+
     private void ValidateClassUniqueNameMethod(Method method, Class classT)
     {
         var methods = classT.Methods;
 
-        if (methods.Any(existingMethod => existingMethod.Name.Equals(method.Name)))
+        if(methods.Any(existingMethod => existingMethod.Name.Equals(method.Name)))
         {
             throw new Exception("A method with the same name already exists in the class.");
         }
@@ -41,28 +58,23 @@ public class MethodService(IMethodRepository methodRepository,IClassRepository c
 
     private static void ValidateClassExist(Class classT)
     {
-        if (classT == null)
+        if(classT == null)
         {
             throw new Exception("Class not found.");
         }
     }
 
-    private static void ValidateMethodExist(Method method)
+    private void ValidateMethodExist(Method method)
     {
-        if (method == null)
+        if(method == null)
         {
-            throw new Exception("Method not found.");
+            throw new Exception("Method null.");
         }
-    }
-
-    public void DeleteMethod(Guid id)
-    {
-        _methodRepository.Delete(id);
     }
 
     private static void ValidateIsNotNull(MethodDTO method)
     {
-        if (method == null)
+        if(method == null)
         {
             throw new Exception("Method cannot be null.");
         }
@@ -71,7 +83,7 @@ public class MethodService(IMethodRepository methodRepository,IClassRepository c
     private void ValidateUniqueMethod(Method methodT)
     {
         List<Method> methods = _methodRepository.FindAll();
-        if (methods.Any(method => method.Name.Equals(methodT.Name)))
+        if(methods.Any(method => method.Name.Equals(methodT.Name)))
         {
             throw new Exception("Method with the same name  already exists.");
         }

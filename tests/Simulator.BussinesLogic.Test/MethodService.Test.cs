@@ -81,7 +81,7 @@ public class MethodServiceTest
 
         var exception = Assert.ThrowsException<Exception>(() =>
             _methodService.AssociateMethodWithClass(Guid.NewGuid(), Guid.NewGuid()));
-        Assert.AreEqual("Method not found.", exception.Message);
+        Assert.AreEqual("Method null.", exception.Message);
     }
 
     [TestMethod]
