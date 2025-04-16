@@ -26,7 +26,7 @@ public sealed class SqlContext : DbContext
         modelBuilder.Entity<Method>()
             .HasKey(m => m.Id);
         modelBuilder.Entity<Class>()
-            .HasKey(a => a.Id);
+            .HasKey(c => c.Id);
         modelBuilder.Entity<Method>()
             .HasMany(m => m.Methods)
             .WithMany();
@@ -35,9 +35,9 @@ public sealed class SqlContext : DbContext
         modelBuilder.Entity<Method>()
             .HasMany<LocalVariable>(m => m.LocalVariables);
         modelBuilder.Entity<Parameter>()
-            .HasKey(a => a.Id);
+            .HasKey(p => p.Id);
         modelBuilder.Entity<LocalVariable>()
-            .HasKey(a => a.Id);
+            .HasKey(l => l.Id);
 
         base.OnModelCreating(modelBuilder);
     }
