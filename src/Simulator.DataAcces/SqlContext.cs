@@ -25,6 +25,9 @@ public sealed class SqlContext : DbContext
             .HasKey(m => m.Id);
         modelBuilder.Entity<Class>()
             .HasKey(a => a.Id);
+        modelBuilder.Entity<Method>()
+            .HasMany(m => m.Methods)
+            .WithMany();
 
         base.OnModelCreating(modelBuilder);
     }

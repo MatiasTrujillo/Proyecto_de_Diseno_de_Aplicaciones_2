@@ -164,14 +164,15 @@ public class MethodRepositoryTest
     [TestMethod]
     public void Update_WhenMethodExists_ShouldAddAMethodToList()
     {
-        _context.Methods.Add(_secondMethod);
+        _context.Methods.AddRange(_secondMethod, _thirdMethod);
         _context.SaveChanges();
 
-        _oneMethod.Methods.Add(_thirdMethod);
+        _secondMethod.Methods.Add(_thirdMethod);
         _repositoryTest.Update(_secondMethod);
 
         using var refreshedContext = ProgramTest.BuildTestDbContext();
-        var saved = refreshedContext.Methods.Find(_secondMethod.Id);
+        var saved = refreshedContext.Methods.Include(m => m.Methods)
+            .FirstOrDefault(m => m.Id == _secondMethod.Id);
 
         saved.Should().NotBeNull();
         saved.Methods.Count.Should().Be(1);

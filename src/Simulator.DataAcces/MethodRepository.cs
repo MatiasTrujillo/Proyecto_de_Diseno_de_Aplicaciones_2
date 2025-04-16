@@ -1,3 +1,4 @@
+using Microsoft.EntityFrameworkCore;
 using Simulator.Domain;
 using Simulator.IDataAcces;
 
@@ -14,6 +15,21 @@ public class MethodRepository(SqlContext context) : IMethodRepository
     public Method Find(Guid id)
     {
         return context.Methods.Find(id);
+    }
+
+    public void Update(Method entity)
+    {
+        Method existingMethod = Find(entity.Id);
+
+        foreach (var subMethod in entity.Methods)
+        {
+            if (existingMethod.Methods.All(m => m.Id != subMethod.Id))
+            {
+                existingMethod.Methods.Add(subMethod);
+            }
+        }
+
+        context.SaveChanges();
     }
 
     public List<Method> FindAll()
