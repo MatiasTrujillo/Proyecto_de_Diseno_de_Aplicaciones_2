@@ -198,7 +198,7 @@ public class MethodRepositoryTest
         saved.Parameters.Count.Should().Be(1);
         saved.Parameters[0].Id.Should().Be(_parameter.Id);
     }
-    
+
     [TestMethod]
     public void Update_WhenMethodExists_ShouldAddALocalVariableToList()
     {
