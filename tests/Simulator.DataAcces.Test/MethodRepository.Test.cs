@@ -183,8 +183,8 @@ public class MethodRepositoryTest
     [TestMethod]
     public void Update_WhenMethodExists_ShouldAddAParameterToList()
     {
-        _context.Methods.AddRange(_secondMethod);
-        _context.Parameters.AddRange(_parameter);
+        _context.Methods.Add(_secondMethod);
+        _context.Parameters.Add(_parameter);
         _context.SaveChanges();
 
         _secondMethod.Parameters.Add(_parameter);
