@@ -160,4 +160,21 @@ public class MethodRepositoryTest
         deleted.Should().BeNull();
     }
     #endregion
+
+    [TestMethod]
+    public void Update_WhenMethodExists_ShouldAddAMethodToList()
+    {
+        _context.Methods.Add(_secondMethod);
+        _context.SaveChanges();
+
+        _oneMethod.Methods.Add(_thirdMethod);
+        _repositoryTest.Update(_secondMethod);
+
+        using var refreshedContext = ProgramTest.BuildTestDbContext();
+        var saved = refreshedContext.Methods.Find(_secondMethod.Id);
+
+        saved.Should().NotBeNull();
+        saved.Methods.Count.Should().Be(1);
+        saved.Methods[0].Id.Should().Be(_thirdMethod.Id);
+    }
 }
