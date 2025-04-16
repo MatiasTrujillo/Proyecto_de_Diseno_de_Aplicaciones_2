@@ -198,5 +198,24 @@ public class MethodRepositoryTest
         saved.Parameters.Count.Should().Be(1);
         saved.Parameters[0].Id.Should().Be(_parameter.Id);
     }
+    
+    [TestMethod]
+    public void Update_WhenMethodExists_ShouldAddALocalVariableToList()
+    {
+        _context.Methods.Add(_secondMethod);
+        _context.LocalVariables.Add(_localVariable);
+        _context.SaveChanges();
+
+        _secondMethod.LocalVariables.Add(_localVariable);
+        _repositoryTest.Update(_secondMethod);
+
+        using var refreshedContext = ProgramTest.BuildTestDbContext();
+        Method? saved = refreshedContext.Methods.Include(m => m.LocalVariables).Include(method => method.Methods)
+            .FirstOrDefault(m => m.Id == _secondMethod.Id);
+
+        saved.Should().NotBeNull();
+        saved.LocalVariables.Count.Should().Be(1);
+        saved.LocalVariables[0].Id.Should().Be(_localVariable.Id);
+    }
     #endregion
 }
