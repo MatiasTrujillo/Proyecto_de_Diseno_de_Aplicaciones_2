@@ -8,7 +8,7 @@ public class Class
     public Class? HierarchyClass { get; set; }
     public List<Attribute> Attributes { get; set; }
 
-    public List<Method> Methods { get; set; } = new();
+    public List<Method> Methods { get; set; }
 
     public Class()
     {

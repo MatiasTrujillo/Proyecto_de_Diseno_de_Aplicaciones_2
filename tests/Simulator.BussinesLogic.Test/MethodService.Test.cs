@@ -29,7 +29,7 @@ public class MethodServiceTest
             .Setup(repo => repo.Add(It.IsAny<Method>()));
         _mockMethodRepository
             .Setup(repo => repo.FindAll())
-            .Returns(new List<Method>());
+            .Returns([]);
         _methodService = new MethodService(_mockMethodRepository.Object, _mockClassRepository.Object);
     }
 
@@ -68,7 +68,7 @@ public class MethodServiceTest
 
         _mockMethodRepository
             .Setup(repo => repo.FindAll())
-            .Returns(new List<Method> { existingMethod });
+            .Returns([existingMethod]);
 
         var exception = Assert.ThrowsException<Exception>(() => _methodService.CreateMethod(methodDto));
         Assert.AreEqual("Method with the same name  already exists.", exception.Message);
@@ -99,7 +99,7 @@ public class MethodServiceTest
     public void AssociateMethodWithClass_ShouldAddMethodToClass_WhenValidInputsProvided()
     {
         var method = new Method { Id = Guid.NewGuid(), Name = "TestMethod" };
-        var classT = new Class { Id = Guid.NewGuid(), Name = "TestClass", Methods = new List<Method>() };
+        var classT = new Class { Id = Guid.NewGuid(), Name = "TestClass", Methods = [] };
 
         _mockMethodRepository.Setup(repo => repo.Find(method.Id)).Returns(method);
         _mockClassRepository.Setup(repo => repo.Find(classT.Id)).Returns(classT);
@@ -120,7 +120,7 @@ public class MethodServiceTest
         {
             Id = Guid.NewGuid(),
             Name = "TestClass",
-            Methods = new List<Method> { existingMethod }
+            Methods = [existingMethod]
         };
 
         _mockMethodRepository.Setup(repo => repo.Find(method.Id)).Returns(method);

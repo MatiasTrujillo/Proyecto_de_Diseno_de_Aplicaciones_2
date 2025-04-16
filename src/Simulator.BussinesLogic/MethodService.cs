@@ -5,7 +5,7 @@ using Simulator.IDataAcces;
 
 namespace Simulator.BussinesLogic;
 
-public class MethodService(IMethodRepository methodRepository,IClassRepository classRepository) : IMethodService
+public class MethodService(IMethodRepository methodRepository, IClassRepository classRepository) : IMethodService
 {
     private readonly IMethodRepository _methodRepository = methodRepository;
     private readonly IClassRepository _classRepository = classRepository;
