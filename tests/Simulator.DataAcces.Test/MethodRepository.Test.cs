@@ -61,7 +61,7 @@ public class MethodRepositoryTest
         _repositoryTest.Add(_oneMethod);
 
         using var otherContext = ProgramTest.BuildTestDbContext();
-        var saved = otherContext.Methods
+        Method saved = otherContext.Methods
             .Include(method => method.Parameters)
             .Include(method => method.LocalVariables)
             .Include(method => method.Methods)
