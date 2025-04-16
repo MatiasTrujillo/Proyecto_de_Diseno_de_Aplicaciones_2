@@ -21,19 +21,38 @@ public class MethodService(IMethodRepository methodRepository,IClassRepository c
     public void AssociateMethodWithClass(Guid methodId, Guid classId)
     {
         var method = _methodRepository.Find(methodId);
-        if (method == null)
-        {
-            throw new Exception("Method not found.");
-        }
-
+        ValidateMethodExist(method);
         var classT = _classRepository.Find(classId);
+        ValidateClassExist(classT);
+        ValidateClassUniqueNameMethod(method, classT);
+        classT.Methods.Add(method);
+        _classRepository.Update(classT);
+    }
+
+    private void ValidateClassUniqueNameMethod(Method method, Class classT)
+    {
+        var methods = classT.Methods;
+
+        if (methods.Any(existingMethod => existingMethod.Name.Equals(method.Name)))
+        {
+            throw new Exception("A method with the same name already exists in the class.");
+        }
+    }
+
+    private static void ValidateClassExist(Class classT)
+    {
         if (classT == null)
         {
             throw new Exception("Class not found.");
         }
+    }
 
-        classT.Methods.Add(method);
-        _methodRepository.Update(method);
+    private static void ValidateMethodExist(Method method)
+    {
+        if (method == null)
+        {
+            throw new Exception("Method not found.");
+        }
     }
 
     public void DeleteMethod(Guid id)

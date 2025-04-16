@@ -103,11 +103,31 @@ public class MethodServiceTest
 
         _mockMethodRepository.Setup(repo => repo.Find(method.Id)).Returns(method);
         _mockClassRepository.Setup(repo => repo.Find(classT.Id)).Returns(classT);
-        _mockMethodRepository.Setup(repo => repo.Update(method));
+        _mockClassRepository.Setup(repo => repo.Update(It.IsAny<Class>()));
 
         _methodService.AssociateMethodWithClass(method.Id, classT.Id);
 
         Assert.IsTrue(classT.Methods.Contains(method));
-        _mockMethodRepository.Verify(repo => repo.Update(method), Times.Once);
+        _mockClassRepository.Verify(repo => repo.Update(classT), Times.Once);
+    }
+
+    [TestMethod]
+    public void ValidateClassUniqueNameMethod_ShouldThrowException_WhenMethodNameAlreadyExists()
+    {
+        var method = new Method { Id = Guid.NewGuid(), Name = "TestMethod" };
+        var existingMethod = new Method { Id = Guid.NewGuid(), Name = "TestMethod" };
+        var classT = new Class
+        {
+            Id = Guid.NewGuid(),
+            Name = "TestClass",
+            Methods = new List<Method> { existingMethod }
+        };
+
+        _mockMethodRepository.Setup(repo => repo.Find(method.Id)).Returns(method);
+        _mockClassRepository.Setup(repo => repo.Find(classT.Id)).Returns(classT);
+
+        var exception = Assert.ThrowsException<Exception>(() =>
+            _methodService.AssociateMethodWithClass(method.Id, classT.Id));
+        Assert.AreEqual("A method with the same name already exists in the class.", exception.Message);
     }
 }
