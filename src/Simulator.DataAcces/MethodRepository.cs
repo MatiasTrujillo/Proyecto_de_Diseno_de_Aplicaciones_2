@@ -11,11 +11,6 @@ public class MethodRepository(SqlContext context) : IMethodRepository
         context.SaveChanges();
     }
 
-    public void Update(Method attribute)
-    {
-        throw new NotImplementedException();
-    }
-
     public Method Find(Guid id)
     {
         return context.Methods.Find(id);
