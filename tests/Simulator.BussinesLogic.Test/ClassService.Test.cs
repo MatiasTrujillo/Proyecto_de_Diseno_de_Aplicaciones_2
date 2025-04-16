@@ -156,4 +156,35 @@ public class ClassServiceTest
 
         Assert.AreEqual("There is already a class with this name", exception.Message);
     }
+
+    [TestMethod]
+    public void UpdateClass_ShouldNotUpdateClass_WhenClassDoesNotExist()
+    {
+        var id = Guid.NewGuid();
+        var dto = new ClassDTO
+        {
+            Id = id,
+            Name = "name1",
+            Stereotype = KeyWord.Abstract,
+            HirarchyClass = null,
+            Attributes = []
+        };
+
+        _mockClassRepository
+            .Setup(r => r.Find(id))
+            .Returns<Class?>(null);
+
+        _mockClassRepository.Setup(r => r.FindAll())
+            .Returns([]);
+
+        _mockClassRepository
+            .Setup(r => r.Update(It.IsAny<Class>()));
+
+        var exception = Assert.ThrowsException<ClassException>(() =>
+        {
+            _classService.UpdateClass(id, dto);
+        });
+
+        Assert.AreEqual("There is no class with this id", exception.Message);
+    }
 }
