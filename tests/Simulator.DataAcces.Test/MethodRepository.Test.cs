@@ -1,6 +1,7 @@
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using Simulator.Domain;
+using Void = Simulator.Domain.Void;
 
 namespace Simulator.DataAcces.Test;
 
@@ -45,7 +46,7 @@ public class MethodRepositoryTest
         _parameter = new Parameter(Guid.NewGuid(), "Parameter");
         _localVariable = new LocalVariable(Guid.NewGuid(), "LocalVariable");
         _oneMethod = new Method(_oneId, _oneMethodName, _accessibilityPublic, null, [_secondMethod],
-            [_parameter], [_localVariable]);
+            [_parameter], [_localVariable], new Void());
     }
 
     [TestCleanup]

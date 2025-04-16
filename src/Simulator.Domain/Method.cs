@@ -9,10 +9,7 @@ public class Method
     public List<Parameter> Parameters { get; set; }
     public List<LocalVariable> LocalVariables { get; set; }
     public KeyWord? Stereotype { get; set; }
-    /*
-    TODO List:
     public Type ReturnType { get; set; }
-    */
 
     public Method()
     {
@@ -23,6 +20,7 @@ public class Method
         Parameters = [];
         LocalVariables = [];
         Stereotype = null;
+        ReturnType = new Void();
     }
 
     public Method(Guid id, string? name, Accessibility accessibility, KeyWord? stereotype)
@@ -34,10 +32,11 @@ public class Method
         Parameters = [];
         LocalVariables = [];
         Stereotype = stereotype;
+        ReturnType = new Void();
     }
 
     public Method(Guid id, string? name, Accessibility accessibility, KeyWord? stereotype, List<Method> methods, List<Parameter> parameters,
-        List<LocalVariable> localVariables)
+        List<LocalVariable> localVariables, Type returnType)
     {
         Id = id;
         Name = name;
@@ -46,5 +45,6 @@ public class Method
         Parameters = parameters;
         LocalVariables = localVariables;
         Stereotype = stereotype;
+        ReturnType = returnType;
     }
 }
