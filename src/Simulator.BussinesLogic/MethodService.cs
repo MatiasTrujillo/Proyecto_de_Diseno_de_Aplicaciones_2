@@ -37,6 +37,10 @@ public class MethodService(IMethodRepository methodRepository, IClassRepository 
         _methodRepository.Delete(id);
     }
 
+    public void AddAMethod(Guid id, Guid idToAdd)
+    {
+    }
+
     private void ValidateMehodIsNotInClass(Guid id)
     {
         var classes = _classRepository.FindAll();

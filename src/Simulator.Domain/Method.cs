@@ -47,4 +47,14 @@ public class Method
         LocalVariables = localVariables;
         Stereotype = stereotype;
     }
+
+    public override bool Equals(object? obj)
+    {
+        if (obj is not Method other)
+        {
+            return false;
+        }
+
+        return Id == other.Id;
+    }
 }

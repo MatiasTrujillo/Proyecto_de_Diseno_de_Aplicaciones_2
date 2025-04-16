@@ -12,6 +12,7 @@ public class MethodServiceTest
     private Mock<IClassRepository> _mockClassRepository = null!;
     private MethodService _methodService = null!;
     private MethodDTO methodDto = new MethodDTO();
+    private MethodDTO otherMethodDto = new MethodDTO();
 
     [TestInitialize]
     public void Initialize()
@@ -22,6 +23,13 @@ public class MethodServiceTest
             Name = "First Method Dto",
             Accessibility = Accessibility.Private,
             Stereotype = null
+        };
+        otherMethodDto = new MethodDTO()
+        {
+            Id = Guid.NewGuid(),
+            Name = "Second Method Dto",
+            Accessibility = Accessibility.Public,
+            Stereotype = KeyWord.Abstract
         };
         _mockMethodRepository = new Mock<IMethodRepository>(MockBehavior.Strict);
         _mockClassRepository = new Mock<IClassRepository>(MockBehavior.Strict);
@@ -129,5 +137,23 @@ public class MethodServiceTest
         var exception = Assert.ThrowsException<Exception>(() =>
             _methodService.AssociateMethodWithClass(method.Id, classT.Id));
         Assert.AreEqual("A method with the same name already exists in the class.", exception.Message);
+    }
+
+    [TestMethod]
+    public void AddAMethod_ShouldCallRepositoryUpdate_WithValidNewMethod()
+    {
+        _methodService.CreateMethod(methodDto);
+        _methodService.CreateMethod(otherMethodDto);
+
+        _mockMethodRepository.Setup(repo => repo.Find(methodDto.Id)).Returns(methodDto.ToEntity());
+        _mockMethodRepository.Setup(repo => repo.Find(otherMethodDto.Id)).Returns(otherMethodDto.ToEntity());
+        _mockMethodRepository.Setup(repo => repo.Update(It.IsAny<Method>()));
+
+        _methodService.AddAMethod(methodDto.Id, otherMethodDto.Id);
+
+        _mockMethodRepository.Verify(repo => repo.Update(
+            It.Is<Method>(m =>
+                m.Id == methodDto.Id &&
+                m.Methods.Contains(otherMethodDto.ToEntity()))), Times.Once);
     }
 }
