@@ -142,18 +142,21 @@ public class MethodServiceTest
     [TestMethod]
     public void AddAMethod_ShouldCallRepositoryUpdate_WithValidNewMethod()
     {
+        var method = methodDto.ToEntity();
+        var methodToAdd = otherMethodDto.ToEntity();
+
         _methodService.CreateMethod(methodDto);
         _methodService.CreateMethod(otherMethodDto);
 
-        _mockMethodRepository.Setup(repo => repo.Find(methodDto.Id)).Returns(methodDto.ToEntity());
-        _mockMethodRepository.Setup(repo => repo.Find(otherMethodDto.Id)).Returns(otherMethodDto.ToEntity());
+        _mockMethodRepository.Setup(repo => repo.Find(method.Id)).Returns(method);
+        _mockMethodRepository.Setup(repo => repo.Find(methodToAdd.Id)).Returns(methodToAdd);
         _mockMethodRepository.Setup(repo => repo.Update(It.IsAny<Method>()));
 
-        _methodService.AddAMethod(methodDto.Id, otherMethodDto.Id);
+        _methodService.AddAMethod(method.Id, methodToAdd.Id);
 
         _mockMethodRepository.Verify(repo => repo.Update(
             It.Is<Method>(m =>
-                m.Id == methodDto.Id &&
-                m.Methods.Contains(otherMethodDto.ToEntity()))), Times.Once);
+                m.Id == method.Id &&
+                m.Methods.Contains(methodToAdd))), Times.Once);
     }
 }
