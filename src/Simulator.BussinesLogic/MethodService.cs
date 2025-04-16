@@ -11,17 +11,17 @@ public class MethodService(IMethodRepository methodRepository) : IMethodService
 
     public void CreateMethod(MethodDTO method)
     {
+        ValidateIsNotNull(method);
         var methodT = method.ToEntity();
-        ValidateIsNotNull(methodT);
         ValidateUniqueMethod(methodT);
         _methodRepository.Add(methodT);
     }
 
-    private void ValidateIsNotNull(Method methodT)
+    private static void ValidateIsNotNull(MethodDTO method)
     {
-        if (methodT == null)
+        if (method == null)
         {
-            throw new ArgumentNullException(nameof(methodT), "Method cannot be null.");
+            throw new Exception("Method cannot be null.");
         }
     }
 

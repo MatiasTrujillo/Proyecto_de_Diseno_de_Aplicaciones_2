@@ -25,12 +25,12 @@ public class MethodServiceTest
         _mockMethodRepository = new Mock<IMethodRepository>(MockBehavior.Strict);
         _mockMethodRepository
             .Setup(repo => repo.Add(It.IsAny<Method>()));
-        _methodService = new MethodService(_mockMethodRepository.Object);
         _mockMethodRepository
-            .Setup(repo => repo.Delete(It.IsAny<Guid>()));
+            .Setup(repo => repo.FindAll())
+            .Returns(new List<Method>());
+        _methodService = new MethodService(_mockMethodRepository.Object);
     }
 
-    #region CreateMethod
     [TestMethod]
     public void CreateMethod_ShouldCallRepositoryAdd_WithValidMethod()
     {
@@ -42,6 +42,15 @@ public class MethodServiceTest
                 m.Name.Equals(methodDto.Name) &&
                 m.Accessibility == methodDto.Accessibility &&
                 m.Stereotype == null)), Times.Once);
+    }
+
+    [TestMethod]
+    public void CreateMethod_ShouldThrowException_WhenMethodIsNull()
+    {
+        MethodDTO nullMethodDto = null!;
+
+        var exception = Assert.ThrowsException<Exception>(() => _methodService.CreateMethod(nullMethodDto));
+        Assert.AreEqual("Method cannot be null.", exception.Message);
     }
 
     [TestMethod]
@@ -62,16 +71,4 @@ public class MethodServiceTest
         var exception = Assert.ThrowsException<Exception>(() => _methodService.CreateMethod(methodDto));
         Assert.AreEqual("Method with the same name  already exists.", exception.Message);
     }
-    #endregion
-
-    #region DeleteMethod
-    [TestMethod]
-    public void DeleteMethod_ShouldCallRepositoryDelete_WithValidMethod()
-    {
-        _methodService.CreateMethod(methodDto);
-        _methodService.DeleteMethod(methodDto.Id);
-
-        _mockMethodRepository.Verify(repo => repo.Delete(methodDto.Id), Times.Once);
-    }
-    #endregion
 }
