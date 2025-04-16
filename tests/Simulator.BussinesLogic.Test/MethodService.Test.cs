@@ -43,6 +43,25 @@ public class MethodServiceTest
                 m.Accessibility == methodDto.Accessibility &&
                 m.Stereotype == null)), Times.Once);
     }
+
+    [TestMethod]
+    public void CreateMethod_ShouldThrowException_WhenMethodNameAlreadyExists()
+    {
+        var existingMethod = new Method
+        {
+            Id = Guid.NewGuid(),
+            Name = methodDto.Name,
+            Accessibility = Accessibility.Private,
+            Stereotype = null
+        };
+
+        _mockMethodRepository
+            .Setup(repo => repo.FindAll())
+            .Returns(new List<Method> { existingMethod });
+
+        var exception = Assert.ThrowsException<Exception>(() => _methodService.CreateMethod(methodDto));
+        Assert.AreEqual("Method with the same name  already exists.", exception.Message);
+    }
     #endregion
 
     #region DeleteMethod

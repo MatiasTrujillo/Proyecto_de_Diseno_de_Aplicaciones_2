@@ -1,4 +1,5 @@
 using DTO;
+using Simulator.Domain;
 using Simulator.IBussinesLogic;
 using Simulator.IDataAcces;
 
@@ -10,7 +11,27 @@ public class MethodService(IMethodRepository methodRepository) : IMethodService
 
     public void CreateMethod(MethodDTO method)
     {
-        _methodRepository.Add(method.ToEntity());
+        var methodT = method.ToEntity();
+        ValidateIsNotNull(methodT);
+        ValidateUniqueMethod(methodT);
+        _methodRepository.Add(methodT);
+    }
+
+    private void ValidateIsNotNull(Method methodT)
+    {
+        if (methodT == null)
+        {
+            throw new ArgumentNullException(nameof(methodT), "Method cannot be null.");
+        }
+    }
+
+    private void ValidateUniqueMethod(Method methodT)
+    {
+        List<Method> methods = _methodRepository.FindAll();
+        if (methods.Any(method => method.Name.Equals(methodT.Name)))
+        {
+            throw new Exception("Method with the same name  already exists.");
+        }
     }
 
     public void DeleteMethod(Guid id)
