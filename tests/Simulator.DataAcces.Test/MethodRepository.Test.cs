@@ -1,7 +1,6 @@
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using Simulator.Domain;
-using Void = Simulator.Domain.Void;
 
 namespace Simulator.DataAcces.Test;
 
@@ -46,7 +45,7 @@ public class MethodRepositoryTest
         _parameter = new Parameter(Guid.NewGuid(), "Parameter");
         _localVariable = new LocalVariable(Guid.NewGuid(), "LocalVariable");
         _oneMethod = new Method(_oneId, _oneMethodName, _accessibilityPublic, null, [_secondMethod],
-            [_parameter], [_localVariable], new Void());
+            [_parameter], [_localVariable]);
     }
 
     [TestCleanup]
@@ -83,18 +82,22 @@ public class MethodRepositoryTest
     [TestMethod]
     public void Find_WhenMethodExists_ShouldReturnIt()
     {
-        _context.Methods.Add(_secondMethod);
+        _context.Methods.Add(_oneMethod);
         _context.SaveChanges();
 
-        var result = _repositoryTest.Find(_secondMethod.Id);
+        var result = _repositoryTest.Find(_oneMethod.Id);
+        var methodsList = result.Methods.ToList();
+        var parametersList = result.Parameters.ToList();
+        var localVariablesList = result.LocalVariables.ToList();
 
         result.Should().NotBeNull();
-        result.Id.Should().Be(_secondMethod.Id);
-        result.Name.Should().Be(_secondMethod.Name);
-        result.Accessibility.Should().Be(_secondMethod.Accessibility);
-        result.Stereotype.Should().Be(_secondMethod.Stereotype);
-        result.Methods.Should().NotBeNull();
-        result.Methods.Should().BeEmpty();
+        result.Id.Should().Be(_oneMethod.Id);
+        result.Name.Should().Be(_oneMethod.Name);
+        result.Accessibility.Should().Be(_oneMethod.Accessibility);
+        result.Stereotype.Should().Be(_oneMethod.Stereotype);
+        methodsList.Should().NotBeEmpty();
+        parametersList.Should().NotBeEmpty();
+        localVariablesList.Should().NotBeEmpty();
     }
 
     [TestMethod]

@@ -2,7 +2,6 @@ using DTO;
 using Moq;
 using Simulator.Domain;
 using Simulator.IDataAcces;
-using Void = Simulator.Domain.Void;
 
 namespace Simulator.BussinesLogic.Test;
 
@@ -44,8 +43,7 @@ public class MethodServiceTest
                 m.Id == methodDto.Id &&
                 m.Name.Equals(methodDto.Name) &&
                 m.Accessibility == methodDto.Accessibility &&
-                m.Stereotype == null &&
-                m.ReturnType is Void)), Times.Once);
+                m.Stereotype == null)), Times.Once);
     }
 
     [TestMethod]
