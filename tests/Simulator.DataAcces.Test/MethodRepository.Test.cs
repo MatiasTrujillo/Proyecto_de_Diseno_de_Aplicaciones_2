@@ -179,5 +179,24 @@ public class MethodRepositoryTest
         saved.Methods.Count.Should().Be(1);
         saved.Methods[0].Id.Should().Be(_thirdMethod.Id);
     }
+
+    [TestMethod]
+    public void Update_WhenMethodExists_ShouldAddAParameterToList()
+    {
+        _context.Methods.AddRange(_secondMethod);
+        _context.Parameters.AddRange(_parameter);
+        _context.SaveChanges();
+
+        _secondMethod.Methods.Add(_thirdMethod);
+        _repositoryTest.Update(_secondMethod);
+
+        using var refreshedContext = ProgramTest.BuildTestDbContext();
+        Method? saved = refreshedContext.Methods.Include(m => m.Parameters).Include(method => method.Methods)
+            .FirstOrDefault(m => m.Id == _secondMethod.Id);
+
+        saved.Should().NotBeNull();
+        saved.Parameters.Count.Should().Be(1);
+        saved.Parameters[0].Id.Should().Be(_parameter.Id);
+    }
     #endregion
 }

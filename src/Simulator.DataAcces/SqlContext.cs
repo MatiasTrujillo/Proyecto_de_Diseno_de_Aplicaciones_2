@@ -16,6 +16,7 @@ public sealed class SqlContext : DbContext
     public DbSet<Attribute> Attributes { get; set; }
     public DbSet<Method> Methods { get; set; }
     public DbSet<Class> Classes { get; set; }
+    public DbSet<Parameter> Parameters { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -28,6 +29,10 @@ public sealed class SqlContext : DbContext
         modelBuilder.Entity<Method>()
             .HasMany(m => m.Methods)
             .WithMany();
+        modelBuilder.Entity<Method>()
+            .HasMany<Parameter>(m => m.Parameters);
+        modelBuilder.Entity<Parameter>()
+            .HasKey(a => a.Id);
 
         base.OnModelCreating(modelBuilder);
     }
