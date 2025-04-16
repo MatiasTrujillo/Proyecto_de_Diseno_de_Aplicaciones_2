@@ -21,14 +21,7 @@ public class MethodRepository(SqlContext context) : IMethodRepository
     {
         Method existingMethod = Find(entity.Id);
 
-        foreach (var subMethod in entity.Methods)
-        {
-            if (existingMethod.Methods.All(m => m.Id != subMethod.Id))
-            {
-                existingMethod.Methods.Add(subMethod);
-            }
-        }
-
+        context.Entry(existingMethod).CurrentValues.SetValues(entity);
         context.SaveChanges();
     }
 

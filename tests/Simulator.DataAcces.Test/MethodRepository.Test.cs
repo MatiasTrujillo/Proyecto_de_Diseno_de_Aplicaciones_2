@@ -187,7 +187,7 @@ public class MethodRepositoryTest
         _context.Parameters.AddRange(_parameter);
         _context.SaveChanges();
 
-        _secondMethod.Methods.Add(_thirdMethod);
+        _secondMethod.Parameters.Add(_parameter);
         _repositoryTest.Update(_secondMethod);
 
         using var refreshedContext = ProgramTest.BuildTestDbContext();
