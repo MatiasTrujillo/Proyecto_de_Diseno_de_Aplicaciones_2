@@ -5,9 +5,10 @@ using Simulator.IDataAcces;
 
 namespace Simulator.BussinesLogic;
 
-public class MethodService(IMethodRepository methodRepository) : IMethodService
+public class MethodService(IMethodRepository methodRepository,IClassRepository classRepository) : IMethodService
 {
     private readonly IMethodRepository _methodRepository = methodRepository;
+    private readonly IClassRepository _classRepository = classRepository;
 
     public void CreateMethod(MethodDTO method)
     {
@@ -15,6 +16,29 @@ public class MethodService(IMethodRepository methodRepository) : IMethodService
         var methodT = method.ToEntity();
         ValidateUniqueMethod(methodT);
         _methodRepository.Add(methodT);
+    }
+
+    public void AssociateMethodWithClass(Guid methodId, Guid classId)
+    {
+        var method = _methodRepository.Find(methodId);
+        if (method == null)
+        {
+            throw new Exception("Method not found.");
+        }
+
+        var classT = _classRepository.Find(classId);
+        if (classT == null)
+        {
+            throw new Exception("Class not found.");
+        }
+
+        classT.Methods.Add(method);
+        _methodRepository.Update(method);
+    }
+
+    public void DeleteMethod(Guid id)
+    {
+        _methodRepository.Delete(id);
     }
 
     private static void ValidateIsNotNull(MethodDTO method)
@@ -32,10 +56,5 @@ public class MethodService(IMethodRepository methodRepository) : IMethodService
         {
             throw new Exception("Method with the same name  already exists.");
         }
-    }
-
-    public void DeleteMethod(Guid id)
-    {
-        _methodRepository.Delete(id);
     }
 }

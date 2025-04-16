@@ -15,8 +15,8 @@ public class ClassRepositoryTest
     public ClassRepositoryTest()
     {
         _repository = new ClassRepository(_context);
-        aClass = new Class(Guid.NewGuid(), "jose", KeyWord.Abstract, null, []);
-        anotherClass = new Class(Guid.NewGuid(), "juan", null, null, []);
+        aClass = new Class(Guid.NewGuid(), "jose", KeyWord.Abstract, null, [], []);
+        anotherClass = new Class(Guid.NewGuid(), "juan", null, null, [], []);
     }
 
     [TestInitialize]
@@ -113,7 +113,7 @@ public class ClassRepositoryTest
         _context.Classes.Add(aClass);
         _context.SaveChanges();
 
-        var updated = new Class(aClass.Id, "josesito", null, null, []);
+        var updated = new Class(aClass.Id, "josesito", null, null, [], []);
 
         _repository.Update(updated);
 

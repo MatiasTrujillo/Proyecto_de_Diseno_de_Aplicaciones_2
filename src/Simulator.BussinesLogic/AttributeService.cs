@@ -24,6 +24,7 @@ public class AttributeService(IAttributeRepository attributeRepository, IClassRe
         ValidateClassExists(idClass);
         ValidUniqueNameInClass(idClass, attributeT);
         classT.Attributes.Add(attributeT);
+        _classRepository.Update(classT);
     }
 
     public void UpdateAttribute(Guid id, AttributeDto attribute)

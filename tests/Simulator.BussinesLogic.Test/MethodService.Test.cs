@@ -9,6 +9,7 @@ namespace Simulator.BussinesLogic.Test;
 public class MethodServiceTest
 {
     private Mock<IMethodRepository> _mockMethodRepository = null!;
+    private Mock<IClassRepository> _mockClassRepository = null!;
     private MethodService _methodService = null!;
     private MethodDTO methodDto = new MethodDTO();
 
@@ -23,12 +24,13 @@ public class MethodServiceTest
             Stereotype = null
         };
         _mockMethodRepository = new Mock<IMethodRepository>(MockBehavior.Strict);
+        _mockClassRepository = new Mock<IClassRepository>(MockBehavior.Strict);
         _mockMethodRepository
             .Setup(repo => repo.Add(It.IsAny<Method>()));
         _mockMethodRepository
             .Setup(repo => repo.FindAll())
             .Returns(new List<Method>());
-        _methodService = new MethodService(_mockMethodRepository.Object);
+        _methodService = new MethodService(_mockMethodRepository.Object, _mockClassRepository.Object);
     }
 
     [TestMethod]
@@ -70,5 +72,15 @@ public class MethodServiceTest
 
         var exception = Assert.ThrowsException<Exception>(() => _methodService.CreateMethod(methodDto));
         Assert.AreEqual("Method with the same name  already exists.", exception.Message);
+    }
+
+    [TestMethod]
+    public void AssociateMethodWithClass_ShouldThrowException_WhenMethodNotFound()
+    {
+        _mockMethodRepository.Setup(repo => repo.Find(It.IsAny<Guid>())).Returns((Method)null!);
+
+        var exception = Assert.ThrowsException<Exception>(() =>
+            _methodService.AssociateMethodWithClass(Guid.NewGuid(), Guid.NewGuid()));
+        Assert.AreEqual("Method not found.", exception.Message);
     }
 }
