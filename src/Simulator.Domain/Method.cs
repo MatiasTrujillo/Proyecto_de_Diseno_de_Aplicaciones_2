@@ -50,11 +50,11 @@ public class Method
 
     public override bool Equals(object? obj)
     {
-        if (obj is not Method other)
-        {
-            return false;
-        }
+        return obj is Method other && Id == other.Id;
+    }
 
-        return Id == other.Id;
+    public override int GetHashCode()
+    {
+        return Id.GetHashCode();
     }
 }
