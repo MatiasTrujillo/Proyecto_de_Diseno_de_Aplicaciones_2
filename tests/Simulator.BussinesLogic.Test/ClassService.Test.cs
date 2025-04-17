@@ -1,7 +1,7 @@
-using DTO;
 using Moq;
 using Simulator.Domain;
 using Simulator.Domain.Exception;
+using Simulator.DTO;
 using Simulator.IDataAcces;
 
 namespace Simulator.BussinesLogic.Test;
@@ -86,7 +86,7 @@ public class ClassServiceTest
     public void UpdateClass_ShouldUpdateClass_WhenValid()
     {
         var id = Guid.NewGuid();
-        var original = new Class(id, "OldName", KeyWord.Sealed, null, []);
+        var original = new Class(id, "OldName", KeyWord.Sealed, null, [], []);
         var dto = new ClassDTO
         {
             Id = id,
@@ -121,8 +121,8 @@ public class ClassServiceTest
     {
         var id1 = Guid.NewGuid();
         var id2 = Guid.NewGuid();
-        var original1 = new Class(id1, "name1", KeyWord.Sealed, null, []);
-        var original2 = new Class(id2, "name2", KeyWord.Sealed, null, []);
+        var original1 = new Class(id1, "name1", KeyWord.Sealed, null, [] ,[]);
+        var original2 = new Class(id2, "name2", KeyWord.Sealed, null, [], []);
         var dto = new ClassDTO
         {
             Id = id2,
@@ -192,7 +192,7 @@ public class ClassServiceTest
     public void DeleteClass_ShouldDeleteClass_WhenValid()
     {
         var id = Guid.NewGuid();
-        var original = new Class(id, "OldName", KeyWord.Sealed, null, []);
+        var original = new Class(id, "OldName", KeyWord.Sealed, null, [], []);
 
         _mockClassRepository
             .Setup(r => r.Find(id))
