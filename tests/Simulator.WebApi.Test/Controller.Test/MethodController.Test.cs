@@ -71,4 +71,24 @@ public class MethodControllerTest
 
         _methodServiceMock.Verify(service => service.AddAMethod(id, idToAdd), Times.Once);
     }
+
+    [TestMethod]
+    public void AddLocalVariableToMethod_ShouldReturnCreated_WhenLocalVariableIsAddedSuccessfully()
+    {
+        var methodId = Guid.NewGuid();
+        var localVariable = new LocalVariableDTO
+        {
+            Name = "TestVariable",
+        };
+        _methodServiceMock.Setup(service => service.AddLocalVariableToMethod(methodId, localVariable))
+            .Verifiable();
+
+        var result = _controller.AddLocalVariableToMethod(methodId, localVariable) as CreatedResult;
+
+        Assert.IsNotNull(result, "The result should not be null.");
+        Assert.AreEqual(201, result.StatusCode, "The status code should be 201 Created.");
+        Assert.IsNotNull(result.Value, "The response value should not be null.");
+
+        _methodServiceMock.Verify(service => service.AddLocalVariableToMethod(methodId, localVariable), Times.Once);
+    }
 }

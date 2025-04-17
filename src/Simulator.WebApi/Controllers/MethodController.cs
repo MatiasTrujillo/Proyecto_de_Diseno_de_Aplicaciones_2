@@ -37,4 +37,10 @@ public class MethodController(IMethodService methodService) : ControllerBase
         _amethodService.AddAMethod(id, idToAdd);
         return Created(string.Empty, new { message = "Method added successfully" });
     }
+
+    [HttpPost("{methodId}/localVariable")]
+    public IActionResult AddLocalVariableToMethod([FromRoute] Guid methodId, [FromBody] LocalVariableDTO localVariable)
+    {
+        return Created(string.Empty, new { message = "Local variable added successfully" });
+    }
 }
