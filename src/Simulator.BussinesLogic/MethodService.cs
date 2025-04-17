@@ -61,15 +61,18 @@ public class MethodService(IMethodRepository methodRepository, IClassRepository 
         LocalVariable localVariableT = localVariable.ToEntity();
         var method = _methodRepository.Find(methodId);
         ValidateMethodExist(method);
+        ValidateNameLocalVariable(localVariable, method);
+        method.LocalVariables.Add(localVariableT);
+        _methodRepository.Update(method);
+    }
 
+    private static void ValidateNameLocalVariable(LocalVariableDTO localVariable, Method method)
+    {
         if (method.LocalVariables.Any(v => v.Name.Equals(localVariable.Name, StringComparison.OrdinalIgnoreCase)) ||
             method.Parameters.Any(p => p.Name.Equals(localVariable.Name, StringComparison.OrdinalIgnoreCase)))
         {
             throw new Exception("A variable or parameter with the same name already exists.");
         }
-
-        method.LocalVariables.Add(localVariableT);
-        _methodRepository.Update(method);
     }
 
     private void ValidateMethodIsNotInRepeted(Guid idMethod, Guid idMethodToAdd)
