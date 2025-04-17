@@ -1,5 +1,54 @@
+using Microsoft.AspNetCore.Mvc;
+using Simulator.DTO;
+using Simulator.IBussinesLogic;
+
 namespace Simulator.WebApi.Controllers;
 
-public class MethodController
+[ApiController]
+[Route("[controller]")]
+public class MethodController(IMethodService methodService) : ControllerBase
 {
+    private readonly IMethodService _amethodService = methodService;
+
+    [HttpPost]
+    public IActionResult CreateMethod([FromBody] MethodDTO method)
+    {
+        _amethodService.CreateMethod(method);
+        return Created(string.Empty, new { message = "Method created successfully" });
+    }
+
+    [HttpPost("{methodId}/associate/{classId}")]
+    public IActionResult AssociateMethodWithClass([FromRoute] Guid methodId, [FromRoute] Guid classId)
+    {
+        _amethodService.AssociateMethodWithClass(methodId, classId);
+        return Created(string.Empty, new { message = "Method associated with class successfully" });
+    }
+
+    [HttpDelete("{id}")]
+    public IActionResult DeleteMethod([FromRoute] Guid id)
+    {
+        _amethodService.DeleteMethod(id);
+        return NoContent();
+    }
+
+    [HttpPost("{id}/add/{idToAdd}")]
+    public IActionResult AddAMethod([FromRoute] Guid id, [FromRoute] Guid idToAdd)
+    {
+        _amethodService.AddAMethod(id, idToAdd);
+        return Created(string.Empty, new { message = "Method added successfully" });
+    }
+
+    [HttpPost("{methodId}/localVariable")]
+    public IActionResult AddLocalVariableToMethod([FromRoute] Guid methodId, [FromBody] LocalVariableDTO localVariable)
+    {
+        _amethodService.AddLocalVariableToMethod(methodId, localVariable);
+        return Created(string.Empty, new { message = "Local variable added successfully" });
+    }
+
+    [HttpPost("{methodId}/parameter")]
+    public IActionResult AddParameterToMethod([FromRoute] Guid methodId, [FromBody] ParameterDTO parameter)
+    {
+        _amethodService.AddParameterToMethod(methodId, parameter);
+        return Created(string.Empty, new { message = "Parameter added successfully" });
+    }
 }
