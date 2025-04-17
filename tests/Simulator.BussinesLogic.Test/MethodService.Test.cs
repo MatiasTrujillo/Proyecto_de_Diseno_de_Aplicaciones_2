@@ -219,4 +219,44 @@ public class MethodServiceTest
         Assert.IsTrue(method.LocalVariables.Any(v => v.Name == localVariable.Name));
         _mockMethodRepository.Verify(repo => repo.Update(method), Times.Once);
     }
+
+    [TestMethod]
+    public void AddLocalVariableToMethod_ShouldThrowException_WhenLocalVariableNameConflictsWithExistingVariable()
+    {
+        var methodId = Guid.NewGuid();
+        var localVariable = new LocalVariableDTO { Name = "TestVariable" };
+        var method = new Method
+        {
+            Id = methodId,
+            Name = "TestMethod",
+            LocalVariables = [new LocalVariable { Name = "TestVariable" }],
+            Parameters = []
+        };
+
+        _mockMethodRepository.Setup(repo => repo.Find(methodId)).Returns(method);
+
+        var exception = Assert.ThrowsException<Exception>(() =>
+            _methodService.AddLocalVariableToMethod(methodId, localVariable));
+        Assert.AreEqual("A variable or parameter with the same name already exists.", exception.Message);
+    }
+
+    [TestMethod]
+    public void AddLocalVariableToMethod_ShouldThrowException_WhenLocalVariableNameConflictsWithExistingParameter()
+    {
+        var methodId = Guid.NewGuid();
+        var localVariable = new LocalVariableDTO { Name = "TestParameter" };
+        var method = new Method
+        {
+            Id = methodId,
+            Name = "TestMethod",
+            LocalVariables = new List<LocalVariable>(),
+            Parameters = [new Parameter { Name = "TestParameter" }]
+        };
+
+        _mockMethodRepository.Setup(repo => repo.Find(methodId)).Returns(method);
+
+        var exception = Assert.ThrowsException<Exception>(() =>
+            _methodService.AddLocalVariableToMethod(methodId, localVariable));
+        Assert.AreEqual("A variable or parameter with the same name already exists.", exception.Message);
+    }
 }
