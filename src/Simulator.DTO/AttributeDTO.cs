@@ -13,4 +13,14 @@ public class AttributeDto
     {
         return new Attribute(Id, Name, Accessibility);
     }
+
+    public static AttributeDto? FromEntity(Attribute? anAttribute)
+    {
+        return new AttributeDto()
+        {
+            Id = anAttribute.Id,
+            Name = anAttribute.Name,
+            Accessibility = anAttribute.Accessibility,
+        };
+    }
 }
