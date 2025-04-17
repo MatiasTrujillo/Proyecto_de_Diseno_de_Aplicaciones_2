@@ -45,6 +45,7 @@ public class ClassService(IClassRepository classRepository) : IClassService
 
     public void DeleteClass(Guid id)
     {
+        ValidateClassIdExists(id);
         _classRepository.Delete(id);
     }
 

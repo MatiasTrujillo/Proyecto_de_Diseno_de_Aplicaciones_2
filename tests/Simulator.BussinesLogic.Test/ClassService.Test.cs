@@ -198,6 +198,9 @@ public class ClassServiceTest
             .Setup(r => r.Find(id))
             .Returns(original);
 
+        _mockClassRepository.Setup(r => r.FindAll())
+            .Returns([original]);
+
         _mockClassRepository
             .Setup(r => r.Delete(It.IsAny<Guid>()));
 
@@ -214,6 +217,9 @@ public class ClassServiceTest
         _mockClassRepository
             .Setup(r => r.Find(id))
             .Returns<Class?>(null);
+
+        _mockClassRepository.Setup(r => r.FindAll())
+            .Returns([]);
 
         _mockClassRepository
             .Setup(r => r.Delete(It.IsAny<Guid>()));
