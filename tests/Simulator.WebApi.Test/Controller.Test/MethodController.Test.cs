@@ -55,4 +55,20 @@ public class MethodControllerTest
         Assert.AreEqual(204, result.StatusCode);
         _methodServiceMock.Verify(service => service.DeleteMethod(id), Times.Once);
     }
+
+    [TestMethod]
+    public void AddAMethod_ShouldReturnCreated_WhenMethodIsAddedSuccessfully()
+    {
+        var id = Guid.NewGuid();
+        var idToAdd = Guid.NewGuid();
+        _methodServiceMock.Setup(service => service.AddAMethod(id, idToAdd))
+            .Verifiable();
+
+        var result = _controller.AddAMethod(id, idToAdd) as CreatedResult;
+
+        Assert.IsNotNull(result);
+        Assert.AreEqual(201, result.StatusCode);
+
+        _methodServiceMock.Verify(service => service.AddAMethod(id, idToAdd), Times.Once);
+    }
 }

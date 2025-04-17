@@ -30,4 +30,11 @@ public class MethodController(IMethodService methodService) : ControllerBase
         _amethodService.DeleteMethod(id);
         return NoContent();
     }
+
+    [HttpPost("{id}/add/{idToAdd}")]
+    public IActionResult AddAMethod([FromRoute] Guid id, [FromRoute] Guid idToAdd)
+    {
+        _amethodService.AddAMethod(id, idToAdd);
+        return Created(string.Empty, new { message = "Method added successfully" });
+    }
 }
