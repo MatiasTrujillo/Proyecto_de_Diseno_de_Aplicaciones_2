@@ -1,6 +1,6 @@
-using DTO;
 using Moq;
 using Simulator.Domain;
+using Simulator.DTO;
 using Simulator.IDataAcces;
 
 namespace Simulator.BussinesLogic.Test;
@@ -140,23 +140,198 @@ public class MethodServiceTest
     }
 
     [TestMethod]
-    public void AddAMethod_ShouldCallRepositoryUpdate_WithValidNewMethod()
+    public void AddAMethod_ShouldAddMethod_WhenValidInputsProvided()
     {
-        var method = methodDto.ToEntity();
-        var methodToAdd = otherMethodDto.ToEntity();
+        var methodId = Guid.NewGuid();
+        var methodToAddId = Guid.NewGuid();
+        var method = new Method { Id = methodId, Name = "ParentMethod", Methods = [] };
+        var methodToAdd = new Method { Id = methodToAddId, Name = "ChildMethod" };
 
-        _methodService.CreateMethod(methodDto);
-        _methodService.CreateMethod(otherMethodDto);
-
-        _mockMethodRepository.Setup(repo => repo.Find(method.Id)).Returns(method);
-        _mockMethodRepository.Setup(repo => repo.Find(methodToAdd.Id)).Returns(methodToAdd);
+        _mockMethodRepository.Setup(repo => repo.Find(methodId)).Returns(method);
+        _mockMethodRepository.Setup(repo => repo.Find(methodToAddId)).Returns(methodToAdd);
         _mockMethodRepository.Setup(repo => repo.Update(It.IsAny<Method>()));
 
-        _methodService.AddAMethod(method.Id, methodToAdd.Id);
+        _methodService.AddAMethod(methodId, methodToAddId);
 
-        _mockMethodRepository.Verify(repo => repo.Update(
-            It.Is<Method>(m =>
-                m.Id == method.Id &&
-                m.Methods.Contains(methodToAdd))), Times.Once);
+        Assert.IsTrue(method.Methods.Contains(methodToAdd));
+        _mockMethodRepository.Verify(repo => repo.Update(method), Times.Once);
+    }
+
+    [TestMethod]
+    public void AddAMethod_ShouldThrowException_WhenMethodIsAlreadyAssociated()
+    {
+        var methodId = Guid.NewGuid();
+        var methodToAddId = Guid.NewGuid();
+        var methodToAdd = new Method { Id = methodToAddId, Name = "ChildMethod" };
+        var method = new Method
+        {
+            Id = methodId,
+            Name = "ParentMethod",
+            Methods = [methodToAdd]
+        };
+
+        _mockMethodRepository.Setup(repo => repo.Find(methodId)).Returns(method);
+        _mockMethodRepository.Setup(repo => repo.Find(methodToAddId)).Returns(methodToAdd);
+
+        var exception = Assert.ThrowsException<Exception>(() =>
+            _methodService.AddAMethod(methodId, methodToAddId));
+        Assert.AreEqual("Method is already associated with this method.", exception.Message);
+    }
+
+    [TestMethod]
+    public void ValidateMethodIsNotInUse_ShouldThrowException_WhenMethodIsAssociatedWithOtherMethods()
+    {
+        var methodId = Guid.NewGuid();
+        var associatedMethod = new Method { Id = Guid.NewGuid(), Name = "AssociatedMethod" };
+        var method = new Method
+        {
+            Id = methodId,
+            Name = "TestMethod",
+            Methods = [associatedMethod]
+        };
+
+        _mockMethodRepository.Setup(repo => repo.Find(methodId)).Returns(method);
+        _mockClassRepository.Setup(repo => repo.FindAll()).Returns([]);
+
+        var exception = Assert.ThrowsException<Exception>(() =>
+            _methodService.DeleteMethod(methodId));
+        Assert.AreEqual("Method is associated with another method.", exception.Message);
+    }
+
+    [TestMethod]
+    public void AddLocalVariableToMethod_ShouldAddLocalVariable_WhenValidInputsProvided()
+    {
+        var methodId = Guid.NewGuid();
+        var localVariable = new LocalVariableDTO { Name = "TestVariable" };
+        var method = new Method
+        {
+            Id = methodId,
+            Name = "TestMethod",
+            LocalVariables = [],
+            Parameters = []
+        };
+
+        _mockMethodRepository.Setup(repo => repo.Find(methodId)).Returns(method);
+        _mockMethodRepository.Setup(repo => repo.Update(It.IsAny<Method>()));
+
+        _methodService.AddLocalVariableToMethod(methodId, localVariable);
+
+        Assert.IsTrue(method.LocalVariables.Any(v => v.Name == localVariable.Name));
+        _mockMethodRepository.Verify(repo => repo.Update(method), Times.Once);
+    }
+
+    [TestMethod]
+    public void AddLocalVariableToMethod_ShouldThrowException_WhenLocalVariableNameConflictsWithExistingVariable()
+    {
+        var methodId = Guid.NewGuid();
+        var localVariable = new LocalVariableDTO { Name = "TestVariable" };
+        var method = new Method
+        {
+            Id = methodId,
+            Name = "TestMethod",
+            LocalVariables = [new LocalVariable { Name = "TestVariable" }],
+            Parameters = []
+        };
+
+        _mockMethodRepository.Setup(repo => repo.Find(methodId)).Returns(method);
+
+        var exception = Assert.ThrowsException<Exception>(() =>
+            _methodService.AddLocalVariableToMethod(methodId, localVariable));
+        Assert.AreEqual("A variable or parameter with the same name already exists.", exception.Message);
+    }
+
+    [TestMethod]
+    public void AddLocalVariableToMethod_ShouldThrowException_WhenLocalVariableNameConflictsWithExistingParameter()
+    {
+        var methodId = Guid.NewGuid();
+        var localVariable = new LocalVariableDTO { Name = "TestParameter" };
+        var method = new Method
+        {
+            Id = methodId,
+            Name = "TestMethod",
+            LocalVariables = [],
+            Parameters = [new Parameter { Name = "TestParameter" }]
+        };
+
+        _mockMethodRepository.Setup(repo => repo.Find(methodId)).Returns(method);
+
+        var exception = Assert.ThrowsException<Exception>(() =>
+            _methodService.AddLocalVariableToMethod(methodId, localVariable));
+        Assert.AreEqual("A variable or parameter with the same name already exists.", exception.Message);
+    }
+
+    [TestMethod]
+    public void AddParameterToMethod_ShouldThrowException_WhenMethodNotFound()
+    {
+        var methodId = Guid.NewGuid();
+        var parameter = new ParameterDTO { Name = "TestParameter" };
+
+        _mockMethodRepository.Setup(repo => repo.Find(methodId)).Returns((Method)null!);
+
+        var exception = Assert.ThrowsException<Exception>(() =>
+            _methodService.AddParameterToMethod(methodId, parameter));
+        Assert.AreEqual("Method null.", exception.Message);
+    }
+
+    [TestMethod]
+    public void AddParameterToMethod_ShouldThrowException_WhenParameterNameConflictsWithExistingLocalVariable()
+    {
+        var methodId = Guid.NewGuid();
+        var parameter = new ParameterDTO { Name = "TestVariable" };
+        var method = new Method
+        {
+            Id = methodId,
+            Name = "TestMethod",
+            LocalVariables = [new LocalVariable { Name = "TestVariable" }],
+            Parameters = []
+        };
+
+        _mockMethodRepository.Setup(repo => repo.Find(methodId)).Returns(method);
+
+        var exception = Assert.ThrowsException<Exception>(() =>
+            _methodService.AddParameterToMethod(methodId, parameter));
+        Assert.AreEqual("A variable or parameter with the same name already exists.", exception.Message);
+    }
+
+    [TestMethod]
+    public void AddParameterToMethod_ShouldThrowException_WhenParameterNameConflictsWithExistingParameter()
+    {
+        var methodId = Guid.NewGuid();
+        var parameter = new ParameterDTO { Name = "TestParameter" };
+        var method = new Method
+        {
+            Id = methodId,
+            Name = "TestMethod",
+            LocalVariables = [],
+            Parameters = [new Parameter { Name = "TestParameter" }]
+        };
+
+        _mockMethodRepository.Setup(repo => repo.Find(methodId)).Returns(method);
+
+        var exception = Assert.ThrowsException<Exception>(() =>
+            _methodService.AddParameterToMethod(methodId, parameter));
+        Assert.AreEqual("A variable or parameter with the same name already exists.", exception.Message);
+    }
+
+    [TestMethod]
+    public void AddParameterToMethod_ShouldAddParameter_WhenValidInputsProvided()
+    {
+        var methodId = Guid.NewGuid();
+        var parameter = new ParameterDTO { Name = "TestParameter" };
+        var method = new Method
+        {
+            Id = methodId,
+            Name = "TestMethod",
+            LocalVariables = [],
+            Parameters = []
+        };
+
+        _mockMethodRepository.Setup(repo => repo.Find(methodId)).Returns(method);
+        _mockMethodRepository.Setup(repo => repo.Update(It.IsAny<Method>()));
+
+        _methodService.AddParameterToMethod(methodId, parameter);
+
+        Assert.IsTrue(method.Parameters.Any(p => p.Name == parameter.Name));
+        _mockMethodRepository.Verify(repo => repo.Update(method), Times.Once);
     }
 }

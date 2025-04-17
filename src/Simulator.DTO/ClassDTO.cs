@@ -1,6 +1,6 @@
 using Simulator.Domain;
 
-namespace DTO;
+namespace Simulator.DTO;
 
 public class ClassDTO
 {

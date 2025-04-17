@@ -1,7 +1,7 @@
 using Simulator.Domain;
 using Attribute = Simulator.Domain.Attribute;
 
-namespace DTO;
+namespace Simulator.DTO;
 
 public class AttributeDto
 {

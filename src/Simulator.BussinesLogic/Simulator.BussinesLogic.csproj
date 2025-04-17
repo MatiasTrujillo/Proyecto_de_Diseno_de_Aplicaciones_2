@@ -7,7 +7,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\DTO\DTO.csproj" />
+      <ProjectReference Include="..\Simulator.DTO\Simulator.DTO.csproj" />
       <ProjectReference Include="..\Simulator.DataAcces\Simulator.DataAcces.csproj" />
       <ProjectReference Include="..\Simulator.Domain\Simulator.Domain.csproj" />
         <ProjectReference Include="..\Simulator.IBussinesLogic\Simulator.IBussinesLogic.csproj" />
