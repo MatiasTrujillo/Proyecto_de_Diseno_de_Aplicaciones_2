@@ -66,6 +66,24 @@ public class MethodService(IMethodRepository methodRepository, IClassRepository 
         _methodRepository.Update(method);
     }
 
+    public void AddParameterToMethod(Guid methodId, ParameterDTO parameter)
+    {
+        Parameter parameterT = parameter.ToEntity();
+        var method = _methodRepository.Find(methodId);
+        ValidateMethodExist(method);
+        method.Parameters.Add(parameterT);
+        _methodRepository.Update(method);
+    }
+
+    private void ValidateNameParameter(ParameterDTO parameter, Method method)
+    {
+        if (method.LocalVariables.Any(v => v.Name.Equals(parameter.Name, StringComparison.OrdinalIgnoreCase)) ||
+            method.Parameters.Any(p => p.Name.Equals(parameter.Name, StringComparison.OrdinalIgnoreCase)))
+        {
+            throw new Exception("A variable or parameter with the same name already exists.");
+        }
+    }
+
     private static void ValidateNameLocalVariable(LocalVariableDTO localVariable, Method method)
     {
         if (method.LocalVariables.Any(v => v.Name.Equals(localVariable.Name, StringComparison.OrdinalIgnoreCase)) ||

@@ -259,4 +259,19 @@ public class MethodServiceTest
             _methodService.AddLocalVariableToMethod(methodId, localVariable));
         Assert.AreEqual("A variable or parameter with the same name already exists.", exception.Message);
     }
+
+    [TestMethod]
+    public void AddParameterToMethod_ShouldThrowException_WhenMethodNotFound()
+    {
+        // Arrange
+        var methodId = Guid.NewGuid();
+        var parameter = new ParameterDTO { Name = "TestParameter" };
+
+        _mockMethodRepository.Setup(repo => repo.Find(methodId)).Returns((Method)null!);
+
+        // Act & Assert
+        var exception = Assert.ThrowsException<Exception>(() =>
+            _methodService.AddParameterToMethod(methodId, parameter));
+        Assert.AreEqual("Method null.", exception.Message);
+    }
 }
