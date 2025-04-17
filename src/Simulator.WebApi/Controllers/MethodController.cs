@@ -27,6 +27,7 @@ public class MethodController(IMethodService methodService) : ControllerBase
     [HttpDelete("{id}")]
     public IActionResult DeleteMethod([FromRoute] Guid id)
     {
+        _amethodService.DeleteMethod(id);
         return NoContent();
     }
 }
