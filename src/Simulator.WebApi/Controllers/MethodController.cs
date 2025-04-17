@@ -16,4 +16,11 @@ public class MethodController(IMethodService methodService) : ControllerBase
         _amethodService.CreateMethod(method);
         return Created(string.Empty, new { message = "Method created successfully" });
     }
+
+    [HttpPost("{methodId}/associate/{classId}")]
+    public IActionResult AssociateMethodWithClass([FromRoute] Guid methodId, [FromRoute] Guid classId)
+    {
+        _amethodService.AssociateMethodWithClass(methodId, classId);
+        return Created(string.Empty, new { message = "Method associated with class successfully" });
+    }
 }

@@ -25,4 +25,20 @@ public class MethodControllerTest
         Assert.AreEqual(201, result.StatusCode);
         _methodServiceMock.Verify(service => service.CreateMethod(methodDto), Times.Once);
     }
+
+    [TestMethod]
+    public void AssociateMethodWithClass_ShouldReturnCreated_WhenAssociationIsSuccessful()
+    {
+        var methodId = Guid.NewGuid();
+        var classId = Guid.NewGuid();
+        _methodServiceMock.Setup(service => service.AssociateMethodWithClass(methodId, classId))
+            .Verifiable();
+
+        var result = _controller.AssociateMethodWithClass(methodId, classId) as CreatedResult;
+
+        Assert.IsNotNull(result);
+        Assert.AreEqual(201, result.StatusCode);
+
+        _methodServiceMock.Verify(service => service.AssociateMethodWithClass(methodId, classId), Times.Once);
+    }
 }
