@@ -56,6 +56,15 @@ public class MethodService(IMethodRepository methodRepository, IClassRepository 
         _methodRepository.Update(method);
     }
 
+    public void AddLocalVariableToMethod(Guid methodId, LocalVariableDTO localVariable)
+    {
+        LocalVariable localVariableT = localVariable.ToEntity();
+        var method = _methodRepository.Find(methodId);
+
+        method.LocalVariables.Add(localVariableT);
+        _methodRepository.Update(method);
+    }
+
     private void ValidateMethodIsNotInRepeted(Guid idMethod, Guid idMethodToAdd)
     {
         var method = _methodRepository.Find(idMethod);

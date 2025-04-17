@@ -144,7 +144,7 @@ public class MethodServiceTest
     {
         var methodId = Guid.NewGuid();
         var methodToAddId = Guid.NewGuid();
-        var method = new Method { Id = methodId, Name = "ParentMethod", Methods = new List<Method>() };
+        var method = new Method { Id = methodId, Name = "ParentMethod", Methods = [] };
         var methodToAdd = new Method { Id = methodToAddId, Name = "ChildMethod" };
 
         _mockMethodRepository.Setup(repo => repo.Find(methodId)).Returns(method);
@@ -167,7 +167,7 @@ public class MethodServiceTest
         {
             Id = methodId,
             Name = "ParentMethod",
-            Methods = new List<Method> { methodToAdd }
+            Methods = [methodToAdd]
         };
 
         _mockMethodRepository.Setup(repo => repo.Find(methodId)).Returns(method);
@@ -187,7 +187,7 @@ public class MethodServiceTest
         {
             Id = methodId,
             Name = "TestMethod",
-            Methods = new List<Method> { associatedMethod }
+            Methods = [associatedMethod]
         };
 
         _mockMethodRepository.Setup(repo => repo.Find(methodId)).Returns(method);
@@ -196,5 +196,27 @@ public class MethodServiceTest
         var exception = Assert.ThrowsException<Exception>(() =>
             _methodService.DeleteMethod(methodId));
         Assert.AreEqual("Method is associated with another method.", exception.Message);
+    }
+
+    [TestMethod]
+    public void AddLocalVariableToMethod_ShouldAddLocalVariable_WhenValidInputsProvided()
+    {
+        var methodId = Guid.NewGuid();
+        var localVariable = new LocalVariableDTO { Name = "TestVariable" };
+        var method = new Method
+        {
+            Id = methodId,
+            Name = "TestMethod",
+            LocalVariables = new List<LocalVariable>(),
+            Parameters = new List<Parameter>()
+        };
+
+        _mockMethodRepository.Setup(repo => repo.Find(methodId)).Returns(method);
+        _mockMethodRepository.Setup(repo => repo.Update(It.IsAny<Method>()));
+
+        _methodService.AddLocalVariableToMethod(methodId, localVariable);
+
+        Assert.IsTrue(method.LocalVariables.Any(v => v.Name == localVariable.Name));
+        _mockMethodRepository.Verify(repo => repo.Update(method), Times.Once);
     }
 }

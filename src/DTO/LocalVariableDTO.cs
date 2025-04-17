@@ -1,3 +1,14 @@
+using Simulator.Domain;
+using Attribute = System.Attribute;
+
 namespace DTO;
 
-public class LocalVariableDTO;
+public class LocalVariableDTO
+{
+    public Guid Id { get; set; }
+    public string Name { get; set; } = string.Empty;
+    public LocalVariable ToEntity()
+    {
+        return new LocalVariable(Id, Name);
+    }
+}
