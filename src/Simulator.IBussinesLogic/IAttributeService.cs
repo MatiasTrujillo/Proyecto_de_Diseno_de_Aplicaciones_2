@@ -1,4 +1,4 @@
-﻿using DTO;
+﻿using Simulator.DTO;
 
 namespace Simulator.IBussinesLogic;
 

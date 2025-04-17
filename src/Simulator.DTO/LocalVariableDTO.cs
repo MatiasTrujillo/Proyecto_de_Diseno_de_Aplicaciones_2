@@ -1,13 +1,13 @@
 using Simulator.Domain;
 
-namespace DTO;
+namespace Simulator.DTO;
 
-public class ParameterDTO
+public class LocalVariableDTO
 {
     public Guid Id { get; set; } = Guid.NewGuid();
     public string Name { get; set; } = string.Empty;
-    public Parameter ToEntity()
+    public LocalVariable ToEntity()
     {
-        return new Parameter(Id, Name);
+        return new LocalVariable(Id, Name);
     }
 }

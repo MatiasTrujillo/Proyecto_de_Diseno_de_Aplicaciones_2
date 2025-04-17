@@ -1,5 +1,5 @@
-﻿using DTO;
-using Simulator.Domain.Exception;
+﻿using Simulator.Domain.Exception;
+using Simulator.DTO;
 using Simulator.IBussinesLogic;
 using Simulator.IDataAcces;
 using Attribute = Simulator.Domain.Attribute;
