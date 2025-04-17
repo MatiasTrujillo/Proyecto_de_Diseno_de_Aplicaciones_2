@@ -10,9 +10,9 @@ public class Method
     public List<LocalVariable> LocalVariables { get; set; }
     public KeyWord? Stereotype { get; set; }
     /*
-    TODO List:
-    public Type ReturnType { get; set; }
-    */
+     TODO List:
+     public Type ReturnType { get; set; }
+     */
 
     public Method()
     {
@@ -46,5 +46,15 @@ public class Method
         Parameters = parameters;
         LocalVariables = localVariables;
         Stereotype = stereotype;
+    }
+
+    public override bool Equals(object? obj)
+    {
+        return obj is Method other && Id == other.Id;
+    }
+
+    public override int GetHashCode()
+    {
+        return Id.GetHashCode();
     }
 }

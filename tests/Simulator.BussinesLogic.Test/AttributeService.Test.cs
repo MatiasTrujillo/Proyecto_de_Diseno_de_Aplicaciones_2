@@ -1,7 +1,7 @@
-using DTO;
 using Moq;
 using Simulator.Domain;
 using Simulator.Domain.Exception;
+using Simulator.DTO;
 using Simulator.IDataAcces;
 using Attribute = Simulator.Domain.Attribute;
 
@@ -69,10 +69,15 @@ public class AttributeServiceTest
             .Setup(repo => repo.Find(classId))
             .Returns(classEntity);
 
+        _mockClassRepository
+            .Setup(repo => repo.Update(It.IsAny<Class>()));
+
         _attributeService.AsociateAttribute(classId, attributeDTO);
 
         Assert.AreEqual(1, classEntity.Attributes.Count);
         Assert.AreEqual(attributeDTO.Name, classEntity.Attributes[0].Name);
+
+        _mockClassRepository.Verify(repo => repo.Update(classEntity), Times.Once);
     }
 
     [TestMethod]

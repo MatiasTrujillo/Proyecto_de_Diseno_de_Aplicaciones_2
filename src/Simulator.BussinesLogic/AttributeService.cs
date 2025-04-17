@@ -1,5 +1,5 @@
-﻿using DTO;
-using Simulator.Domain.Exception;
+﻿using Simulator.Domain.Exception;
+using Simulator.DTO;
 using Simulator.IBussinesLogic;
 using Simulator.IDataAcces;
 using Attribute = Simulator.Domain.Attribute;
@@ -24,6 +24,7 @@ public class AttributeService(IAttributeRepository attributeRepository, IClassRe
         ValidateClassExists(idClass);
         ValidUniqueNameInClass(idClass, attributeT);
         classT.Attributes.Add(attributeT);
+        _classRepository.Update(classT);
     }
 
     public void UpdateAttribute(Guid id, AttributeDto attribute)

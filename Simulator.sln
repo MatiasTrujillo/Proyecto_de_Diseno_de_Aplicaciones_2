@@ -25,7 +25,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Simulator.WebApi", "src\Sim
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Simulator.IBussinesLogic", "src\Simulator.IBussinesLogic\Simulator.IBussinesLogic.csproj", "{75B3482C-70F6-463B-982F-DA62E7B5A814}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DTO", "src\DTO\DTO.csproj", "{D63398C1-4842-43C0-BC23-B827A49F1145}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Simulator.DTO", "src\Simulator.DTO\Simulator.DTO.csproj", "{D63398C1-4842-43C0-BC23-B827A49F1145}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

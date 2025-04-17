@@ -16,6 +16,8 @@ public sealed class SqlContext : DbContext
     public DbSet<Attribute> Attributes { get; set; }
     public DbSet<Method> Methods { get; set; }
     public DbSet<Class> Classes { get; set; }
+    public DbSet<Parameter> Parameters { get; set; }
+    public DbSet<LocalVariable> LocalVariables { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -24,7 +26,18 @@ public sealed class SqlContext : DbContext
         modelBuilder.Entity<Method>()
             .HasKey(m => m.Id);
         modelBuilder.Entity<Class>()
-            .HasKey(a => a.Id);
+            .HasKey(c => c.Id);
+        modelBuilder.Entity<Method>()
+            .HasMany(m => m.Methods)
+            .WithMany();
+        modelBuilder.Entity<Method>()
+            .HasMany<Parameter>(m => m.Parameters);
+        modelBuilder.Entity<Method>()
+            .HasMany<LocalVariable>(m => m.LocalVariables);
+        modelBuilder.Entity<Parameter>()
+            .HasKey(p => p.Id);
+        modelBuilder.Entity<LocalVariable>()
+            .HasKey(l => l.Id);
 
         base.OnModelCreating(modelBuilder);
     }
