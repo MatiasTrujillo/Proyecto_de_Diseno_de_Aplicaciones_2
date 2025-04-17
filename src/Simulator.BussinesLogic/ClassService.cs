@@ -71,7 +71,7 @@ public class ClassService(IClassRepository classRepository) : IClassService
 
     private List<Attribute> ConvertAttributesToEntity(List<AttributeDto> attributeDtos)
     {
-        List<Attribute> attributes = new List<Attribute>();
+        var attributes = new List<Attribute>();
         foreach(var attDto in attributeDtos)
         {
             attributes.Add(attDto.ToEntity());

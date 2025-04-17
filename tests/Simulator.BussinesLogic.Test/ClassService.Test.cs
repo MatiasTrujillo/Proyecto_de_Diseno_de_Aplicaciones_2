@@ -68,8 +68,7 @@ public class ClassServiceTest
             Attributes = []
         };
 
-        List<Class> classes = new List<Class>();
-        classes.Add(dto1.ToEntity());
+        var classes = new List<Class> { dto1.ToEntity() };
 
         _mockClassRepository.Setup(r => r.FindAll())
             .Returns(classes);
@@ -96,8 +95,7 @@ public class ClassServiceTest
             Attributes = []
         };
 
-        List<Class> classes = new List<Class>();
-        classes.Add(original);
+        var classes = new List<Class> { original };
 
         _mockClassRepository.Setup(r => r.FindAll())
             .Returns(classes);
@@ -121,7 +119,7 @@ public class ClassServiceTest
     {
         var id1 = Guid.NewGuid();
         var id2 = Guid.NewGuid();
-        var original1 = new Class(id1, "name1", KeyWord.Sealed, null, [] ,[]);
+        var original1 = new Class(id1, "name1", KeyWord.Sealed, null, [], []);
         var original2 = new Class(id2, "name2", KeyWord.Sealed, null, [], []);
         var dto = new ClassDTO
         {
@@ -139,9 +137,7 @@ public class ClassServiceTest
             .Setup(r => r.Find(id2))
             .Returns(original2);
 
-        List<Class> classes = new List<Class>();
-        classes.Add(original1);
-        classes.Add(original2);
+        var classes = new List<Class> { original1, original2 };
 
         _mockClassRepository.Setup(r => r.FindAll())
             .Returns(classes);
