@@ -187,4 +187,22 @@ public class ClassServiceTest
 
         Assert.AreEqual("There is no class with this id", exception.Message);
     }
+
+    [TestMethod]
+    public void DeleteClass_ShouldDeleteClass_WhenValid()
+    {
+        var id = Guid.NewGuid();
+        var original = new Class(id, "OldName", KeyWord.Sealed, null, []);
+
+        _mockClassRepository
+            .Setup(r => r.Find(id))
+            .Returns(original);
+
+        _mockClassRepository
+            .Setup(r => r.Delete(It.IsAny<Guid>()));
+
+        _classService.DeleteClass(id);
+
+        _mockClassRepository.Verify(r => r.Delete(id), Times.Once);
+    }
 }
