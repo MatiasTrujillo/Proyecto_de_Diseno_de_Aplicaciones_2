@@ -205,4 +205,24 @@ public class ClassServiceTest
 
         _mockClassRepository.Verify(r => r.Delete(id), Times.Once);
     }
+
+    [TestMethod]
+    public void DeleteClass_ShouldNotDeleteClass_WhenIdDoesNotExist()
+    {
+        var id = Guid.NewGuid();
+
+        _mockClassRepository
+            .Setup(r => r.Find(id))
+            .Returns<Class?>(null);
+
+        _mockClassRepository
+            .Setup(r => r.Delete(It.IsAny<Guid>()));
+
+        var exception = Assert.ThrowsException<ClassException>(() =>
+        {
+            _classService.DeleteClass(id);
+        });
+
+        Assert.AreEqual("There is no class with this id", exception.Message);
+    }
 }
