@@ -177,4 +177,24 @@ public class MethodServiceTest
             _methodService.AddAMethod(methodId, methodToAddId));
         Assert.AreEqual("Method is already associated with this method.", exception.Message);
     }
+
+    [TestMethod]
+    public void ValidateMethodIsNotInUse_ShouldThrowException_WhenMethodIsAssociatedWithOtherMethods()
+    {
+        var methodId = Guid.NewGuid();
+        var associatedMethod = new Method { Id = Guid.NewGuid(), Name = "AssociatedMethod" };
+        var method = new Method
+        {
+            Id = methodId,
+            Name = "TestMethod",
+            Methods = new List<Method> { associatedMethod }
+        };
+
+        _mockMethodRepository.Setup(repo => repo.Find(methodId)).Returns(method);
+        _mockClassRepository.Setup(repo => repo.FindAll()).Returns(new List<Class>()); // Setup for FindAll
+
+        var exception = Assert.ThrowsException<Exception>(() =>
+            _methodService.DeleteMethod(methodId));
+        Assert.AreEqual("Method is associated with another method.", exception.Message);
+    }
 }

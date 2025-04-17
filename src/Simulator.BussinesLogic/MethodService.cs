@@ -34,7 +34,17 @@ public class MethodService(IMethodRepository methodRepository, IClassRepository 
         var method = _methodRepository.Find(id);
         ValidateMethodExist(method);
         ValidateMehodIsNotInClass(id);
+        ValidateMethodIsNotInUse(id);
         _methodRepository.Delete(id);
+    }
+
+    private void ValidateMethodIsNotInUse(Guid id)
+    {
+        var method = _methodRepository.Find(id);
+        if(method.Methods.Any())
+        {
+            throw new Exception("Method is associated with another method.");
+        }
     }
 
     public void AddAMethod(Guid id, Guid idToAdd)
