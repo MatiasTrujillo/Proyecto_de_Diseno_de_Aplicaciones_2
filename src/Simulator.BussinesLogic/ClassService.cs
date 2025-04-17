@@ -45,7 +45,7 @@ public class ClassService(IClassRepository classRepository) : IClassService
 
     public void DeleteClass(Guid id)
     {
-        throw new NotImplementedException();
+        _classRepository.Delete(id);
     }
 
     private void ValidateClassNameIsUnique(Class aClass)
