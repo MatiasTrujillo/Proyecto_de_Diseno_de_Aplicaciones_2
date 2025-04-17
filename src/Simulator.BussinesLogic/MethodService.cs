@@ -71,6 +71,7 @@ public class MethodService(IMethodRepository methodRepository, IClassRepository 
         Parameter parameterT = parameter.ToEntity();
         var method = _methodRepository.Find(methodId);
         ValidateMethodExist(method);
+        ValidateNameParameter(parameter, method);
         method.Parameters.Add(parameterT);
         _methodRepository.Update(method);
     }

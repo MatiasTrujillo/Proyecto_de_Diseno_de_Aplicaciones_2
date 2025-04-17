@@ -263,15 +263,53 @@ public class MethodServiceTest
     [TestMethod]
     public void AddParameterToMethod_ShouldThrowException_WhenMethodNotFound()
     {
-        // Arrange
         var methodId = Guid.NewGuid();
         var parameter = new ParameterDTO { Name = "TestParameter" };
 
         _mockMethodRepository.Setup(repo => repo.Find(methodId)).Returns((Method)null!);
 
-        // Act & Assert
         var exception = Assert.ThrowsException<Exception>(() =>
             _methodService.AddParameterToMethod(methodId, parameter));
         Assert.AreEqual("Method null.", exception.Message);
+    }
+
+    [TestMethod]
+    public void AddParameterToMethod_ShouldThrowException_WhenParameterNameConflictsWithExistingLocalVariable()
+    {
+        var methodId = Guid.NewGuid();
+        var parameter = new ParameterDTO { Name = "TestVariable" };
+        var method = new Method
+        {
+            Id = methodId,
+            Name = "TestMethod",
+            LocalVariables = new List<LocalVariable> { new LocalVariable { Name = "TestVariable" } },
+            Parameters = new List<Parameter>()
+        };
+
+        _mockMethodRepository.Setup(repo => repo.Find(methodId)).Returns(method);
+
+        var exception = Assert.ThrowsException<Exception>(() =>
+            _methodService.AddParameterToMethod(methodId, parameter));
+        Assert.AreEqual("A variable or parameter with the same name already exists.", exception.Message);
+    }
+
+    [TestMethod]
+    public void AddParameterToMethod_ShouldThrowException_WhenParameterNameConflictsWithExistingParameter()
+    {
+        var methodId = Guid.NewGuid();
+        var parameter = new ParameterDTO { Name = "TestParameter" };
+        var method = new Method
+        {
+            Id = methodId,
+            Name = "TestMethod",
+            LocalVariables = new List<LocalVariable>(),
+            Parameters = new List<Parameter> { new Parameter { Name = "TestParameter" } }
+        };
+
+        _mockMethodRepository.Setup(repo => repo.Find(methodId)).Returns(method);
+
+        var exception = Assert.ThrowsException<Exception>(() =>
+            _methodService.AddParameterToMethod(methodId, parameter));
+        Assert.AreEqual("A variable or parameter with the same name already exists.", exception.Message);
     }
 }
