@@ -140,23 +140,20 @@ public class MethodServiceTest
     }
 
     [TestMethod]
-    public void AddAMethod_ShouldCallRepositoryUpdate_WithValidNewMethod()
+    public void AddAMethod_ShouldAddMethod_WhenValidInputsProvided()
     {
-        var method = methodDto.ToEntity();
-        var methodToAdd = otherMethodDto.ToEntity();
+        var methodId = Guid.NewGuid();
+        var methodToAddId = Guid.NewGuid();
+        var method = new Method { Id = methodId, Name = "ParentMethod", Methods = new List<Method>() };
+        var methodToAdd = new Method { Id = methodToAddId, Name = "ChildMethod" };
 
-        _methodService.CreateMethod(methodDto);
-        _methodService.CreateMethod(otherMethodDto);
-
-        _mockMethodRepository.Setup(repo => repo.Find(method.Id)).Returns(method);
-        _mockMethodRepository.Setup(repo => repo.Find(methodToAdd.Id)).Returns(methodToAdd);
+        _mockMethodRepository.Setup(repo => repo.Find(methodId)).Returns(method);
+        _mockMethodRepository.Setup(repo => repo.Find(methodToAddId)).Returns(methodToAdd);
         _mockMethodRepository.Setup(repo => repo.Update(It.IsAny<Method>()));
 
-        _methodService.AddAMethod(method.Id, methodToAdd.Id);
+        _methodService.AddAMethod(methodId, methodToAddId);
 
-        _mockMethodRepository.Verify(repo => repo.Update(
-            It.Is<Method>(m =>
-                m.Id == method.Id &&
-                m.Methods.Contains(methodToAdd))), Times.Once);
+        Assert.IsTrue(method.Methods.Contains(methodToAdd));
+        _mockMethodRepository.Verify(repo => repo.Update(method), Times.Once);
     }
 }

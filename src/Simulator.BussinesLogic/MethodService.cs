@@ -41,8 +41,19 @@ public class MethodService(IMethodRepository methodRepository, IClassRepository 
     {
         var method = _methodRepository.Find(id);
         var methodToAdd = _methodRepository.Find(idToAdd);
+        ValidateMethodIsNotInRepeted(id, idToAdd);
         method.Methods.Add(methodToAdd);
         _methodRepository.Update(method);
+    }
+
+    private void ValidateMethodIsNotInRepeted(Guid idMethod, Guid idMethodToAdd)
+    {
+        var method = _methodRepository.Find(idMethod);
+        var methodToAdd = _methodRepository.Find(idMethodToAdd);
+        if(method.Methods.Any(m => m.Id == idMethodToAdd))
+        {
+            throw new Exception("Method is already associated with this method.");
+        }
     }
 
     private void ValidateMehodIsNotInClass(Guid id)
