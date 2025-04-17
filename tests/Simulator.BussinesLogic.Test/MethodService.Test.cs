@@ -191,7 +191,7 @@ public class MethodServiceTest
         };
 
         _mockMethodRepository.Setup(repo => repo.Find(methodId)).Returns(method);
-        _mockClassRepository.Setup(repo => repo.FindAll()).Returns(new List<Class>()); // Setup for FindAll
+        _mockClassRepository.Setup(repo => repo.FindAll()).Returns([]);
 
         var exception = Assert.ThrowsException<Exception>(() =>
             _methodService.DeleteMethod(methodId));
@@ -207,8 +207,8 @@ public class MethodServiceTest
         {
             Id = methodId,
             Name = "TestMethod",
-            LocalVariables = new List<LocalVariable>(),
-            Parameters = new List<Parameter>()
+            LocalVariables = [],
+            Parameters = []
         };
 
         _mockMethodRepository.Setup(repo => repo.Find(methodId)).Returns(method);
@@ -249,7 +249,7 @@ public class MethodServiceTest
         {
             Id = methodId,
             Name = "TestMethod",
-            LocalVariables = new List<LocalVariable>(),
+            LocalVariables = [],
             Parameters = [new Parameter { Name = "TestParameter" }]
         };
 
@@ -282,8 +282,8 @@ public class MethodServiceTest
         {
             Id = methodId,
             Name = "TestMethod",
-            LocalVariables = new List<LocalVariable> { new LocalVariable { Name = "TestVariable" } },
-            Parameters = new List<Parameter>()
+            LocalVariables = [new LocalVariable { Name = "TestVariable" }],
+            Parameters = []
         };
 
         _mockMethodRepository.Setup(repo => repo.Find(methodId)).Returns(method);
@@ -302,8 +302,8 @@ public class MethodServiceTest
         {
             Id = methodId,
             Name = "TestMethod",
-            LocalVariables = new List<LocalVariable>(),
-            Parameters = new List<Parameter> { new Parameter { Name = "TestParameter" } }
+            LocalVariables = [],
+            Parameters = [new Parameter { Name = "TestParameter" }]
         };
 
         _mockMethodRepository.Setup(repo => repo.Find(methodId)).Returns(method);
@@ -322,8 +322,8 @@ public class MethodServiceTest
         {
             Id = methodId,
             Name = "TestMethod",
-            LocalVariables = new List<LocalVariable>(),
-            Parameters = new List<Parameter>()
+            LocalVariables = [],
+            Parameters = []
         };
 
         _mockMethodRepository.Setup(repo => repo.Find(methodId)).Returns(method);

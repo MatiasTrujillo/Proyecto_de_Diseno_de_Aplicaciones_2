@@ -38,15 +38,6 @@ public class MethodService(IMethodRepository methodRepository, IClassRepository 
         _methodRepository.Delete(id);
     }
 
-    private void ValidateMethodIsNotInUse(Guid id)
-    {
-        var method = _methodRepository.Find(id);
-        if(method.Methods.Any())
-        {
-            throw new Exception("Method is associated with another method.");
-        }
-    }
-
     public void AddAMethod(Guid id, Guid idToAdd)
     {
         var method = _methodRepository.Find(id);
@@ -76,9 +67,18 @@ public class MethodService(IMethodRepository methodRepository, IClassRepository 
         _methodRepository.Update(method);
     }
 
+    private void ValidateMethodIsNotInUse(Guid id)
+    {
+        var method = _methodRepository.Find(id);
+        if(method.Methods.Count != 0)
+        {
+            throw new Exception("Method is associated with another method.");
+        }
+    }
+
     private void ValidateNameParameter(ParameterDTO parameter, Method method)
     {
-        if (method.LocalVariables.Any(v => v.Name.Equals(parameter.Name, StringComparison.OrdinalIgnoreCase)) ||
+        if(method.LocalVariables.Any(v => v.Name.Equals(parameter.Name, StringComparison.OrdinalIgnoreCase)) ||
             method.Parameters.Any(p => p.Name.Equals(parameter.Name, StringComparison.OrdinalIgnoreCase)))
         {
             throw new Exception("A variable or parameter with the same name already exists.");
@@ -87,7 +87,7 @@ public class MethodService(IMethodRepository methodRepository, IClassRepository 
 
     private static void ValidateNameLocalVariable(LocalVariableDTO localVariable, Method method)
     {
-        if (method.LocalVariables.Any(v => v.Name.Equals(localVariable.Name, StringComparison.OrdinalIgnoreCase)) ||
+        if(method.LocalVariables.Any(v => v.Name.Equals(localVariable.Name, StringComparison.OrdinalIgnoreCase)) ||
             method.Parameters.Any(p => p.Name.Equals(localVariable.Name, StringComparison.OrdinalIgnoreCase)))
         {
             throw new Exception("A variable or parameter with the same name already exists.");

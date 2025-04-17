@@ -1,5 +1,4 @@
 using Simulator.Domain;
-using Attribute = System.Attribute;
 
 namespace DTO;
 
