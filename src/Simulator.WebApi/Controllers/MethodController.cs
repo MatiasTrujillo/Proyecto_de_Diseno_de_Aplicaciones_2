@@ -23,4 +23,10 @@ public class MethodController(IMethodService methodService) : ControllerBase
         _amethodService.AssociateMethodWithClass(methodId, classId);
         return Created(string.Empty, new { message = "Method associated with class successfully" });
     }
+
+    [HttpDelete("{id}")]
+    public IActionResult DeleteMethod([FromRoute] Guid id)
+    {
+        return NoContent();
+    }
 }

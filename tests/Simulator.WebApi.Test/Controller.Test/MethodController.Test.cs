@@ -41,4 +41,18 @@ public class MethodControllerTest
 
         _methodServiceMock.Verify(service => service.AssociateMethodWithClass(methodId, classId), Times.Once);
     }
+
+    [TestMethod]
+    public void DeleteMethod_ShouldReturnNoContent_WhenMethodIsDeleted()
+    {
+        var id = Guid.NewGuid();
+        _methodServiceMock.Setup(service => service.DeleteMethod(id))
+            .Verifiable();
+
+        var result = _controller.DeleteMethod(id) as NoContentResult;
+
+        Assert.IsNotNull(result);
+        Assert.AreEqual(204, result.StatusCode);
+        _methodServiceMock.Verify(service => service.DeleteMethod(id), Times.Once);
+    }
 }
