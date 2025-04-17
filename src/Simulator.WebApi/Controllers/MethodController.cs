@@ -48,6 +48,7 @@ public class MethodController(IMethodService methodService) : ControllerBase
     [HttpPost("{methodId}/parameter")]
     public IActionResult AddParameterToMethod([FromRoute] Guid methodId, [FromBody] ParameterDTO parameter)
     {
+        _amethodService.AddParameterToMethod(methodId, parameter);
         return Created(string.Empty, new { message = "Parameter added successfully" });
     }
 }
