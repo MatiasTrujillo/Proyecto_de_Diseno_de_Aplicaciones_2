@@ -10,7 +10,7 @@ public class ClassDTO
     public ClassDTO? HirarchyClass { get; set; } = null;
     public List<AttributeDto> Attributes { get; set; } = [];
 
-    // public List<MethodDTO> Method { get; set; } = new();
+    // public List<MethodDTO> Method { get; set; } = new() ;
 
     public Class ToEntity()
     {
