@@ -9,43 +9,35 @@ public class Method
     public List<Parameter> Parameters { get; set; }
     public List<LocalVariable> LocalVariables { get; set; }
     public KeyWord? Stereotype { get; set; }
-    /*
-     TODO List:
-     public Type ReturnType { get; set; }
-     */
+    public Type ReturnType { get; set; }
 
     public Method()
     {
-        Id = Guid.NewGuid();
         Name = string.Empty;
         Accessibility = Accessibility.Public;
         Methods = [];
         Parameters = [];
         LocalVariables = [];
         Stereotype = null;
+        ReturnType = new Primitive();
     }
 
-    public Method(Guid id, string? name, Accessibility accessibility, KeyWord? stereotype)
+    public Method(string name, Accessibility accessibility, KeyWord? stereotype, List<Method> methods,
+        List<Parameter> parameters,
+        List<LocalVariable> localVariables, Type returnType)
     {
-        Id = id;
-        Name = name;
-        Accessibility = accessibility;
-        Methods = [];
-        Parameters = [];
-        LocalVariables = [];
-        Stereotype = stereotype;
-    }
-
-    public Method(Guid id, string? name, Accessibility accessibility, KeyWord? stereotype, List<Method> methods, List<Parameter> parameters,
-        List<LocalVariable> localVariables)
-    {
-        Id = id;
         Name = name;
         Accessibility = accessibility;
         Methods = methods;
         Parameters = parameters;
         LocalVariables = localVariables;
         Stereotype = stereotype;
+        ReturnType = returnType;
+    }
+
+    public string ExecuteMethod()
+    {
+        return $"prueba";
     }
 
     public override bool Equals(object? obj)

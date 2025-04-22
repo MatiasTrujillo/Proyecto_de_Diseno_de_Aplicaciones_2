@@ -10,13 +10,16 @@ public class ClassRepositoryTest
 
     private readonly ClassRepository _repository;
     private readonly Class aClass;
+    private readonly Guid _id;
     private readonly Class anotherClass;
 
     public ClassRepositoryTest()
     {
+        _id = Guid.NewGuid();
         _repository = new ClassRepository(_context);
-        aClass = new Class(Guid.NewGuid(), "jose", KeyWord.Abstract, null, [], []);
-        anotherClass = new Class(Guid.NewGuid(), "juan", null, null, [], []);
+        aClass = new Class("jose", KeyWord.Abstract, null, [], []);
+        aClass.Id = _id;
+        anotherClass = new Class("juan", null, null, [], []);
     }
 
     [TestInitialize]
@@ -38,7 +41,7 @@ public class ClassRepositoryTest
         _repository.Add(aClass);
 
         using var otherContext = ProgramTest.BuildTestDbContext();
-        var saved = otherContext.Classes.ToList();
+        var saved = otherContext.Set<Class>().ToList();
 
         saved.Count.Should().Be(1);
         saved[0].Id.Should().Be(aClass.Id);
@@ -113,12 +116,13 @@ public class ClassRepositoryTest
         _context.Classes.Add(aClass);
         _context.SaveChanges();
 
-        var updated = new Class(aClass.Id, "josesito", null, null, [], []);
+        var updated = new Class("josesito", null, null, [], []);
+        updated.Id = aClass.Id;
 
         _repository.Update(updated);
 
         using var refreshedContext = ProgramTest.BuildTestDbContext();
-        var saved = refreshedContext.Classes.Find(aClass.Id);
+        var saved = refreshedContext.Set<Class>().Find(aClass.Id);
 
         saved.Should().NotBeNull();
         saved.Name.Should().Be("josesito");

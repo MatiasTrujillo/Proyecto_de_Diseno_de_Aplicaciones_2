@@ -1,6 +1,17 @@
 namespace Simulator.Domain;
 
-public class Primitive(PrimitiveType primitiveType) : Type
+public class Primitive : Type
 {
-    public PrimitiveType PrimitiveType { get; set; } = primitiveType;
+    public static PrimitiveType PrimitiveType { get; set; }
+
+    public Primitive()
+    {
+        Id = Guid.NewGuid();
+        PrimitiveType = PrimitiveType.Int;
+    }
+
+    public Primitive(PrimitiveType primitiveType)
+    {
+        PrimitiveType = primitiveType;
+    }
 }

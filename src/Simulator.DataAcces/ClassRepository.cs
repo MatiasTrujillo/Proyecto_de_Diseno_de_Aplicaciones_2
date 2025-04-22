@@ -21,12 +21,12 @@ public class ClassRepository(SqlContext context) : IClassRepository
 
     public Class Find(Guid id)
     {
-        return context.Classes.Find(id);
+        return context.Set<Class>().Find(id);
     }
 
     public List<Class> FindAll()
     {
-        return context.Classes.ToList();
+        return context.Set<Class>().ToList();
     }
 
     public bool Exist(Guid id)

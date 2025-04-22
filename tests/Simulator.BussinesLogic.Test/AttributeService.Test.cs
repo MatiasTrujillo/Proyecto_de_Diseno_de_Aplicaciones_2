@@ -84,7 +84,7 @@ public class AttributeServiceTest
     public void AsociateAtributeToClass_ShouldThrowException_WhenAttributeNameAlreadyExistsInClass()
     {
         var classId = Guid.NewGuid();
-        var existingAttribute = new Attribute(Guid.NewGuid(), "Intelligence", Accessibility.Private);
+        var existingAttribute = new Attribute(Guid.NewGuid(), "Intelligence", Accessibility.Private, null);
 
         var classEntity = new Class
         {
@@ -195,7 +195,7 @@ public class AttributeServiceTest
     public void UpdateAttribute_ShouldUpdateAttribute_WhenValid()
     {
         var id = Guid.NewGuid();
-        var original = new Attribute(id, "OldName", Accessibility.Private);
+        var original = new Attribute(id, "OldName", Accessibility.Private, null);
         var dto = new AttributeDto
         {
             Id = id,
@@ -224,7 +224,7 @@ public class AttributeServiceTest
     public void UpdateAttribute_ShouldThrowAttributeException_WhenAttributeIsInClass()
     {
         var id = Guid.NewGuid();
-        var attribute = new Attribute(id, "SomeName", Accessibility.Private);
+        var attribute = new Attribute(id, "SomeName", Accessibility.Private, null);
         var dto = new AttributeDto
         {
             Id = id,

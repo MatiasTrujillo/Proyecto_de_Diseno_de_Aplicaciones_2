@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 using Simulator.Domain;
 using Attribute = Simulator.Domain.Attribute;
+using Type = Simulator.Domain.Type;
 
 namespace Simulator.DataAcces;
 
@@ -15,27 +16,52 @@ public sealed class SqlContext : DbContext
 
     public DbSet<Attribute> Attributes { get; set; }
     public DbSet<Method> Methods { get; set; }
-    public DbSet<Class> Classes { get; set; }
+    public DbSet<Class> Classes { get; set; } // Corrected to DbSet<Class>
+    public DbSet<Primitive> Primitives { get; set; }
     public DbSet<Parameter> Parameters { get; set; }
     public DbSet<LocalVariable> LocalVariables { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        // Configure Type hierarchy
+        modelBuilder.Entity<Type>()
+            .HasKey(t => t.Id);
+
+        modelBuilder.Entity<Class>()
+            .HasBaseType<Type>();
+
+        modelBuilder.Entity<Primitive>()
+            .HasBaseType<Type>();
+
+        // Configure Attribute
         modelBuilder.Entity<Attribute>()
             .HasKey(a => a.Id);
-        modelBuilder.Entity<Method>()
-            .HasKey(m => m.Id);
-        modelBuilder.Entity<Class>()
-            .HasKey(c => c.Id);
+
         modelBuilder.Entity<Method>()
             .HasMany(m => m.Methods)
-            .WithMany();
+            .WithMany()
+            .UsingEntity(j => j.ToTable("MethodRelations"));
+
         modelBuilder.Entity<Method>()
-            .HasMany<Parameter>(m => m.Parameters);
+            .HasMany(m => m.Parameters)
+            .WithOne()
+            .OnDelete(DeleteBehavior.Cascade);
+
         modelBuilder.Entity<Method>()
-            .HasMany<LocalVariable>(m => m.LocalVariables);
+            .HasMany(m => m.LocalVariables)
+            .WithOne()
+            .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<Method>()
+            .HasOne(m => m.ReturnType)
+            .WithMany()
+            .OnDelete(DeleteBehavior.Restrict);
+
+        // Configure Parameter
         modelBuilder.Entity<Parameter>()
             .HasKey(p => p.Id);
+
+        // Configure LocalVariable
         modelBuilder.Entity<LocalVariable>()
             .HasKey(l => l.Id);
 

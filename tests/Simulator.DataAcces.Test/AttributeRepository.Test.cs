@@ -1,6 +1,7 @@
 using FluentAssertions;
 using Simulator.Domain;
 using Attribute = Simulator.Domain.Attribute;
+using Type = Simulator.Domain.Type;
 
 namespace Simulator.DataAcces.Test;
 
@@ -9,6 +10,7 @@ public class AttributeRepositoryTest
 {
     private readonly SqlContext _context = ProgramTest.BuildTestDbContext();
     private readonly AttributeRepository _repository;
+    private readonly Type _primitive = new Primitive(PrimitiveType.Int);
 
     public AttributeRepositoryTest()
     {
@@ -31,7 +33,7 @@ public class AttributeRepositoryTest
     [TestMethod]
     public void Add_WhenValidAttributeProvided_ShouldBeSavedInDatabase()
     {
-        var attribute = new Attribute(Guid.NewGuid(), "Strength", Accessibility.Public);
+        var attribute = new Attribute(Guid.NewGuid(), "Strength", Accessibility.Public, _primitive);
 
         _repository.Add(attribute);
 
@@ -49,7 +51,7 @@ public class AttributeRepositoryTest
     [TestMethod]
     public void Find_WhenAttributeExists_ShouldReturnIt()
     {
-        var attribute = new Attribute(Guid.NewGuid(), "Agility", Accessibility.Protected);
+        var attribute = new Attribute(Guid.NewGuid(), "Agility", Accessibility.Protected, _primitive);
         _context.Attributes.Add(attribute);
         _context.SaveChanges();
 
@@ -74,8 +76,8 @@ public class AttributeRepositoryTest
     [TestMethod]
     public void FindAll_WhenMultipleAttributesExist_ShouldReturnAll()
     {
-        var attr1 = new Attribute(Guid.NewGuid(), "Speed", Accessibility.Private);
-        var attr2 = new Attribute(Guid.NewGuid(), "Intelligence", Accessibility.Public);
+        var attr1 = new Attribute(Guid.NewGuid(), "Speed", Accessibility.Private, _primitive);
+        var attr2 = new Attribute(Guid.NewGuid(), "Intelligence", Accessibility.Public, _primitive);
 
         _context.Attributes.AddRange(attr1, attr2);
         _context.SaveChanges();
@@ -92,7 +94,7 @@ public class AttributeRepositoryTest
     [TestMethod]
     public void Exist_WhenAttributeExists_ShouldReturnTrue()
     {
-        var attribute = new Attribute(Guid.NewGuid(), "Charisma", Accessibility.Public);
+        var attribute = new Attribute(Guid.NewGuid(), "Charisma", Accessibility.Public, _primitive);
         _context.Attributes.Add(attribute);
         _context.SaveChanges();
 
@@ -114,11 +116,11 @@ public class AttributeRepositoryTest
     [TestMethod]
     public void Update_WhenAttributeExists_ShouldModifyIt()
     {
-        var attribute = new Attribute(Guid.NewGuid(), "Wisdom", Accessibility.Protected);
+        var attribute = new Attribute(Guid.NewGuid(), "Wisdom", Accessibility.Protected, _primitive);
         _context.Attributes.Add(attribute);
         _context.SaveChanges();
 
-        var updated = new Attribute(attribute.Id, "Knowledge", Accessibility.Private);
+        var updated = new Attribute(attribute.Id, "Knowledge", Accessibility.Private, _primitive);
 
         _repository.Update(updated);
 
@@ -135,7 +137,7 @@ public class AttributeRepositoryTest
     [TestMethod]
     public void Delete_WhenAttributeExists_ShouldRemoveItFromDatabase()
     {
-        var attribute = new Attribute(Guid.NewGuid(), "Dexterity", Accessibility.Public);
+        var attribute = new Attribute(Guid.NewGuid(), "Dexterity", Accessibility.Public, _primitive);
         _context.Attributes.Add(attribute);
         _context.SaveChanges();
 
