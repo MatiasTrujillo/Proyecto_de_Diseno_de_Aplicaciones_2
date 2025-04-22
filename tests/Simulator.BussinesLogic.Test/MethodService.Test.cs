@@ -519,5 +519,8 @@ public class MethodServiceTest
         Console.WriteLine("----------------------------------------------");
         Console.WriteLine(result);
         Assert.AreEqual(result2, "Notificacion.Enviar() -> SMS.Enviar()");
+        var res =
+            "Notificador.Notificar() -> Notificador.Notificar() aviso.Enviar() -> Notificacion.Enviar() aviso.Confirmar() -> Notificacion.Confirmar() otroAviso.Enviar() -> Email.Enviar() otroAviso.Confirmar() -> Notificacion.Confirmar()";
+        Assert.AreEqual(res, result);
     }
 }
