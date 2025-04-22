@@ -35,10 +35,24 @@ public class Method
         ReturnType = returnType;
     }
 
-    public string ExecuteMethod(Class reference, Class objectToCreate, Method methodReference)
+        public string ExecuteMethod(Class reference, Class objectToCreate, Method methodReference)
     {
         var result = new List<string>();
-        result.Add($"{reference.Name}.{methodReference.Name}() -> {reference.Name}.{methodReference.Name}()");
+        var flag = false;
+
+        if(objectToCreate.HierarchyClass != null)
+        {
+            flag = reference.Id != objectToCreate.HierarchyClass.Id;
+        }
+
+        if(!flag)
+        {
+            result.Add($"{reference.Name}.{methodReference.Name}() -> {objectToCreate.Name}.{methodReference.Name}()");
+        }
+        else
+        {
+            result.Add($"{reference.Name}.{methodReference.Name}() -> {reference.Name}.{methodReference.Name}()");
+        }
 
         foreach(var calledMethod in methodReference.Methods)
         {
