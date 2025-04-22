@@ -419,4 +419,105 @@ public class MethodServiceTest
         var result2 = "Auto.IniciarViaje() -> Auto.IniciarViaje()\nmotorAuto.Encender() -> Motor.Encender()\nthis.IniciarViaje() -> Auto.IniciarViaje()";
         Assert.AreEqual(result, result2);
     }
+
+        [TestMethod]
+    public void ExecuteMethodExample2_SholddReturnMethodExecuted()
+    {
+        Guid id = Guid.NewGuid();
+        var confirmar = new Method
+        {
+            Id = Guid.NewGuid(),
+            Name = "Confirmar",
+            Accessibility = Accessibility.Public,
+            Methods = [],
+            Parameters = [],
+            LocalVariables = [],
+            Stereotype = null
+        };
+
+        var enviar = new Method
+        {
+            Id = Guid.NewGuid(),
+            Name = "Enviar",
+            Accessibility = Accessibility.Public,
+            Methods = [],
+            Parameters = [],
+            LocalVariables = [],
+            ReturnType = null,
+            Stereotype = KeyWord.Abstract
+        };
+
+        var notificacion = new Class
+        {
+            Id = id,
+            Name = "Notificacion",
+            Stereotype = KeyWord.Abstract,
+            HierarchyClass = null,
+            Attributes = [],
+            Methods = [enviar, confirmar]
+        };
+
+        var notificar = new Method
+        {
+            Id = Guid.NewGuid(),
+            Name = "Notificar",
+            Accessibility = Accessibility.Public,
+            Parameters = [
+                new Parameter
+                {
+                    Id = Guid.NewGuid(),
+                    Name = "aviso",
+                    ParameterType = notificacion
+                }
+
+            ],
+            Methods = [enviar, confirmar],
+            LocalVariables = [],
+            Stereotype = null
+        };
+
+        var email = new Class
+        {
+            Id = id,
+            Name = "Email",
+            Stereotype = null,
+            HierarchyClass = notificacion,
+            Attributes = [],
+            Methods = [enviar]
+        };
+
+        var otroAviso = new Attribute
+        {
+            Id = Guid.NewGuid(),
+            Name = "otroAviso",
+            Accessibility = Accessibility.Private,
+            Type = email
+        };
+
+        var sms = new Class
+        {
+            Id = id,
+            Name = "SMS",
+            Stereotype = null,
+            HierarchyClass = notificacion,
+            Attributes = [],
+            Methods = [enviar]
+        };
+
+        var notificador = new Class
+        {
+            Id = Guid.NewGuid(),
+            Name = "Notificador",
+            Stereotype = null,
+            HierarchyClass = null,
+            Attributes = [otroAviso],
+            Methods = [notificar]
+        };
+        var result = _method.ExecuteMethod(notificador, notificador, notificar);
+        var result2 = _method.ExecuteMethod(notificacion, sms, enviar);
+        Console.WriteLine(result2);
+        Console.WriteLine("----------------------------------------------");
+        Console.WriteLine(result);
+        Assert.AreEqual(result2, "Notificacion.Enviar() -> SMS.Enviar()");
+    }
 }
