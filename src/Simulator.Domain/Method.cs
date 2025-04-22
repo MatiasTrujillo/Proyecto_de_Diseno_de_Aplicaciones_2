@@ -35,9 +35,73 @@ public class Method
         ReturnType = returnType;
     }
 
-    public string ExecuteMethod()
+    public string ExecuteMethod(Class reference, Class objectToCreate, Method methodReference)
     {
-        return $"prueba";
+        var result = new List<string>();
+        result.Add($"{reference.Name}.{methodReference.Name}() -> {reference.Name}.{methodReference.Name}()");
+
+        foreach(var calledMethod in methodReference.Methods)
+        {
+            var found = false;
+            foreach(var param in methodReference.Parameters)
+            {
+                if(param.ParameterType is Class paramClass)
+                {
+                    if(paramClass.Methods.Any(m => m.Name == calledMethod.Name))
+                    {
+                        result.Add($"{param.Name}.{calledMethod.Name}() -> {paramClass.Name}.{calledMethod.Name}()");
+                        found = true;
+                        break;
+                    }
+                }
+            }
+
+            if(reference is Class referenceClass)
+            {
+                foreach(var attr in referenceClass.Attributes)
+                {
+                    if(attr.Type is Class attrClass)
+                    {
+                        if(attrClass.Methods.Any(m => m.Name == calledMethod.Name))
+                        {
+                            result.Add($"{attr.Name}.{calledMethod.Name}() -> {attrClass.Name}.{calledMethod.Name}()");
+                            found = true;
+                            break;
+                        }
+
+                        var parent = attrClass.HierarchyClass;
+                        while(parent != null)
+                        {
+                            var methodInParent = parent.Methods.FirstOrDefault(m => m.Name == calledMethod.Name);
+                            if(methodInParent != null)
+                            {
+                                result.Add(
+                                    $"{attr.Name}.{calledMethod.Name}() -> {parent.Name}.{methodInParent.Name}()");
+                                found = true;
+                                break;
+                            }
+
+                            parent = parent.HierarchyClass;
+                        }
+                    }
+                }
+
+                if(found)
+                {
+                    continue;
+                }
+
+                if(referenceClass.Methods.Any(m => m.Name == calledMethod.Name))
+                {
+                    result.Add($"this.{calledMethod.Name}() -> {referenceClass.Name}.{calledMethod.Name}()");
+                    continue;
+                }
+            }
+
+            result.Add($"this.{calledMethod.Name}() -> {reference.Name}.{calledMethod.Name}()");
+        }
+
+        return string.Join("\n", result);
     }
 
     public override bool Equals(object? obj)

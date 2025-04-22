@@ -414,9 +414,8 @@ public class MethodServiceTest
             Methods = [iniciarViaje, detenerViaje]
         };
 
-        var result = _method.ExecuteMethod();
-        Console.WriteLine(auto);
-        Console.WriteLine(motor);
+        var result = _method.ExecuteMethod(auto, auto, iniciarViaje);
+        Console.WriteLine(result);
         var result2 = "Auto.IniciarViaje() -> Auto.IniciarViaje()\nmotorAuto.Encender() -> Motor.Encender()\nthis.IniciarViaje() -> Auto.IniciarViaje()";
         Assert.AreEqual(result, result2);
     }
