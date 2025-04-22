@@ -420,10 +420,10 @@ public class MethodServiceTest
         Assert.AreEqual(result, result2);
     }
 
-        [TestMethod]
+    [TestMethod]
     public void ExecuteMethodExample2_SholddReturnMethodExecuted()
     {
-        Guid id = Guid.NewGuid();
+        var id = Guid.NewGuid();
         var confirmar = new Method
         {
             Id = Guid.NewGuid(),

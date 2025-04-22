@@ -35,7 +35,7 @@ public class Method
         ReturnType = returnType;
     }
 
-        public string ExecuteMethod(Class reference, Class objectToCreate, Method methodReference)
+    public string ExecuteMethod(Class reference, Class objectToCreate, Method methodReference)
     {
         var result = new List<string>();
         var flag = false;
