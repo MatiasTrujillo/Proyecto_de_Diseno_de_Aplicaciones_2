@@ -115,6 +115,44 @@ public class Method
             result.Add($"this.{calledMethod.Name}() -> {reference.Name}.{calledMethod.Name}()");
         }
 
+        foreach (var calledMethod in methodReference.Methods)
+        {
+            var found = false;
+            Console.WriteLine("entro metodo");
+
+            // Primero: buscar en parámetros
+            foreach (var localVar in methodReference.LocalVariables)
+            {
+                Console.WriteLine("entro local variable");
+                var classType = localVar.LocalVariableType as Class;
+                if (classType != null)
+                {
+                    // Verificar si el método está presente en las clases asociadas
+                    if (classType.Methods.Any(m => m.Name == calledMethod.Name))
+                    {
+                        result.Add($"{localVar.Name}.{calledMethod.Name}() -> {classType.Name}.{calledMethod.Name}()");
+                        found = true;
+                        break;
+                    }
+
+                    // Buscar en la jerarquía de clases
+                    var parent = classType.HierarchyClass;
+                    while (parent != null)
+                    {
+                        var methodInParent = parent.Methods.FirstOrDefault(m => m.Name == calledMethod.Name);
+                        if (methodInParent != null)
+                        {
+                            result.Add($"{localVar.Name}.{calledMethod.Name}() -> {parent.Name}.{methodInParent.Name}()");
+                            found = true;
+                            break;
+                        }
+
+                        parent = parent.HierarchyClass;
+                    }
+                }
+            }
+        }
+
         return string.Join("\n", result);
     }
 
