@@ -6,15 +6,26 @@ using Simulator.IDataAcces;
 using Simulator.WebApi.Filters;
 
 var builder = WebApplication.CreateBuilder(args);
-
 builder.Services.AddDbContext<SqlContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("CorsPolicy", policy =>
+    {
+        policy.WithOrigins("http://localhost:4200", "http://localhost:8098")
+            .AllowAnyMethod()
+            .AllowAnyHeader();
+    });
+});
+
 // Add services to the container.
 builder.Services.AddControllers(options => { options.Filters.Add(typeof(ExceptionFilter)); });
+builder.Services.AddScoped<IAttributeRepository, AttributeRepository>();
 builder.Services.AddScoped<IClassRepository, ClassRepository>();
 builder.Services.AddScoped<IMethodRepository, MethodRepository>();
 
+builder.Services.AddScoped<IAttributeService, AttributeService>();
 builder.Services.AddScoped<IClassService, ClassService>();
 builder.Services.AddScoped<IMethodService, MethodService>();
 builder.Services.AddControllers();
@@ -26,7 +37,7 @@ builder.Services.AddSwaggerGen();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-if(app.Environment.IsDevelopment())
+if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
@@ -37,5 +48,8 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 
 app.MapControllers();
+
+// Ensure the application listens on all network interfaces
+app.Urls.Add("http://*:80");
 
 app.Run();

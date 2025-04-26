@@ -16,7 +16,7 @@ public sealed class SqlContext : DbContext
 
     public DbSet<Attribute> Attributes { get; set; }
     public DbSet<Method> Methods { get; set; }
-    public DbSet<Class> Classes { get; set; } // Corrected to DbSet<Class>
+    public DbSet<Class> Classes { get; set; }
     public DbSet<Primitive> Primitives { get; set; }
     public DbSet<Parameter> Parameters { get; set; }
     public DbSet<LocalVariable> LocalVariables { get; set; }
@@ -74,6 +74,7 @@ public class SqlContextFactory : IDesignTimeDbContextFactory<SqlContext>
     public SqlContext CreateDbContext(string[] args)
     {
         var optionsBuilder = new DbContextOptionsBuilder<SqlContext>();
+
         optionsBuilder.UseSqlServer("Server=127.0.0.1,1433;Database=dataBase;User Id=sa;Password=Passw1rd;TrustServerCertificate=true;");
 
         return new SqlContext(optionsBuilder.Options);

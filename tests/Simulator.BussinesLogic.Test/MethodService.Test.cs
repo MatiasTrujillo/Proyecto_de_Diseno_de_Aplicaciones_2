@@ -1,3 +1,5 @@
+using System.Net.Mail;
+using Microsoft.Extensions.Logging;
 using Moq;
 using Simulator.Domain;
 using Simulator.DTO;
@@ -22,10 +24,7 @@ public class MethodServiceTest
     {
         methodDto = new MethodDTO()
         {
-            Id = Guid.NewGuid(),
-            Name = "First Method Dto",
-            Accessibility = Accessibility.Private,
-            Stereotype = null
+            Id = Guid.NewGuid(), Name = "First Method Dto", Accessibility = Accessibility.Private, Stereotype = null
         };
         otherMethodDto = new MethodDTO()
         {
@@ -70,10 +69,7 @@ public class MethodServiceTest
     {
         var existingMethod = new Method
         {
-            Id = Guid.NewGuid(),
-            Name = methodDto.Name,
-            Accessibility = Accessibility.Private,
-            Stereotype = null
+            Id = Guid.NewGuid(), Name = methodDto.Name, Accessibility = Accessibility.Private, Stereotype = null
         };
 
         _mockMethodRepository
@@ -126,12 +122,7 @@ public class MethodServiceTest
     {
         var method = new Method { Id = Guid.NewGuid(), Name = "TestMethod" };
         var existingMethod = new Method { Id = Guid.NewGuid(), Name = "TestMethod" };
-        var classT = new Class
-        {
-            Id = Guid.NewGuid(),
-            Name = "TestClass",
-            Methods = [existingMethod]
-        };
+        var classT = new Class { Id = Guid.NewGuid(), Name = "TestClass", Methods = [existingMethod] };
 
         _mockMethodRepository.Setup(repo => repo.Find(method.Id)).Returns(method);
         _mockClassRepository.Setup(repo => repo.Find(classT.Id)).Returns(classT);
@@ -165,12 +156,7 @@ public class MethodServiceTest
         var methodId = Guid.NewGuid();
         var methodToAddId = Guid.NewGuid();
         var methodToAdd = new Method { Id = methodToAddId, Name = "ChildMethod" };
-        var method = new Method
-        {
-            Id = methodId,
-            Name = "ParentMethod",
-            Methods = [methodToAdd]
-        };
+        var method = new Method { Id = methodId, Name = "ParentMethod", Methods = [methodToAdd] };
 
         _mockMethodRepository.Setup(repo => repo.Find(methodId)).Returns(method);
         _mockMethodRepository.Setup(repo => repo.Find(methodToAddId)).Returns(methodToAdd);
@@ -185,12 +171,7 @@ public class MethodServiceTest
     {
         var methodId = Guid.NewGuid();
         var associatedMethod = new Method { Id = Guid.NewGuid(), Name = "AssociatedMethod" };
-        var method = new Method
-        {
-            Id = methodId,
-            Name = "TestMethod",
-            Methods = [associatedMethod]
-        };
+        var method = new Method { Id = methodId, Name = "TestMethod", Methods = [associatedMethod] };
 
         _mockMethodRepository.Setup(repo => repo.Find(methodId)).Returns(method);
         _mockClassRepository.Setup(repo => repo.FindAll()).Returns([]);
@@ -205,13 +186,7 @@ public class MethodServiceTest
     {
         var methodId = Guid.NewGuid();
         var localVariable = new LocalVariableDTO { Name = "TestVariable" };
-        var method = new Method
-        {
-            Id = methodId,
-            Name = "TestMethod",
-            LocalVariables = [],
-            Parameters = []
-        };
+        var method = new Method { Id = methodId, Name = "TestMethod", LocalVariables = [], Parameters = [] };
 
         _mockMethodRepository.Setup(repo => repo.Find(methodId)).Returns(method);
         _mockMethodRepository.Setup(repo => repo.Update(It.IsAny<Method>()));
@@ -320,13 +295,7 @@ public class MethodServiceTest
     {
         var methodId = Guid.NewGuid();
         var parameter = new ParameterDTO { Name = "TestParameter" };
-        var method = new Method
-        {
-            Id = methodId,
-            Name = "TestMethod",
-            LocalVariables = [],
-            Parameters = []
-        };
+        var method = new Method { Id = methodId, Name = "TestMethod", LocalVariables = [], Parameters = [] };
 
         _mockMethodRepository.Setup(repo => repo.Find(methodId)).Returns(method);
         _mockMethodRepository.Setup(repo => repo.Update(It.IsAny<Method>()));
@@ -398,10 +367,7 @@ public class MethodServiceTest
 
         var motorAuto = new Attribute
         {
-            Id = Guid.NewGuid(),
-            Name = "motorAuto",
-            Accessibility = Accessibility.Private,
-            Type = motor
+            Id = Guid.NewGuid(), Name = "motorAuto", Accessibility = Accessibility.Private, Type = motor
         };
 
         var auto = new Class()
@@ -418,8 +384,8 @@ public class MethodServiceTest
         Console.WriteLine(result);
         var result2 =
             "Auto.IniciarViaje() -> Auto.IniciarViaje()\n" +
-            "motorAuto.Encender() -> Motor.Encender()\n" +
-            "this.IniciarViaje() -> Auto.IniciarViaje()";
+            "\tmotorAuto.Encender() -> Motor.Encender()\n" +
+            "\tthis.IniciarViaje() -> Auto.IniciarViaje()";
         Assert.AreEqual(result, result2);
     }
 
@@ -481,26 +447,16 @@ public class MethodServiceTest
             Methods = [enviar]
         };
 
-        var otroAviso = new LocalVariable()
-        {
-            Id = Guid.NewGuid(),
-            Name = "otroAviso",
-            LocalVariableType = email
-        };
+        var otroAviso = new LocalVariable() { Id = Guid.NewGuid(), Name = "otroAviso", LocalVariableType = email };
 
         var notificar = new Method
         {
             Id = Guid.NewGuid(),
             Name = "Notificar",
             Accessibility = Accessibility.Public,
-            Parameters = [
-                new Parameter
-                {
-                    Id = Guid.NewGuid(),
-                    Name = "aviso",
-                    ParameterType = notificacion
-                }
-
+            Parameters =
+            [
+                new Parameter { Id = Guid.NewGuid(), Name = "aviso", ParameterType = notificacion }
             ],
             Methods = [enviar, confirmar],
             LocalVariables = [otroAviso],
@@ -516,19 +472,160 @@ public class MethodServiceTest
             Attributes = [],
             Methods = [notificar]
         };
-
         var result = _method.ExecuteMethod(notificador, notificador, notificar);
-        var result2 = _method.ExecuteMethod(notificacion, sms, enviar);
-        Console.WriteLine(result2);
-        Console.WriteLine("----------------------------------------------");
         Console.WriteLine(result);
-        Assert.AreEqual(result2, "Notificacion.Enviar() -> SMS.Enviar()");
         var res =
             "Notificador.Notificar() -> Notificador.Notificar()\n" +
-            "aviso.Enviar() -> Notificacion.Enviar()\n" +
-            "aviso.Confirmar() -> Notificacion.Confirmar()\n" +
-            "otroAviso.Enviar() -> Email.Enviar()\n" +
-            "otroAviso.Confirmar() -> Notificacion.Confirmar()";
+            "\taviso.Enviar() -> Notificacion.Enviar()\n" +
+            "\taviso.Confirmar() -> Notificacion.Confirmar()\n" +
+            "\totroAviso.Enviar() -> Email.Enviar()\n" +
+            "\totroAviso.Confirmar() -> Notificacion.Confirmar()";
+        Assert.AreEqual(res, result);
+    }
+
+     [TestMethod]
+    public void ExecuteMethodExample3_SholddReturnMethodExecuted()
+    {
+        var limpiar = new Method
+        {
+            Id = Guid.NewGuid(),
+            Name = "Limpiar",
+            Accessibility = Accessibility.Protected,
+            Methods = [],
+            Parameters = [],
+            LocalVariables = [],
+            ReturnType = null,
+            Stereotype = null
+        };
+
+        var inicializar = new Method
+        {
+            Id = Guid.NewGuid(),
+            Name = "Inicializar",
+            Accessibility = Accessibility.Protected,
+            Methods = [],
+            Parameters = [],
+            LocalVariables = [],
+            ReturnType = null,
+            Stereotype = null
+        };
+
+        var esValidoEntrada = new Method
+        {
+            Id = Guid.NewGuid(),
+            Name = "EsValido",
+            Accessibility = Accessibility.Public,
+            Methods = [inicializar],
+            Parameters = [],
+            LocalVariables = [],
+            ReturnType = new Primitive(PrimitiveType.Bool),
+            Stereotype = null
+        };
+
+        var esValidoTexto = new Method
+        {
+            Id = Guid.NewGuid(),
+            Name = "EsValido",
+            Accessibility = Accessibility.Public,
+            Methods = [esValidoEntrada, limpiar],
+            Parameters = [],
+            LocalVariables = [],
+            ReturnType = new Primitive(PrimitiveType.Bool),
+            Stereotype = null
+        };
+
+        var esValido = new Method
+        {
+            Id = Guid.NewGuid(),
+            Name = "EsValido",
+            Accessibility = Accessibility.Public,
+            Methods = [esValidoTexto],
+            Parameters = [],
+            LocalVariables = [],
+            ReturnType = new Primitive(PrimitiveType.Bool),
+            Stereotype = KeyWord.Sealed
+        };
+
+        var metodoEsValido = new Method
+        {
+            Id = Guid.NewGuid(),
+            Name = "EsValido",
+            Accessibility = Accessibility.Public,
+            Methods = [esValido],
+            Parameters = [],
+            LocalVariables = [],
+            ReturnType = new Primitive(PrimitiveType.Bool),
+            Stereotype = KeyWord.Sealed
+        };
+
+        var entrada = new Class
+        {
+            Id = Guid.NewGuid(),
+            Name = "Entrada",
+            Stereotype = null,
+            HierarchyClass = null,
+            Attributes = [],
+            Methods = [esValidoEntrada, inicializar,  limpiar]
+        };
+
+        var entradaTexto = new Class
+        {
+            Id = Guid.NewGuid(),
+            Name = "EntradaTexto",
+            Stereotype = null,
+            HierarchyClass = entrada,
+            Attributes = [],
+            Methods = [esValidoTexto, metodoEsValido]
+        };
+
+        var entradaTextoEspecial = new Class
+        {
+            Id = Guid.NewGuid(),
+            Name = "EntradaTextoEspecial",
+            Stereotype = KeyWord.Sealed,
+            HierarchyClass = entradaTexto,
+            Attributes = [],
+            Methods = [metodoEsValido, esValidoEntrada]
+        };
+
+        var input = new LocalVariable
+            {
+                Id = Guid.NewGuid(),
+                Name = "input",
+                LocalVariableType = entradaTextoEspecial
+            };
+
+        var validar = new Method
+        {
+            Id = Guid.NewGuid(),
+            Name = "Validar",
+            Accessibility = Accessibility.Public,
+            Methods = [esValido],
+            Parameters = [],
+            LocalVariables = [input],
+            ReturnType = new Primitive(PrimitiveType.Bool),
+            Stereotype = null
+        };
+
+        var validador = new Class
+        {
+            Id = Guid.NewGuid(),
+            Name = "Validador",
+            Stereotype = null,
+            HierarchyClass = null,
+            Attributes = [],
+            Methods = [validar]
+        };
+
+        var result = _method.ExecuteMethod(validador, validador, validar);
+
+        var res =
+            "Validador.Validar() -> Validador.Validar()\n" +
+            "\tinput.EsValido() -> EntradaTextoEspecial.EsValido()\n" +
+            "\t\tbase.EsValido() -> EntradaTexto.EsValido()\n" +
+            "\t\t\tbase.EsValido() -> Entrada.EsValido()\n" +
+            "\t\t\t\tthis.Inicializar() -> Entrada.Inicializar()\n" +
+            "\t\t\t\tthis.Limpiar() -> Entrada.Limpiar()";
         Assert.AreEqual(res, result);
     }
 }

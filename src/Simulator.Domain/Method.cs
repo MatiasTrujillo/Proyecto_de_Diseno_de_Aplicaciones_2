@@ -2,6 +2,7 @@
 
 public class Method
 {
+    private static int Indentacion = 0;
     public Guid Id { get; set; }
     public string? Name { get; set; }
     public Accessibility Accessibility { get; set; }
@@ -37,49 +38,40 @@ public class Method
 
     public string ExecuteMethod(Class reference, Class objectToCreate, Method methodReference)
     {
+        Indentacion = 0;
         var result = new List<string>();
         var flag = false;
-
         if(objectToCreate.HierarchyClass != null)
         {
             flag = reference.Id != objectToCreate.HierarchyClass.Id;
         }
 
-        if(!flag)
-        {
-            result.Add($"{reference.Name}.{methodReference.Name}() -> {objectToCreate.Name}.{methodReference.Name}()");
-        }
-        else
-        {
-            result.Add($"{reference.Name}.{methodReference.Name}() -> {reference.Name}.{methodReference.Name}()");
-        }
+        FirstLine(reference, objectToCreate, methodReference, flag, result);
 
         foreach(var calledMethod in methodReference.Methods)
         {
-            var found = false;
             foreach(var param in methodReference.Parameters)
             {
                 if(param.ParameterType is Class paramClass)
                 {
                     if(paramClass.Methods.Any(m => m.Name == calledMethod.Name))
                     {
-                        result.Add($"{param.Name}.{calledMethod.Name}() -> {paramClass.Name}.{calledMethod.Name}()");
-                        found = true;
-                        break;
+                        var indentation = new string('\t', Indentacion);
+                        result.Add($"{indentation}{param.Name}.{calledMethod.Name}() -> {paramClass.Name}.{calledMethod.Name}()");
                     }
                 }
             }
 
             if(reference is Class referenceClass)
             {
+                var indentation = new string('\t', Indentacion);
                 foreach(var attr in referenceClass.Attributes)
                 {
                     if(attr.Type is Class attrClass)
                     {
                         if(attrClass.Methods.Any(m => m.Name == calledMethod.Name))
                         {
-                            result.Add($"{attr.Name}.{calledMethod.Name}() -> {attrClass.Name}.{calledMethod.Name}()");
-                            found = true;
+                            result.Add($"{indentation}{attr.Name}.{calledMethod.Name}() -> {attrClass.Name}.{calledMethod.Name}()");
                             break;
                         }
 
@@ -90,8 +82,7 @@ public class Method
                             if(methodInParent != null)
                             {
                                 result.Add(
-                                    $"{attr.Name}.{calledMethod.Name}() -> {parent.Name}.{methodInParent.Name}()");
-                                found = true;
+                                    $"{indentation}{attr.Name}.{calledMethod.Name}() -> {parent.Name}.{methodInParent.Name}()");
                                 break;
                             }
 
@@ -100,60 +91,57 @@ public class Method
                     }
                 }
 
-                if(found)
-                {
-                    continue;
-                }
-
                 if(referenceClass.Methods.Any(m => m.Name == calledMethod.Name))
                 {
-                    result.Add($"this.{calledMethod.Name}() -> {referenceClass.Name}.{calledMethod.Name}()");
-                    continue;
+                    result.Add($"{indentation}this.{calledMethod.Name}() -> {referenceClass.Name}.{calledMethod.Name}()");
                 }
             }
-
-            result.Add($"this.{calledMethod.Name}() -> {reference.Name}.{calledMethod.Name}()");
         }
 
-        foreach (var calledMethod in methodReference.Methods)
+        foreach(var calledMethod in methodReference.Methods)
         {
-            var found = false;
-            Console.WriteLine("entro metodo");
-
-            // Primero: buscar en parámetros
-            foreach (var localVar in methodReference.LocalVariables)
+            var slead = true;
+            foreach(var localVar in methodReference.LocalVariables)
             {
-                Console.WriteLine("entro local variable");
                 var classType = localVar.LocalVariableType as Class;
-                if (classType != null)
+                var c = classType.Methods.Any(m => m.Name == calledMethod.Name);
+                var aux = classType;
+                var i = 0;
+                if(classType != null && c)
                 {
-                    // Verificar si el método está presente en las clases asociadas
-                    if (classType.Methods.Any(m => m.Name == calledMethod.Name))
-                    {
-                        result.Add($"{localVar.Name}.{calledMethod.Name}() -> {classType.Name}.{calledMethod.Name}()");
-                        found = true;
-                        break;
-                    }
-
-                    // Buscar en la jerarquía de clases
-                    var parent = classType.HierarchyClass;
-                    while (parent != null)
-                    {
-                        var methodInParent = parent.Methods.FirstOrDefault(m => m.Name == calledMethod.Name);
-                        if (methodInParent != null)
+                    var classInherited = classType.HierarchyClass;
+                        var cant = classInherited.Methods.Count;
+                        while (aux != null && i < cant)
                         {
-                            result.Add($"{localVar.Name}.{calledMethod.Name}() -> {parent.Name}.{methodInParent.Name}()");
-                            found = true;
-                            break;
-                        }
+                            if(classInherited != null && classInherited.Methods[i].Stereotype != KeyWord.Sealed)
+                            {
+                                var indentation = new string('\t', Indentacion);
+                                result.Add($"{indentation}{localVar.Name}.{classInherited.Methods[i].Name}() -> {aux.Name}.{classInherited.Methods[i].Name}()");
+                            }
 
-                        parent = parent.HierarchyClass;
-                    }
+                            aux = aux.HierarchyClass;
+                            i++;
+                        }
                 }
             }
         }
 
         return string.Join("\n", result);
+    }
+
+    private static void FirstLine(Class reference, Class objectToCreate, Method methodReference, bool flag, List<string> result)
+    {
+        var indentation = new string('\t', Indentacion);
+        if(!flag)
+        {
+            result.Add($"{indentation}{reference.Name}.{methodReference.Name}() -> {objectToCreate.Name}.{methodReference.Name}()");
+        }
+        else
+        {
+            result.Add($"{indentation}{reference.Name}.{methodReference.Name}() -> {reference.Name}.{methodReference.Name}()");
+        }
+
+        Indentacion++;
     }
 
     public override bool Equals(object? obj)
