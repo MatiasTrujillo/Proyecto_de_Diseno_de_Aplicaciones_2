@@ -122,11 +122,36 @@ public class Method
                             aux = aux.HierarchyClass;
                             i++;
                         }
+
+                        while(classInherited != null)
+                        {
+                            Sobreescrito(classType, result, classInherited);
+                            classType = classInherited;
+                            classInherited = classInherited.HierarchyClass;
+                        }
+
+                        MethodTThis(classType, result);
                 }
             }
         }
 
         return string.Join("\n", result);
+    }
+
+    private static void MethodTThis(Class classType, List<string> result)
+    {
+        var indentation = new string('\t', Indentacion + 1);
+        if(classType.Stereotype == null)
+        {
+            foreach(var m in classType.Methods)
+            {
+                if(!(m.Methods.Count > 0))
+                {
+                    result.Add($"{indentation}this.{m.Name}() -> {classType.Name}.{m.Name}()");
+                    Indentacion++;
+                }
+            }
+        }
     }
 
     private static void FirstLine(Class reference, Class objectToCreate, Method methodReference, bool flag, List<string> result)
@@ -142,6 +167,41 @@ public class Method
         }
 
         Indentacion++;
+    }
+
+    private void Sobreescrito(Class classType, List<string> result, Class parent)
+    {
+        foreach(var methodInParent in classType.Methods)
+        {
+            var cant = ContarOcurrenciasMetodoEnJerarquia(methodInParent);
+            var indentation = new string('\t', Indentacion + 1);
+            if(cant > 1)
+            {
+                result.Add($"{indentation}base.{methodInParent.Name}() -> {parent.Name}.{methodInParent.Name}()");
+                Indentacion++;
+            }
+        }
+    }
+
+    public int ContarOcurrenciasMetodoEnJerarquia(Method metodoNombre)
+    {
+        var count = 0;
+        var met = metodoNombre;
+
+        foreach(var m in met.Methods)
+        {
+            if(m.Name == metodoNombre.Name)
+            {
+                count++;
+            }
+
+            if(m.Methods.Count > 0)
+            {
+                count += ContarOcurrenciasMetodoEnJerarquia(m);
+            }
+        }
+
+        return count;
     }
 
     public override bool Equals(object? obj)
