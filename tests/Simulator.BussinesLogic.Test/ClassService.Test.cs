@@ -128,6 +128,29 @@ public class ClassServiceTest
     }
 
     [TestMethod]
+    public void CreateClass_ShouldThrowException_WhenNameCannotHaveSpacesDoesNot()
+    {
+        var dto = new ClassDTO
+        {
+            Id = Guid.NewGuid(),
+            Name = "Class Name",
+            Stereotype = KeyWord.Sealed,
+            HirarchyClass = null,
+            Attributes = []
+        };
+
+        _mockClassRepository.Setup(r => r.FindAll())
+            .Returns([]);
+
+        var exception = Assert.ThrowsException<ClassException>(() =>
+        {
+            _classService.CreateClass(dto);
+        });
+
+        Assert.AreEqual("The class name must not contain spaces.", exception.Message);
+    }
+
+    [TestMethod]
     public void UpdateClass_ShouldUpdateClass_WhenValid()
     {
         var id = Guid.NewGuid();
