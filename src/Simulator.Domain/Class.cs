@@ -22,15 +22,20 @@ public class Class : Type
 
     public Class(string name, KeyWord? stereotype, Class? hierarchyClass, List<Attribute> attributes, List<Method> method)
     {
-        if (name == string.Empty)
-        {
-            throw new ClassException("The class name cannot be empty.");
-        }
+        ValidatName(name);
 
         Name = name;
         Stereotype = stereotype;
         HierarchyClass = hierarchyClass;
         Attributes = attributes;
         Methods = method;
+    }
+
+    private void ValidatName(string name)
+    {
+        if (name == string.Empty)
+        {
+            throw new ClassException("The class name cannot be empty.");
+        }
     }
 }
