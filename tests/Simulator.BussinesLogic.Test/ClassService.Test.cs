@@ -105,6 +105,29 @@ public class ClassServiceTest
     }
 
     [TestMethod]
+    public void CreateClass_ShouldThrowException_WhenNameDoesNotBeginWithACapitalLetter()
+    {
+        var dto = new ClassDTO
+        {
+            Id = Guid.NewGuid(),
+            Name = string.Empty,
+            Stereotype = KeyWord.Sealed,
+            HirarchyClass = null,
+            Attributes = []
+        };
+
+        _mockClassRepository.Setup(r => r.FindAll())
+            .Returns([]);
+
+        var exception = Assert.ThrowsException<ClassException>(() =>
+        {
+            _classService.CreateClass(dto);
+        });
+
+        Assert.AreEqual("The class name must start with an uppercase letter.", exception.Message);
+    }
+
+    [TestMethod]
     public void UpdateClass_ShouldUpdateClass_WhenValid()
     {
         var id = Guid.NewGuid();
