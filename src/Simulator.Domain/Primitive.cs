@@ -6,7 +6,6 @@ public class Primitive : Type
 
     public Primitive()
     {
-        Id = Guid.NewGuid();
         PrimitiveType = PrimitiveType.Int;
     }
 

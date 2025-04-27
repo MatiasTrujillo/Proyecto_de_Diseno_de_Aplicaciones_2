@@ -13,9 +13,9 @@ public class LocalVariable
         LocalVariableType = new Primitive();
     }
 
-    public LocalVariable(Guid id, string name, Type localVariableType)
+    public LocalVariable(string name, Type localVariableType)
     {
-        Id = id;
+        Id = Guid.NewGuid();
         Name = name;
         LocalVariableType = localVariableType;
     }

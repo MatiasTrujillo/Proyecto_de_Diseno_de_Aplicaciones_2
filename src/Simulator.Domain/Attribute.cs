@@ -15,13 +15,13 @@ public class Attribute
         Type = new Primitive(PrimitiveType.Int);
     }
 
-    public Attribute(Guid id, string name, Accessibility accessibility, Type type)
+    public Attribute(string name, Accessibility accessibility, Type type)
     {
-        ValidateAttributes(name);
-        Id = id;
+        Id = Guid.NewGuid();
         Name = name;
         Accessibility = accessibility;
         Type = type;
+        ValidateAttributes(name);
     }
 
     private void ValidateAttributes(string name)

@@ -33,7 +33,7 @@ public class AttributeRepositoryTest
     [TestMethod]
     public void Add_WhenValidAttributeProvided_ShouldBeSavedInDatabase()
     {
-        var attribute = new Attribute(Guid.NewGuid(), "Strength", Accessibility.Public, _primitive);
+        var attribute = new Attribute("Strength", Accessibility.Public, _primitive);
 
         _repository.Add(attribute);
 
@@ -51,7 +51,7 @@ public class AttributeRepositoryTest
     [TestMethod]
     public void Find_WhenAttributeExists_ShouldReturnIt()
     {
-        var attribute = new Attribute(Guid.NewGuid(), "Agility", Accessibility.Protected, _primitive);
+        var attribute = new Attribute("Agility", Accessibility.Protected, _primitive);
         _context.Attributes.Add(attribute);
         _context.SaveChanges();
 
@@ -76,8 +76,8 @@ public class AttributeRepositoryTest
     [TestMethod]
     public void FindAll_WhenMultipleAttributesExist_ShouldReturnAll()
     {
-        var attr1 = new Attribute(Guid.NewGuid(), "Speed", Accessibility.Private, _primitive);
-        var attr2 = new Attribute(Guid.NewGuid(), "Intelligence", Accessibility.Public, _primitive);
+        var attr1 = new Attribute("Speed", Accessibility.Private, _primitive);
+        var attr2 = new Attribute("Intelligence", Accessibility.Public, _primitive);
 
         _context.Attributes.AddRange(attr1, attr2);
         _context.SaveChanges();
@@ -94,7 +94,7 @@ public class AttributeRepositoryTest
     [TestMethod]
     public void Exist_WhenAttributeExists_ShouldReturnTrue()
     {
-        var attribute = new Attribute(Guid.NewGuid(), "Charisma", Accessibility.Public, _primitive);
+        var attribute = new Attribute("Charisma", Accessibility.Public, _primitive);
         _context.Attributes.Add(attribute);
         _context.SaveChanges();
 
@@ -116,14 +116,17 @@ public class AttributeRepositoryTest
     [TestMethod]
     public void Update_WhenAttributeExists_ShouldModifyIt()
     {
-        var attribute = new Attribute(Guid.NewGuid(), "Wisdom", Accessibility.Protected, _primitive);
+        // Arrange
+        var attribute = new Attribute("Wisdom", Accessibility.Protected, _primitive);
         _context.Attributes.Add(attribute);
         _context.SaveChanges();
 
-        var updated = new Attribute(attribute.Id, "Knowledge", Accessibility.Private, _primitive);
-
+        // Act
+        var updated = new Attribute("Knowledge", Accessibility.Private, _primitive);
+        updated.Id = attribute.Id; // mismo ID para indicar que es el mismo registro
         _repository.Update(updated);
 
+        // Assert
         using var refreshedContext = ProgramTest.BuildTestDbContext();
         var saved = refreshedContext.Attributes.Find(attribute.Id);
 
@@ -137,7 +140,7 @@ public class AttributeRepositoryTest
     [TestMethod]
     public void Delete_WhenAttributeExists_ShouldRemoveItFromDatabase()
     {
-        var attribute = new Attribute(Guid.NewGuid(), "Dexterity", Accessibility.Public, _primitive);
+        var attribute = new Attribute("Dexterity", Accessibility.Public, _primitive);
         _context.Attributes.Add(attribute);
         _context.SaveChanges();
 

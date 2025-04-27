@@ -10,6 +10,6 @@ public class LocalVariableDTO
     public Type LocalVariableType { get; set; } = new Primitive();
     public LocalVariable ToEntity()
     {
-        return new LocalVariable(Id, Name, LocalVariableType);
+        return new LocalVariable(Name, LocalVariableType);
     }
 }

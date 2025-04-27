@@ -2,7 +2,7 @@
 
 public class Method
 {
-    private static int Indentacion = 0;
+    private static int _indentacion = 0;
     public Guid Id { get; set; }
     public string? Name { get; set; }
     public Accessibility Accessibility { get; set; }
@@ -14,6 +14,7 @@ public class Method
 
     public Method()
     {
+        Id = Guid.NewGuid();
         Name = string.Empty;
         Accessibility = Accessibility.Public;
         Methods = [];
@@ -27,6 +28,7 @@ public class Method
         List<Parameter> parameters,
         List<LocalVariable> localVariables, Type returnType)
     {
+        Id = Guid.NewGuid();
         Name = name;
         Accessibility = accessibility;
         Methods = methods;
@@ -38,7 +40,7 @@ public class Method
 
     public string ExecuteMethod(Class reference, Class objectToCreate, Method methodReference)
     {
-        Indentacion = 0;
+        _indentacion = 0;
         var result = new List<string>();
         var flag = false;
         if(objectToCreate.HierarchyClass != null)
@@ -56,22 +58,24 @@ public class Method
                 {
                     if(paramClass.Methods.Any(m => m.Name == calledMethod.Name))
                     {
-                        var indentation = new string('\t', Indentacion);
-                        result.Add($"{indentation}{param.Name}.{calledMethod.Name}() -> {paramClass.Name}.{calledMethod.Name}()");
+                        var indentation = new string('\t', _indentacion);
+                        result.Add(
+                            $"{indentation}{param.Name}.{calledMethod.Name}() -> {paramClass.Name}.{calledMethod.Name}()");
                     }
                 }
             }
 
             if(reference is Class referenceClass)
             {
-                var indentation = new string('\t', Indentacion);
+                var indentation = new string('\t', _indentacion);
                 foreach(var attr in referenceClass.Attributes)
                 {
                     if(attr.Type is Class attrClass)
                     {
                         if(attrClass.Methods.Any(m => m.Name == calledMethod.Name))
                         {
-                            result.Add($"{indentation}{attr.Name}.{calledMethod.Name}() -> {attrClass.Name}.{calledMethod.Name}()");
+                            result.Add(
+                                $"{indentation}{attr.Name}.{calledMethod.Name}() -> {attrClass.Name}.{calledMethod.Name}()");
                             break;
                         }
 
@@ -93,7 +97,8 @@ public class Method
 
                 if(referenceClass.Methods.Any(m => m.Name == calledMethod.Name))
                 {
-                    result.Add($"{indentation}this.{calledMethod.Name}() -> {referenceClass.Name}.{calledMethod.Name}()");
+                    result.Add(
+                        $"{indentation}this.{calledMethod.Name}() -> {referenceClass.Name}.{calledMethod.Name}()");
                 }
             }
         }
@@ -110,27 +115,28 @@ public class Method
                 if(classType != null && c)
                 {
                     var classInherited = classType.HierarchyClass;
-                        var cant = classInherited.Methods.Count;
-                        while (aux != null && i < cant)
+                    var cant = classInherited.Methods.Count;
+                    while(aux != null && i < cant)
+                    {
+                        if(classInherited != null && classInherited.Methods[i].Stereotype != KeyWord.Sealed)
                         {
-                            if(classInherited != null && classInherited.Methods[i].Stereotype != KeyWord.Sealed)
-                            {
-                                var indentation = new string('\t', Indentacion);
-                                result.Add($"{indentation}{localVar.Name}.{classInherited.Methods[i].Name}() -> {aux.Name}.{classInherited.Methods[i].Name}()");
-                            }
-
-                            aux = aux.HierarchyClass;
-                            i++;
+                            var indentation = new string('\t', _indentacion);
+                            result.Add(
+                                $"{indentation}{localVar.Name}.{classInherited.Methods[i].Name}() -> {aux.Name}.{classInherited.Methods[i].Name}()");
                         }
 
-                        while(classInherited != null)
-                        {
-                            Sobreescrito(classType, result, classInherited);
-                            classType = classInherited;
-                            classInherited = classInherited.HierarchyClass;
-                        }
+                        aux = aux.HierarchyClass;
+                        i++;
+                    }
 
-                        MethodTThis(classType, result);
+                    while(classInherited != null)
+                    {
+                        Sobreescrito(classType, result, classInherited);
+                        classType = classInherited;
+                        classInherited = classInherited.HierarchyClass;
+                    }
+
+                    MethodTThis(classType, result);
                 }
             }
         }
@@ -140,7 +146,7 @@ public class Method
 
     private static void MethodTThis(Class classType, List<string> result)
     {
-        var indentation = new string('\t', Indentacion + 1);
+        var indentation = new string('\t', _indentacion + 1);
         if(classType.Stereotype == null)
         {
             foreach(var m in classType.Methods)
@@ -148,25 +154,28 @@ public class Method
                 if(!(m.Methods.Count > 0))
                 {
                     result.Add($"{indentation}this.{m.Name}() -> {classType.Name}.{m.Name}()");
-                    Indentacion++;
+                    _indentacion++;
                 }
             }
         }
     }
 
-    private static void FirstLine(Class reference, Class objectToCreate, Method methodReference, bool flag, List<string> result)
+    private static void FirstLine(Class reference, Class objectToCreate, Method methodReference, bool flag,
+        List<string> result)
     {
-        var indentation = new string('\t', Indentacion);
+        var indentation = new string('\t', _indentacion);
         if(!flag)
         {
-            result.Add($"{indentation}{reference.Name}.{methodReference.Name}() -> {objectToCreate.Name}.{methodReference.Name}()");
+            result.Add(
+                $"{indentation}{reference.Name}.{methodReference.Name}() -> {objectToCreate.Name}.{methodReference.Name}()");
         }
         else
         {
-            result.Add($"{indentation}{reference.Name}.{methodReference.Name}() -> {reference.Name}.{methodReference.Name}()");
+            result.Add(
+                $"{indentation}{reference.Name}.{methodReference.Name}() -> {reference.Name}.{methodReference.Name}()");
         }
 
-        Indentacion++;
+        _indentacion++;
     }
 
     private void Sobreescrito(Class classType, List<string> result, Class parent)
@@ -174,11 +183,11 @@ public class Method
         foreach(var methodInParent in classType.Methods)
         {
             var cant = ContarOcurrenciasMetodoEnJerarquia(methodInParent);
-            var indentation = new string('\t', Indentacion + 1);
+            var indentation = new string('\t', _indentacion + 1);
             if(cant > 1)
             {
                 result.Add($"{indentation}base.{methodInParent.Name}() -> {parent.Name}.{methodInParent.Name}()");
-                Indentacion++;
+                _indentacion++;
             }
         }
     }

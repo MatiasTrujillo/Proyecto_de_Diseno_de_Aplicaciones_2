@@ -10,6 +10,6 @@ public class ParameterDTO
     public Type ParameterType { get; set; } = new Primitive();
     public Parameter ToEntity()
     {
-        return new Parameter(Id, Name, ParameterType);
+        return new Parameter(Name, ParameterType);
     }
 }

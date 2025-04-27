@@ -46,8 +46,8 @@ public class MethodRepositoryTest
              null, null, null, _class);
         _thirdMethod = new Method(_thirdMethodName, Accessibility.Protected, KeyWord.Sealed, null, null, null,
             _class);
-        _parameter = new Parameter(Guid.NewGuid(), "Parameter", _class);
-        _localVariable = new LocalVariable(Guid.NewGuid(), "LocalVariable", null);
+        _parameter = new Parameter("Parameter", _class);
+        _localVariable = new LocalVariable("LocalVariable", null);
         _oneMethod = new Method(_oneMethodName, _accessibilityPublic, null, [_secondMethod],
             [_parameter], [_localVariable], null);
     }

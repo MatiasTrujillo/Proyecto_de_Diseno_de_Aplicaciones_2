@@ -14,7 +14,6 @@ public class AttributeRepository(SqlContext context) : IAttributeRepository
     public void Update(Attribute entity)
     {
         Attribute existingAttribute = Find(entity.Id);
-
         context.Entry(existingAttribute).CurrentValues.SetValues(entity);
         context.SaveChanges();
     }

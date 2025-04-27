@@ -13,9 +13,9 @@ public class Parameter
         ParameterType = new Primitive();
     }
 
-    public Parameter(Guid id, string name, Type parameterType)
+    public Parameter(string name, Type parameterType)
     {
-        Id = id;
+        Id = Guid.NewGuid();
         Name = name;
         ParameterType = parameterType;
     }

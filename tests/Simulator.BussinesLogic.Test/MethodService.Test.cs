@@ -1,5 +1,3 @@
-using System.Net.Mail;
-using Microsoft.Extensions.Logging;
 using Moq;
 using Simulator.Domain;
 using Simulator.DTO;
@@ -14,19 +12,22 @@ public class MethodServiceTest
     private Mock<IMethodRepository> _mockMethodRepository = null!;
     private Mock<IClassRepository> _mockClassRepository = null!;
     private MethodService _methodService = null!;
-    private MethodDTO methodDto = new MethodDTO();
-    private MethodDTO otherMethodDto = new MethodDTO();
+    private MethodDTO _methodDto = new MethodDTO();
+    private MethodDTO _otherMethodDto = new MethodDTO();
 
     private readonly Method _method = new Method();
 
     [TestInitialize]
     public void Initialize()
     {
-        methodDto = new MethodDTO()
+        _methodDto = new MethodDTO()
         {
-            Id = Guid.NewGuid(), Name = "First Method Dto", Accessibility = Accessibility.Private, Stereotype = null
+            Id = Guid.NewGuid(),
+            Name = "First Method Dto",
+            Accessibility = Accessibility.Private,
+            Stereotype = null
         };
-        otherMethodDto = new MethodDTO()
+        _otherMethodDto = new MethodDTO()
         {
             Id = Guid.NewGuid(),
             Name = "Second Method Dto",
@@ -46,12 +47,12 @@ public class MethodServiceTest
     [TestMethod]
     public void CreateMethod_ShouldCallRepositoryAdd_WithValidMethod()
     {
-        _methodService.CreateMethod(methodDto);
+        _methodService.CreateMethod(_methodDto);
 
         _mockMethodRepository.Verify(repo => repo.Add(
             It.Is<Method>(m =>
-                m.Name.Equals(methodDto.Name) &&
-                m.Accessibility == methodDto.Accessibility &&
+                m.Name.Equals(_methodDto.Name) &&
+                m.Accessibility == _methodDto.Accessibility &&
                 m.Stereotype == null)), Times.Once);
     }
 
@@ -69,14 +70,17 @@ public class MethodServiceTest
     {
         var existingMethod = new Method
         {
-            Id = Guid.NewGuid(), Name = methodDto.Name, Accessibility = Accessibility.Private, Stereotype = null
+            Id = Guid.NewGuid(),
+            Name = _methodDto.Name,
+            Accessibility = Accessibility.Private,
+            Stereotype = null
         };
 
         _mockMethodRepository
             .Setup(repo => repo.FindAll())
             .Returns([existingMethod]);
 
-        var exception = Assert.ThrowsException<Exception>(() => _methodService.CreateMethod(methodDto));
+        var exception = Assert.ThrowsException<Exception>(() => _methodService.CreateMethod(_methodDto));
         Assert.AreEqual("Method with the same name  already exists.", exception.Message);
     }
 
@@ -367,7 +371,10 @@ public class MethodServiceTest
 
         var motorAuto = new Attribute
         {
-            Id = Guid.NewGuid(), Name = "motorAuto", Accessibility = Accessibility.Private, Type = motor
+            Id = Guid.NewGuid(),
+            Name = "motorAuto",
+            Accessibility = Accessibility.Private,
+            Type = motor
         };
 
         var auto = new Class()
@@ -447,16 +454,26 @@ public class MethodServiceTest
             Methods = [enviar]
         };
 
-        var otroAviso = new LocalVariable() { Id = Guid.NewGuid(), Name = "otroAviso", LocalVariableType = email };
+        var otroAviso = new LocalVariable()
+        {
+            Id = Guid.NewGuid(),
+            Name = "otroAviso",
+            LocalVariableType = email
+        };
 
         var notificar = new Method
         {
             Id = Guid.NewGuid(),
             Name = "Notificar",
             Accessibility = Accessibility.Public,
-            Parameters =
-            [
-                new Parameter { Id = Guid.NewGuid(), Name = "aviso", ParameterType = notificacion }
+            Parameters = [
+                new Parameter
+                {
+                    Id = Guid.NewGuid(),
+                    Name = "aviso",
+                    ParameterType = notificacion
+                }
+
             ],
             Methods = [enviar, confirmar],
             LocalVariables = [otroAviso],
@@ -472,8 +489,13 @@ public class MethodServiceTest
             Attributes = [],
             Methods = [notificar]
         };
+
         var result = _method.ExecuteMethod(notificador, notificador, notificar);
+        var result2 = _method.ExecuteMethod(notificacion, sms, enviar);
+        Console.WriteLine(result2);
+        Console.WriteLine("----------------------------------------------");
         Console.WriteLine(result);
+        Assert.AreEqual(result2, "Notificacion.Enviar() -> SMS.Enviar()");
         var res =
             "Notificador.Notificar() -> Notificador.Notificar()\n" +
             "\taviso.Enviar() -> Notificacion.Enviar()\n" +
@@ -483,7 +505,7 @@ public class MethodServiceTest
         Assert.AreEqual(res, result);
     }
 
-     [TestMethod]
+    [TestMethod]
     public void ExecuteMethodExample3_SholddReturnMethodExecuted()
     {
         var limpiar = new Method
@@ -565,7 +587,7 @@ public class MethodServiceTest
             Stereotype = null,
             HierarchyClass = null,
             Attributes = [],
-            Methods = [esValidoEntrada, inicializar,  limpiar]
+            Methods = [esValidoEntrada, inicializar, limpiar]
         };
 
         var entradaTexto = new Class
@@ -589,11 +611,11 @@ public class MethodServiceTest
         };
 
         var input = new LocalVariable
-            {
-                Id = Guid.NewGuid(),
-                Name = "input",
-                LocalVariableType = entradaTextoEspecial
-            };
+        {
+            Id = Guid.NewGuid(),
+            Name = "input",
+            LocalVariableType = entradaTextoEspecial
+        };
 
         var validar = new Method
         {
