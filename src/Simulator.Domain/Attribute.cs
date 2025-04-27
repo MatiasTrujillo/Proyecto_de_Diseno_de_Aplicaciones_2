@@ -5,20 +5,23 @@ public class Attribute
     public Guid Id { get; set; }
     public string Name { get; set; }
     public Accessibility Accessibility { get; set; }
+    public Type Type { get; set; }
 
     public Attribute()
     {
         Id = Guid.NewGuid();
         Name = string.Empty;
         Accessibility = Accessibility.Public;
+        Type = new Primitive(PrimitiveType.Int);
     }
 
-    public Attribute(Guid id, string name, Accessibility accessibility)
+    public Attribute(string name, Accessibility accessibility, Type type)
     {
-        ValidateAttributes(name);
-        Id = id;
+        Id = Guid.NewGuid();
         Name = name;
         Accessibility = accessibility;
+        Type = type;
+        ValidateAttributes(name);
     }
 
     private void ValidateAttributes(string name)

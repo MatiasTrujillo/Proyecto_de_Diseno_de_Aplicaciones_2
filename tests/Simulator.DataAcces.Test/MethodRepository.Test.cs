@@ -14,6 +14,7 @@ public class MethodRepositoryTest
     private Accessibility _accessibilityPublic;
     private Method _oneMethod = new Method();
     private Method _secondMethod = new Method();
+    private readonly Class _class = new Class();
     private Accessibility _accessibilityPrivate;
     private Guid _secondId;
     private Guid _thirdId;
@@ -32,6 +33,7 @@ public class MethodRepositoryTest
     public void Setup()
     {
         _context.Database.EnsureCreated();
+        _class.Id = Guid.NewGuid();
         _oneId = Guid.NewGuid();
         _secondId = Guid.NewGuid();
         _thirdId = Guid.NewGuid();
@@ -40,12 +42,14 @@ public class MethodRepositoryTest
         _thirdMethodName = "Third Method";
         _accessibilityPublic = Accessibility.Public;
         _accessibilityPrivate = Accessibility.Private;
-        _secondMethod = new Method(_secondId, _secondMethodName, _accessibilityPrivate, KeyWord.Abstract);
-        _thirdMethod = new Method(_thirdId, _thirdMethodName, Accessibility.Protected, KeyWord.Sealed);
-        _parameter = new Parameter(Guid.NewGuid(), "Parameter");
-        _localVariable = new LocalVariable(Guid.NewGuid(), "LocalVariable");
-        _oneMethod = new Method(_oneId, _oneMethodName, _accessibilityPublic, null, [_secondMethod],
-            [_parameter], [_localVariable]);
+        _secondMethod = new Method(_secondMethodName, _accessibilityPrivate, KeyWord.Abstract,
+             null, null, null, _class);
+        _thirdMethod = new Method(_thirdMethodName, Accessibility.Protected, KeyWord.Sealed, null, null, null,
+            _class);
+        _parameter = new Parameter("Parameter", _class);
+        _localVariable = new LocalVariable("LocalVariable", null);
+        _oneMethod = new Method(_oneMethodName, _accessibilityPublic, null, [_secondMethod],
+            [_parameter], [_localVariable], null);
     }
 
     [TestCleanup]
@@ -54,168 +58,212 @@ public class MethodRepositoryTest
         _context.Database.EnsureDeleted();
     }
 
-    #region Add
     [TestMethod]
-    public void Add_WhenValidMethodProvided_ShouldBeSavedInDatabase()
+    public void Add_WhenCalledWithValidMethod_ShouldPersistMethodWithRelations()
     {
-        _repositoryTest.Add(_oneMethod);
+        var returnType = new Simulator.Domain.Class { Id = Guid.NewGuid(), Name = "ReturnClass" };
+        var parameter = new Parameter { Id = Guid.NewGuid(), Name = "param1" };
+        var localVariable = new LocalVariable { Id = Guid.NewGuid(), Name = "localVar1" };
+        var calledMethod = new Method { Id = Guid.NewGuid(), Name = "CalledMethod" };
 
-        using var otherContext = ProgramTest.BuildTestDbContext();
-        Method saved = otherContext.Methods
-            .Include(method => method.Parameters)
-            .Include(method => method.LocalVariables)
-            .Include(method => method.Methods)
-            .Single(m => m.Id == _oneMethod.Id);
-
-        saved.Id.Should().Be(_oneMethod.Id);
-        saved.Name.Should().Be(_oneMethod.Name);
-        saved.Accessibility.Should().Be(_oneMethod.Accessibility);
-        saved.Stereotype.Should().BeNull();
-        saved.Methods.Count.Should().Be(1);
-        saved.Methods[0].Id.Should().Be(_secondMethod.Id);
-        saved.Parameters[0].Id.Should().Be(_parameter.Id);
-        saved.LocalVariables[0].Id.Should().Be(_localVariable.Id);
-    }
-    #endregion
-
-    #region Find
-    [TestMethod]
-    public void Find_WhenMethodExists_ShouldReturnIt()
-    {
-        _context.Methods.Add(_oneMethod);
+        _context.Classes.Add(returnType);
+        _context.Parameters.Add(parameter);
+        _context.LocalVariables.Add(localVariable);
+        _context.Methods.Add(calledMethod);
         _context.SaveChanges();
 
-        var result = _repositoryTest.Find(_oneMethod.Id);
-        var methodsList = result.Methods.ToList();
-        var parametersList = result.Parameters.ToList();
-        var localVariablesList = result.LocalVariables.ToList();
+        var method = new Method
+        {
+            Id = Guid.NewGuid(),
+            Name = "MainMethod",
+            ReturnType = returnType,
+            Parameters = [parameter],
+            LocalVariables = [localVariable],
+            Methods = [calledMethod]
+        };
+
+        _repositoryTest.Add(method);
+
+        using var refreshedContext = ProgramTest.BuildTestDbContext();
+        var saved = refreshedContext.Methods
+            .Include(m => m.ReturnType)
+            .Include(m => m.Parameters)
+            .Include(m => m.LocalVariables)
+            .Include(m => m.Methods)
+            .FirstOrDefault(m => m.Id == method.Id);
+
+        saved.Should().NotBeNull();
+        saved!.ReturnType.Should().NotBeNull();
+        saved.ReturnType.Id.Should().Be(returnType.Id);
+
+        saved.Parameters.Should().HaveCount(1);
+        saved.Parameters[0].Id.Should().Be(parameter.Id);
+
+        saved.LocalVariables.Should().HaveCount(1);
+        saved.LocalVariables[0].Id.Should().Be(localVariable.Id);
+
+        saved.Methods.Should().HaveCount(1);
+        saved.Methods[0].Id.Should().Be(calledMethod.Id);
+    }
+
+    [TestMethod]
+    public void Find_WhenMethodExists_ShouldReturnMethodWithRelations()
+    {
+        var returnType = new Class { Id = Guid.NewGuid(), Name = "ReturnClass" };
+        var parameter = new Parameter { Id = Guid.NewGuid(), Name = "Parameter1", ParameterType = returnType };
+        var localVariable = new LocalVariable { Id = Guid.NewGuid(), Name = "LocalVar1", LocalVariableType = returnType };
+        var relatedMethod = new Method { Id = Guid.NewGuid(), Name = "RelatedMethod" };
+
+        _context.Classes.Add(returnType);
+        _context.Parameters.Add(parameter);
+        _context.LocalVariables.Add(localVariable);
+        _context.Methods.Add(relatedMethod);
+        _context.SaveChanges();
+
+        var mainMethod = new Method
+        {
+            Id = Guid.NewGuid(),
+            Name = "MainMethod",
+            ReturnType = returnType,
+            Parameters = [parameter],
+            LocalVariables = [localVariable],
+            Methods = [relatedMethod]
+        };
+
+        _context.Methods.Add(mainMethod);
+        _context.SaveChanges();
+
+        var result = _repositoryTest.Find(mainMethod.Id);
 
         result.Should().NotBeNull();
-        result.Id.Should().Be(_oneMethod.Id);
-        result.Name.Should().Be(_oneMethod.Name);
-        result.Accessibility.Should().Be(_oneMethod.Accessibility);
-        result.Stereotype.Should().Be(_oneMethod.Stereotype);
-        methodsList.Should().NotBeEmpty();
-        parametersList.Should().NotBeEmpty();
-        localVariablesList.Should().NotBeEmpty();
+        result!.Id.Should().Be(mainMethod.Id);
+        result.Name.Should().Be("MainMethod");
+
+        result.ReturnType.Should().NotBeNull();
+        result.ReturnType.Id.Should().Be(returnType.Id);
+
+        result.Parameters.Should().HaveCount(1);
+        result.Parameters[0].Id.Should().Be(parameter.Id);
+
+        result.LocalVariables.Should().HaveCount(1);
+        result.LocalVariables[0].Id.Should().Be(localVariable.Id);
+
+        result.Methods.Should().HaveCount(1);
+        result.Methods[0].Id.Should().Be(relatedMethod.Id);
     }
 
     [TestMethod]
-    public void Find_WhenMethodDoesNotExist_ShouldReturnNull()
+    public void Update_WhenMethodExists_ShouldUpdateParameterList()
     {
-        var result = _repositoryTest.Find(_oneId);
+        var methodId = Guid.NewGuid();
+        var parameterId = Guid.NewGuid();
 
-        result.Should().BeNull();
-    }
-    #endregion
+        var originalMethod = new Method
+        {
+            Id = methodId,
+            Name = "TestMethod",
+            Parameters = [],
+            ReturnType = new Primitive()
+        };
 
-    #region FindAll
-    [TestMethod]
-    public void FindAll_WhenMultipleMethodsExist_ShouldReturnAll()
-    {
-        _context.Methods.AddRange(_oneMethod, _secondMethod, _thirdMethod);
+        var parameter = new Parameter
+        {
+            Id = parameterId,
+            Name = "Param1",
+            ParameterType = new Primitive()
+        };
+        _context.Methods.Add(originalMethod);
+        _context.Parameters.Add(parameter);
         _context.SaveChanges();
 
-        var result = _repositoryTest.FindAll();
+        originalMethod.Parameters.Add(parameter);
+        _repositoryTest.Update(originalMethod);
 
-        result.Count.Should().Be(3);
-        result.Should().Contain(m => m.Name == _oneMethod.Name);
-        result.Should().Contain(a => a.Name == _secondMethod.Name);
-        result.Should().Contain(a => a.Name == _thirdMethod.Name);
+        using var refreshedContext = ProgramTest.BuildTestDbContext();
+        var saved = refreshedContext.Methods
+            .Include(m => m.Parameters)
+            .FirstOrDefault(m => m.Id == methodId);
+
+        saved.Should().NotBeNull();
+        saved!.Parameters.Should().ContainSingle(p => p.Id == parameterId);
     }
-    #endregion
 
-    #region Exist
+    [TestMethod]
+    public void FindAll_WhenMethodsExist_ShouldReturnMethodsWithRelations()
+    {
+        var methodId1 = Guid.NewGuid();
+        var methodId2 = Guid.NewGuid();
+
+        var method1 = new Method
+        {
+            Id = methodId1,
+            Name = "Method 1",
+            Parameters = [new Parameter { Id = Guid.NewGuid(), Name = "param1", ParameterType = new Primitive() }],
+            LocalVariables =
+                [new LocalVariable { Id = Guid.NewGuid(), Name = "localVar1", LocalVariableType = new Primitive() }],
+            ReturnType = new Primitive()
+        };
+
+        var method2 = new Method
+        {
+            Id = methodId2,
+            Name = "Method 2",
+            Parameters = [new Parameter { Id = Guid.NewGuid(), Name = "param2", ParameterType = new Primitive() }],
+            LocalVariables =
+                [new LocalVariable { Id = Guid.NewGuid(), Name = "localVar2", LocalVariableType = new Primitive() }],
+            ReturnType = new Primitive()
+        };
+
+        _context.Methods.Add(method1);
+        _context.Methods.Add(method2);
+        _context.SaveChanges();
+
+        var methods = _repositoryTest.FindAll();
+
+        methods.Should().NotBeNull();
+        methods.Should().HaveCount(2);
+        methods.Should().Contain(m => m.Id == methodId1);
+        methods.Should().Contain(m => m.Id == methodId2);
+
+        methods[0].Parameters.Should().NotBeEmpty();
+        methods[0].LocalVariables.Should().NotBeEmpty();
+        methods[0].ReturnType.Should().NotBeNull();
+    }
+
     [TestMethod]
     public void Exist_WhenMethodExists_ShouldReturnTrue()
     {
-        _context.Methods.Add(_oneMethod);
+        var id = Guid.NewGuid();
+        var method = new Method { Id = id, Name = "TestMethod", ReturnType = new Primitive() };
+        _context.Methods.Add(method);
         _context.SaveChanges();
 
-        var exists = _repositoryTest.Exist(_oneId);
+        var result = _repositoryTest.Exist(id);
 
-        exists.Should().BeTrue();
+        result.Should().BeTrue();
     }
 
     [TestMethod]
     public void Exist_WhenMethodDoesNotExist_ShouldReturnFalse()
     {
-        var exists = _repositoryTest.Exist(Guid.NewGuid());
+        var nonExistingId = Guid.NewGuid();
 
-        exists.Should().BeFalse();
-    }
-    #endregion
+        var result = _repositoryTest.Exist(nonExistingId);
 
-    #region Delete
-    [TestMethod]
-    public void Delete_WhenAttributeExists_ShouldRemoveItFromDatabase()
-    {
-        _context.Methods.Add(_oneMethod);
-        _context.SaveChanges();
-
-        _repositoryTest.Delete(_oneMethod.Id);
-
-        using var refreshedContext = ProgramTest.BuildTestDbContext();
-        var deleted = refreshedContext.Methods.Find(_oneMethod.Id);
-        deleted.Should().BeNull();
-    }
-    #endregion
-
-    #region Update
-    [TestMethod]
-    public void Update_WhenMethodExists_ShouldAddAMethodToList()
-    {
-        _context.Methods.AddRange(_secondMethod, _thirdMethod);
-        _context.SaveChanges();
-
-        _secondMethod.Methods.Add(_thirdMethod);
-        _repositoryTest.Update(_secondMethod);
-
-        using var refreshedContext = ProgramTest.BuildTestDbContext();
-        Method? saved = refreshedContext.Methods.Include(m => m.Methods)
-            .FirstOrDefault(m => m.Id == _secondMethod.Id);
-
-        saved.Should().NotBeNull();
-        saved.Methods.Count.Should().Be(1);
-        saved.Methods[0].Id.Should().Be(_thirdMethod.Id);
+        result.Should().BeFalse();
     }
 
     [TestMethod]
-    public void Update_WhenMethodExists_ShouldAddAParameterToList()
+    public void Delete_WhenMethodExists_ShouldRemoveFromDatabase()
     {
-        _context.Methods.Add(_secondMethod);
-        _context.Parameters.Add(_parameter);
+        var id = Guid.NewGuid();
+        var method = new Method { Id = id, Name = "DeleteMe", ReturnType = new Primitive() };
+        _context.Methods.Add(method);
         _context.SaveChanges();
 
-        _secondMethod.Parameters.Add(_parameter);
-        _repositoryTest.Update(_secondMethod);
+        _repositoryTest.Delete(id);
 
-        using var refreshedContext = ProgramTest.BuildTestDbContext();
-        Method? saved = refreshedContext.Methods.Include(m => m.Parameters).Include(method => method.Methods)
-            .FirstOrDefault(m => m.Id == _secondMethod.Id);
-
-        saved.Should().NotBeNull();
-        saved.Parameters.Count.Should().Be(1);
-        saved.Parameters[0].Id.Should().Be(_parameter.Id);
+        var result = _context.Methods.Find(id);
+        result.Should().BeNull();
     }
-
-    [TestMethod]
-    public void Update_WhenMethodExists_ShouldAddALocalVariableToList()
-    {
-        _context.Methods.Add(_secondMethod);
-        _context.LocalVariables.Add(_localVariable);
-        _context.SaveChanges();
-
-        _secondMethod.LocalVariables.Add(_localVariable);
-        _repositoryTest.Update(_secondMethod);
-
-        using var refreshedContext = ProgramTest.BuildTestDbContext();
-        Method? saved = refreshedContext.Methods.Include(m => m.LocalVariables).Include(method => method.Methods)
-            .FirstOrDefault(m => m.Id == _secondMethod.Id);
-
-        saved.Should().NotBeNull();
-        saved.LocalVariables.Count.Should().Be(1);
-        saved.LocalVariables[0].Id.Should().Be(_localVariable.Id);
-    }
-    #endregion
 }

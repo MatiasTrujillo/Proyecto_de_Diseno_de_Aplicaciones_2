@@ -63,7 +63,6 @@ public class AttributeControllerTest
         var controller = new AttributeController(mockAttributeService.Object);
         var attributeDto = new AttributeDto
         {
-            Id = Guid.NewGuid(),
             Name = "TestAttribute",
             Accessibility = Accessibility.Public
         };

@@ -33,7 +33,6 @@ public class AttributeServiceTest
     {
         var dto = new AttributeDto
         {
-            Id = Guid.NewGuid(),
             Name = "Strength",
             Accessibility = Accessibility.Private
         };
@@ -42,7 +41,6 @@ public class AttributeServiceTest
 
         _mockAttributeRepository.Verify(repo => repo.Add(
             It.Is<Attribute>(a =>
-                a.Id == dto.Id &&
                 a.Name == dto.Name &&
                 a.Accessibility == dto.Accessibility)), Times.Once);
     }
@@ -53,7 +51,6 @@ public class AttributeServiceTest
         var classId = Guid.NewGuid();
         var attributeDTO = new AttributeDto
         {
-            Id = Guid.NewGuid(),
             Name = "Agility",
             Accessibility = Accessibility.Public
         };
@@ -84,7 +81,7 @@ public class AttributeServiceTest
     public void AsociateAtributeToClass_ShouldThrowException_WhenAttributeNameAlreadyExistsInClass()
     {
         var classId = Guid.NewGuid();
-        var existingAttribute = new Attribute(Guid.NewGuid(), "Intelligence", Accessibility.Private);
+        var existingAttribute = new Attribute("Intelligence", Accessibility.Private, null);
 
         var classEntity = new Class
         {
@@ -95,7 +92,6 @@ public class AttributeServiceTest
 
         var dto = new AttributeDto
         {
-            Id = Guid.NewGuid(),
             Name = "Intelligence",
             Accessibility = Accessibility.Public
         };
@@ -115,7 +111,6 @@ public class AttributeServiceTest
     {
         var dto = new AttributeDto
         {
-            Id = Guid.NewGuid(),
             Name = "Agility",
             Accessibility = Accessibility.Protected
         };
@@ -137,7 +132,6 @@ public class AttributeServiceTest
     {
         var dto = new AttributeDto
         {
-            Id = Guid.NewGuid(),
             Name = string.Empty,
             Accessibility = Accessibility.Public
         };
@@ -167,7 +161,6 @@ public class AttributeServiceTest
         var longName = new string('A', 51);
         var dto = new AttributeDto
         {
-            Id = Guid.NewGuid(),
             Name = longName,
             Accessibility = Accessibility.Public
         };
@@ -195,10 +188,9 @@ public class AttributeServiceTest
     public void UpdateAttribute_ShouldUpdateAttribute_WhenValid()
     {
         var id = Guid.NewGuid();
-        var original = new Attribute(id, "OldName", Accessibility.Private);
+        var original = new Attribute("OldName", Accessibility.Private, null);
         var dto = new AttributeDto
         {
-            Id = id,
             Name = "NewName",
             Accessibility = Accessibility.Public
         };
@@ -224,10 +216,9 @@ public class AttributeServiceTest
     public void UpdateAttribute_ShouldThrowAttributeException_WhenAttributeIsInClass()
     {
         var id = Guid.NewGuid();
-        var attribute = new Attribute(id, "SomeName", Accessibility.Private);
+        var attribute = new Attribute("SomeName", Accessibility.Private, null);
         var dto = new AttributeDto
         {
-            Id = id,
             Name = "UpdatedName",
             Accessibility = Accessibility.Public
         };
@@ -261,7 +252,6 @@ public class AttributeServiceTest
         var id = Guid.NewGuid();
         var dto = new AttributeDto
         {
-            Id = id,
             Name = "NewName",
             Accessibility = Accessibility.Private
         };
