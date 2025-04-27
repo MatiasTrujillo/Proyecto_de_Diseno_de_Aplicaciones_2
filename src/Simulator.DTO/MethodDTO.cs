@@ -1,5 +1,4 @@
 using Simulator.Domain;
-using Type = Simulator.Domain.Type;
 
 namespace Simulator.DTO;
 
@@ -15,10 +14,10 @@ public class MethodDTO
 
     public Method ToEntity()
     {
-        Type returnType = ReturnType.ToEntity();
-        List<LocalVariable> localVariable = LocalVariable.Select(lv => lv.ToEntity()).ToList();
-        List<Parameter> parameters = Parameters.Select(p => p.ToEntity()).ToList();
-        List<Method> methods = Methods.Select(m => m.ToEntity()).ToList();
+        var returnType = ReturnType.ToEntity();
+        var localVariable = LocalVariable.Select(lv => lv.ToEntity()).ToList();
+        var parameters = Parameters.Select(p => p.ToEntity()).ToList();
+        var methods = Methods.Select(m => m.ToEntity()).ToList();
         return new Method(Name, Accessibility, Stereotype, methods, parameters, localVariable, returnType);
     }
 }

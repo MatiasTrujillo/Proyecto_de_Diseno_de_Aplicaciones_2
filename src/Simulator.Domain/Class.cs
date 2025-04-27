@@ -15,14 +15,14 @@ public class Class : Type
     {
         Stereotype = null;
         HierarchyClass = null;
-        Attributes = new List<Attribute>();
-        Methods = new List<Method>();
+        Attributes = [];
+        Methods = [];
     }
 
     public Class(KeyWord? stereotype, Type? hierarchyClass, List<Attribute> attributes, List<Method> methods, string name)
-        : base(name) // Se pasa el nombre al constructor base para validar
+        : base(name)
     {
-        ValidatName(name);
+        ValidateName(name);
         Name = name;
         Stereotype = stereotype;
         HierarchyClass = hierarchyClass;
@@ -30,19 +30,19 @@ public class Class : Type
         Methods = methods;
     }
 
-    private void ValidatName(string name)
+    private void ValidateName(string name)
     {
-        if (name == string.Empty)
+        if(name == string.Empty)
         {
             throw new ClassException("The class name cannot be empty.");
         }
 
-        if (!char.IsUpper(name[0]))
+        if(!char.IsUpper(name[0]))
         {
             throw new ClassException("The class name must start with an uppercase letter.");
         }
 
-        if (name.Contains(' '))
+        if(name.Contains(' '))
         {
             throw new ClassException("The class name must not contain spaces.");
         }

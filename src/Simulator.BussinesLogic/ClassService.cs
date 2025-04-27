@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using Simulator.BussinesLogic.Exception;
 using Simulator.Domain;
@@ -7,8 +6,6 @@ using Simulator.Domain.Exception;
 using Simulator.DTO;
 using Simulator.IBussinesLogic;
 using Simulator.IDataAcces;
-using Attribute = Simulator.Domain.Attribute;
-
 namespace Simulator.BussinesLogic;
 
 public class ClassService(IClassRepository classRepository, IAttributeRepository attributeRepository, IMethodRepository methodRepository) : IClassService
@@ -106,16 +103,5 @@ public class ClassService(IClassRepository classRepository, IAttributeRepository
         {
             throw new ClassException("There is no class with this id");
         }
-    }
-
-    private List<Attribute> ConvertAttributesToEntity(List<AttributeDto> attributeDtos)
-    {
-        var attributes = new List<Attribute>();
-        foreach(var attDto in attributeDtos)
-        {
-            attributes.Add(attDto.ToEntity());
-        }
-
-        return attributes;
     }
 }

@@ -153,7 +153,7 @@ public class ClassServiceTest
     public void UpdateClass_ShouldUpdateClass_WhenValid()
     {
         var id = Guid.NewGuid();
-        var original = new Class(KeyWord.Sealed, null, [], [],"OldName") { Id = id};
+        var original = new Class(KeyWord.Sealed, null, [], [], "OldName") { Id = id };
         var dto = new ClassDTO
         {
             Name = "NewName",
@@ -186,8 +186,8 @@ public class ClassServiceTest
     {
         var id1 = Guid.NewGuid();
         var id2 = Guid.NewGuid();
-        var original1 = new Class(KeyWord.Sealed, null, [], [],"Class1");
-        var original2 = new Class(KeyWord.Sealed, null, [], [],"Class2");
+        var original1 = new Class(KeyWord.Sealed, null, [], [], "Class1");
+        var original2 = new Class(KeyWord.Sealed, null, [], [], "Class2");
         var dto = new ClassDTO
         {
             Name = "Class1",
@@ -253,10 +253,10 @@ public class ClassServiceTest
     public void UpdateClassStereotype_ShouldUpdate_WhenClassExistsAndStereotypeIsAbstract()
     {
         var classId = Guid.NewGuid();
-        var existingClass = new Class(KeyWord.Sealed, null, null, new List<Method>(), "TestClass") { Id = classId};
+        var existingClass = new Class(KeyWord.Sealed, null, null, [], "TestClass") { Id = classId };
 
         _mockClassRepository.Setup(repo => repo.Find(classId)).Returns(existingClass);
-        _mockClassRepository.Setup(repo => repo.FindAll()).Returns(new List<Class> { existingClass });
+        _mockClassRepository.Setup(repo => repo.FindAll()).Returns([existingClass]);
         _mockClassRepository.Setup(repo => repo.Update(It.IsAny<Class>()));
 
         _classService.UpdateClassStereotype(classId, "Abstract");
@@ -269,10 +269,10 @@ public class ClassServiceTest
     public void UpdateClassStereotype_ShouldUpdate_WhenClassExistsAndStereotypeIsSealed()
     {
         var classId = Guid.NewGuid();
-        var existingClass = new Class(KeyWord.Abstract, null, null, new List<Method>(), "TestClass") { Id = classId};
+        var existingClass = new Class(KeyWord.Abstract, null, null, [], "TestClass") { Id = classId };
 
         _mockClassRepository.Setup(repo => repo.Find(classId)).Returns(existingClass);
-        _mockClassRepository.Setup(repo => repo.FindAll()).Returns(new List<Class> { existingClass });
+        _mockClassRepository.Setup(repo => repo.FindAll()).Returns([existingClass]);
         _mockClassRepository.Setup(repo => repo.Update(It.IsAny<Class>()));
 
         _classService.UpdateClassStereotype(classId, "Sealed");
@@ -287,7 +287,7 @@ public class ClassServiceTest
         var classId = Guid.NewGuid();
 
         _mockClassRepository.Setup(repo => repo.Find(classId)).Returns<Class?>(null);
-        _mockClassRepository.Setup(repo => repo.FindAll()).Returns(new List<Class>());
+        _mockClassRepository.Setup(repo => repo.FindAll()).Returns([]);
 
         var exception = Assert.ThrowsException<ClassException>(() =>
         {
@@ -301,11 +301,11 @@ public class ClassServiceTest
     public void UpdateClassStereotype_ShouldThrowException_WhenStereotypeIsInvalid()
     {
         var classId = Guid.NewGuid();
-        var existingClass = new Class(KeyWord.Sealed, null, null, new List<Method>(), "TestClass") { Id = classId};
+        var existingClass = new Class(KeyWord.Sealed, null, null, [], "TestClass") { Id = classId };
 
         _mockClassRepository.Setup(repo => repo.Find(classId)).Returns(existingClass);
 
-        _mockClassRepository.Setup(repo => repo.FindAll()).Returns(new List<Class> { existingClass });
+        _mockClassRepository.Setup(repo => repo.FindAll()).Returns([existingClass]);
 
         var exception = Assert.ThrowsException<InvalidClassStereotypeException>(() =>
         {
@@ -319,12 +319,12 @@ public class ClassServiceTest
     public void DeleteClass_ShouldDeleteClass_WhenValid()
     {
         var id = Guid.NewGuid();
-        var original = new Class(KeyWord.Sealed, null, [], [],"Class2") { Id = id};
+        var original = new Class(KeyWord.Sealed, null, [], [], "Class2") { Id = id };
 
         _mockClassRepository.Setup(r => r.Find(id)).Returns(original);
         _mockClassRepository.Setup(r => r.FindAll()).Returns([original]);
         _mockAttributeRepository.Setup(r => r.FindAll()).Returns([]);
-        _mockMethodRepository.Setup(r => r.FindAll()).Returns(new List<Method>());
+        _mockMethodRepository.Setup(r => r.FindAll()).Returns([]);
         _mockClassRepository.Setup(r => r.Delete(It.IsAny<Guid>()));
 
         _classService.DeleteClass(id);
@@ -377,9 +377,9 @@ public class ClassServiceTest
 
         _mockClassRepository.Setup(repo => repo.Find(classId)).Returns(existingClass);
         _mockClassRepository.Setup(repo => repo.Find(hierarchyClassId)).Returns(hierarchyClass);
-        _mockClassRepository.Setup(repo => repo.FindAll()).Returns(new List<Class> { existingClass, hierarchyClass });
-        _mockAttributeRepository.Setup(repo => repo.FindAll()).Returns(new List<Attribute>());
-        _mockMethodRepository.Setup(repo => repo.FindAll()).Returns(new List<Method>());
+        _mockClassRepository.Setup(repo => repo.FindAll()).Returns([existingClass, hierarchyClass]);
+        _mockAttributeRepository.Setup(repo => repo.FindAll()).Returns([]);
+        _mockMethodRepository.Setup(repo => repo.FindAll()).Returns([]);
         _mockClassRepository.Setup(repo => repo.Update(It.IsAny<Class>()));
 
         _classService.UpdateClassInherits(classId, dto);
@@ -417,8 +417,8 @@ public class ClassServiceTest
         _mockClassRepository.Setup(repo => repo.Find(classId)).Returns(existingClass);
         _mockClassRepository.Setup(repo => repo.Find(hierarchyClassId)).Returns(hierarchyClass);
         _mockClassRepository.Setup(repo => repo.FindAll()).Returns(classes);
-        _mockAttributeRepository.Setup(repo => repo.FindAll()).Returns(new List<Attribute>());
-        _mockMethodRepository.Setup(repo => repo.FindAll()).Returns(new List<Method>());
+        _mockAttributeRepository.Setup(repo => repo.FindAll()).Returns([]);
+        _mockMethodRepository.Setup(repo => repo.FindAll()).Returns([]);
 
         var exception = Assert.ThrowsException<ClassException>(() =>
         {
@@ -433,7 +433,7 @@ public class ClassServiceTest
     {
         var classId = Guid.NewGuid();
 
-        var existingClass = new Class(KeyWord.Sealed, null, [], [],"ClassA" ) { Id = classId};
+        var existingClass = new Class(KeyWord.Sealed, null, [], [], "ClassA") { Id = classId };
 
         var dto = new ClassDTO
         {

@@ -299,18 +299,21 @@ public class MethodServiceTest
     {
         var methodId = Guid.NewGuid();
         var parameter = new ParameterDTO { Name = "TestParameter" };  // Nombre del parámetro es válido
-        var method = new Method { Id = methodId, Name = "TestMethod", LocalVariables = new List<LocalVariable>(), Parameters = new List<Parameter>() };
+        var method = new Method
+        {
+            Id = methodId,
+            Name = "TestMethod",
+            LocalVariables = [],
+            Parameters = []
+        };
 
         _mockMethodRepository.Setup(repo => repo.Find(methodId)).Returns(method);
         _mockMethodRepository.Setup(repo => repo.Update(It.IsAny<Method>()));
 
-        // Llamada al servicio para agregar el parámetro
         _methodService.AddParameterToMethod(methodId, parameter);
 
-        // Verificamos que el parámetro haya sido agregado correctamente
         Assert.IsTrue(method.Parameters.Any(p => p.Name == parameter.Name));
 
-        // Verificamos que el repositorio haya sido actualizado una vez
         _mockMethodRepository.Verify(repo => repo.Update(method), Times.Once);
     }
 

@@ -12,7 +12,7 @@ public class AttributeDto
 
     public Attribute ToEntity()
     {
-        if (Type == null)
+        if(Type == null)
         {
             throw new ArgumentNullException(nameof(Type), "The Type property cannot be null.");
         }

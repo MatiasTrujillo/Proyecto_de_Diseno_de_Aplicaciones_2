@@ -23,7 +23,7 @@ public class ExceptionFilterTest
             _httpContext,
             new Microsoft.AspNetCore.Routing.RouteData(),
             new Microsoft.AspNetCore.Mvc.Abstractions.ActionDescriptor());
-        _context = new ExceptionContext(_actionContext, new List<IFilterMetadata>());
+        _context = new ExceptionContext(_actionContext, []);
         _filter = new ExceptionFilter();
     }
 

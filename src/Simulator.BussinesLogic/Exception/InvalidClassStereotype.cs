@@ -1,9 +1,5 @@
 namespace Simulator.BussinesLogic.Exception;
 
-public class InvalidClassStereotypeException : System.Exception
+public class InvalidClassStereotypeException(string message) : System.Exception(message)
 {
-    public InvalidClassStereotypeException(string message)
-        : base(message)
-    {
-    }
 }

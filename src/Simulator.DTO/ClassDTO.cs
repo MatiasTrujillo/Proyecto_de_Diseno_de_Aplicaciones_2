@@ -7,8 +7,8 @@ public class ClassDTO
     public string Name { get; set; } = string.Empty;
     public KeyWord? Stereotype { get; set; } = null;
     public TypeDTO? HierarchyClass { get; set; } = null;
-    public List<AttributeDto> Attributes { get; set; } = new List<AttributeDto>();
-    public List<MethodDTO> Methods { get; set; } = new List<MethodDTO>();
+    public List<AttributeDto> Attributes { get; set; } = [];
+    public List<MethodDTO> Methods { get; set; } = [];
 
     public Class ToEntity()
     {
