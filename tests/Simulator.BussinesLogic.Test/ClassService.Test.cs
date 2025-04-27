@@ -110,7 +110,7 @@ public class ClassServiceTest
         var dto = new ClassDTO
         {
             Id = Guid.NewGuid(),
-            Name = string.Empty,
+            Name = "class",
             Stereotype = KeyWord.Sealed,
             HirarchyClass = null,
             Attributes = []
