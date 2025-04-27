@@ -17,11 +17,25 @@ public class ClassController(IClassService classService) : ControllerBase
         return Created(string.Empty, new { message = "Class created successfully" });
     }
 
-    [HttpPatch("{id}")]
-    public IActionResult UpdateClass([FromRoute] Guid id, [FromBody] ClassDTO classDto)
+    [HttpPatch("names/{id}")]
+    public IActionResult UpdateClassName([FromRoute] Guid id, [FromQuery] string name)
     {
-        _classService.UpdateClass(id, classDto);
+        _classService.UpdateNameClass(id, name);
         return Ok(new { message = "Class updated successfully" });
+    }
+
+    [HttpPatch("stereotypes/{id}")]
+    public IActionResult UpdateClassStereotype([FromRoute] Guid id, [FromQuery] string stereotype)
+    {
+        _classService.UpdateClassStereotype(id, stereotype);
+        return Ok(new { message = "Class stereotype updated successfully" });
+    }
+
+    [HttpPatch("inherits/{id}")]
+    public IActionResult UpdateClassInherits([FromRoute] Guid id, [FromBody] ClassDTO classDto)
+    {
+        _classService.UpdateClassInherits(id, classDto);
+        return Ok(new { message = "Class inheritance updated successfully" });
     }
 
     [HttpDelete("{id}")]

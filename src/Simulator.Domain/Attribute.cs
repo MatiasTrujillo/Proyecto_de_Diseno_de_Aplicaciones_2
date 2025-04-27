@@ -17,11 +17,11 @@ public class Attribute
 
     public Attribute(string name, Accessibility accessibility, Type type)
     {
+        ValidateAttributes(name);
         Id = Guid.NewGuid();
         Name = name;
         Accessibility = accessibility;
         Type = type;
-        ValidateAttributes(name);
     }
 
     private void ValidateAttributes(string name)

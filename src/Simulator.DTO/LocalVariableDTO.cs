@@ -5,11 +5,11 @@ namespace Simulator.DTO;
 
 public class LocalVariableDTO
 {
-    public Guid Id { get; set; } = Guid.NewGuid();
     public string Name { get; set; } = string.Empty;
-    public Type LocalVariableType { get; set; } = new Primitive();
+    public TypeDTO LocalVariableType { get; set; } = new TypeDTO();
     public LocalVariable ToEntity()
     {
-        return new LocalVariable(Name, LocalVariableType);
+        Type localVariableType = LocalVariableType.ToEntity();
+        return new LocalVariable(Name, localVariableType);
     }
 }

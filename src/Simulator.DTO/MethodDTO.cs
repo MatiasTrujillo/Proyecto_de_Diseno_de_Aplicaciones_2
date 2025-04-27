@@ -1,21 +1,23 @@
 using Simulator.Domain;
-using Type = Simulator.Domain.Type;
 
 namespace Simulator.DTO;
 
 public class MethodDTO
 {
-    public Guid Id { get; set; }
     public string Name { get; set; } = string.Empty;
     public Accessibility Accessibility { get; set; }
     public KeyWord? Stereotype { get; set; }
-    private List<LocalVariable> LocalVariable { get; set; } = [];
-    private List<Parameter> Parameters { get; set; } = [];
-    private List<Method> Methods { get; set; } = [];
-    public Type ReturnType { get; set; } = new Primitive();
+    private List<LocalVariableDTO> LocalVariable { get; set; } = [];
+    private List<ParameterDTO> Parameters { get; set; } = [];
+    private List<MethodDTO> Methods { get; set; } = [];
+    public TypeDTO ReturnType { get; set; } = new TypeDTO();
 
     public Method ToEntity()
     {
-        return new Method(Name, Accessibility, Stereotype, Methods, Parameters, LocalVariable, ReturnType);
+        var returnType = ReturnType.ToEntity();
+        var localVariable = LocalVariable.Select(lv => lv.ToEntity()).ToList();
+        var parameters = Parameters.Select(p => p.ToEntity()).ToList();
+        var methods = Methods.Select(m => m.ToEntity()).ToList();
+        return new Method(Name, Accessibility, Stereotype, methods, parameters, localVariable, returnType);
     }
 }

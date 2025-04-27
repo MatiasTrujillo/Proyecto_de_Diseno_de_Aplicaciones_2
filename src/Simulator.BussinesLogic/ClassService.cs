@@ -1,59 +1,95 @@
+using System;
+using System.Linq;
+using Simulator.BussinesLogic.Exception;
 using Simulator.Domain;
 using Simulator.Domain.Exception;
 using Simulator.DTO;
 using Simulator.IBussinesLogic;
 using Simulator.IDataAcces;
-using Attribute = Simulator.Domain.Attribute;
-
 namespace Simulator.BussinesLogic;
 
-public class ClassService(IClassRepository classRepository) : IClassService
+public class ClassService(IClassRepository classRepository, IAttributeRepository attributeRepository, IMethodRepository methodRepository) : IClassService
 {
     private readonly IClassRepository _classRepository = classRepository;
-
-    // private readonly IAttributeRepository _attributeRepository = attributeRepository;
-
-    // private readonly IMethodRepository _methodRepository = methodRepository;
+    private readonly IAttributeRepository _attributeRepository = attributeRepository;
+    private readonly IMethodRepository _methodRepository = methodRepository;
 
     public void CreateClass(ClassDTO classDto)
     {
         var aClass = classDto.ToEntity();
-        ValidateClassNameIsUnique(aClass);
+        ValidateClassNameIsUnique(aClass.Name);
         _classRepository.Add(aClass);
     }
 
-    public void UpdateClass(Guid id, ClassDTO classDto)
+    public void UpdateNameClass(Guid id, string name)
     {
-        ValidateClassNameIsUnique(classDto.ToEntity());
+        ValidateClassNameIsUnique(name);
         ValidateClassIdExists(id);
         var classT = _classRepository.Find(id);
-        classT.Name = classDto.Name;
-        classT.Stereotype = classDto.Stereotype;
+        classT.Name = name;
+        _classRepository.Update(classT);
+    }
 
-        if(classT.HierarchyClass != null)
-        {
-            classT.HierarchyClass = classDto.HirarchyClass.ToEntity();
-        }
-        else
-        {
-            classT.HierarchyClass = null;
-        }
+    public void UpdateClassStereotype(Guid id, string stereotype)
+    {
+        ValidateClassIdExists(id);
+        var classT = _classRepository.Find(id);
+        ValidateStereotype(stereotype, classT);
+        _classRepository.Update(classT);
+    }
 
-        classT.Attributes = ConvertAttributesToEntity(classDto.Attributes);
+    public void UpdateClassInherits(Guid id, ClassDTO classDTO)
+    {
+        ValidateClassIdExists(id);
+        ValidateClassIsNotInUse(id);
+        var classT = _classRepository.Find(id);
+        var heritageClass = classDTO.ToEntity();
+        classT.HierarchyClass = heritageClass;
         _classRepository.Update(classT);
     }
 
     public void DeleteClass(Guid id)
     {
         ValidateClassIdExists(id);
+        ValidateClassIsNotInUse(id);
         _classRepository.Delete(id);
     }
 
-    private void ValidateClassNameIsUnique(Class aClass)
+    private static void ValidateStereotype(string stereotype, Class classT)
+    {
+        if(stereotype == "Abstract")
+        {
+            classT.Stereotype = KeyWord.Abstract;
+        }
+        else if(stereotype == "Sealed")
+        {
+            classT.Stereotype = KeyWord.Sealed;
+        }
+        else
+        {
+            throw new InvalidClassStereotypeException("The stereotype is not valid");
+        }
+    }
+
+    private void ValidateClassIsNotInUse(Guid id)
+    {
+        var classT = _classRepository.Find(id);
+        var classes = _classRepository.FindAll();
+        var attributeT = _attributeRepository.FindAll();
+        var methods = _methodRepository.FindAll();
+        if(classes.Any(c => c.HierarchyClass != null && c.HierarchyClass.Id == id) ||
+           attributeT.Any(a => a.Type == classT) ||
+           methods.Any(m => m.ReturnType == classT))
+        {
+            throw new ClassException("Class is associated with another class, attribute or method");
+        }
+    }
+
+    private void ValidateClassNameIsUnique(string name)
     {
         var classes = _classRepository.FindAll();
 
-        if(classes.Any(classT => classT.Name == aClass.Name && classT.Id != aClass.Id))
+        if(classes.Any(classT => classT.Name == name))
         {
             throw new ClassException("There is already a class with this name");
         }
@@ -67,16 +103,5 @@ public class ClassService(IClassRepository classRepository) : IClassService
         {
             throw new ClassException("There is no class with this id");
         }
-    }
-
-    private List<Attribute> ConvertAttributesToEntity(List<AttributeDto> attributeDtos)
-    {
-        var attributes = new List<Attribute>();
-        foreach(var attDto in attributeDtos)
-        {
-            attributes.Add(attDto.ToEntity());
-        }
-
-        return attributes;
     }
 }

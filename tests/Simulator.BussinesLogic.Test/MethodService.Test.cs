@@ -1,5 +1,6 @@
 using Moq;
 using Simulator.Domain;
+using Simulator.Domain.Exception;
 using Simulator.DTO;
 using Simulator.IDataAcces;
 using Attribute = Simulator.Domain.Attribute;
@@ -15,21 +16,17 @@ public class MethodServiceTest
     private MethodDTO _methodDto = new MethodDTO();
     private MethodDTO _otherMethodDto = new MethodDTO();
 
-    private readonly Method _method = new Method();
-
     [TestInitialize]
     public void Initialize()
     {
         _methodDto = new MethodDTO()
         {
-            Id = Guid.NewGuid(),
             Name = "First Method Dto",
             Accessibility = Accessibility.Private,
             Stereotype = null
         };
         _otherMethodDto = new MethodDTO()
         {
-            Id = Guid.NewGuid(),
             Name = "Second Method Dto",
             Accessibility = Accessibility.Public,
             Stereotype = KeyWord.Abstract
@@ -61,7 +58,7 @@ public class MethodServiceTest
     {
         MethodDTO nullMethodDto = null!;
 
-        var exception = Assert.ThrowsException<Exception>(() => _methodService.CreateMethod(nullMethodDto));
+        var exception = Assert.ThrowsException<MethodException>(() => _methodService.CreateMethod(nullMethodDto));
         Assert.AreEqual("Method cannot be null.", exception.Message);
     }
 
@@ -80,7 +77,7 @@ public class MethodServiceTest
             .Setup(repo => repo.FindAll())
             .Returns([existingMethod]);
 
-        var exception = Assert.ThrowsException<Exception>(() => _methodService.CreateMethod(_methodDto));
+        var exception = Assert.ThrowsException<MethodException>(() => _methodService.CreateMethod(_methodDto));
         Assert.AreEqual("Method with the same name  already exists.", exception.Message);
     }
 
@@ -89,7 +86,7 @@ public class MethodServiceTest
     {
         _mockMethodRepository.Setup(repo => repo.Find(It.IsAny<Guid>())).Returns((Method)null!);
 
-        var exception = Assert.ThrowsException<Exception>(() =>
+        var exception = Assert.ThrowsException<MethodException>(() =>
             _methodService.AssociateMethodWithClass(Guid.NewGuid(), Guid.NewGuid()));
         Assert.AreEqual("Method null.", exception.Message);
     }
@@ -100,7 +97,7 @@ public class MethodServiceTest
         _mockMethodRepository.Setup(repo => repo.Find(It.IsAny<Guid>())).Returns(new Method());
         _mockClassRepository.Setup(repo => repo.Find(It.IsAny<Guid>())).Returns((Class)null!);
 
-        var exception = Assert.ThrowsException<Exception>(() =>
+        var exception = Assert.ThrowsException<MethodException>(() =>
             _methodService.AssociateMethodWithClass(Guid.NewGuid(), Guid.NewGuid()));
         Assert.AreEqual("Class not found.", exception.Message);
     }
@@ -131,7 +128,7 @@ public class MethodServiceTest
         _mockMethodRepository.Setup(repo => repo.Find(method.Id)).Returns(method);
         _mockClassRepository.Setup(repo => repo.Find(classT.Id)).Returns(classT);
 
-        var exception = Assert.ThrowsException<Exception>(() =>
+        var exception = Assert.ThrowsException<MethodException>(() =>
             _methodService.AssociateMethodWithClass(method.Id, classT.Id));
         Assert.AreEqual("A method with the same name already exists in the class.", exception.Message);
     }
@@ -165,7 +162,7 @@ public class MethodServiceTest
         _mockMethodRepository.Setup(repo => repo.Find(methodId)).Returns(method);
         _mockMethodRepository.Setup(repo => repo.Find(methodToAddId)).Returns(methodToAdd);
 
-        var exception = Assert.ThrowsException<Exception>(() =>
+        var exception = Assert.ThrowsException<MethodException>(() =>
             _methodService.AddAMethod(methodId, methodToAddId));
         Assert.AreEqual("Method is already associated with this method.", exception.Message);
     }
@@ -180,7 +177,7 @@ public class MethodServiceTest
         _mockMethodRepository.Setup(repo => repo.Find(methodId)).Returns(method);
         _mockClassRepository.Setup(repo => repo.FindAll()).Returns([]);
 
-        var exception = Assert.ThrowsException<Exception>(() =>
+        var exception = Assert.ThrowsException<MethodException>(() =>
             _methodService.DeleteMethod(methodId));
         Assert.AreEqual("Method is associated with another method.", exception.Message);
     }
@@ -216,7 +213,7 @@ public class MethodServiceTest
 
         _mockMethodRepository.Setup(repo => repo.Find(methodId)).Returns(method);
 
-        var exception = Assert.ThrowsException<Exception>(() =>
+        var exception = Assert.ThrowsException<MethodException>(() =>
             _methodService.AddLocalVariableToMethod(methodId, localVariable));
         Assert.AreEqual("A variable or parameter with the same name already exists.", exception.Message);
     }
@@ -236,7 +233,7 @@ public class MethodServiceTest
 
         _mockMethodRepository.Setup(repo => repo.Find(methodId)).Returns(method);
 
-        var exception = Assert.ThrowsException<Exception>(() =>
+        var exception = Assert.ThrowsException<MethodException>(() =>
             _methodService.AddLocalVariableToMethod(methodId, localVariable));
         Assert.AreEqual("A variable or parameter with the same name already exists.", exception.Message);
     }
@@ -249,8 +246,11 @@ public class MethodServiceTest
 
         _mockMethodRepository.Setup(repo => repo.Find(methodId)).Returns((Method)null!);
 
-        var exception = Assert.ThrowsException<Exception>(() =>
+        // Comprobamos si se lanza la excepción esperada
+        var exception = Assert.ThrowsException<MethodException>(() =>
             _methodService.AddParameterToMethod(methodId, parameter));
+
+        // Verificamos que el mensaje de la excepción sea el correcto
         Assert.AreEqual("Method null.", exception.Message);
     }
 
@@ -269,7 +269,7 @@ public class MethodServiceTest
 
         _mockMethodRepository.Setup(repo => repo.Find(methodId)).Returns(method);
 
-        var exception = Assert.ThrowsException<Exception>(() =>
+        var exception = Assert.ThrowsException<MethodException>(() =>
             _methodService.AddParameterToMethod(methodId, parameter));
         Assert.AreEqual("A variable or parameter with the same name already exists.", exception.Message);
     }
@@ -289,7 +289,7 @@ public class MethodServiceTest
 
         _mockMethodRepository.Setup(repo => repo.Find(methodId)).Returns(method);
 
-        var exception = Assert.ThrowsException<Exception>(() =>
+        var exception = Assert.ThrowsException<MethodException>(() =>
             _methodService.AddParameterToMethod(methodId, parameter));
         Assert.AreEqual("A variable or parameter with the same name already exists.", exception.Message);
     }
@@ -298,8 +298,14 @@ public class MethodServiceTest
     public void AddParameterToMethod_ShouldAddParameter_WhenValidInputsProvided()
     {
         var methodId = Guid.NewGuid();
-        var parameter = new ParameterDTO { Name = "TestParameter" };
-        var method = new Method { Id = methodId, Name = "TestMethod", LocalVariables = [], Parameters = [] };
+        var parameter = new ParameterDTO { Name = "TestParameter" };  // Nombre del parámetro es válido
+        var method = new Method
+        {
+            Id = methodId,
+            Name = "TestMethod",
+            LocalVariables = [],
+            Parameters = []
+        };
 
         _mockMethodRepository.Setup(repo => repo.Find(methodId)).Returns(method);
         _mockMethodRepository.Setup(repo => repo.Update(It.IsAny<Method>()));
@@ -307,6 +313,7 @@ public class MethodServiceTest
         _methodService.AddParameterToMethod(methodId, parameter);
 
         Assert.IsTrue(method.Parameters.Any(p => p.Name == parameter.Name));
+
         _mockMethodRepository.Verify(repo => repo.Update(method), Times.Once);
     }
 
@@ -387,7 +394,7 @@ public class MethodServiceTest
             Methods = [iniciarViaje, detenerViaje]
         };
 
-        var result = _method.ExecuteMethod(auto, auto, iniciarViaje);
+        var result = _methodService.ExecuteMethod(auto, auto, iniciarViaje);
         Console.WriteLine(result);
         var result2 =
             "Auto.IniciarViaje() -> Auto.IniciarViaje()\n" +
@@ -490,8 +497,8 @@ public class MethodServiceTest
             Methods = [notificar]
         };
 
-        var result = _method.ExecuteMethod(notificador, notificador, notificar);
-        var result2 = _method.ExecuteMethod(notificacion, sms, enviar);
+        var result = _methodService.ExecuteMethod(notificador, notificador, notificar);
+        var result2 = _methodService.ExecuteMethod(notificacion, sms, enviar);
         Console.WriteLine(result2);
         Console.WriteLine("----------------------------------------------");
         Console.WriteLine(result);
@@ -639,7 +646,7 @@ public class MethodServiceTest
             Methods = [validar]
         };
 
-        var result = _method.ExecuteMethod(validador, validador, validar);
+        var result = _methodService.ExecuteMethod(validador, validador, validar);
 
         var res =
             "Validador.Validar() -> Validador.Validar()\n" +
@@ -648,6 +655,7 @@ public class MethodServiceTest
             "\t\t\tbase.EsValido() -> Entrada.EsValido()\n" +
             "\t\t\t\tthis.Inicializar() -> Entrada.Inicializar()\n" +
             "\t\t\t\tthis.Limpiar() -> Entrada.Limpiar()";
+        Console.WriteLine(result);
         Assert.AreEqual(res, result);
     }
 }
