@@ -22,6 +22,11 @@ public class Class : Type
 
     public Class(string name, KeyWord? stereotype, Class? hierarchyClass, List<Attribute> attributes, List<Method> method)
     {
+        if (name.Contains(' '))
+        {
+            throw new ClassException("The class name must not contain spaces.");
+        }
+
         ValidatName(name);
         Name = name;
         Stereotype = stereotype;
