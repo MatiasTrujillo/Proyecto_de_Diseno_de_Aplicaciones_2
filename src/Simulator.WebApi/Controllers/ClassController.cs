@@ -17,10 +17,10 @@ public class ClassController(IClassService classService) : ControllerBase
         return Created(string.Empty, new { message = "Class created successfully" });
     }
 
-    [HttpPatch("{id}")]
-    public IActionResult UpdateClass([FromRoute] Guid id, [FromBody] ClassDTO classDto)
+    [HttpPatch("names/{id}")]
+    public IActionResult UpdateClassName([FromRoute] Guid id, [FromQuery] string name)
     {
-        _classService.UpdateClass(id, classDto);
+        _classService.UpdateNameClass(id, name);
         return Ok(new { message = "Class updated successfully" });
     }
 

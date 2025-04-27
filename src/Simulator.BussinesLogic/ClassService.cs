@@ -1,3 +1,7 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using Simulator.BussinesLogic.Exception;
 using Simulator.Domain;
 using Simulator.Domain.Exception;
 using Simulator.DTO;
@@ -18,28 +22,41 @@ public class ClassService(IClassRepository classRepository) : IClassService
     public void CreateClass(ClassDTO classDto)
     {
         var aClass = classDto.ToEntity();
-        ValidateClassNameIsUnique(aClass);
+        ValidateClassNameIsUnique(aClass.Name);
         _classRepository.Add(aClass);
     }
 
-    public void UpdateClass(Guid id, ClassDTO classDto)
+    public void UpdateNameClass(Guid id, string name)
     {
-        ValidateClassNameIsUnique(classDto.ToEntity());
+        ValidateClassNameIsUnique(name);
         ValidateClassIdExists(id);
         var classT = _classRepository.Find(id);
-        classT.Name = classDto.Name;
-        classT.Stereotype = classDto.Stereotype;
+        classT.Name = name;
+        _classRepository.Update(classT);
+    }
 
-        if(classT.HierarchyClass != null)
+    public void UpdateClassSteriotype(Guid id, string stereotype)
+    {
+        throw new NotImplementedException();
+    }
+
+    public void UpdateClassStereotype(Guid id, string stereotype)
+    {
+        ValidateClassIdExists(id);
+        var classT = _classRepository.Find(id);
+        if(stereotype == "Abstract")
         {
-            classT.HierarchyClass = classDto.HirarchyClass.ToEntity();
+            classT.Stereotype = KeyWord.Abstract;
+        }
+        else if(stereotype == "Sealed")
+        {
+            classT.Stereotype = KeyWord.Sealed;
         }
         else
         {
-            classT.HierarchyClass = null;
+            throw new InvalidClassStereotypeException("The stereotype is not valid");
         }
 
-        classT.Attributes = ConvertAttributesToEntity(classDto.Attributes);
         _classRepository.Update(classT);
     }
 
@@ -49,11 +66,11 @@ public class ClassService(IClassRepository classRepository) : IClassService
         _classRepository.Delete(id);
     }
 
-    private void ValidateClassNameIsUnique(Class aClass)
+    private void ValidateClassNameIsUnique(string name)
     {
         var classes = _classRepository.FindAll();
 
-        if(classes.Any(classT => classT.Name == aClass.Name && classT.Id != aClass.Id))
+        if(classes.Any(classT => classT.Name == name))
         {
             throw new ClassException("There is already a class with this name");
         }

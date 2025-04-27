@@ -1,4 +1,5 @@
 using Moq;
+using Simulator.BussinesLogic.Exception;
 using Simulator.Domain;
 using Simulator.Domain.Exception;
 using Simulator.DTO;
@@ -177,7 +178,7 @@ public class ClassServiceTest
         _mockClassRepository
             .Setup(r => r.Update(It.IsAny<Class>()));
 
-        _classService.UpdateClass(id, dto);
+        _classService.UpdateNameClass(id, dto.Name);
 
         Assert.AreEqual("NewName", original.Name);
         Assert.AreEqual(KeyWord.Sealed, original.Stereotype);
@@ -217,7 +218,7 @@ public class ClassServiceTest
 
         var exception = Assert.ThrowsException<ClassException>(() =>
         {
-            _classService.UpdateClass(id2, dto);
+            _classService.UpdateNameClass(id2, dto.Name);
         });
 
         Assert.AreEqual("There is already a class with this name", exception.Message);
@@ -248,10 +249,79 @@ public class ClassServiceTest
 
         var exception = Assert.ThrowsException<ClassException>(() =>
         {
-            _classService.UpdateClass(id, dto);
+            _classService.UpdateNameClass(id, dto.Name);
         });
 
         Assert.AreEqual("There is no class with this id", exception.Message);
+    }
+
+    [TestMethod]
+    public void UpdateClassStereotype_ShouldUpdate_WhenClassExistsAndStereotypeIsAbstract()
+    {
+        var classId = Guid.NewGuid();
+        var existingClass = new Class("TestClass", KeyWord.Sealed, null, null, new List<Method>());
+        existingClass.Id = classId;
+
+        _mockClassRepository.Setup(repo => repo.Find(classId)).Returns(existingClass);
+        _mockClassRepository.Setup(repo => repo.FindAll()).Returns(new List<Class> { existingClass });
+        _mockClassRepository.Setup(repo => repo.Update(It.IsAny<Class>()));
+
+        _classService.UpdateClassStereotype(classId, "Abstract");
+
+        Assert.AreEqual(KeyWord.Abstract, existingClass.Stereotype);
+        _mockClassRepository.Verify(repo => repo.Update(existingClass), Times.Once);
+    }
+
+    [TestMethod]
+    public void UpdateClassStereotype_ShouldUpdate_WhenClassExistsAndStereotypeIsSealed()
+    {
+        var classId = Guid.NewGuid();
+        var existingClass = new Class("TestClass", KeyWord.Abstract, null, null, new List<Method>());
+        existingClass.Id = classId;
+
+        _mockClassRepository.Setup(repo => repo.Find(classId)).Returns(existingClass);
+        _mockClassRepository.Setup(repo => repo.FindAll()).Returns(new List<Class> { existingClass });
+        _mockClassRepository.Setup(repo => repo.Update(It.IsAny<Class>()));
+
+        _classService.UpdateClassStereotype(classId, "Sealed");
+
+        Assert.AreEqual(KeyWord.Sealed, existingClass.Stereotype);
+        _mockClassRepository.Verify(repo => repo.Update(existingClass), Times.Once);
+    }
+
+    [TestMethod]
+    public void UpdateClassStereotype_ShouldThrowException_WhenClassDoesNotExist()
+    {
+        var classId = Guid.NewGuid();
+
+        _mockClassRepository.Setup(repo => repo.Find(classId)).Returns<Class?>(null);
+        _mockClassRepository.Setup(repo => repo.FindAll()).Returns(new List<Class>());
+
+        var exception = Assert.ThrowsException<ClassException>(() =>
+        {
+            _classService.UpdateClassStereotype(classId, "Abstract");
+        });
+
+        Assert.AreEqual("There is no class with this id", exception.Message);
+    }
+
+    [TestMethod]
+    public void UpdateClassStereotype_ShouldThrowException_WhenStereotypeIsInvalid()
+    {
+        var classId = Guid.NewGuid();
+        var existingClass = new Class("TestClass", KeyWord.Sealed, null, null, new List<Method>());
+        existingClass.Id = classId;
+
+        _mockClassRepository.Setup(repo => repo.Find(classId)).Returns(existingClass);
+
+        _mockClassRepository.Setup(repo => repo.FindAll()).Returns(new List<Class> { existingClass });
+
+        var exception = Assert.ThrowsException<InvalidClassStereotypeException>(() =>
+        {
+            _classService.UpdateClassStereotype(classId, "InvalidStereotype");
+        });
+
+        Assert.AreEqual("The stereotype is not valid", exception.Message);
     }
 
     [TestMethod]

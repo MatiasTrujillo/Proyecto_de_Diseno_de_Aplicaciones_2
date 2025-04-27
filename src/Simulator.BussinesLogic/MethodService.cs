@@ -1,4 +1,8 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using Simulator.Domain;
+using Simulator.Domain.Exception;
 using Simulator.DTO;
 using Simulator.IBussinesLogic;
 using Simulator.IDataAcces;
@@ -72,7 +76,7 @@ public class MethodService(IMethodRepository methodRepository, IClassRepository 
         var method = _methodRepository.Find(id);
         if(method.Methods.Count != 0)
         {
-            throw new Exception("Method is associated with another method.");
+            throw new MethodException("Method is associated with another method.");
         }
     }
 
@@ -81,7 +85,7 @@ public class MethodService(IMethodRepository methodRepository, IClassRepository 
         if(method.LocalVariables.Any(v => v.Name.Equals(parameter.Name, StringComparison.OrdinalIgnoreCase)) ||
             method.Parameters.Any(p => p.Name.Equals(parameter.Name, StringComparison.OrdinalIgnoreCase)))
         {
-            throw new Exception("A variable or parameter with the same name already exists.");
+            throw new MethodException("A variable or parameter with the same name already exists.");
         }
     }
 
@@ -90,7 +94,7 @@ public class MethodService(IMethodRepository methodRepository, IClassRepository 
         if(method.LocalVariables.Any(v => v.Name.Equals(localVariable.Name, StringComparison.OrdinalIgnoreCase)) ||
             method.Parameters.Any(p => p.Name.Equals(localVariable.Name, StringComparison.OrdinalIgnoreCase)))
         {
-            throw new Exception("A variable or parameter with the same name already exists.");
+            throw new MethodException("A variable or parameter with the same name already exists.");
         }
     }
 
@@ -100,7 +104,7 @@ public class MethodService(IMethodRepository methodRepository, IClassRepository 
         var methodToAdd = _methodRepository.Find(idMethodToAdd);
         if(method.Methods.Any(m => m.Id == idMethodToAdd))
         {
-            throw new Exception("Method is already associated with this method.");
+            throw new MethodException("Method is already associated with this method.");
         }
     }
 
@@ -109,7 +113,7 @@ public class MethodService(IMethodRepository methodRepository, IClassRepository 
         var classes = _classRepository.FindAll();
         if(classes.Any(classT => classT.Methods.Any(method => method.Id == id)))
         {
-            throw new Exception("Method is associated with a class.");
+            throw new MethodException("Method is associated with a class.");
         }
     }
 
@@ -119,7 +123,7 @@ public class MethodService(IMethodRepository methodRepository, IClassRepository 
 
         if(methods.Any(existingMethod => existingMethod.Name.Equals(method.Name)))
         {
-            throw new Exception("A method with the same name already exists in the class.");
+            throw new MethodException("A method with the same name already exists in the class.");
         }
     }
 
@@ -127,7 +131,7 @@ public class MethodService(IMethodRepository methodRepository, IClassRepository 
     {
         if(classT == null)
         {
-            throw new Exception("Class not found.");
+            throw new MethodException("Class not found.");
         }
     }
 
@@ -135,7 +139,7 @@ public class MethodService(IMethodRepository methodRepository, IClassRepository 
     {
         if(method == null)
         {
-            throw new Exception("Method null.");
+            throw new MethodException("Method null.");
         }
     }
 
@@ -143,7 +147,7 @@ public class MethodService(IMethodRepository methodRepository, IClassRepository 
     {
         if(method == null)
         {
-            throw new Exception("Method cannot be null.");
+            throw new MethodException("Method cannot be null.");
         }
     }
 
@@ -152,7 +156,7 @@ public class MethodService(IMethodRepository methodRepository, IClassRepository 
         List<Method> methods = _methodRepository.FindAll();
         if(methods.Any(method => method.Name.Equals(methodT.Name)))
         {
-            throw new Exception("Method with the same name  already exists.");
+            throw new MethodException("Method with the same name  already exists.");
         }
     }
 }

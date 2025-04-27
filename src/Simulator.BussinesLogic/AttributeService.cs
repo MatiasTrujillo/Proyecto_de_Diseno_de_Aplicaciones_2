@@ -1,4 +1,6 @@
-﻿using Simulator.Domain.Exception;
+﻿using System;
+using System.Linq;
+using Simulator.Domain.Exception;
 using Simulator.DTO;
 using Simulator.IBussinesLogic;
 using Simulator.IDataAcces;

@@ -31,14 +31,14 @@ public class ClassControllerTest
     {
         var id = Guid.NewGuid();
         var classT = new ClassDTO();
-        _classServiceMock.Setup(service => service.UpdateClass(id, classT))
+        _classServiceMock.Setup(service => service.UpdateNameClass(id, classT.Name))
             .Verifiable();
 
-        var result = _controller.UpdateClass(id, classT) as OkObjectResult;
+        var result = _controller.UpdateClassName(id, classT.Name) as OkObjectResult;
 
         Assert.IsNotNull(result);
         Assert.AreEqual(200, result.StatusCode);
-        _classServiceMock.Verify(service => service.UpdateClass(id, classT), Times.Once);
+        _classServiceMock.Verify(service => service.UpdateNameClass(id, classT.Name), Times.Once);
     }
 
     [TestMethod]
