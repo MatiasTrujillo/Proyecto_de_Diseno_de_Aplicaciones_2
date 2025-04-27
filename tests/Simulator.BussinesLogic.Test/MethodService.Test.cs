@@ -16,8 +16,6 @@ public class MethodServiceTest
     private MethodDTO _methodDto = new MethodDTO();
     private MethodDTO _otherMethodDto = new MethodDTO();
 
-    private readonly Method _method = new Method();
-
     [TestInitialize]
     public void Initialize()
     {
@@ -393,7 +391,7 @@ public class MethodServiceTest
             Methods = [iniciarViaje, detenerViaje]
         };
 
-        var result = _method.ExecuteMethod(auto, auto, iniciarViaje);
+        var result = _methodService.ExecuteMethod(auto, auto, iniciarViaje);
         Console.WriteLine(result);
         var result2 =
             "Auto.IniciarViaje() -> Auto.IniciarViaje()\n" +
@@ -496,8 +494,8 @@ public class MethodServiceTest
             Methods = [notificar]
         };
 
-        var result = _method.ExecuteMethod(notificador, notificador, notificar);
-        var result2 = _method.ExecuteMethod(notificacion, sms, enviar);
+        var result = _methodService.ExecuteMethod(notificador, notificador, notificar);
+        var result2 = _methodService.ExecuteMethod(notificacion, sms, enviar);
         Console.WriteLine(result2);
         Console.WriteLine("----------------------------------------------");
         Console.WriteLine(result);
@@ -645,7 +643,7 @@ public class MethodServiceTest
             Methods = [validar]
         };
 
-        var result = _method.ExecuteMethod(validador, validador, validar);
+        var result = _methodService.ExecuteMethod(validador, validador, validar);
 
         var res =
             "Validador.Validar() -> Validador.Validar()\n" +
@@ -654,6 +652,7 @@ public class MethodServiceTest
             "\t\t\tbase.EsValido() -> Entrada.EsValido()\n" +
             "\t\t\t\tthis.Inicializar() -> Entrada.Inicializar()\n" +
             "\t\t\t\tthis.Limpiar() -> Entrada.Limpiar()";
+        Console.WriteLine(result);
         Assert.AreEqual(res, result);
     }
 }
