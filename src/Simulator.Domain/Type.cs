@@ -3,11 +3,17 @@ namespace Simulator.Domain;
 public class Type
 {
     public Guid Id { get; set; }
+    public string Name { get; set; }
 
-    public Type() { }
-
-    public Type(Guid id)
+    public Type()
     {
-        Id = id;
+        Id = Guid.NewGuid();
+        Name = string.Empty;
+    }
+
+    public Type(string name)
+    {
+        Id = Guid.NewGuid();
+        Name = name;
     }
 }

@@ -5,11 +5,11 @@ namespace Simulator.DTO;
 
 public class ParameterDTO
 {
-    public Guid Id { get; set; } = Guid.NewGuid();
     public string Name { get; set; } = string.Empty;
-    public Type ParameterType { get; set; } = new Primitive();
+    public TypeDTO ParameterType { get; set; } = new TypeDTO();
     public Parameter ToEntity()
     {
-        return new Parameter(Name, ParameterType);
+        Type parameterType = ParameterType.ToEntity();
+        return new Parameter(Name, parameterType);
     }
 }

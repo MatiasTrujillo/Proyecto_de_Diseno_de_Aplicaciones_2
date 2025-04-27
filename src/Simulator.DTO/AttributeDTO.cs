@@ -8,20 +8,15 @@ public class AttributeDto
 {
     public string Name { get; set; } = string.Empty;
     public Accessibility Accessibility { get; set; }
-    public Type Type { get; set; } = null;
+    public TypeDTO? Type { get; set; } = new TypeDTO();
 
     public Attribute ToEntity()
     {
-        return new Attribute(Name, Accessibility, Type);
-    }
-
-    public static AttributeDto? FromEntity(Attribute? anAttribute)
-    {
-        return new AttributeDto()
+        if (Type == null)
         {
-            Name = anAttribute.Name,
-            Accessibility = anAttribute.Accessibility,
-            Type = anAttribute.Type
-        };
+            throw new ArgumentNullException(nameof(Type), "The Type property cannot be null.");
+        }
+
+        return new Attribute(Name, Accessibility, Type.ToEntity());
     }
 }

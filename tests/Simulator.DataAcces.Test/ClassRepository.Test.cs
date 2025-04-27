@@ -17,9 +17,10 @@ public class ClassRepositoryTest
     {
         _id = Guid.NewGuid();
         _repository = new ClassRepository(_context);
-        aClass = new Class("Class1", KeyWord.Abstract, null, [], []);
+        aClass = new Class(KeyWord.Abstract, null, [], [], "Class1");
         aClass.Id = _id;
-        anotherClass = new Class("Class", null, null, [], []);
+        anotherClass = new Class(null, null, [], [], "Class1");
+        aClass.Name = "Class";
     }
 
     [TestInitialize]
@@ -77,12 +78,16 @@ public class ClassRepositoryTest
     [TestMethod]
     public void FindAll_WhenMultipleClassesExist_ShouldReturnAll()
     {
+        var aClass = new Simulator.Domain.Class { Name = "Class" };
+        var anotherClass = new Simulator.Domain.Class { Name = "Class1" };
+
         _context.Classes.AddRange(aClass, anotherClass);
         _context.SaveChanges();
 
         var result = _repository.FindAll();
 
         result.Count.Should().Be(2);
+
         result.Should().Contain(a => a.Name == "Class");
         result.Should().Contain(a => a.Name == "Class1");
     }
@@ -116,7 +121,7 @@ public class ClassRepositoryTest
         _context.Classes.Add(aClass);
         _context.SaveChanges();
 
-        var updated = new Class("Class1", null, null, [], []);
+        var updated = new Class(null, null, [], [], "Class1");
         updated.Id = aClass.Id;
 
         _repository.Update(updated);

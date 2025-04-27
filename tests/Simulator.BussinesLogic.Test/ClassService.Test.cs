@@ -153,8 +153,7 @@ public class ClassServiceTest
     public void UpdateClass_ShouldUpdateClass_WhenValid()
     {
         var id = Guid.NewGuid();
-        var original = new Class("OldName", KeyWord.Sealed, null, [], []);
-        original.Id = id;
+        var original = new Class(KeyWord.Sealed, null, [], [],"OldName") { Id = id};
         var dto = new ClassDTO
         {
             Name = "NewName",
@@ -187,8 +186,8 @@ public class ClassServiceTest
     {
         var id1 = Guid.NewGuid();
         var id2 = Guid.NewGuid();
-        var original1 = new Class("Class1", KeyWord.Sealed, null, [], []);
-        var original2 = new Class("Class2", KeyWord.Sealed, null, [], []);
+        var original1 = new Class(KeyWord.Sealed, null, [], [],"Class1");
+        var original2 = new Class(KeyWord.Sealed, null, [], [],"Class2");
         var dto = new ClassDTO
         {
             Name = "Class1",
@@ -254,8 +253,7 @@ public class ClassServiceTest
     public void UpdateClassStereotype_ShouldUpdate_WhenClassExistsAndStereotypeIsAbstract()
     {
         var classId = Guid.NewGuid();
-        var existingClass = new Class("TestClass", KeyWord.Sealed, null, null, new List<Method>());
-        existingClass.Id = classId;
+        var existingClass = new Class(KeyWord.Sealed, null, null, new List<Method>(), "TestClass") { Id = classId};
 
         _mockClassRepository.Setup(repo => repo.Find(classId)).Returns(existingClass);
         _mockClassRepository.Setup(repo => repo.FindAll()).Returns(new List<Class> { existingClass });
@@ -271,8 +269,7 @@ public class ClassServiceTest
     public void UpdateClassStereotype_ShouldUpdate_WhenClassExistsAndStereotypeIsSealed()
     {
         var classId = Guid.NewGuid();
-        var existingClass = new Class("TestClass", KeyWord.Abstract, null, null, new List<Method>());
-        existingClass.Id = classId;
+        var existingClass = new Class(KeyWord.Abstract, null, null, new List<Method>(), "TestClass") { Id = classId};
 
         _mockClassRepository.Setup(repo => repo.Find(classId)).Returns(existingClass);
         _mockClassRepository.Setup(repo => repo.FindAll()).Returns(new List<Class> { existingClass });
@@ -304,8 +301,7 @@ public class ClassServiceTest
     public void UpdateClassStereotype_ShouldThrowException_WhenStereotypeIsInvalid()
     {
         var classId = Guid.NewGuid();
-        var existingClass = new Class("TestClass", KeyWord.Sealed, null, null, new List<Method>());
-        existingClass.Id = classId;
+        var existingClass = new Class(KeyWord.Sealed, null, null, new List<Method>(), "TestClass") { Id = classId};
 
         _mockClassRepository.Setup(repo => repo.Find(classId)).Returns(existingClass);
 
@@ -323,7 +319,7 @@ public class ClassServiceTest
     public void DeleteClass_ShouldDeleteClass_WhenValid()
     {
         var id = Guid.NewGuid();
-        var original = new Class("Class2", KeyWord.Sealed, null, [], []) { Id = id };
+        var original = new Class(KeyWord.Sealed, null, [], [],"Class2") { Id = id};
 
         _mockClassRepository.Setup(r => r.Find(id)).Returns(original);
         _mockClassRepository.Setup(r => r.FindAll()).Returns([original]);
@@ -365,10 +361,10 @@ public class ClassServiceTest
         var classId = Guid.NewGuid();
         var hierarchyClassId = Guid.NewGuid();
 
-        var existingClass = new Class("ClassA", KeyWord.Sealed, null, [], []);
+        var existingClass = new Class(KeyWord.Sealed, null, [], [], "ClassA");
         existingClass.Id = classId;
 
-        var hierarchyClass = new Class("ClassB", KeyWord.Sealed, null, [], []);
+        var hierarchyClass = new Class(KeyWord.Sealed, null, [], [], "ClassB");
         hierarchyClass.Id = hierarchyClassId;
 
         var dto = new ClassDTO
@@ -398,16 +394,16 @@ public class ClassServiceTest
         var classId = Guid.NewGuid();
         var hierarchyClassId = Guid.NewGuid();
 
-        var existingClass = new Class("ClassA", KeyWord.Sealed, null, [], []);
+        var existingClass = new Class(KeyWord.Sealed, null, [], [], "ClassA");
         existingClass.Id = classId;
 
-        var hierarchyClass = new Class("ClassB", KeyWord.Sealed, null, [], []);
+        var hierarchyClass = new Class(KeyWord.Sealed, null, [], [], "ClassB");
         hierarchyClass.Id = hierarchyClassId;
 
         var classes = new List<Class>
         {
             existingClass,
-            new Class("OtherClass", KeyWord.Sealed, existingClass, [], [])
+            new Class(KeyWord.Sealed, existingClass, [], [], "OtherName")
         };
 
         var dto = new ClassDTO
@@ -437,8 +433,7 @@ public class ClassServiceTest
     {
         var classId = Guid.NewGuid();
 
-        var existingClass = new Class("ClassA", KeyWord.Sealed, null, [], []);
-        existingClass.Id = classId;
+        var existingClass = new Class(KeyWord.Sealed, null, [], [],"ClassA" ) { Id = classId};
 
         var dto = new ClassDTO
         {

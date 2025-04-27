@@ -23,14 +23,12 @@ public class MethodServiceTest
     {
         _methodDto = new MethodDTO()
         {
-            Id = Guid.NewGuid(),
             Name = "First Method Dto",
             Accessibility = Accessibility.Private,
             Stereotype = null
         };
         _otherMethodDto = new MethodDTO()
         {
-            Id = Guid.NewGuid(),
             Name = "Second Method Dto",
             Accessibility = Accessibility.Public,
             Stereotype = KeyWord.Abstract
@@ -250,8 +248,11 @@ public class MethodServiceTest
 
         _mockMethodRepository.Setup(repo => repo.Find(methodId)).Returns((Method)null!);
 
+        // Comprobamos si se lanza la excepción esperada
         var exception = Assert.ThrowsException<MethodException>(() =>
             _methodService.AddParameterToMethod(methodId, parameter));
+
+        // Verificamos que el mensaje de la excepción sea el correcto
         Assert.AreEqual("Method null.", exception.Message);
     }
 
@@ -299,15 +300,19 @@ public class MethodServiceTest
     public void AddParameterToMethod_ShouldAddParameter_WhenValidInputsProvided()
     {
         var methodId = Guid.NewGuid();
-        var parameter = new ParameterDTO { Name = "TestParameter" };
-        var method = new Method { Id = methodId, Name = "TestMethod", LocalVariables = [], Parameters = [] };
+        var parameter = new ParameterDTO { Name = "TestParameter" };  // Nombre del parámetro es válido
+        var method = new Method { Id = methodId, Name = "TestMethod", LocalVariables = new List<LocalVariable>(), Parameters = new List<Parameter>() };
 
         _mockMethodRepository.Setup(repo => repo.Find(methodId)).Returns(method);
         _mockMethodRepository.Setup(repo => repo.Update(It.IsAny<Method>()));
 
+        // Llamada al servicio para agregar el parámetro
         _methodService.AddParameterToMethod(methodId, parameter);
 
+        // Verificamos que el parámetro haya sido agregado correctamente
         Assert.IsTrue(method.Parameters.Any(p => p.Name == parameter.Name));
+
+        // Verificamos que el repositorio haya sido actualizado una vez
         _mockMethodRepository.Verify(repo => repo.Update(method), Times.Once);
     }
 

@@ -4,7 +4,6 @@ namespace Simulator.Domain;
 
 public class Class : Type
 {
-    public string Name { get; set; }
     public KeyWord? Stereotype { get; set; }
     public Class? HierarchyClass { get; set; }
     public List<Attribute> Attributes { get; set; }
@@ -12,22 +11,23 @@ public class Class : Type
     public List<Method> Methods { get; set; }
 
     public Class()
+        : base(string.Empty)
     {
-        Name = string.Empty;
         Stereotype = null;
         HierarchyClass = null;
-        Attributes = [];
-        Methods = [];
+        Attributes = new List<Attribute>();
+        Methods = new List<Method>();
     }
 
-    public Class(string name, KeyWord? stereotype, Class? hierarchyClass, List<Attribute> attributes, List<Method> method)
+    public Class(KeyWord? stereotype, Class? hierarchyClass, List<Attribute> attributes, List<Method> methods, string name)
+        : base(name) // Se pasa el nombre al constructor base para validar
     {
         ValidatName(name);
         Name = name;
         Stereotype = stereotype;
         HierarchyClass = hierarchyClass;
         Attributes = attributes;
-        Methods = method;
+        Methods = methods;
     }
 
     private void ValidatName(string name)

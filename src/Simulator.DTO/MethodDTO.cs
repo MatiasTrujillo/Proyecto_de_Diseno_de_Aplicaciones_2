@@ -5,17 +5,20 @@ namespace Simulator.DTO;
 
 public class MethodDTO
 {
-    public Guid Id { get; set; }
     public string Name { get; set; } = string.Empty;
     public Accessibility Accessibility { get; set; }
     public KeyWord? Stereotype { get; set; }
-    private List<LocalVariable> LocalVariable { get; set; } = [];
-    private List<Parameter> Parameters { get; set; } = [];
-    private List<Method> Methods { get; set; } = [];
-    public Type ReturnType { get; set; } = new Primitive();
+    private List<LocalVariableDTO> LocalVariable { get; set; } = [];
+    private List<ParameterDTO> Parameters { get; set; } = [];
+    private List<MethodDTO> Methods { get; set; } = [];
+    public TypeDTO ReturnType { get; set; } = new TypeDTO();
 
     public Method ToEntity()
     {
-        return new Method(Name, Accessibility, Stereotype, Methods, Parameters, LocalVariable, ReturnType);
+        Type returnType = ReturnType.ToEntity();
+        List<LocalVariable> localVariable = LocalVariable.Select(lv => lv.ToEntity()).ToList();
+        List<Parameter> parameters = Parameters.Select(p => p.ToEntity()).ToList();
+        List<Method> methods = Methods.Select(m => m.ToEntity()).ToList();
+        return new Method(Name, Accessibility, Stereotype, methods, parameters, localVariable, returnType);
     }
 }
