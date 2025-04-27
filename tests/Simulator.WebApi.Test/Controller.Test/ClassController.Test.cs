@@ -42,6 +42,21 @@ public class ClassControllerTest
     }
 
     [TestMethod]
+    public void UpdateClassStereotype_ShouldReturnOk_WhenStereotypeIsUpdated()
+    {
+        var id = Guid.NewGuid();
+        var stereotype = "Abstract";
+        _classServiceMock.Setup(service => service.UpdateClassStereotype(id, stereotype))
+            .Verifiable();
+
+        var result = _controller.UpdateClassStereotype(id, stereotype) as OkObjectResult;
+
+        Assert.IsNotNull(result);
+        Assert.AreEqual(200, result.StatusCode);
+        _classServiceMock.Verify(service => service.UpdateClassStereotype(id, stereotype), Times.Once);
+    }
+
+    [TestMethod]
     public void DeleteClass_ShouldReturnNoContent_WhenClassIsDeleted()
     {
         var id = Guid.NewGuid();

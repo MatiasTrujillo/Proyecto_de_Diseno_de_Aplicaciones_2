@@ -35,11 +35,6 @@ public class ClassService(IClassRepository classRepository) : IClassService
         _classRepository.Update(classT);
     }
 
-    public void UpdateClassSteriotype(Guid id, string stereotype)
-    {
-        throw new NotImplementedException();
-    }
-
     public void UpdateClassStereotype(Guid id, string stereotype)
     {
         ValidateClassIdExists(id);

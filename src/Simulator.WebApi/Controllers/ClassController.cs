@@ -24,6 +24,13 @@ public class ClassController(IClassService classService) : ControllerBase
         return Ok(new { message = "Class updated successfully" });
     }
 
+    [HttpPatch("stereotypes/{id}")]
+    public IActionResult UpdateClassStereotype([FromRoute] Guid id, [FromQuery] string stereotype)
+    {
+        _classService.UpdateClassStereotype(id, stereotype);
+        return Ok(new { message = "Class stereotype updated successfully" });
+    }
+
     [HttpDelete("{id}")]
     public IActionResult DeleteClass([FromRoute] Guid id)
     {
