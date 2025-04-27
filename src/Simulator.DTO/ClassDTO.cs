@@ -14,21 +14,11 @@ public class ClassDTO
 
     public Class ToEntity()
     {
-        var aClass = new Class { Id = Id, Name = Name, Stereotype = Stereotype };
+        var hierarchy = HirarchyClass?.ToEntity();
+        var attributes = Attributes.Select(attr => attr.ToEntity()).ToList();
 
-        if(HirarchyClass != null)
-        {
-            aClass.HierarchyClass = HirarchyClass.ToEntity();
-        }
-        else
-        {
-            aClass.HierarchyClass = null;
-        }
-
-        foreach(var attr in Attributes)
-        {
-            aClass.Attributes.Add(attr.ToEntity());
-        }
+        var aClass = new Class(Name, Stereotype, hierarchy, attributes, []);
+        aClass.Id = Id;
 
         return aClass;
     }

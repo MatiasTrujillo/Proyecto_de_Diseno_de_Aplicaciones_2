@@ -22,6 +22,11 @@ public class Class : Type
 
     public Class(string name, KeyWord? stereotype, Class? hierarchyClass, List<Attribute> attributes, List<Method> method)
     {
+        if (name == string.Empty)
+        {
+            throw new ClassException("The class name cannot be empty.");
+        }
+
         Name = name;
         Stereotype = stereotype;
         HierarchyClass = hierarchyClass;
