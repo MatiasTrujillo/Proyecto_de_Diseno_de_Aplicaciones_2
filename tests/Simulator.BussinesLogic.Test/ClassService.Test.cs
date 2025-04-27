@@ -323,19 +323,13 @@ public class ClassServiceTest
     public void DeleteClass_ShouldDeleteClass_WhenValid()
     {
         var id = Guid.NewGuid();
-        var original = new Class("Class2", KeyWord.Sealed, null, [], []);
-        original.Id = id;
+        var original = new Class("Class2", KeyWord.Sealed, null, [], []) { Id = id };
 
-        _mockClassRepository
-            .Setup(r => r.Find(id))
-            .Returns(original);
-
-        _mockClassRepository
-            .Setup(r => r.FindAll())
-            .Returns([original]);
-
-        _mockClassRepository
-            .Setup(r => r.Delete(It.IsAny<Guid>()));
+        _mockClassRepository.Setup(r => r.Find(id)).Returns(original);
+        _mockClassRepository.Setup(r => r.FindAll()).Returns([original]);
+        _mockAttributeRepository.Setup(r => r.FindAll()).Returns([]);
+        _mockMethodRepository.Setup(r => r.FindAll()).Returns(new List<Method>());
+        _mockClassRepository.Setup(r => r.Delete(It.IsAny<Guid>()));
 
         _classService.DeleteClass(id);
 

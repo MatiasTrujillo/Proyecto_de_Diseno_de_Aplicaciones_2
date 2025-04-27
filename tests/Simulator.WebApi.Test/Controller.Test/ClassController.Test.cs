@@ -63,7 +63,6 @@ public class ClassControllerTest
         var classDto = new ClassDTO
         {
             Name = "UpdatedClass",
-            Stereotype = null,
             HirarchyClass = null,
             Attributes = []
         };

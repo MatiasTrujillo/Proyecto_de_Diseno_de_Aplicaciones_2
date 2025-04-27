@@ -73,6 +73,7 @@ public class ClassService(IClassRepository classRepository, IAttributeRepository
     public void DeleteClass(Guid id)
     {
         ValidateClassIdExists(id);
+        ValidateClassIsNotInUse(id);
         _classRepository.Delete(id);
     }
 
