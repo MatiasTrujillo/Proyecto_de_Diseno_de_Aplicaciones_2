@@ -79,7 +79,7 @@ public class Method
                             break;
                         }
 
-                        var parent = attrClass.HierarchyClass;
+                        var parent = attrClass.HierarchyClass as Class;
                         while(parent != null)
                         {
                             var methodInParent = parent.Methods.FirstOrDefault(m => m.Name == calledMethod.Name);
@@ -90,7 +90,7 @@ public class Method
                                 break;
                             }
 
-                            parent = parent.HierarchyClass;
+                            parent = (Class)parent.HierarchyClass;
                         }
                     }
                 }
@@ -114,7 +114,7 @@ public class Method
                 var i = 0;
                 if(classType != null && c)
                 {
-                    var classInherited = classType.HierarchyClass;
+                    var classInherited = classType.HierarchyClass as Class;
                     var cant = classInherited.Methods.Count;
                     while(aux != null && i < cant)
                     {
@@ -125,7 +125,7 @@ public class Method
                                 $"{indentation}{localVar.Name}.{classInherited.Methods[i].Name}() -> {aux.Name}.{classInherited.Methods[i].Name}()");
                         }
 
-                        aux = aux.HierarchyClass;
+                        aux = (Class)aux.HierarchyClass;
                         i++;
                     }
 
@@ -133,7 +133,7 @@ public class Method
                     {
                         Sobreescrito(classType, result, classInherited);
                         classType = classInherited;
-                        classInherited = classInherited.HierarchyClass;
+                        classInherited = (Class)classInherited.HierarchyClass;
                     }
 
                     MethodTThis(classType, result);

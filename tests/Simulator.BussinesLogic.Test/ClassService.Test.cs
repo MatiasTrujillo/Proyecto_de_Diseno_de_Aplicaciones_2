@@ -36,7 +36,7 @@ public class ClassServiceTest
         {
             Name = "Pedro",
             Stereotype = KeyWord.Sealed,
-            HirarchyClass = null,
+            HierarchyClass = null,
             Attributes = []
         };
 
@@ -58,7 +58,7 @@ public class ClassServiceTest
         {
             Name = "Pedro",
             Stereotype = KeyWord.Sealed,
-            HirarchyClass = null,
+            HierarchyClass = null,
             Attributes = []
         };
 
@@ -66,7 +66,7 @@ public class ClassServiceTest
         {
             Name = "Pedro",
             Stereotype = null,
-            HirarchyClass = null,
+            HierarchyClass = null,
             Attributes = []
         };
 
@@ -90,7 +90,7 @@ public class ClassServiceTest
         {
             Name = string.Empty,
             Stereotype = KeyWord.Sealed,
-            HirarchyClass = null,
+            HierarchyClass = null,
             Attributes = []
         };
 
@@ -112,7 +112,7 @@ public class ClassServiceTest
         {
             Name = "class",
             Stereotype = KeyWord.Sealed,
-            HirarchyClass = null,
+            HierarchyClass = null,
             Attributes = []
         };
 
@@ -134,7 +134,7 @@ public class ClassServiceTest
         {
             Name = "Class Name",
             Stereotype = KeyWord.Sealed,
-            HirarchyClass = null,
+            HierarchyClass = null,
             Attributes = []
         };
 
@@ -158,7 +158,7 @@ public class ClassServiceTest
         {
             Name = "NewName",
             Stereotype = KeyWord.Sealed,
-            HirarchyClass = null,
+            HierarchyClass = null,
             Attributes = []
         };
 
@@ -192,7 +192,7 @@ public class ClassServiceTest
         {
             Name = "Class1",
             Stereotype = KeyWord.Abstract,
-            HirarchyClass = null,
+            HierarchyClass = null,
             Attributes = []
         };
 
@@ -227,7 +227,7 @@ public class ClassServiceTest
         {
             Name = "Class1",
             Stereotype = KeyWord.Abstract,
-            HirarchyClass = null,
+            HierarchyClass = null,
             Attributes = []
         };
 
@@ -371,7 +371,7 @@ public class ClassServiceTest
         {
             Name = "ClassB",
             Stereotype = KeyWord.Sealed,
-            HirarchyClass = null,
+            HierarchyClass = null,
             Attributes = []
         };
 
@@ -410,7 +410,7 @@ public class ClassServiceTest
         {
             Name = "ClassB",
             Stereotype = KeyWord.Sealed,
-            HirarchyClass = null,
+            HierarchyClass = null,
             Attributes = []
         };
 
@@ -439,7 +439,7 @@ public class ClassServiceTest
         {
             Name = "NonExistentClass",
             Stereotype = KeyWord.Sealed,
-            HirarchyClass = null,
+            HierarchyClass = null,
             Attributes = []
         };
 

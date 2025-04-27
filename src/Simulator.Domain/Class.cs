@@ -5,7 +5,7 @@ namespace Simulator.Domain;
 public class Class : Type
 {
     public KeyWord? Stereotype { get; set; }
-    public Class? HierarchyClass { get; set; }
+    public Type? HierarchyClass { get; set; }
     public List<Attribute> Attributes { get; set; }
 
     public List<Method> Methods { get; set; }
@@ -19,7 +19,7 @@ public class Class : Type
         Methods = new List<Method>();
     }
 
-    public Class(KeyWord? stereotype, Class? hierarchyClass, List<Attribute> attributes, List<Method> methods, string name)
+    public Class(KeyWord? stereotype, Type? hierarchyClass, List<Attribute> attributes, List<Method> methods, string name)
         : base(name) // Se pasa el nombre al constructor base para validar
     {
         ValidatName(name);
