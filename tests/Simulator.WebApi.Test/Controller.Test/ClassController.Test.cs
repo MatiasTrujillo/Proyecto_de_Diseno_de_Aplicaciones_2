@@ -57,6 +57,27 @@ public class ClassControllerTest
     }
 
     [TestMethod]
+    public void UpdateClassInherits_ShouldReturnOk_WhenUpdateIsSuccessful()
+    {
+        var classId = Guid.NewGuid();
+        var classDto = new ClassDTO
+        {
+            Name = "UpdatedClass",
+            Stereotype = null,
+            HirarchyClass = null,
+            Attributes = []
+        };
+
+        _classServiceMock.Setup(service => service.UpdateClassInherits(classId, classDto));
+
+        var okResult = _controller.UpdateClassInherits(classId, classDto) as OkObjectResult;
+
+        Assert.IsNotNull(okResult);
+        Assert.AreEqual(200, okResult.StatusCode);
+        _classServiceMock.Verify(service => service.UpdateClassInherits(classId, classDto), Times.Once);
+    }
+
+    [TestMethod]
     public void DeleteClass_ShouldReturnNoContent_WhenClassIsDeleted()
     {
         var id = Guid.NewGuid();

@@ -31,6 +31,13 @@ public class ClassController(IClassService classService) : ControllerBase
         return Ok(new { message = "Class stereotype updated successfully" });
     }
 
+    [HttpPatch("inherits/{id}")]
+    public IActionResult UpdateClassInherits([FromRoute] Guid id, [FromBody] ClassDTO classDto)
+    {
+        _classService.UpdateClassInherits(id, classDto);
+        return Ok(new { message = "Class inheritance updated successfully" });
+    }
+
     [HttpDelete("{id}")]
     public IActionResult DeleteClass([FromRoute] Guid id)
     {
