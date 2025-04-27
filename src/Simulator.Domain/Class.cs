@@ -23,11 +23,6 @@ public class Class : Type
     public Class(string name, KeyWord? stereotype, Class? hierarchyClass, List<Attribute> attributes, List<Method> method)
     {
         ValidatName(name);
-        if (!char.IsUpper(name[0]))
-        {
-            throw new ClassException("The class name must start with an uppercase letter.");
-        }
-
         Name = name;
         Stereotype = stereotype;
         HierarchyClass = hierarchyClass;
@@ -40,6 +35,11 @@ public class Class : Type
         if (name == string.Empty)
         {
             throw new ClassException("The class name cannot be empty.");
+        }
+
+        if (!char.IsUpper(name[0]))
+        {
+            throw new ClassException("The class name must start with an uppercase letter.");
         }
     }
 }
