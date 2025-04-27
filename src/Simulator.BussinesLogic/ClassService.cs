@@ -11,13 +11,13 @@ using Attribute = Simulator.Domain.Attribute;
 
 namespace Simulator.BussinesLogic;
 
-public class ClassService(IClassRepository classRepository) : IClassService
+public class ClassService(IClassRepository classRepository, IAttributeRepository attributeRepository, IMethodRepository methodRepository) : IClassService
 {
     private readonly IClassRepository _classRepository = classRepository;
 
-    // private readonly IAttributeRepository _attributeRepository = attributeRepository;
+    private readonly IAttributeRepository _attributeRepository = attributeRepository;
 
-    // private readonly IMethodRepository _methodRepository = methodRepository;
+    private readonly IMethodRepository _methodRepository = methodRepository;
 
     public void CreateClass(ClassDTO classDto)
     {
@@ -55,10 +55,39 @@ public class ClassService(IClassRepository classRepository) : IClassService
         _classRepository.Update(classT);
     }
 
+    public void UpdateClassInherits(Guid id, ClassDTO classDTO)
+    {
+        ValidateClassIdExists(id);
+        ValidateClassIsNotInUse(id);
+        var classT = _classRepository.Find(id);
+        var heritageClass = classDTO.ToEntity();
+        if(heritageClass == null)
+        {
+            throw new ClassException("The class to inherit from does not exist");
+        }
+
+        classT.HierarchyClass = heritageClass;
+        _classRepository.Update(classT);
+    }
+
     public void DeleteClass(Guid id)
     {
         ValidateClassIdExists(id);
         _classRepository.Delete(id);
+    }
+
+    private void ValidateClassIsNotInUse(Guid id)
+    {
+        var classT = _classRepository.Find(id);
+        var classes = _classRepository.FindAll();
+        var attributeT = _attributeRepository.FindAll();
+        var methods = _methodRepository.FindAll();
+        if(classes.Any(c => c.HierarchyClass != null && c.HierarchyClass.Id == id) ||
+           attributeT.Any(a => a.Type == classT) ||
+           methods.Any(m => m.ReturnType == classT))
+        {
+            throw new ClassException("Class is associated with another class, attribute or method");
+        }
     }
 
     private void ValidateClassNameIsUnique(string name)
