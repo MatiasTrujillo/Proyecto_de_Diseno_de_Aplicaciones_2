@@ -14,9 +14,7 @@ namespace Simulator.BussinesLogic;
 public class ClassService(IClassRepository classRepository, IAttributeRepository attributeRepository, IMethodRepository methodRepository) : IClassService
 {
     private readonly IClassRepository _classRepository = classRepository;
-
     private readonly IAttributeRepository _attributeRepository = attributeRepository;
-
     private readonly IMethodRepository _methodRepository = methodRepository;
 
     public void CreateClass(ClassDTO classDto)
@@ -39,6 +37,29 @@ public class ClassService(IClassRepository classRepository, IAttributeRepository
     {
         ValidateClassIdExists(id);
         var classT = _classRepository.Find(id);
+        ValidateStereotype(stereotype, classT);
+        _classRepository.Update(classT);
+    }
+
+    public void UpdateClassInherits(Guid id, ClassDTO classDTO)
+    {
+        ValidateClassIdExists(id);
+        ValidateClassIsNotInUse(id);
+        var classT = _classRepository.Find(id);
+        var heritageClass = classDTO.ToEntity();
+        classT.HierarchyClass = heritageClass;
+        _classRepository.Update(classT);
+    }
+
+    public void DeleteClass(Guid id)
+    {
+        ValidateClassIdExists(id);
+        ValidateClassIsNotInUse(id);
+        _classRepository.Delete(id);
+    }
+
+    private static void ValidateStereotype(string stereotype, Class classT)
+    {
         if(stereotype == "Abstract")
         {
             classT.Stereotype = KeyWord.Abstract;
@@ -51,30 +72,6 @@ public class ClassService(IClassRepository classRepository, IAttributeRepository
         {
             throw new InvalidClassStereotypeException("The stereotype is not valid");
         }
-
-        _classRepository.Update(classT);
-    }
-
-    public void UpdateClassInherits(Guid id, ClassDTO classDTO)
-    {
-        ValidateClassIdExists(id);
-        ValidateClassIsNotInUse(id);
-        var classT = _classRepository.Find(id);
-        var heritageClass = classDTO.ToEntity();
-        if(heritageClass == null)
-        {
-            throw new ClassException("The class to inherit from does not exist");
-        }
-
-        classT.HierarchyClass = heritageClass;
-        _classRepository.Update(classT);
-    }
-
-    public void DeleteClass(Guid id)
-    {
-        ValidateClassIdExists(id);
-        ValidateClassIsNotInUse(id);
-        _classRepository.Delete(id);
     }
 
     private void ValidateClassIsNotInUse(Guid id)
