@@ -82,6 +82,29 @@ public class ClassServiceTest
     }
 
     [TestMethod]
+    public void CreateClass_ShouldThrowException_WhenNameIsWhitespace()
+    {
+        var dto = new ClassDTO
+        {
+            Id = Guid.NewGuid(),
+            Name = string.Empty,
+            Stereotype = KeyWord.Sealed,
+            HirarchyClass = null,
+            Attributes = []
+        };
+
+        _mockClassRepository.Setup(r => r.FindAll())
+            .Returns([]);
+
+        var exception = Assert.ThrowsException<ClassException>(() =>
+        {
+            _classService.CreateClass(dto);
+        });
+
+        Assert.AreEqual("The class name cannot be empty.", exception.Message);
+    }
+
+    [TestMethod]
     public void UpdateClass_ShouldUpdateClass_WhenValid()
     {
         var id = Guid.NewGuid();
@@ -120,12 +143,12 @@ public class ClassServiceTest
     {
         var id1 = Guid.NewGuid();
         var id2 = Guid.NewGuid();
-        var original1 = new Class("name1", KeyWord.Sealed, null, [], []);
-        var original2 = new Class("name2", KeyWord.Sealed, null, [], []);
+        var original1 = new Class("Class1", KeyWord.Sealed, null, [], []);
+        var original2 = new Class("Class2", KeyWord.Sealed, null, [], []);
         var dto = new ClassDTO
         {
             Id = id2,
-            Name = "name1",
+            Name = "Class1",
             Stereotype = KeyWord.Abstract,
             HirarchyClass = null,
             Attributes = []
@@ -161,7 +184,7 @@ public class ClassServiceTest
         var dto = new ClassDTO
         {
             Id = id,
-            Name = "name1",
+            Name = "Class1",
             Stereotype = KeyWord.Abstract,
             HirarchyClass = null,
             Attributes = []
@@ -189,7 +212,7 @@ public class ClassServiceTest
     public void DeleteClass_ShouldDeleteClass_WhenValid()
     {
         var id = Guid.NewGuid();
-        var original = new Class("OldName", KeyWord.Sealed, null, [], []);
+        var original = new Class("Class2", KeyWord.Sealed, null, [], []);
         original.Id = id;
 
         _mockClassRepository

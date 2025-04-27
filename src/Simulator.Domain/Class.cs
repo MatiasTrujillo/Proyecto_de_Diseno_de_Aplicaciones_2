@@ -1,3 +1,5 @@
+using Simulator.Domain.Exception;
+
 namespace Simulator.Domain;
 
 public class Class : Type

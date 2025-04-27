@@ -17,9 +17,9 @@ public class ClassRepositoryTest
     {
         _id = Guid.NewGuid();
         _repository = new ClassRepository(_context);
-        aClass = new Class("jose", KeyWord.Abstract, null, [], []);
+        aClass = new Class("Class1", KeyWord.Abstract, null, [], []);
         aClass.Id = _id;
-        anotherClass = new Class("juan", null, null, [], []);
+        anotherClass = new Class("Class", null, null, [], []);
     }
 
     [TestInitialize]
@@ -83,8 +83,8 @@ public class ClassRepositoryTest
         var result = _repository.FindAll();
 
         result.Count.Should().Be(2);
-        result.Should().Contain(a => a.Name == "jose");
-        result.Should().Contain(a => a.Name == "juan");
+        result.Should().Contain(a => a.Name == "Class");
+        result.Should().Contain(a => a.Name == "Class1");
     }
     #endregion
 
@@ -116,7 +116,7 @@ public class ClassRepositoryTest
         _context.Classes.Add(aClass);
         _context.SaveChanges();
 
-        var updated = new Class("josesito", null, null, [], []);
+        var updated = new Class("Class1", null, null, [], []);
         updated.Id = aClass.Id;
 
         _repository.Update(updated);
@@ -125,7 +125,7 @@ public class ClassRepositoryTest
         var saved = refreshedContext.Set<Class>().Find(aClass.Id);
 
         saved.Should().NotBeNull();
-        saved.Name.Should().Be("josesito");
+        saved.Name.Should().Be("Class1");
         saved.Stereotype.Should().Be(null);
     }
     #endregion
