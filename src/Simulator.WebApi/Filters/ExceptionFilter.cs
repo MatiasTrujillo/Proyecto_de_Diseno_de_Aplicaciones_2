@@ -20,6 +20,8 @@ public class ExceptionFilter : IExceptionFilter
             ClassInUseException _ => new ObjectResult(new { context.Exception.Message }) { StatusCode = 409 },
             InvalidAttributeException _ => new ObjectResult(new { context.Exception.Message }) { StatusCode = 400 },
             InvalidClassException _ => new ObjectResult(new { context.Exception.Message }) { StatusCode = 400 },
+            InvalidMethodException _ => new ObjectResult(new { context.Exception.Message }) { StatusCode = 400 },
+            AttributeException _ => new ObjectResult(new { context.Exception.Message }) { StatusCode = 400 },
             _ => new ObjectResult(new { context.Exception.Message }) { StatusCode = 500 }
         };
         context.ExceptionHandled = true;

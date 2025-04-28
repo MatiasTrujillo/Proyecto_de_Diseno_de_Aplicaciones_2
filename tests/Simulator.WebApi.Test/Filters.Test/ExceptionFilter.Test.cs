@@ -179,4 +179,38 @@ public class ExceptionFilterTest
         var message = result?.Value?.GetType().GetProperty("Message")?.GetValue(result.Value)?.ToString();
         Assert.AreEqual("Invalid class exception", message);
     }
+
+    [TestMethod]
+    public void OnException_ShouldSetResultTo400AndHandleInvalidMethodException_WhenInvalidMethodExceptionIsThrown()
+    {
+        var exception = new InvalidMethodException("Invalid method exception");
+        _context.Exception = exception;
+
+        _filter.OnException(_context);
+
+        Assert.IsInstanceOfType(_context.Result, typeof(ObjectResult));
+        var result = _context.Result as ObjectResult;
+        Assert.AreEqual(400, result?.StatusCode);
+        Assert.IsTrue(_context.ExceptionHandled);
+
+        var message = result?.Value?.GetType().GetProperty("Message")?.GetValue(result.Value)?.ToString();
+        Assert.AreEqual("Invalid method exception", message);
+    }
+
+    [TestMethod]
+    public void OnException_ShouldSetResultTo400AndHandleAttributeException_WhenAttributeExceptionIsThrown()
+    {
+        var exception = new AttributeException("Attribute exception");
+        _context.Exception = exception;
+
+        _filter.OnException(_context);
+
+        Assert.IsInstanceOfType(_context.Result, typeof(ObjectResult));
+        var result = _context.Result as ObjectResult;
+        Assert.AreEqual(400, result?.StatusCode);
+        Assert.IsTrue(_context.ExceptionHandled);
+
+        var message = result?.Value?.GetType().GetProperty("Message")?.GetValue(result.Value)?.ToString();
+        Assert.AreEqual("Attribute exception", message);
+    }
 }
