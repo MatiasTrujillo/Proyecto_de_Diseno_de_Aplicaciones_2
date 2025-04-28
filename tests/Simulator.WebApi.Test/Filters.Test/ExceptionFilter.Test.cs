@@ -111,4 +111,38 @@ public class ExceptionFilterTest
         var message = result?.Value?.GetType().GetProperty("Message")?.GetValue(result.Value)?.ToString();
         Assert.AreEqual("Method not found exception", message);
     }
+
+    [TestMethod]
+    public void OnException_ShouldSetResultTo409AndHandleAttributeAlreadyInClassException_WhenAttributeAlreadyInClassExceptionIsThrown()
+    {
+        var exception = new AttributeAlreadyInClassException("Attribute already in class exception");
+        _context.Exception = exception;
+
+        _filter.OnException(_context);
+
+        Assert.IsInstanceOfType(_context.Result, typeof(ObjectResult));
+        var result = _context.Result as ObjectResult;
+        Assert.AreEqual(409, result?.StatusCode);
+        Assert.IsTrue(_context.ExceptionHandled);
+
+        var message = result?.Value?.GetType().GetProperty("Message")?.GetValue(result.Value)?.ToString();
+        Assert.AreEqual("Attribute already in class exception", message);
+    }
+
+    [TestMethod]
+    public void OnException_ShouldSetResultTo409AndHandleClassInUseException_WhenClassInUseExceptionIsThrown()
+    {
+        var exception = new ClassInUseException("Class in use exception");
+        _context.Exception = exception;
+
+        _filter.OnException(_context);
+
+        Assert.IsInstanceOfType(_context.Result, typeof(ObjectResult));
+        var result = _context.Result as ObjectResult;
+        Assert.AreEqual(409, result?.StatusCode);
+        Assert.IsTrue(_context.ExceptionHandled);
+
+        var message = result?.Value?.GetType().GetProperty("Message")?.GetValue(result.Value)?.ToString();
+        Assert.AreEqual("Class in use exception", message);
+    }
 }
