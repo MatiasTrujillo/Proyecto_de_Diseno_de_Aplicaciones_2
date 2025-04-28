@@ -17,33 +17,6 @@ public class MethodRepository(SqlContext context) : IMethodRepository
             }
         }
 
-        var resolvedParameters = new List<Parameter>();
-        foreach(var param in method.Parameters)
-        {
-            var existingParam = context.Parameters.Find(param.Id);
-            resolvedParameters.Add(existingParam ?? param);
-        }
-
-        method.Parameters = resolvedParameters;
-
-        var resolvedLocalVars = new List<LocalVariable>();
-        foreach(var localVar in method.LocalVariables)
-        {
-            var existingVar = context.LocalVariables.Find(localVar.Id);
-            resolvedLocalVars.Add(existingVar ?? localVar);
-        }
-
-        method.LocalVariables = resolvedLocalVars;
-
-        var resolvedMethods = new List<Method>();
-        foreach(var innerMethod in method.Methods)
-        {
-            var existingMethod = context.Methods.Find(innerMethod.Id);
-            resolvedMethods.Add(existingMethod ?? innerMethod);
-        }
-
-        method.Methods = resolvedMethods;
-
         context.Methods.Add(method);
         context.SaveChanges();
     }
