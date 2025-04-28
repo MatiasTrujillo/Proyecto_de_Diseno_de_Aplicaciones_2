@@ -4,6 +4,7 @@ using Simulator.Domain;
 using Simulator.DTO;
 using Simulator.IBussinesLogic;
 using Simulator.WebApi.Controllers;
+using Attribute = Simulator.Domain.Attribute;
 
 namespace Simulator.WebApi.Test.Controller.Test;
 
@@ -32,14 +33,15 @@ public class AttributeControllerTest
     {
         var id = Guid.NewGuid();
         var attribute = new AttributeDto();
-        AttributeServiceMock.Setup(service => service.UpdateAttribute(id, attribute))
+        attribute.Name = "TestAttribute";
+        AttributeServiceMock.Setup(service => service.UpdateAttributeName(id, attribute.Name))
             .Verifiable();
 
-        var result = _controller.UpdateAttribute(id, attribute) as OkObjectResult;
+        var result = _controller.UpdateAttribute(id, attribute.Name) as OkObjectResult;
 
         Assert.IsNotNull(result);
         Assert.AreEqual(200, result.StatusCode);
-        AttributeServiceMock.Verify(service => service.UpdateAttribute(id, attribute), Times.Once);
+        AttributeServiceMock.Verify(service => service.UpdateAttributeName(id, attribute.Name), Times.Once);
     }
 
     [TestMethod]
@@ -61,14 +63,15 @@ public class AttributeControllerTest
     {
         var mockAttributeService = new Mock<IAttributeService>();
         var controller = new AttributeController(mockAttributeService.Object);
-        var attributeDto = new AttributeDto
+        var attribute = new Attribute
         {
+            Id = Guid.NewGuid(),
             Name = "TestAttribute",
             Accessibility = Accessibility.Public
         };
         var classId = Guid.NewGuid();
 
-        var result = controller.AsociateAttribute(classId, attributeDto) as CreatedResult;
+        var result = controller.AsociateAttribute(classId, attribute.Id) as CreatedResult;
 
         Assert.IsNotNull(result);
         Assert.AreEqual(201, result.StatusCode);
@@ -77,6 +80,6 @@ public class AttributeControllerTest
         Assert.IsNotNull(value);
         Assert.AreEqual(201, result.StatusCode);
 
-        mockAttributeService.Verify(service => service.AsociateAttribute(classId, attributeDto), Times.Once);
+        mockAttributeService.Verify(service => service.AsociateAttribute(classId, attribute.Id), Times.Once);
     }
 }

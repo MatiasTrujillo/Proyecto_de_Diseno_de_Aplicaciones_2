@@ -36,8 +36,6 @@ public class ClassServiceTest
         {
             Name = "Pedro",
             Stereotype = KeyWord.Sealed,
-            HierarchyClass = null,
-            Attributes = []
         };
 
         _mockClassRepository.Setup(r => r.FindAll())
@@ -58,16 +56,12 @@ public class ClassServiceTest
         {
             Name = "Pedro",
             Stereotype = KeyWord.Sealed,
-            HierarchyClass = null,
-            Attributes = []
         };
 
         var dto2 = new ClassDTO
         {
             Name = "Pedro",
             Stereotype = null,
-            HierarchyClass = null,
-            Attributes = []
         };
 
         var classes = new List<Class> { dto1.ToEntity() };
@@ -90,8 +84,6 @@ public class ClassServiceTest
         {
             Name = string.Empty,
             Stereotype = KeyWord.Sealed,
-            HierarchyClass = null,
-            Attributes = []
         };
 
         _mockClassRepository.Setup(r => r.FindAll())
@@ -112,8 +104,6 @@ public class ClassServiceTest
         {
             Name = "class",
             Stereotype = KeyWord.Sealed,
-            HierarchyClass = null,
-            Attributes = []
         };
 
         _mockClassRepository.Setup(r => r.FindAll())
@@ -134,8 +124,6 @@ public class ClassServiceTest
         {
             Name = "Class Name",
             Stereotype = KeyWord.Sealed,
-            HierarchyClass = null,
-            Attributes = []
         };
 
         _mockClassRepository.Setup(r => r.FindAll())
@@ -158,8 +146,6 @@ public class ClassServiceTest
         {
             Name = "NewName",
             Stereotype = KeyWord.Sealed,
-            HierarchyClass = null,
-            Attributes = []
         };
 
         var classes = new List<Class> { original };
@@ -192,8 +178,6 @@ public class ClassServiceTest
         {
             Name = "Class1",
             Stereotype = KeyWord.Abstract,
-            HierarchyClass = null,
-            Attributes = []
         };
 
         _mockClassRepository
@@ -227,8 +211,6 @@ public class ClassServiceTest
         {
             Name = "Class1",
             Stereotype = KeyWord.Abstract,
-            HierarchyClass = null,
-            Attributes = []
         };
 
         _mockClassRepository
@@ -371,8 +353,6 @@ public class ClassServiceTest
         {
             Name = "ClassB",
             Stereotype = KeyWord.Sealed,
-            HierarchyClass = null,
-            Attributes = []
         };
 
         _mockClassRepository.Setup(repo => repo.Find(classId)).Returns(existingClass);
@@ -382,7 +362,7 @@ public class ClassServiceTest
         _mockMethodRepository.Setup(repo => repo.FindAll()).Returns([]);
         _mockClassRepository.Setup(repo => repo.Update(It.IsAny<Class>()));
 
-        _classService.UpdateClassInherits(classId, dto);
+        _classService.UpdateClassInherits(classId, hierarchyClassId);
 
         Assert.AreEqual(hierarchyClass.Name, existingClass.HierarchyClass.Name);
         _mockClassRepository.Verify(repo => repo.Update(existingClass), Times.Once);
@@ -391,38 +371,49 @@ public class ClassServiceTest
     [TestMethod]
     public void UpdateClassInherits_ShouldThrowException_WhenClassIsInUse()
     {
-        var classId = Guid.NewGuid();
+        var existingClassId = Guid.NewGuid();
         var hierarchyClassId = Guid.NewGuid();
+        var associatedClassId = Guid.NewGuid();
 
-        var existingClass = new Class(KeyWord.Sealed, null, [], [], "ClassA");
-        existingClass.Id = classId;
-
-        var hierarchyClass = new Class(KeyWord.Sealed, null, [], [], "ClassB");
-        hierarchyClass.Id = hierarchyClassId;
-
-        var classes = new List<Class>
+        var existingClass = new Class(KeyWord.Sealed, null, [], [], "ClassA")
         {
-            existingClass,
-            new Class(KeyWord.Sealed, existingClass, [], [], "OtherName")
+            Id = existingClassId
         };
 
-        var dto = new ClassDTO
+        var hierarchyClass = new Class(KeyWord.Sealed, null, [], [], "ClassB")
         {
-            Name = "ClassB",
-            Stereotype = KeyWord.Sealed,
-            HierarchyClass = null,
-            Attributes = []
+            Id = hierarchyClassId
         };
 
-        _mockClassRepository.Setup(repo => repo.Find(classId)).Returns(existingClass);
-        _mockClassRepository.Setup(repo => repo.Find(hierarchyClassId)).Returns(hierarchyClass);
-        _mockClassRepository.Setup(repo => repo.FindAll()).Returns(classes);
-        _mockAttributeRepository.Setup(repo => repo.FindAll()).Returns([]);
-        _mockMethodRepository.Setup(repo => repo.FindAll()).Returns([]);
+        var associatedClass = new Class(KeyWord.Sealed, existingClass, [], [], "AssociatedClass")
+        {
+            Id = associatedClassId
+        };
+
+        var classes = new List<Class> { existingClass, hierarchyClass, associatedClass };
+
+        _mockClassRepository.Setup(r => r.Find(It.IsAny<Guid>())).Returns<Guid>(id =>
+        {
+            if (id == existingClassId)
+            {
+                return existingClass;
+            }
+
+            if (id == hierarchyClassId)
+            {
+                return hierarchyClass;
+            }
+
+            return null;
+        });
+
+        _mockClassRepository.Setup(r => r.FindAll()).Returns(classes);
+        _mockAttributeRepository.Setup(r => r.FindAll()).Returns([]);
+        _mockMethodRepository.Setup(r => r.FindAll()).Returns([]);
 
         var exception = Assert.ThrowsException<ClassException>(() =>
         {
-            _classService.UpdateClassInherits(classId, dto);
+            _classService.UpdateClassInherits(existingClassId, hierarchyClassId);
         });
 
         Assert.AreEqual("Class is associated with another class, attribute or method", exception.Message);
@@ -439,8 +430,6 @@ public class ClassServiceTest
         {
             Name = "NonExistentClass",
             Stereotype = KeyWord.Sealed,
-            HierarchyClass = null,
-            Attributes = []
         };
 
         _mockClassRepository.Setup(repo => repo.Find(classId)).Returns(existingClass);
@@ -451,7 +440,7 @@ public class ClassServiceTest
 
         var exception = Assert.ThrowsException<ClassException>(() =>
         {
-            _classService.UpdateClassInherits(Guid.NewGuid(), dto);
+            _classService.UpdateClassInherits(Guid.NewGuid(), Guid.Empty);
         });
 
         Assert.AreEqual("There is no class with this id", exception.Message);

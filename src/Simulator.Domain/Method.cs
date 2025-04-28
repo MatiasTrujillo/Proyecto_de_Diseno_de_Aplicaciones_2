@@ -1,15 +1,17 @@
-﻿namespace Simulator.Domain;
+﻿using Simulator.Domain.Exception;
+
+namespace Simulator.Domain;
 
 public class Method
 {
     public Guid Id { get; set; }
-    public string? Name { get; set; }
+    public string Name { get; set; }
     public Accessibility Accessibility { get; set; }
-    public List<Method> Methods { get; set; }
-    public List<Parameter> Parameters { get; set; }
-    public List<LocalVariable> LocalVariables { get; set; }
+    public List<Method>? Methods { get; set; }
+    public List<Parameter>? Parameters { get; set; }
+    public List<LocalVariable>? LocalVariables { get; set; }
     public KeyWord? Stereotype { get; set; }
-    public Type ReturnType { get; set; }
+    public Type? ReturnType { get; set; }
 
     public Method()
     {
@@ -27,6 +29,7 @@ public class Method
         List<Parameter> parameters,
         List<LocalVariable> localVariables, Type returnType)
     {
+        ValidateMethodName(name);
         Id = Guid.NewGuid();
         Name = name;
         Accessibility = accessibility;
@@ -35,6 +38,24 @@ public class Method
         LocalVariables = localVariables;
         Stereotype = stereotype;
         ReturnType = returnType;
+    }
+
+    private void ValidateMethodName(string name)
+    {
+        if (string.IsNullOrWhiteSpace(name))
+        {
+            throw new MethodException("Method name cannot be empty.");
+        }
+
+        if (name.Length > 50)
+        {
+            throw new MethodException("Method name cannot be longer than 50 characters.");
+        }
+
+        if (name.Contains(' '))
+        {
+            throw new MethodException("Method name cannot contain spaces.");
+        }
     }
 
     public override bool Equals(object? obj)

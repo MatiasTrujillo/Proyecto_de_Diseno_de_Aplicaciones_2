@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Linq;
+using Simulator.Domain;
 using Simulator.Domain.Exception;
 using Simulator.DTO;
 using Simulator.IBussinesLogic;
 using Simulator.IDataAcces;
 using Attribute = Simulator.Domain.Attribute;
+using Type = Simulator.Domain.Type;
 
 namespace Simulator.BussinesLogic;
 
@@ -13,15 +15,18 @@ public class AttributeService(IAttributeRepository attributeRepository, IClassRe
     private readonly IAttributeRepository _attributeRepository = attributeRepository;
     private readonly IClassRepository _classRepository = classRepository;
 
-    public void CreateAttribute(AttributeDto aDTO)
+    public Guid CreateAttribute(AttributeDto aDTO)
     {
         var attribute = aDTO.ToEntity();
+        ValidateAttributeType(attribute.Type);
+        var classT = _attributeRepository.Find(attribute.Type.Id);
         _attributeRepository.Add(attribute);
+        return attribute.Id;
     }
 
-    public void AsociateAttribute(Guid idClass, AttributeDto attribute)
+    public void AsociateAttribute(Guid id, Guid idClass)
     {
-        var attributeT = attribute.ToEntity();
+        var attributeT = _attributeRepository.Find(id);
         var classT = _classRepository.Find(idClass);
         ValidateClassExists(idClass);
         ValidUniqueNameInClass(idClass, attributeT);
@@ -29,15 +34,32 @@ public class AttributeService(IAttributeRepository attributeRepository, IClassRe
         _classRepository.Update(classT);
     }
 
-    public void UpdateAttribute(Guid id, AttributeDto attribute)
+    public void UpdateAttributeName(Guid id, string newName)
     {
-        var attributeT = _attributeRepository.Find(id);
-        ValidateAttributeExist(attributeT);
-        ValidateAttributeIsNotInClass(attributeT);
-        attributeT.Name = attribute.Name;
-        attributeT.Accessibility = attribute.Accessibility;
-        _attributeRepository.Update(attributeT);
+        var attribute = _attributeRepository.Find(id);
+        ValidateAttributeExist(attribute);
+        ValidateAttributeIsNotInClass(attribute);
+        attribute.Name = newName;
+        _attributeRepository.Update(attribute);
     }
+
+    public void UpdateAttributeAccessibility(Guid id, string newAccessibility)
+    {
+        var attribute = _attributeRepository.Find(id);
+        ValidateAttributeExist(attribute);
+        ValidateAttributeIsNotInClass(attribute);
+        ValidateAccessibility(newAccessibility, attribute);
+        _attributeRepository.Update(attribute);
+    }
+
+    /*public void UpdateAttributeType(Guid id, string type)
+    {
+        var attribute = _attributeRepository.Find(id);
+        ValidateAttributeExist(attribute);
+        ValidateAttributeIsNotInClass(attribute);
+        attribute.Type = type.ToEntity();
+        _attributeRepository.Update(attribute);
+    }*/
 
     public void DeleteAttribute(Guid id)
     {
@@ -45,6 +67,35 @@ public class AttributeService(IAttributeRepository attributeRepository, IClassRe
         ValidateAttributeExist(attributeT);
         ValidateAttributeIsNotInClass(attributeT);
         _attributeRepository.Delete(id);
+    }
+
+    private void ValidateAttributeType(Type? methodTReturnType)
+    {
+        var classes = _classRepository.FindAll();
+        if(methodTReturnType != null && classes.All(c => c.Name != methodTReturnType.Name))
+        {
+            throw new MethodException("Return type not found.");
+        }
+    }
+
+    private void ValidateAccessibility(string newAccessibility, Attribute attribute)
+    {
+        if (newAccessibility == "Public")
+        {
+            attribute.Accessibility = Accessibility.Public;
+        }
+        else if (newAccessibility == "Private")
+        {
+            attribute.Accessibility = Accessibility.Private;
+        }
+        else if (newAccessibility == "Protected")
+        {
+            attribute.Accessibility = Accessibility.Protected;
+        }
+        else
+        {
+            throw new AttributeException("Invalid accessibility type");
+        }
     }
 
     private void ValidateAttributeIsNotInClass(Attribute attributeT)
@@ -78,7 +129,7 @@ public class AttributeService(IAttributeRepository attributeRepository, IClassRe
     {
         var classT = _classRepository.Find(idClass);
 
-        if(classT.Attributes.Any(a => a.Name == attribute.Name))
+        if(classT.Attributes != null && classT.Attributes.Any(a => a.Name == attribute.Name))
         {
             throw new AttributeException($"An attribute with the name '{attribute.Name}' already exists in the class");
         }

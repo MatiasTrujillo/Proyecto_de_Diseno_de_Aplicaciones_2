@@ -6,9 +6,9 @@ public class Class : Type
 {
     public KeyWord? Stereotype { get; set; }
     public Type? HierarchyClass { get; set; }
-    public List<Attribute> Attributes { get; set; }
+    public List<Attribute>? Attributes { get; set; }
 
-    public List<Method> Methods { get; set; }
+    public List<Method>? Methods { get; set; }
 
     public Class()
         : base(string.Empty)

@@ -60,20 +60,15 @@ public class ClassControllerTest
     public void UpdateClassInherits_ShouldReturnOk_WhenUpdateIsSuccessful()
     {
         var classId = Guid.NewGuid();
-        var classDto = new ClassDTO
-        {
-            Name = "UpdatedClass",
-            HierarchyClass = null,
-            Attributes = []
-        };
+        var classId2 = Guid.NewGuid();
 
-        _classServiceMock.Setup(service => service.UpdateClassInherits(classId, classDto));
+        _classServiceMock.Setup(service => service.UpdateClassInherits(classId, classId2));
 
-        var okResult = _controller.UpdateClassInherits(classId, classDto) as OkObjectResult;
+        var okResult = _controller.UpdateClassInherits(classId, classId2) as OkObjectResult;
 
         Assert.IsNotNull(okResult);
         Assert.AreEqual(200, okResult.StatusCode);
-        _classServiceMock.Verify(service => service.UpdateClassInherits(classId, classDto), Times.Once);
+        _classServiceMock.Verify(service => service.UpdateClassInherits(classId, classId2), Times.Once);
     }
 
     [TestMethod]

@@ -21,13 +21,13 @@ public class MethodServiceTest
     {
         _methodDto = new MethodDTO()
         {
-            Name = "First Method Dto",
+            Name = "FirstMethodDto",
             Accessibility = Accessibility.Private,
             Stereotype = null
         };
         _otherMethodDto = new MethodDTO()
         {
-            Name = "Second Method Dto",
+            Name = "SecondMethodDto",
             Accessibility = Accessibility.Public,
             Stereotype = KeyWord.Abstract
         };
@@ -44,6 +44,14 @@ public class MethodServiceTest
     [TestMethod]
     public void CreateMethod_ShouldCallRepositoryAdd_WithValidMethod()
     {
+        var classes = new List<Class>();
+        _mockClassRepository.Setup(repo => repo.FindAll()).Returns(classes);
+
+        if (_methodDto.ReturnType != null)
+        {
+            classes.Add(new Class { Name = _methodDto.ReturnType.Name });
+        }
+
         _methodService.CreateMethod(_methodDto);
 
         _mockMethodRepository.Verify(repo => repo.Add(
@@ -246,11 +254,9 @@ public class MethodServiceTest
 
         _mockMethodRepository.Setup(repo => repo.Find(methodId)).Returns((Method)null!);
 
-        // Comprobamos si se lanza la excepción esperada
         var exception = Assert.ThrowsException<MethodException>(() =>
             _methodService.AddParameterToMethod(methodId, parameter));
 
-        // Verificamos que el mensaje de la excepción sea el correcto
         Assert.AreEqual("Method null.", exception.Message);
     }
 
@@ -315,6 +321,33 @@ public class MethodServiceTest
         Assert.IsTrue(method.Parameters.Any(p => p.Name == parameter.Name));
 
         _mockMethodRepository.Verify(repo => repo.Update(method), Times.Once);
+    }
+
+    [TestMethod]
+    [ExpectedException(typeof(MethodException))]
+    public void MethodConstructor_WithEmptyName_ShouldThrowMethodException()
+    {
+        var name = string.Empty;
+
+        var method = new Method(name, Accessibility.Public, null, new List<Method>(), new List<Parameter>(), new List<LocalVariable>(), new Primitive());
+    }
+
+    [TestMethod]
+    [ExpectedException(typeof(MethodException))]
+    public void MethodConstructor_WithSpacesInName_ShouldThrowMethodException()
+    {
+        var name = "Invalid Name";
+
+        var method = new Method(name, Accessibility.Public, null, new List<Method>(), new List<Parameter>(), new List<LocalVariable>(), new Primitive());
+    }
+
+    [TestMethod]
+    [ExpectedException(typeof(MethodException))]
+    public void MethodConstructor_WithNameLongerThan50Characters_ShouldThrowMethodException()
+    {
+        var name = new string('a', 51);
+
+        var method = new Method(name, Accessibility.Public, null, new List<Method>(), new List<Parameter>(), new List<LocalVariable>(), new Primitive());
     }
 
     [TestMethod]

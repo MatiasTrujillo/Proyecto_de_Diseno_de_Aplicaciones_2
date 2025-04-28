@@ -14,11 +14,12 @@ public class ClassService(IClassRepository classRepository, IAttributeRepository
     private readonly IAttributeRepository _attributeRepository = attributeRepository;
     private readonly IMethodRepository _methodRepository = methodRepository;
 
-    public void CreateClass(ClassDTO classDto)
+    public Guid CreateClass(ClassDTO classDto)
     {
         var aClass = classDto.ToEntity();
         ValidateClassNameIsUnique(aClass.Name);
         _classRepository.Add(aClass);
+        return aClass.Id;
     }
 
     public void UpdateNameClass(Guid id, string name)
@@ -38,12 +39,13 @@ public class ClassService(IClassRepository classRepository, IAttributeRepository
         _classRepository.Update(classT);
     }
 
-    public void UpdateClassInherits(Guid id, ClassDTO classDTO)
+    public void UpdateClassInherits(Guid id, Guid idClass)
     {
         ValidateClassIdExists(id);
+        ValidateClassIdExists(idClass);
         ValidateClassIsNotInUse(id);
         var classT = _classRepository.Find(id);
-        var heritageClass = classDTO.ToEntity();
+        var heritageClass = _classRepository.Find(idClass);
         classT.HierarchyClass = heritageClass;
         _classRepository.Update(classT);
     }

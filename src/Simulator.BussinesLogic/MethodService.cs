@@ -16,12 +16,25 @@ public class MethodService(IMethodRepository methodRepository, IClassRepository 
     private readonly IClassRepository _classRepository = classRepository;
     private static int _indentacion = 0;
 
-    public void CreateMethod(MethodDTO method)
+    public Guid CreateMethod(MethodDTO method)
     {
         ValidateIsNotNull(method);
         var methodT = method.ToEntity();
         ValidateUniqueMethod(methodT);
+        ValidateMethodReturnType(methodT.ReturnType);
         _methodRepository.Add(methodT);
+        return methodT.Id;
+    }
+
+    public void AddAMethod(Guid id, Guid idToAdd)
+    {
+        var method = _methodRepository.Find(id);
+        var methodToAdd = _methodRepository.Find(idToAdd);
+        ValidateMethodExist(method);
+        ValidateMethodExist(methodToAdd);
+        ValidateMethodIsNotInRepeted(id, idToAdd);
+        method.Methods.Add(methodToAdd);
+        _methodRepository.Update(method);
     }
 
     public void AssociateMethodWithClass(Guid methodId, Guid classId)
@@ -33,24 +46,6 @@ public class MethodService(IMethodRepository methodRepository, IClassRepository 
         ValidateClassUniqueNameMethod(method, classT);
         classT.Methods.Add(method);
         _classRepository.Update(classT);
-    }
-
-    public void DeleteMethod(Guid id)
-    {
-        var method = _methodRepository.Find(id);
-        ValidateMethodExist(method);
-        ValidateMehodIsNotInClass(id);
-        ValidateMethodIsNotInUse(id);
-        _methodRepository.Delete(id);
-    }
-
-    public void AddAMethod(Guid id, Guid idToAdd)
-    {
-        var method = _methodRepository.Find(id);
-        var methodToAdd = _methodRepository.Find(idToAdd);
-        ValidateMethodIsNotInRepeted(id, idToAdd);
-        method.Methods.Add(methodToAdd);
-        _methodRepository.Update(method);
     }
 
     public void AddLocalVariableToMethod(Guid methodId, LocalVariableDTO localVariable)
@@ -71,6 +66,15 @@ public class MethodService(IMethodRepository methodRepository, IClassRepository 
         ValidateNameParameter(parameter, method);
         method.Parameters.Add(parameterT);
         _methodRepository.Update(method);
+    }
+
+    public void DeleteMethod(Guid id)
+    {
+        var method = _methodRepository.Find(id);
+        ValidateMethodExist(method);
+        ValidateMehodIsNotInClass(id);
+        ValidateMethodIsNotInUse(id);
+        _methodRepository.Delete(id);
     }
 
     public string ExecuteMethod(Type reference, Class objectToCreate, Method methodReference)
@@ -98,7 +102,7 @@ public class MethodService(IMethodRepository methodRepository, IClassRepository 
             foreach(var localVar in methodReference.LocalVariables)
             {
                 var classType = localVar.LocalVariableType as Class;
-                var c = classType.Methods.Any(m => m.Name == calledMethod.Name);
+                var c = classType.Methods != null && classType.Methods.Any(m => m.Name == calledMethod.Name);
                 var aux = classType;
                 var i = 0;
                 if(classType != null && c)
@@ -142,7 +146,7 @@ public class MethodService(IMethodRepository methodRepository, IClassRepository 
                 {
                     if(attr.Type is Class attrClass)
                     {
-                        if(attrClass.Methods.Any(m => m.Name == calledMethod.Name))
+                        if(attrClass.Methods != null && attrClass.Methods.Any(m => m.Name == calledMethod.Name))
                         {
                             result.Add(
                                 $"{indentation}{attr.Name}.{calledMethod.Name}() -> {attrClass.Name}.{calledMethod.Name}()");
@@ -152,12 +156,15 @@ public class MethodService(IMethodRepository methodRepository, IClassRepository 
                         var parent = attrClass.HierarchyClass as Class;
                         while(parent != null)
                         {
-                            var methodInParent = parent.Methods.FirstOrDefault(m => m.Name == calledMethod.Name);
-                            if(methodInParent != null)
+                            if (parent.Methods != null)
                             {
-                                result.Add(
-                                    $"{indentation}{attr.Name}.{calledMethod.Name}() -> {parent.Name}.{methodInParent.Name}()");
-                                break;
+                                var methodInParent = parent.Methods.FirstOrDefault(m => m.Name == calledMethod.Name);
+                                if(methodInParent != null)
+                                {
+                                    result.Add(
+                                        $"{indentation}{attr.Name}.{calledMethod.Name}() -> {parent.Name}.{methodInParent.Name}()");
+                                    break;
+                                }
                             }
 
                             parent = (Class)parent.HierarchyClass;
@@ -165,7 +172,7 @@ public class MethodService(IMethodRepository methodRepository, IClassRepository 
                     }
                 }
 
-                if(referenceClass.Methods.Any(m => m.Name == calledMethod.Name))
+                if(referenceClass.Methods != null && referenceClass.Methods.Any(m => m.Name == calledMethod.Name))
                 {
                     result.Add(
                         $"{indentation}this.{calledMethod.Name}() -> {referenceClass.Name}.{calledMethod.Name}()");
@@ -182,7 +189,7 @@ public class MethodService(IMethodRepository methodRepository, IClassRepository 
             {
                 if(param.ParameterType is Class paramClass)
                 {
-                    if(paramClass.Methods.Any(m => m.Name == calledMethod.Name))
+                    if(paramClass.Methods != null && paramClass.Methods.Any(m => m.Name == calledMethod.Name))
                     {
                         var indentation = new string('\t', _indentacion);
                         result.Add(
@@ -273,8 +280,8 @@ public class MethodService(IMethodRepository methodRepository, IClassRepository 
 
     private void ValidateNameParameter(ParameterDTO parameter, Method method)
     {
-        if(method.LocalVariables.Any(v => v.Name.Equals(parameter.Name, StringComparison.OrdinalIgnoreCase)) ||
-            method.Parameters.Any(p => p.Name.Equals(parameter.Name, StringComparison.OrdinalIgnoreCase)))
+        if(method.LocalVariables != null && method.Parameters != null && (method.LocalVariables.Any(v => v.Name.Equals(parameter.Name, StringComparison.OrdinalIgnoreCase)) ||
+                                                                          method.Parameters.Any(p => p.Name.Equals(parameter.Name, StringComparison.OrdinalIgnoreCase))))
         {
             throw new MethodException("A variable or parameter with the same name already exists.");
         }
@@ -282,8 +289,8 @@ public class MethodService(IMethodRepository methodRepository, IClassRepository 
 
     private static void ValidateNameLocalVariable(LocalVariableDTO localVariable, Method method)
     {
-        if(method.LocalVariables.Any(v => v.Name.Equals(localVariable.Name, StringComparison.OrdinalIgnoreCase)) ||
-            method.Parameters.Any(p => p.Name.Equals(localVariable.Name, StringComparison.OrdinalIgnoreCase)))
+        if(method.LocalVariables != null && method.Parameters != null && (method.LocalVariables.Any(v => v.Name.Equals(localVariable.Name, StringComparison.OrdinalIgnoreCase)) ||
+                                                                          method.Parameters.Any(p => p.Name.Equals(localVariable.Name, StringComparison.OrdinalIgnoreCase))))
         {
             throw new MethodException("A variable or parameter with the same name already exists.");
         }
@@ -293,7 +300,7 @@ public class MethodService(IMethodRepository methodRepository, IClassRepository 
     {
         var method = _methodRepository.Find(idMethod);
         var methodToAdd = _methodRepository.Find(idMethodToAdd);
-        if(method.Methods.Any(m => m.Id == idMethodToAdd))
+        if(method.Methods != null && method.Methods.Any(m => m.Id == idMethodToAdd))
         {
             throw new MethodException("Method is already associated with this method.");
         }
@@ -302,7 +309,7 @@ public class MethodService(IMethodRepository methodRepository, IClassRepository 
     private void ValidateMehodIsNotInClass(Guid id)
     {
         var classes = _classRepository.FindAll();
-        if(classes.Any(classT => classT.Methods.Any(method => method.Id == id)))
+        if(classes.Any(classT => classT.Methods != null && classT.Methods.Any(method => method.Id == id)))
         {
             throw new MethodException("Method is associated with a class.");
         }
@@ -312,7 +319,7 @@ public class MethodService(IMethodRepository methodRepository, IClassRepository 
     {
         var methods = classT.Methods;
 
-        if(methods.Any(existingMethod => existingMethod.Name.Equals(method.Name)))
+        if(methods != null && methods.Any(existingMethod => existingMethod.Name.Equals(method.Name)))
         {
             throw new MethodException("A method with the same name already exists in the class.");
         }
@@ -348,6 +355,15 @@ public class MethodService(IMethodRepository methodRepository, IClassRepository 
         if(methods.Any(method => method.Name.Equals(methodT.Name)))
         {
             throw new MethodException("Method with the same name  already exists.");
+        }
+    }
+
+    private void ValidateMethodReturnType(Type? methodTReturnType)
+    {
+        var classes = _classRepository.FindAll();
+        if(methodTReturnType != null && classes.All(c => c.Name != methodTReturnType.Name))
+        {
+            throw new MethodException("Return type not found.");
         }
     }
 }

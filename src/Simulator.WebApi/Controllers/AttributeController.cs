@@ -13,22 +13,29 @@ public class AttributeController(IAttributeService attributeService) : Controlle
     [HttpPost]
     public IActionResult CreateAttribute([FromBody] AttributeDto attribute)
     {
-        _attributeService.CreateAttribute(attribute);
-        return Created(string.Empty, new { message = "Attribute created successfully" });
+        var createdAttributeId = _attributeService.CreateAttribute(attribute);
+        return Created(string.Empty, new { id = createdAttributeId });
     }
 
-    [HttpPost("{id}")]
-    public IActionResult AsociateAttribute(Guid id, [FromBody] AttributeDto attributes)
+    [HttpPost("{id}/classes/{idClass}")]
+    public IActionResult AsociateAttribute([FromRoute] Guid id, [FromRoute] Guid idClass)
     {
-        _attributeService.AsociateAttribute(id, attributes);
+        _attributeService.AsociateAttribute(id, idClass);
         return Created(string.Empty, new { message = "Attributes associate successfully" });
     }
 
-    [HttpPatch("{id}")]
-    public IActionResult UpdateAttribute([FromRoute] Guid id, [FromBody] AttributeDto attribute)
+    [HttpPatch("{id}/names/")]
+    public IActionResult UpdateAttribute([FromRoute] Guid id, [FromQuery] string name)
     {
-        _attributeService.UpdateAttribute(id, attribute);
+        _attributeService.UpdateAttributeName(id, name);
         return Ok(new { message = "Attribute updated successfully" });
+    }
+
+    [HttpPatch("{id}/accessibility/")]
+    public IActionResult UpdateAttributeAccessibiliti([FromRoute] Guid id, [FromQuery] string accessibility)
+    {
+        _attributeService.UpdateAttributeAccessibility(id, accessibility);
+        return Ok(new { message = "Attribute accessibility updated successfully" });
     }
 
     [HttpDelete("{id}")]

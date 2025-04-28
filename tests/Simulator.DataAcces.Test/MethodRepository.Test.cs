@@ -37,9 +37,9 @@ public class MethodRepositoryTest
         _oneId = Guid.NewGuid();
         _secondId = Guid.NewGuid();
         _thirdId = Guid.NewGuid();
-        _oneMethodName = "First Method";
-        _secondMethodName = "Second Method";
-        _thirdMethodName = "Third Method";
+        _oneMethodName = "FirstMethod";
+        _secondMethodName = "SecondMethod";
+        _thirdMethodName = "ThirdMethod";
         _accessibilityPublic = Accessibility.Public;
         _accessibilityPrivate = Accessibility.Private;
         _secondMethod = new Method(_secondMethodName, _accessibilityPrivate, KeyWord.Abstract,

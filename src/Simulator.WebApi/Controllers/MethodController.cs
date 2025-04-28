@@ -13,8 +13,8 @@ public class MethodController(IMethodService methodService) : ControllerBase
     [HttpPost]
     public IActionResult CreateMethod([FromBody] MethodDTO method)
     {
-        _amethodService.CreateMethod(method);
-        return Created(string.Empty, new { message = "Method created successfully" });
+        var methodId = _amethodService.CreateMethod(method);
+        return Created(string.Empty, new { id = methodId });
     }
 
     [HttpPost("{methodId}/associate/{classId}")]
@@ -22,13 +22,6 @@ public class MethodController(IMethodService methodService) : ControllerBase
     {
         _amethodService.AssociateMethodWithClass(methodId, classId);
         return Created(string.Empty, new { message = "Method associated with class successfully" });
-    }
-
-    [HttpDelete("{id}")]
-    public IActionResult DeleteMethod([FromRoute] Guid id)
-    {
-        _amethodService.DeleteMethod(id);
-        return NoContent();
     }
 
     [HttpPost("{id}/add/{idToAdd}")]
@@ -50,5 +43,12 @@ public class MethodController(IMethodService methodService) : ControllerBase
     {
         _amethodService.AddParameterToMethod(methodId, parameter);
         return Created(string.Empty, new { message = "Parameter added successfully" });
+    }
+
+    [HttpDelete("{id}")]
+    public IActionResult DeleteMethod([FromRoute] Guid id)
+    {
+        _amethodService.DeleteMethod(id);
+        return NoContent();
     }
 }

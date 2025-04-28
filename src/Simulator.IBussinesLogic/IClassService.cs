@@ -4,9 +4,9 @@ namespace Simulator.IBussinesLogic;
 
 public interface IClassService
 {
-    void CreateClass(ClassDTO classDto);
+    Guid CreateClass(ClassDTO classDto);
     void UpdateNameClass(Guid id, string name);
     void UpdateClassStereotype(Guid id, string stereotype);
-    void UpdateClassInherits(Guid id, ClassDTO classDto);
+    void UpdateClassInherits(Guid id, Guid idClass);
     void DeleteClass(Guid id);
 }

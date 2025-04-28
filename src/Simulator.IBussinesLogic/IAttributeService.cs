@@ -4,8 +4,9 @@ namespace Simulator.IBussinesLogic;
 
 public interface IAttributeService
 {
-    void CreateAttribute(AttributeDto attribute);
-    void AsociateAttribute(Guid idClass, AttributeDto attribute);
-    void UpdateAttribute(Guid id, AttributeDto attribute);
+    Guid CreateAttribute(AttributeDto attribute);
+    void AsociateAttribute(Guid id, Guid idClass);
+    void UpdateAttributeName(Guid id, string newName);
+    void UpdateAttributeAccessibility(Guid id, string newAccessibility);
     void DeleteAttribute(Guid id);
 }

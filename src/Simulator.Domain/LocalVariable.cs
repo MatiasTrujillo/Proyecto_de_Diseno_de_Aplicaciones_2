@@ -4,7 +4,7 @@ public class LocalVariable
 {
     public Guid Id { get; set; }
     public string Name { get; set; }
-    public Type LocalVariableType { get; set; }
+    public Type? LocalVariableType { get; set; }
 
     public LocalVariable()
     {
