@@ -18,6 +18,8 @@ public class ExceptionFilter : IExceptionFilter
             ClassNotFoundException _ => new ObjectResult(new { context.Exception.Message }) { StatusCode = 404 },
             AttributeAlreadyInClassException _ => new ObjectResult(new { context.Exception.Message }) { StatusCode = 409 },
             ClassInUseException _ => new ObjectResult(new { context.Exception.Message }) { StatusCode = 409 },
+            InvalidAttributeException _ => new ObjectResult(new { context.Exception.Message }) { StatusCode = 400 },
+            InvalidClassException _ => new ObjectResult(new { context.Exception.Message }) { StatusCode = 400 },
             _ => new ObjectResult(new { context.Exception.Message }) { StatusCode = 500 }
         };
         context.ExceptionHandled = true;
