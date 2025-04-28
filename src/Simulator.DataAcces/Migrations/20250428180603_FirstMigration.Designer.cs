@@ -12,8 +12,8 @@ using Simulator.DataAcces;
 namespace Simulator.DataAcces.Migrations
 {
     [DbContext(typeof(SqlContext))]
-    [Migration("20250423194333_InitialMigrations")]
-    partial class InitialMigrations
+    [Migration("20250428180603_FirstMigration")]
+    partial class FirstMigration
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -56,7 +56,7 @@ namespace Simulator.DataAcces.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid>("TypeId")
+                    b.Property<Guid?>("TypeId")
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
@@ -74,7 +74,7 @@ namespace Simulator.DataAcces.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("LocalVariableTypeId")
+                    b.Property<Guid?>("LocalVariableTypeId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid?>("MethodId")
@@ -106,9 +106,10 @@ namespace Simulator.DataAcces.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Name")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid>("ReturnTypeId")
+                    b.Property<Guid?>("ReturnTypeId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<int?>("Stereotype")
@@ -136,7 +137,7 @@ namespace Simulator.DataAcces.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid>("ParameterTypeId")
+                    b.Property<Guid?>("ParameterTypeId")
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
@@ -159,6 +160,10 @@ namespace Simulator.DataAcces.Migrations
                         .HasMaxLength(13)
                         .HasColumnType("nvarchar(13)");
 
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.HasKey("Id");
 
                     b.ToTable("Type");
@@ -174,10 +179,6 @@ namespace Simulator.DataAcces.Migrations
 
                     b.Property<Guid?>("HierarchyClassId")
                         .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int?>("Stereotype")
                         .HasColumnType("int");
@@ -217,9 +218,7 @@ namespace Simulator.DataAcces.Migrations
 
                     b.HasOne("Simulator.Domain.Type", "Type")
                         .WithMany()
-                        .HasForeignKey("TypeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("TypeId");
 
                     b.Navigation("Type");
                 });
@@ -228,9 +227,7 @@ namespace Simulator.DataAcces.Migrations
                 {
                     b.HasOne("Simulator.Domain.Type", "LocalVariableType")
                         .WithMany()
-                        .HasForeignKey("LocalVariableTypeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("LocalVariableTypeId");
 
                     b.HasOne("Simulator.Domain.Method", null)
                         .WithMany("LocalVariables")
@@ -249,8 +246,7 @@ namespace Simulator.DataAcces.Migrations
                     b.HasOne("Simulator.Domain.Type", "ReturnType")
                         .WithMany()
                         .HasForeignKey("ReturnTypeId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.Navigation("ReturnType");
                 });
@@ -264,16 +260,14 @@ namespace Simulator.DataAcces.Migrations
 
                     b.HasOne("Simulator.Domain.Type", "ParameterType")
                         .WithMany()
-                        .HasForeignKey("ParameterTypeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("ParameterTypeId");
 
                     b.Navigation("ParameterType");
                 });
 
             modelBuilder.Entity("Simulator.Domain.Class", b =>
                 {
-                    b.HasOne("Simulator.Domain.Class", "HierarchyClass")
+                    b.HasOne("Simulator.Domain.Type", "HierarchyClass")
                         .WithMany()
                         .HasForeignKey("HierarchyClassId");
 

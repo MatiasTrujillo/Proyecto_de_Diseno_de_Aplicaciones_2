@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Simulator.DataAcces.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialMigrations : Migration
+    public partial class FirstMigration : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -16,8 +16,8 @@ namespace Simulator.DataAcces.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Discriminator = table.Column<string>(type: "nvarchar(13)", maxLength: 13, nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Stereotype = table.Column<int>(type: "int", nullable: true),
                     HierarchyClassId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
                 },
@@ -38,7 +38,7 @@ namespace Simulator.DataAcces.Migrations
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Accessibility = table.Column<int>(type: "int", nullable: false),
-                    TypeId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    TypeId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     ClassId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
                 },
                 constraints: table =>
@@ -53,8 +53,7 @@ namespace Simulator.DataAcces.Migrations
                         name: "FK_Attributes_Type_TypeId",
                         column: x => x.TypeId,
                         principalTable: "Type",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -62,10 +61,10 @@ namespace Simulator.DataAcces.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Accessibility = table.Column<int>(type: "int", nullable: false),
                     Stereotype = table.Column<int>(type: "int", nullable: true),
-                    ReturnTypeId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    ReturnTypeId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     ClassId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
                 },
                 constraints: table =>
@@ -90,7 +89,7 @@ namespace Simulator.DataAcces.Migrations
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    LocalVariableTypeId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    LocalVariableTypeId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     MethodId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
                 },
                 constraints: table =>
@@ -106,8 +105,7 @@ namespace Simulator.DataAcces.Migrations
                         name: "FK_LocalVariables_Type_LocalVariableTypeId",
                         column: x => x.LocalVariableTypeId,
                         principalTable: "Type",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -139,7 +137,7 @@ namespace Simulator.DataAcces.Migrations
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    ParameterTypeId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    ParameterTypeId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     MethodId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
                 },
                 constraints: table =>
@@ -155,8 +153,7 @@ namespace Simulator.DataAcces.Migrations
                         name: "FK_Parameters_Type_ParameterTypeId",
                         column: x => x.ParameterTypeId,
                         principalTable: "Type",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateIndex(
