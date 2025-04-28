@@ -11,10 +11,11 @@ public class ExceptionFilter : IExceptionFilter
     {
         context.Result = context.Exception switch
         {
-            AttributeException _ => new ObjectResult(new { context.Exception.Message }) { StatusCode = 400 },
+            AttributeNotFoundException _ => new ObjectResult(new { context.Exception.Message }) { StatusCode = 404 },
+            MethodNotFoundException _ => new ObjectResult(new { context.Exception.Message }) { StatusCode = 404 },
             ClassException _ => new ObjectResult(new { context.Exception.Message }) { StatusCode = 400 },
             MethodException _ => new ObjectResult(new { context.Exception.Message }) { StatusCode = 400 },
-            InvalidClassStereotypeException _ => new ObjectResult(new { context.Exception.Message }) { StatusCode = 400 },
+            ClassNotFoundException _ => new ObjectResult(new { context.Exception.Message }) { StatusCode = 404 },
             _ => new ObjectResult(new { context.Exception.Message }) { StatusCode = 500 }
         };
         context.ExceptionHandled = true;

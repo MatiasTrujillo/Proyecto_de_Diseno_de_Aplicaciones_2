@@ -1,6 +1,5 @@
 namespace Simulator.BussinesLogic.Exception;
 
-public class ClassNotFoundException
+public class ClassNotFoundException(string message) : System.Exception(message)
 {
-    
 }

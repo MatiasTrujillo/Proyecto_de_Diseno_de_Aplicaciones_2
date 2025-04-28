@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using Simulator.BussinesLogic.Exception;
 using Simulator.Domain;
 using Simulator.Domain.Exception;
 using Simulator.DTO;
@@ -94,7 +95,7 @@ public class AttributeService(IAttributeRepository attributeRepository, IClassRe
         }
         else
         {
-            throw new AttributeException("Invalid accessibility type");
+            throw new InvalidAttributeException("Invalid accessibility type");
         }
     }
 
@@ -104,7 +105,7 @@ public class AttributeService(IAttributeRepository attributeRepository, IClassRe
 
         if(classes.Any(classT => classT.Attributes.Contains(attributeT)))
         {
-            throw new AttributeException("Attribute is associated with a class");
+            throw new InvalidAttributeException("Attribute is associated with a class");
         }
     }
 
@@ -112,7 +113,7 @@ public class AttributeService(IAttributeRepository attributeRepository, IClassRe
     {
         if(attributeT == null)
         {
-            throw new AttributeException("Attribute not found");
+            throw new InvalidAttributeException("Attribute not found");
         }
     }
 
@@ -121,7 +122,7 @@ public class AttributeService(IAttributeRepository attributeRepository, IClassRe
         var classT = _classRepository.Find(idClass);
         if(classT == null)
         {
-            throw new AttributeException("Class not found");
+            throw new ClassNotFoundException("Class not found");
         }
     }
 
@@ -131,7 +132,7 @@ public class AttributeService(IAttributeRepository attributeRepository, IClassRe
 
         if(classT.Attributes != null && classT.Attributes.Any(a => a.Name == attribute.Name))
         {
-            throw new AttributeException($"An attribute with the name '{attribute.Name}' already exists in the class");
+            throw new InvalidAttributeException($"An attribute with the name '{attribute.Name}' already exists in the class");
         }
     }
 }

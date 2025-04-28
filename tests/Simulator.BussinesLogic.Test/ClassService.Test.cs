@@ -69,7 +69,7 @@ public class ClassServiceTest
         _mockClassRepository.Setup(r => r.FindAll())
             .Returns(classes);
 
-        var exception = Assert.ThrowsException<ClassException>(() =>
+        var exception = Assert.ThrowsException<InvalidClassException>(() =>
         {
             _classService.CreateClass(dto2);
         });
@@ -195,7 +195,7 @@ public class ClassServiceTest
         _mockClassRepository
             .Setup(r => r.Update(It.IsAny<Class>()));
 
-        var exception = Assert.ThrowsException<ClassException>(() =>
+        var exception = Assert.ThrowsException<InvalidClassException>(() =>
         {
             _classService.UpdateNameClass(id2, dto.Name);
         });
@@ -223,7 +223,7 @@ public class ClassServiceTest
         _mockClassRepository
             .Setup(r => r.Update(It.IsAny<Class>()));
 
-        var exception = Assert.ThrowsException<ClassException>(() =>
+        var exception = Assert.ThrowsException<ClassNotFoundException>(() =>
         {
             _classService.UpdateNameClass(id, dto.Name);
         });
@@ -271,7 +271,7 @@ public class ClassServiceTest
         _mockClassRepository.Setup(repo => repo.Find(classId)).Returns<Class?>(null);
         _mockClassRepository.Setup(repo => repo.FindAll()).Returns([]);
 
-        var exception = Assert.ThrowsException<ClassException>(() =>
+        var exception = Assert.ThrowsException<ClassNotFoundException>(() =>
         {
             _classService.UpdateClassStereotype(classId, "Abstract");
         });
@@ -289,7 +289,7 @@ public class ClassServiceTest
 
         _mockClassRepository.Setup(repo => repo.FindAll()).Returns([existingClass]);
 
-        var exception = Assert.ThrowsException<InvalidClassStereotypeException>(() =>
+        var exception = Assert.ThrowsException<InvalidClassException>(() =>
         {
             _classService.UpdateClassStereotype(classId, "InvalidStereotype");
         });
@@ -329,7 +329,7 @@ public class ClassServiceTest
         _mockClassRepository
             .Setup(r => r.Delete(It.IsAny<Guid>()));
 
-        var exception = Assert.ThrowsException<ClassException>(() =>
+        var exception = Assert.ThrowsException<ClassNotFoundException>(() =>
         {
             _classService.DeleteClass(id);
         });
@@ -411,7 +411,7 @@ public class ClassServiceTest
         _mockAttributeRepository.Setup(r => r.FindAll()).Returns([]);
         _mockMethodRepository.Setup(r => r.FindAll()).Returns([]);
 
-        var exception = Assert.ThrowsException<ClassException>(() =>
+        var exception = Assert.ThrowsException<ClassInUseException>(() =>
         {
             _classService.UpdateClassInherits(existingClassId, hierarchyClassId);
         });
@@ -438,7 +438,7 @@ public class ClassServiceTest
         _mockMethodRepository.Setup(repo => repo.FindAll()).Returns([]);
         _mockClassRepository.Setup(repo => repo.Update(It.IsAny<Class>()));
 
-        var exception = Assert.ThrowsException<ClassException>(() =>
+        var exception = Assert.ThrowsException<ClassNotFoundException>(() =>
         {
             _classService.UpdateClassInherits(Guid.NewGuid(), Guid.Empty);
         });

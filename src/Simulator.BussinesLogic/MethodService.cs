@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Simulator.BussinesLogic.Exception;
 using Simulator.Domain;
 using Simulator.Domain.Exception;
 using Simulator.DTO;
@@ -18,7 +19,7 @@ public class MethodService(IMethodRepository methodRepository, IClassRepository 
 
     public Guid CreateMethod(MethodDTO method)
     {
-        ValidateIsNotNull(method);
+        ValidateMethodDTOExist(method);
         var methodT = method.ToEntity();
         ValidateUniqueMethod(methodT);
         ValidateMethodReturnType(methodT.ReturnType);
@@ -274,7 +275,7 @@ public class MethodService(IMethodRepository methodRepository, IClassRepository 
         var method = _methodRepository.Find(id);
         if(method.Methods.Count != 0)
         {
-            throw new MethodException("Method is associated with another method.");
+            throw new InvalidMethodException("Method is associated with another method.");
         }
     }
 
@@ -283,7 +284,7 @@ public class MethodService(IMethodRepository methodRepository, IClassRepository 
         if(method.LocalVariables != null && method.Parameters != null && (method.LocalVariables.Any(v => v.Name.Equals(parameter.Name, StringComparison.OrdinalIgnoreCase)) ||
                                                                           method.Parameters.Any(p => p.Name.Equals(parameter.Name, StringComparison.OrdinalIgnoreCase))))
         {
-            throw new MethodException("A variable or parameter with the same name already exists.");
+            throw new InvalidMethodException("A variable or parameter with the same name already exists.");
         }
     }
 
@@ -292,7 +293,7 @@ public class MethodService(IMethodRepository methodRepository, IClassRepository 
         if(method.LocalVariables != null && method.Parameters != null && (method.LocalVariables.Any(v => v.Name.Equals(localVariable.Name, StringComparison.OrdinalIgnoreCase)) ||
                                                                           method.Parameters.Any(p => p.Name.Equals(localVariable.Name, StringComparison.OrdinalIgnoreCase))))
         {
-            throw new MethodException("A variable or parameter with the same name already exists.");
+            throw new InvalidMethodException("A variable or parameter with the same name already exists.");
         }
     }
 
@@ -302,7 +303,7 @@ public class MethodService(IMethodRepository methodRepository, IClassRepository 
         var methodToAdd = _methodRepository.Find(idMethodToAdd);
         if(method.Methods != null && method.Methods.Any(m => m.Id == idMethodToAdd))
         {
-            throw new MethodException("Method is already associated with this method.");
+            throw new MethodInUseException("Method is already associated with this method.");
         }
     }
 
@@ -311,7 +312,7 @@ public class MethodService(IMethodRepository methodRepository, IClassRepository 
         var classes = _classRepository.FindAll();
         if(classes.Any(classT => classT.Methods != null && classT.Methods.Any(method => method.Id == id)))
         {
-            throw new MethodException("Method is associated with a class.");
+            throw new MethodInUseException("Method is associated with a class.");
         }
     }
 
@@ -321,7 +322,7 @@ public class MethodService(IMethodRepository methodRepository, IClassRepository 
 
         if(methods != null && methods.Any(existingMethod => existingMethod.Name.Equals(method.Name)))
         {
-            throw new MethodException("A method with the same name already exists in the class.");
+            throw new InvalidMethodException("A method with the same name already exists in the class.");
         }
     }
 
@@ -329,7 +330,7 @@ public class MethodService(IMethodRepository methodRepository, IClassRepository 
     {
         if(classT == null)
         {
-            throw new MethodException("Class not found.");
+            throw new ClassNotFoundException("Class not found.");
         }
     }
 
@@ -337,15 +338,7 @@ public class MethodService(IMethodRepository methodRepository, IClassRepository 
     {
         if(method == null)
         {
-            throw new MethodException("Method null.");
-        }
-    }
-
-    private static void ValidateIsNotNull(MethodDTO method)
-    {
-        if(method == null)
-        {
-            throw new MethodException("Method cannot be null.");
+            throw new MethodNotFoundException("Method null.");
         }
     }
 
@@ -354,7 +347,7 @@ public class MethodService(IMethodRepository methodRepository, IClassRepository 
         List<Method> methods = _methodRepository.FindAll();
         if(methods.Any(method => method.Name.Equals(methodT.Name)))
         {
-            throw new MethodException("Method with the same name  already exists.");
+            throw new InvalidMethodException("Method with the same name  already exists.");
         }
     }
 
@@ -364,6 +357,14 @@ public class MethodService(IMethodRepository methodRepository, IClassRepository 
         if(methodTReturnType != null && classes.All(c => c.Name != methodTReturnType.Name))
         {
             throw new MethodException("Return type not found.");
+        }
+    }
+
+    private void ValidateMethodDTOExist(MethodDTO method)
+    {
+        if(method == null)
+        {
+            throw new MethodNotFoundException("Method cannot be null.");
         }
     }
 }

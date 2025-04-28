@@ -17,28 +17,28 @@ public class MethodController(IMethodService methodService) : ControllerBase
         return Created(string.Empty, new { id = methodId });
     }
 
-    [HttpPost("{methodId}/associate/{classId}")]
+    [HttpPost("{methodId}/classes/{classId}")]
     public IActionResult AssociateMethodWithClass([FromRoute] Guid methodId, [FromRoute] Guid classId)
     {
         _amethodService.AssociateMethodWithClass(methodId, classId);
         return Created(string.Empty, new { message = "Method associated with class successfully" });
     }
 
-    [HttpPost("{id}/add/{idToAdd}")]
+    [HttpPost("{id}/\nmethods/{idToAdd}")]
     public IActionResult AddAMethod([FromRoute] Guid id, [FromRoute] Guid idToAdd)
     {
         _amethodService.AddAMethod(id, idToAdd);
         return Created(string.Empty, new { message = "Method added successfully" });
     }
 
-    [HttpPost("{methodId}/localVariable")]
+    [HttpPost("{methodId}/localVariables")]
     public IActionResult AddLocalVariableToMethod([FromRoute] Guid methodId, [FromBody] LocalVariableDTO localVariable)
     {
         _amethodService.AddLocalVariableToMethod(methodId, localVariable);
         return Created(string.Empty, new { message = "Local variable added successfully" });
     }
 
-    [HttpPost("{methodId}/parameter")]
+    [HttpPost("{methodId}/\nparameters")]
     public IActionResult AddParameterToMethod([FromRoute] Guid methodId, [FromBody] ParameterDTO parameter)
     {
         _amethodService.AddParameterToMethod(methodId, parameter);

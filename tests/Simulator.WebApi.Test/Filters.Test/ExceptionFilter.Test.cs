@@ -45,40 +45,6 @@ public class ExceptionFilterTest
     }
 
     [TestMethod]
-    public void OnException_ShouldSetResultTo400AndHandleAttributeException_WhenAttributeExceptionIsThrown()
-    {
-        var exception = new AttributeException("Attribute exception");
-        _context.Exception = exception;
-
-        _filter.OnException(_context);
-
-        Assert.IsInstanceOfType(_context.Result, typeof(ObjectResult));
-        var result = _context.Result as ObjectResult;
-        Assert.AreEqual(400, result?.StatusCode);
-        Assert.IsTrue(_context.ExceptionHandled);
-
-        var message = result?.Value?.GetType().GetProperty("Message")?.GetValue(result.Value)?.ToString();
-        Assert.AreEqual("Attribute exception", message);
-    }
-
-    [TestMethod]
-    public void OnException_ShouldSetResultTo400AndHandleClassException_WhenClassExceptionIsThrown()
-    {
-        var exception = new ClassException("Class exception");
-        _context.Exception = exception;
-
-        _filter.OnException(_context);
-
-        Assert.IsInstanceOfType(_context.Result, typeof(ObjectResult));
-        var result = _context.Result as ObjectResult;
-        Assert.AreEqual(400, result?.StatusCode);
-        Assert.IsTrue(_context.ExceptionHandled);
-
-        var message = result?.Value?.GetType().GetProperty("Message")?.GetValue(result.Value)?.ToString();
-        Assert.AreEqual("Class exception", message);
-    }
-
-    [TestMethod]
     public void OnException_ShouldSetResultTo400AndHandleMethodException_WhenMethodExceptionIsThrown()
     {
         var exception = new MethodException("Method exception");
@@ -96,19 +62,53 @@ public class ExceptionFilterTest
     }
 
     [TestMethod]
-    public void OnException_ShouldSetResultTo400AndHandleInvalidClassStereotypeException_WhenInvalidClassStereotypeExceptionIsThrown()
+    public void OnException_ShouldSetResultTo404AndHandleAttributeNotFoundException_WhenAttributeNotFoundExceptionIsThrown()
     {
-        var exception = new InvalidClassStereotypeException("Invalid class stereotype exception");
+        var exception = new AttributeNotFoundException("Attribute not found exception");
         _context.Exception = exception;
 
         _filter.OnException(_context);
 
         Assert.IsInstanceOfType(_context.Result, typeof(ObjectResult));
         var result = _context.Result as ObjectResult;
-        Assert.AreEqual(400, result?.StatusCode);
+        Assert.AreEqual(404, result?.StatusCode);
         Assert.IsTrue(_context.ExceptionHandled);
 
         var message = result?.Value?.GetType().GetProperty("Message")?.GetValue(result.Value)?.ToString();
-        Assert.AreEqual("Invalid class stereotype exception", message);
+        Assert.AreEqual("Attribute not found exception", message);
+    }
+
+    [TestMethod]
+    public void OnException_ShouldSetResultTo404AndHandleClassNotFoundException_WhenClassNotFoundExceptionIsThrown()
+    {
+        var exception = new ClassNotFoundException("Class not found exception");
+        _context.Exception = exception;
+
+        _filter.OnException(_context);
+
+        Assert.IsInstanceOfType(_context.Result, typeof(ObjectResult));
+        var result = _context.Result as ObjectResult;
+        Assert.AreEqual(404, result?.StatusCode);
+        Assert.IsTrue(_context.ExceptionHandled);
+
+        var message = result?.Value?.GetType().GetProperty("Message")?.GetValue(result.Value)?.ToString();
+        Assert.AreEqual("Class not found exception", message);
+    }
+
+    [TestMethod]
+    public void OnException_ShouldSetResultTo404AndHandleMethodNotFoundException_WhenMethodNotFoundExceptionIsThrown()
+    {
+        var exception = new MethodNotFoundException("Method not found exception");
+        _context.Exception = exception;
+
+        _filter.OnException(_context);
+
+        Assert.IsInstanceOfType(_context.Result, typeof(ObjectResult));
+        var result = _context.Result as ObjectResult;
+        Assert.AreEqual(404, result?.StatusCode);
+        Assert.IsTrue(_context.ExceptionHandled);
+
+        var message = result?.Value?.GetType().GetProperty("Message")?.GetValue(result.Value)?.ToString();
+        Assert.AreEqual("Method not found exception", message);
     }
 }

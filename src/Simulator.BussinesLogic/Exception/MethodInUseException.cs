@@ -1,6 +1,5 @@
 namespace Simulator.BussinesLogic.Exception;
 
-public class MethodInUseException
+public class MethodInUseException(string message) : System.Exception(message)
 {
-    
 }

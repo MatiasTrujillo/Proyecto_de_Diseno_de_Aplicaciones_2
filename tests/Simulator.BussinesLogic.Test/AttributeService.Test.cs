@@ -1,4 +1,5 @@
 using Moq;
+using Simulator.BussinesLogic.Exception;
 using Simulator.Domain;
 using Simulator.Domain.Exception;
 using Simulator.DTO;
@@ -142,7 +143,7 @@ public class AttributeServiceTest
             .Setup(repo => repo.Find(It.IsAny<Guid>()))
             .Returns(newAttribute);
 
-        var ex = Assert.ThrowsException<AttributeException>(() =>
+        var ex = Assert.ThrowsException<InvalidAttributeException>(() =>
             _attributeService.AsociateAttribute(classId, newAttribute.Id));
 
         Assert.AreEqual("An attribute with the name 'Agility' already exists in the class", ex.Message);
@@ -305,7 +306,7 @@ public class AttributeServiceTest
             .Setup(r => r.Find(id))
             .Returns((Attribute)null);
 
-        var exception = Assert.ThrowsException<AttributeException>(() =>
+        var exception = Assert.ThrowsException<InvalidAttributeException>(() =>
         {
             _attributeService.UpdateAttributeName(id, dto.Name);
         });
@@ -329,12 +330,12 @@ public class AttributeServiceTest
     }
 
     [TestMethod]
-    public void DeleteAttribute_ShouldThrowAttributeException_WhenAttributeDoesNotExist()
+    public void DeleteAttribute_ShouldThrowInvalidAttributeException_WhenAttributeDoesNotExist()
     {
         var id = Guid.NewGuid();
         _mockAttributeRepository.Setup(r => r.Find(id)).Returns((Attribute)null);
 
-        var ex = Assert.ThrowsException<AttributeException>(() =>
+        var ex = Assert.ThrowsException<InvalidAttributeException>(() =>
         {
             _attributeService.DeleteAttribute(id);
         });
@@ -352,7 +353,7 @@ public class AttributeServiceTest
         _mockAttributeRepository.Setup(r => r.Find(id)).Returns(attribute);
         _mockClassRepository.Setup(r => r.FindAll()).Returns([classWithAttribute]);
 
-        var ex = Assert.ThrowsException<AttributeException>(() =>
+        var ex = Assert.ThrowsException<InvalidAttributeException>(() =>
         {
             _attributeService.DeleteAttribute(id);
         });

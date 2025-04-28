@@ -1,5 +1,5 @@
 namespace Simulator.BussinesLogic.Exception;
 
-public class InvalidAccessibilityException(string message) : System.Exception(message)
+public class InvalidAttributeException(string message) : System.Exception(message)
 {
 }

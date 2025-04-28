@@ -1,6 +1,5 @@
 namespace Simulator.BussinesLogic.Exception;
 
-public class AttributeNotFoundException
+public class AttributeNotFoundException(string message) : System.Exception(message)
 {
-    
 }

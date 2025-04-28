@@ -69,7 +69,7 @@ public class ClassService(IClassRepository classRepository, IAttributeRepository
         }
         else
         {
-            throw new InvalidClassStereotypeException("The stereotype is not valid");
+            throw new InvalidClassException("The stereotype is not valid");
         }
     }
 
@@ -83,7 +83,7 @@ public class ClassService(IClassRepository classRepository, IAttributeRepository
            attributeT.Any(a => a.Type == classT) ||
            methods.Any(m => m.ReturnType == classT))
         {
-            throw new ClassException("Class is associated with another class, attribute or method");
+            throw new ClassInUseException("Class is associated with another class, attribute or method");
         }
     }
 
@@ -93,7 +93,7 @@ public class ClassService(IClassRepository classRepository, IAttributeRepository
 
         if(classes.Any(classT => classT.Name == name))
         {
-            throw new ClassException("There is already a class with this name");
+            throw new InvalidClassException("There is already a class with this name");
         }
     }
 
@@ -103,7 +103,7 @@ public class ClassService(IClassRepository classRepository, IAttributeRepository
 
         if(!classes.Exists(classT => classT.Id == id))
         {
-            throw new ClassException("There is no class with this id");
+            throw new ClassNotFoundException("There is no class with this id");
         }
     }
 }
