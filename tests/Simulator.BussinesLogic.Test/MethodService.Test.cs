@@ -387,6 +387,30 @@ public class MethodServiceTest
     }
 
     [TestMethod]
+    public void CreateParameter_ShouldAddParameter_WhenParameterIsValid()
+    {
+        var classT = new TypeDTO { Name = "TestClass" };
+
+        var parameterDto = new ParameterDTO
+        {
+            Name = "TestParameter",
+            ParameterType = classT
+        };
+
+        _mockParameterRepository
+            .Setup(r => r.Add(It.Is<Parameter>(p => p.Name == parameterDto.Name && p.ParameterType.Name == classT.Name)));
+
+        _mockClassRepository
+            .Setup(repo => repo.FindAll())
+            .Returns([new Class { Name = "TestClass" }]);
+
+        var result = _methodService.CreateParameter(parameterDto);
+
+        Assert.AreNotEqual(Guid.Empty, result);
+        _mockParameterRepository.Verify(r => r.Add(It.IsAny<Parameter>()), Times.Once);
+    }
+
+    [TestMethod]
     public void ExecuteMethodExample1_SholddReturnMethodExecuted()
     {
         var encender = new Method
