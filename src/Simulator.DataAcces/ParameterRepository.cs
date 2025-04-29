@@ -5,11 +5,21 @@ using Type = Simulator.Domain.Type;
 
 namespace Simulator.DataAcces;
 
-public class ParameterRepository() : IParameterRepository
+public class ParameterRepository(SqlContext context) : IParameterRepository
 {
     public void Add(Parameter parameter)
     {
-        throw new NotImplementedException();
+        if (parameter.ParameterType != null)
+        {
+            var type = context.Set<Type>().Find(parameter.ParameterType.Id);
+            if (type != null)
+            {
+                parameter.ParameterType = type;
+            }
+        }
+
+        context.Parameters.Add(parameter);
+        context.SaveChanges();
     }
 
     public Parameter Find(Guid id)

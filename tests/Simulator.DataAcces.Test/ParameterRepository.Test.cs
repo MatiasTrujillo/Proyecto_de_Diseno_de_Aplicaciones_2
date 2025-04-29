@@ -61,4 +61,30 @@ public class ParameterRepositoryTest
         saved.ParameterType.Name.Should().Be(_primitive.Name);
     }
     #endregion
+
+    #region Find
+    [TestMethod]
+    public void Find_WhenParameterExists_ShouldReturnItWithType()
+    {
+        _context.Primitives.Add(_primitive);
+        _context.Parameters.Add(_parameter);
+        _context.SaveChanges();
+
+        var result = _repository.Find(_parameter.Id);
+
+        result.Should().NotBeNull();
+        result!.Id.Should().Be(_parameter.Id);
+        result.Name.Should().Be(_parameter.Name);
+        result.ParameterType.Should().NotBeNull();
+        result.ParameterType!.Name.Should().Be(_primitive.Name);
+    }
+
+    [TestMethod]
+    public void Find_WhenParameterDoesNotExist_ShouldReturnNull()
+    {
+        var result = _repository.Find(Guid.NewGuid());
+
+        result.Should().BeNull();
+    }
+    #endregion
 }
