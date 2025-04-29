@@ -24,7 +24,11 @@ public class ParameterRepository(SqlContext context) : IParameterRepository
 
     public Parameter Find(Guid id)
     {
-        throw new NotImplementedException();
+        var parameter = context.Parameters
+            .Include(p => p.ParameterType)
+            .FirstOrDefault(p => p.Id == id);
+
+        return parameter;
     }
 
     public List<Parameter> FindAll()
