@@ -17,6 +17,13 @@ public class MethodController(IMethodService methodService) : ControllerBase
         return Created(string.Empty, new { id = methodId });
     }
 
+    [HttpPost("parameters")]
+    public IActionResult CreateParameter([FromBody] ParameterDTO parameter)
+    {
+        var parameterId = _amethodService.CreateParameter(parameter);
+        return Created(string.Empty, new { id = parameterId });
+    }
+
     [HttpPost("{methodId}/classes/{classId}")]
     public IActionResult AssociateMethodWithClass([FromRoute] Guid methodId, [FromRoute] Guid classId)
     {
