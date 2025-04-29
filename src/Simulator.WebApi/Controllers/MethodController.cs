@@ -38,10 +38,10 @@ public class MethodController(IMethodService methodService) : ControllerBase
         return Created(string.Empty, new { message = "Local variable added successfully" });
     }
 
-    [HttpPost("{methodId}/\nparameters")]
-    public IActionResult AddParameterToMethod([FromRoute] Guid methodId, [FromBody] ParameterDTO parameter)
+    [HttpPost("{methodId}/parameters/{parameterId}")]
+    public IActionResult AddParameterToMethod([FromRoute] Guid methodId, [FromRoute] Guid parameterId)
     {
-        _amethodService.AddParameterToMethod(methodId, parameter);
+        _amethodService.AddParameterToMethod(methodId, parameterId);
         return Created(string.Empty, new { message = "Parameter added successfully" });
     }
 

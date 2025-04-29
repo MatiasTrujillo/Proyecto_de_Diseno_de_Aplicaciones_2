@@ -11,10 +11,11 @@ using Type = Simulator.Domain.Type;
 
 namespace Simulator.BussinesLogic;
 
-public class MethodService(IMethodRepository methodRepository, IClassRepository classRepository) : IMethodService
+public class MethodService(IMethodRepository methodRepository, IClassRepository classRepository, IParameterRepository parameterRepository) : IMethodService
 {
     private readonly IMethodRepository _methodRepository = methodRepository;
     private readonly IClassRepository _classRepository = classRepository;
+    private readonly IParameterRepository _parameterRepository = parameterRepository;
     private static int _indentacion = 0;
 
     public Guid CreateMethod(MethodDTO method)
@@ -59,13 +60,22 @@ public class MethodService(IMethodRepository methodRepository, IClassRepository 
         _methodRepository.Update(method);
     }
 
-    public void AddParameterToMethod(Guid methodId, ParameterDTO parameter)
+    public Guid CreateParameter(ParameterDTO parameter)
     {
-        Parameter parameterT = parameter.ToEntity();
+        ValidateParameterIsNotNull(parameter);
+        var parameterT = parameter.ToEntity();
+        ValidateMethodReturnType(parameterT.ParameterType);
+        _parameterRepository.Add(parameterT);
+        return parameterT.Id;
+    }
+
+    public void AddParameterToMethod(Guid methodId, Guid parameterId)
+    {
+        var param = _parameterRepository.Find(parameterId);
         var method = _methodRepository.Find(methodId);
         ValidateMethodExist(method);
-        ValidateNameParameter(parameter, method);
-        method.Parameters.Add(parameterT);
+        ValidateNameParameter(param, method);
+        method.Parameters.Add(param);
         _methodRepository.Update(method);
     }
 
@@ -279,7 +289,7 @@ public class MethodService(IMethodRepository methodRepository, IClassRepository 
         }
     }
 
-    private void ValidateNameParameter(ParameterDTO parameter, Method method)
+    private void ValidateNameParameter(Parameter parameter, Method method)
     {
         if(method.LocalVariables != null && method.Parameters != null && (method.LocalVariables.Any(v => v.Name.Equals(parameter.Name, StringComparison.OrdinalIgnoreCase)) ||
                                                                           method.Parameters.Any(p => p.Name.Equals(parameter.Name, StringComparison.OrdinalIgnoreCase))))
@@ -365,6 +375,14 @@ public class MethodService(IMethodRepository methodRepository, IClassRepository 
         if(method == null)
         {
             throw new MethodNotFoundException("Method cannot be null.");
+        }
+    }
+
+    private void ValidateParameterIsNotNull(ParameterDTO parameter)
+    {
+        if(parameter == null)
+        {
+            throw new ParameterNotFoundException("Parameter cannot be null.");
         }
     }
 }
