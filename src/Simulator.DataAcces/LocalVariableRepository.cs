@@ -9,10 +9,10 @@ public class LocalVariableRepository(SqlContext context) : ILocalVariableReposit
 {
     public void Add(LocalVariable localVariable)
     {
-        if (localVariable.LocalVariableType != null)
+        if(localVariable.LocalVariableType != null)
         {
             var type = context.Set<Type>().Find(localVariable.LocalVariableType.Id);
-            if (type != null)
+            if(type != null)
             {
                 localVariable.LocalVariableType = type;
             }

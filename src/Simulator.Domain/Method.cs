@@ -42,17 +42,17 @@ public class Method
 
     private void ValidateMethodName(string name)
     {
-        if (string.IsNullOrWhiteSpace(name))
+        if(string.IsNullOrWhiteSpace(name))
         {
             throw new MethodException("Method name cannot be empty.");
         }
 
-        if (name.Length > 50)
+        if(name.Length > 50)
         {
             throw new MethodException("Method name cannot be longer than 50 characters.");
         }
 
-        if (name.Contains(' '))
+        if(name.Contains(' '))
         {
             throw new MethodException("Method name cannot contain spaces.");
         }

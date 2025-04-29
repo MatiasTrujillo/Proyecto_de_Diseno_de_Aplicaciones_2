@@ -9,8 +9,7 @@ public class ClassDTO
 
     public Class ToEntity()
     {
-        var aClass = new Class(Stereotype, null,  null,  null, Name);
-
+        var aClass = new Class(Stereotype, null, null, null, Name);
         return aClass;
     }
 }

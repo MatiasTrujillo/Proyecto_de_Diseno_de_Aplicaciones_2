@@ -186,7 +186,7 @@ public class MethodService(IMethodRepository methodRepository, IClassRepository 
                         var parent = attrClass.HierarchyClass as Class;
                         while(parent != null)
                         {
-                            if (parent.Methods != null)
+                            if(parent.Methods != null)
                             {
                                 var methodInParent = parent.Methods.FirstOrDefault(m => m.Name == calledMethod.Name);
                                 if(methodInParent != null)
@@ -383,7 +383,7 @@ public class MethodService(IMethodRepository methodRepository, IClassRepository 
     private void ValidateMethodReturnType(Type? methodTReturnType)
     {
         var classes = _classRepository.FindAll();
-        if (classes.All(c => c.Name != methodTReturnType.Name))
+        if(classes.All(c => c.Name != methodTReturnType.Name))
         {
             throw new MethodException("Method return type not found.");
         }

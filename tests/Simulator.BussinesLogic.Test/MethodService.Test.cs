@@ -62,7 +62,7 @@ public class MethodServiceTest
         var classes = new List<Class>();
         _mockClassRepository.Setup(repo => repo.FindAll()).Returns(classes);
 
-        if (_methodDto.ReturnType != null)
+        if(_methodDto.ReturnType != null)
         {
             classes.Add(new Class { Name = _methodDto.ReturnType.Name });
         }
@@ -121,7 +121,7 @@ public class MethodServiceTest
 
         _mockClassRepository
             .Setup(repo => repo.FindAll())
-            .Returns(new List<Class> { new Class { Name = _methodDto.ReturnType.Name } });
+            .Returns([new Class { Name = _methodDto.ReturnType.Name }]);
 
         var exception = Assert.ThrowsException<InvalidMethodException>(() => _methodService.CreateMethod(_methodDto));
         Assert.AreEqual("Method with the same name  already exists.", exception.Message);
@@ -237,7 +237,7 @@ public class MethodServiceTest
         _mockMethodRepository.Setup(repo => repo.Find(methodId)).Returns(method);
         _mockMethodRepository.Setup(repo => repo.Delete(It.IsAny<Guid>()));
 
-        _mockClassRepository.Setup(repo => repo.FindAll()).Returns(new List<Class>());
+        _mockClassRepository.Setup(repo => repo.FindAll()).Returns([]);
 
         _methodService.DeleteMethod(methodId);
 
@@ -295,7 +295,7 @@ public class MethodServiceTest
         var methodId = Guid.NewGuid();
         var parameterId = Guid.NewGuid();
         var parameter = new Parameter { Id = parameterId, Name = "TestParameter" };
-        var method = new Method { Id = methodId, Name = "TestMethod", Parameters = new List<Parameter>() };
+        var method = new Method { Id = methodId, Name = "TestMethod", Parameters = [] };
 
         _mockMethodRepository.Setup(repo => repo.Find(methodId)).Returns(method);
         _mockParameterRepository.Setup(repo => repo.Find(parameterId)).Returns(parameter);
@@ -394,8 +394,7 @@ public class MethodServiceTest
     public void MethodConstructor_WithEmptyName_ShouldThrowMethodException()
     {
         var name = string.Empty;
-
-        var method = new Method(name, Accessibility.Public, null, new List<Method>(), new List<Parameter>(), new List<LocalVariable>(), new Primitive());
+        new Method(name, Accessibility.Public, null, [], [], [], new Primitive());
     }
 
     [TestMethod]
@@ -403,8 +402,7 @@ public class MethodServiceTest
     public void MethodConstructor_WithSpacesInName_ShouldThrowMethodException()
     {
         var name = "Invalid Name";
-
-        var method = new Method(name, Accessibility.Public, null, new List<Method>(), new List<Parameter>(), new List<LocalVariable>(), new Primitive());
+        new Method(name, Accessibility.Public, null, [], [], [], new Primitive());
     }
 
     [TestMethod]
@@ -412,8 +410,7 @@ public class MethodServiceTest
     public void MethodConstructor_WithNameLongerThan50Characters_ShouldThrowMethodException()
     {
         var name = new string('a', 51);
-
-        var method = new Method(name, Accessibility.Public, null, new List<Method>(), new List<Parameter>(), new List<LocalVariable>(), new Primitive());
+        new Method(name, Accessibility.Public, null, [], [], [], new Primitive());
     }
 
     [TestMethod]

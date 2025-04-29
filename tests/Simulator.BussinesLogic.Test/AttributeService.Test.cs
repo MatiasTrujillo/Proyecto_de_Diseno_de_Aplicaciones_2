@@ -88,7 +88,7 @@ public class AttributeServiceTest
         {
             Id = classId,
             Name = "Warrior",
-            Attributes = new List<Attribute>()
+            Attributes = []
         };
 
         _mockClassRepository
@@ -169,7 +169,7 @@ public class AttributeServiceTest
 
         _mockClassRepository
             .Setup(repo => repo.FindAll())
-            .Returns(new List<Class>());
+            .Returns([]);
 
         _mockAttributeRepository
             .Setup(repo => repo.Find(It.IsAny<Guid>()))

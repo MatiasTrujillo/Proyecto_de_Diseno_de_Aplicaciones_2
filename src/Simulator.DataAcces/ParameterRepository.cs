@@ -9,10 +9,10 @@ public class ParameterRepository(SqlContext context) : IParameterRepository
 {
     public void Add(Parameter parameter)
     {
-        if (parameter.ParameterType != null)
+        if(parameter.ParameterType != null)
         {
             var type = context.Set<Type>().Find(parameter.ParameterType.Id);
-            if (type != null)
+            if(type != null)
             {
                 parameter.ParameterType = type;
             }

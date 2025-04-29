@@ -2,7 +2,6 @@ using System;
 using System.Linq;
 using Simulator.BussinesLogic.Exception;
 using Simulator.Domain;
-using Simulator.Domain.Exception;
 using Simulator.DTO;
 using Simulator.IBussinesLogic;
 using Simulator.IDataAcces;

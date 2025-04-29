@@ -83,15 +83,15 @@ public class AttributeService(IAttributeRepository attributeRepository, IClassRe
 
     private void ValidateAccessibility(string newAccessibility, Attribute attribute)
     {
-        if (newAccessibility == "Public")
+        if(newAccessibility == "Public")
         {
             attribute.Accessibility = Accessibility.Public;
         }
-        else if (newAccessibility == "Private")
+        else if(newAccessibility == "Private")
         {
             attribute.Accessibility = Accessibility.Private;
         }
-        else if (newAccessibility == "Protected")
+        else if(newAccessibility == "Protected")
         {
             attribute.Accessibility = Accessibility.Protected;
         }

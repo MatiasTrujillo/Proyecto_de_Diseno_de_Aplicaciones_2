@@ -394,12 +394,12 @@ public class ClassServiceTest
 
         _mockClassRepository.Setup(r => r.Find(It.IsAny<Guid>())).Returns<Guid>(id =>
         {
-            if (id == existingClassId)
+            if(id == existingClassId)
             {
                 return existingClass;
             }
 
-            if (id == hierarchyClassId)
+            if(id == hierarchyClassId)
             {
                 return hierarchyClass;
             }
