@@ -52,7 +52,7 @@ public class LocalVariableRepositoryTest
         _repository.Add(_localVariable);
 
         using var refreshedContext = ProgramTest.BuildTestDbContext();
-        var saved = refreshedContext.LocalVariables.Include(p => p.LocalVariableType).FirstOrDefault(p => p.Id == _localVariable.Id);
+        var saved = refreshedContext.LocalVariables.Include(l => l.LocalVariableType).FirstOrDefault(l => l.Id == _localVariable.Id);
 
         saved.Should().NotBeNull();
         saved!.Name.Should().Be(_localVariable.Name);
