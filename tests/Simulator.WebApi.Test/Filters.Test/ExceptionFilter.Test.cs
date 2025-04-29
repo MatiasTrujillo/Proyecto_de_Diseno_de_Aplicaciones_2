@@ -113,6 +113,23 @@ public class ExceptionFilterTest
     }
 
     [TestMethod]
+    public void OnException_ShouldSetResultTo404AndHandleMethodNotFoundException_WhenParameterNotFoundExceptionIsThrown()
+    {
+        var exception = new ParameterNotFoundException("Parameter not found exception");
+        _context.Exception = exception;
+
+        _filter.OnException(_context);
+
+        Assert.IsInstanceOfType(_context.Result, typeof(ObjectResult));
+        var result = _context.Result as ObjectResult;
+        Assert.AreEqual(404, result?.StatusCode);
+        Assert.IsTrue(_context.ExceptionHandled);
+
+        var message = result?.Value?.GetType().GetProperty("Message")?.GetValue(result.Value)?.ToString();
+        Assert.AreEqual("Parameter not found exception", message);
+    }
+
+    [TestMethod]
     public void OnException_ShouldSetResultTo409AndHandleAttributeAlreadyInClassException_WhenAttributeAlreadyInClassExceptionIsThrown()
     {
         var exception = new AttributeAlreadyInClassException("Attribute already in class exception");

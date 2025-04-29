@@ -22,6 +22,7 @@ public class ExceptionFilter : IExceptionFilter
             InvalidClassException _ => new ObjectResult(new { context.Exception.Message }) { StatusCode = 400 },
             InvalidMethodException _ => new ObjectResult(new { context.Exception.Message }) { StatusCode = 400 },
             AttributeException _ => new ObjectResult(new { context.Exception.Message }) { StatusCode = 400 },
+            ParameterNotFoundException _ => new ObjectResult(new { context.Exception.Message }) { StatusCode = 404 },
             _ => new ObjectResult(new { context.Exception.Message }) { StatusCode = 500 }
         };
         context.ExceptionHandled = true;
