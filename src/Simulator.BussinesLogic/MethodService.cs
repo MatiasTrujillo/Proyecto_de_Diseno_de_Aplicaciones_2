@@ -22,7 +22,10 @@ public class MethodService(IMethodRepository methodRepository, IClassRepository 
     {
         ValidateMethodDTOExist(method);
         var methodT = method.ToEntity();
+        var type = methodT.ReturnType.Name;
+        var returnType = _classRepository.FindAll().FirstOrDefault(c => c.Name == type);
         ValidateUniqueMethod(methodT);
+        methodT.ReturnType = returnType;
         ValidateMethodReturnType(methodT.ReturnType);
         _methodRepository.Add(methodT);
         return methodT.Id;
@@ -64,6 +67,9 @@ public class MethodService(IMethodRepository methodRepository, IClassRepository 
     {
         ValidateParameterIsNotNull(parameter);
         var parameterT = parameter.ToEntity();
+        var type = parameterT.ParameterType.Name;
+        var returnType = _classRepository.FindAll().FirstOrDefault(c => c.Name == type);
+        parameterT.ParameterType = returnType;
         ValidateMethodReturnType(parameterT.ParameterType);
         _parameterRepository.Add(parameterT);
         return parameterT.Id;

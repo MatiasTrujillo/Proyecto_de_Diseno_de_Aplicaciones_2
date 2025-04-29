@@ -19,8 +19,10 @@ public class AttributeService(IAttributeRepository attributeRepository, IClassRe
     public Guid CreateAttribute(AttributeDto aDTO)
     {
         var attribute = aDTO.ToEntity();
+        var type = aDTO.Type.Name;
+        var typeT = _classRepository.FindAll().FirstOrDefault(c => c.Name == type);
         ValidateAttributeType(attribute.Type);
-        var classT = _attributeRepository.Find(attribute.Type.Id);
+        attribute.Type = typeT;
         _attributeRepository.Add(attribute);
         return attribute.Id;
     }

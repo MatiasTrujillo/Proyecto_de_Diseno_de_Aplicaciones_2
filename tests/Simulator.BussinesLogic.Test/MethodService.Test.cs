@@ -91,12 +91,17 @@ public class MethodServiceTest
             Id = Guid.NewGuid(),
             Name = _methodDto.Name,
             Accessibility = Accessibility.Private,
-            Stereotype = null
+            Stereotype = null,
+            ReturnType = new Simulator.Domain.Type { Name = _methodDto.ReturnType.Name }
         };
 
         _mockMethodRepository
             .Setup(repo => repo.FindAll())
             .Returns([existingMethod]);
+
+        _mockClassRepository
+            .Setup(repo => repo.FindAll())
+            .Returns(new List<Class> { new Class { Name = _methodDto.ReturnType.Name } });
 
         var exception = Assert.ThrowsException<InvalidMethodException>(() => _methodService.CreateMethod(_methodDto));
         Assert.AreEqual("Method with the same name  already exists.", exception.Message);
