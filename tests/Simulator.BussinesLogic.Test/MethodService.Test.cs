@@ -706,6 +706,192 @@ public class MethodServiceTest
     }
 
     [TestMethod]
+    public void ExecuteMethodExample5_ShouldReturnMethodExecuted()
+    {
+        var id = new Attribute
+        {
+            Id = Guid.NewGuid(),
+            Name = "Id",
+            Accessibility = Accessibility.Public,
+            Type = new Primitive(PrimitiveType.Int)
+        };
+
+        var validarIdentidad = new Method
+        {
+            Id = Guid.NewGuid(),
+            Name = "ValidarIdentidad",
+            Accessibility = Accessibility.Public,
+            LocalVariables = [],
+            Methods = [],
+            ReturnType = new Primitive(PrimitiveType.Bool)
+        };
+
+        var cliente = new Class
+        {
+            Id = Guid.NewGuid(),
+            Name = "Cliente",
+            Stereotype = null,
+            Attributes = [id],
+            Methods = [validarIdentidad],
+            HierarchyClass = null,
+        };
+
+        var str = new Class
+        {
+            Id = Guid.NewGuid(),
+            Name = "string",
+            Stereotype = null,
+            HierarchyClass = null,
+            Attributes = [],
+            Methods = [],
+        };
+
+        var mensaje = new Parameter
+        {
+            Id = Guid.NewGuid(),
+            Name = "mensaje",
+            ParameterType = str
+        };
+
+        var enviarNotificacion = new Method
+        {
+            Id = Guid.NewGuid(),
+            Name = "EnviarNotificacion",
+            Accessibility = Accessibility.Public,
+            Methods = [],
+            LocalVariables = [],
+            Parameters = [mensaje],
+            ReturnType = null,
+        };
+
+        var comunicacion = new Class
+        {
+            Id = Guid.NewGuid(),
+            Name = "Comunicacion",
+            Stereotype = null,
+            Attributes = [],
+            HierarchyClass = null,
+            Methods = [enviarNotificacion],
+        };
+
+        var notificador = new Attribute
+        {
+            Id = Guid.NewGuid(),
+            Name = "notificador",
+            Type = comunicacion,
+            Accessibility = Accessibility.Protected,
+        };
+
+        var clienteParam = new Parameter
+        {
+            Id = Guid.NewGuid(),
+            Name = "cliente",
+            ParameterType = cliente
+        };
+
+        var realizarProcesoProceso = new Method
+        {
+            Id = Guid.NewGuid(),
+            Name = "RealizarProceso",
+            Accessibility = Accessibility.Protected,
+            Methods = [],
+            LocalVariables = [],
+            Parameters = [clienteParam],
+            ReturnType = null,
+            Stereotype = KeyWord.Abstract
+        };
+
+        var ejecutar = new Method
+        {
+            Id = Guid.NewGuid(),
+            Name = "Ejecutar",
+            Stereotype = null,
+            Accessibility = Accessibility.Public,
+            Methods = [realizarProcesoProceso, enviarNotificacion],
+            LocalVariables = [],
+            Parameters = [clienteParam],
+            ReturnType = null,
+        };
+
+        var validar = new Method
+        {
+            Id = Guid.NewGuid(),
+            Name = "Validar",
+            Stereotype = null,
+            Accessibility = Accessibility.Protected,
+            Methods = [validarIdentidad],
+            LocalVariables = [],
+            Parameters = [clienteParam],
+            ReturnType = new Primitive(PrimitiveType.Bool),
+        };
+
+        var proceso = new Class
+        {
+            Id = Guid.NewGuid(),
+            Name = "Proceso",
+            Stereotype = KeyWord.Abstract,
+            Methods = [ejecutar, validar, realizarProcesoProceso],
+            Attributes = [notificador],
+            HierarchyClass = null,
+        };
+
+        var inventarioDisponible = new Attribute
+        {
+            Id = Guid.NewGuid(),
+            Name = "inventarioDisponible",
+            Type = new Primitive(PrimitiveType.Bool),
+            Accessibility = Accessibility.Private
+        };
+
+        var comprobarInventario = new Method
+        {
+            Id = Guid.NewGuid(),
+            Name = "ComprobarInventario",
+            Stereotype = null,
+            Accessibility = Accessibility.Private,
+            Methods = [],
+            LocalVariables = [],
+            Parameters = [],
+            ReturnType = new Primitive(PrimitiveType.Bool),
+        };
+
+        var realizarProcesoPC = new Method
+        {
+            Id = Guid.NewGuid(),
+            Name = "RealizarProceso",
+            Accessibility = Accessibility.Protected,
+            Methods = [validar, comprobarInventario, enviarNotificacion],
+            LocalVariables = [],
+            Parameters = [clienteParam],
+            ReturnType = null,
+            Stereotype = KeyWord.Sealed
+        };
+
+        var procesoCompra = new Class
+        {
+            Id = Guid.NewGuid(),
+            Name = "ProcesoCompra",
+            Stereotype = KeyWord.Sealed,
+            Methods = [realizarProcesoPC, comprobarInventario],
+            Attributes = [inventarioDisponible],
+            HierarchyClass = proceso,
+        };
+
+        var result = _methodService.ExecuteMethod(proceso, procesoCompra, ejecutar);
+
+        var res =
+            "Proceso.Ejecutar(Cliente) -> Proceso.Ejecutar(Cliente)\n" +
+            "\tthis.RealizarProceso(Cliente) -> ProcesoCompra.RealizarProceso(Cliente)\n" +
+            "\t\tthis.Validar(Cliente) -> Cliente.Validar(Cliente)\n" +
+            "\t\t\tcliente.ValidarIdentidad() -> Cliente.ValidarIdentidad()\n" +
+            "\t\tthis.ComprobarInventario() -> ProcesoCompra.ComprobarInventario()\n" +
+            "\t\tnotificador.EnviarNotificacio(string) -> Comunicacion.EnviarNotificacio(string)\n" +
+            "\tnotificador.EnviarNotificacion(string) -> Comunicacion.EnviarNotificacion(string)";
+        Console.WriteLine(result);
+        Assert.AreEqual(res, result);
+    }
+
+    [TestMethod]
     public void ExecuteMethodExample3_SholddReturnMethodExecuted()
     {
         var limpiar = new Method
