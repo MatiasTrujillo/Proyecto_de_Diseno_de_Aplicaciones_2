@@ -25,6 +25,7 @@ builder.Services.AddScoped<IAttributeRepository, AttributeRepository>();
 builder.Services.AddScoped<IClassRepository, ClassRepository>();
 builder.Services.AddScoped<IMethodRepository, MethodRepository>();
 builder.Services.AddScoped<IParameterRepository, ParameterRepository>();
+builder.Services.AddScoped<ILocalVariableRepository, LocalVariableRepository>();
 
 builder.Services.AddScoped<IAttributeService, AttributeService>();
 builder.Services.AddScoped<IClassService, ClassService>();
