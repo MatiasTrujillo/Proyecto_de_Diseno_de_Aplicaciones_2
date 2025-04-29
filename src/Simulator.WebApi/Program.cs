@@ -24,10 +24,12 @@ builder.Services.AddControllers(options => { options.Filters.Add(typeof(Exceptio
 builder.Services.AddScoped<IAttributeRepository, AttributeRepository>();
 builder.Services.AddScoped<IClassRepository, ClassRepository>();
 builder.Services.AddScoped<IMethodRepository, MethodRepository>();
+builder.Services.AddScoped<IParameterRepository, ParameterRepository>();
 
 builder.Services.AddScoped<IAttributeService, AttributeService>();
 builder.Services.AddScoped<IClassService, ClassService>();
 builder.Services.AddScoped<IMethodService, MethodService>();
+
 builder.Services.AddControllers();
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
