@@ -35,9 +35,4 @@ public class ParameterRepository(SqlContext context) : IParameterRepository
     {
         throw new NotImplementedException();
     }
-
-    public bool Exist(Guid id)
-    {
-        throw new NotImplementedException();
-    }
 }

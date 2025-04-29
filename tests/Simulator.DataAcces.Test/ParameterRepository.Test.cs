@@ -87,4 +87,36 @@ public class ParameterRepositoryTest
         result.Should().BeNull();
     }
     #endregion
+
+    #region FindAll
+    [TestMethod]
+    public void FindAll_WhenMultipleParametersExist_ShouldReturnAll()
+    {
+        var anotherParameter = new Parameter
+        {
+            Id = Guid.NewGuid(),
+            Name = "param2",
+            ParameterType = _primitive
+        };
+
+        _context.Primitives.Add(_primitive);
+        _context.Parameters.Add(_parameter);
+        _context.Parameters.Add(anotherParameter);
+        _context.SaveChanges();
+
+        var result = _repository.FindAll();
+
+        result.Should().HaveCount(2);
+        result.Should().Contain(p => p.Name == _parameter.Name);
+        result.Should().Contain(p => p.Name == anotherParameter.Name);
+    }
+
+    [TestMethod]
+    public void FindAll_WhenNoParametersExist_ShouldReturnEmptyList()
+    {
+        var result = _repository.FindAll();
+
+        result.Should().BeEmpty();
+    }
+    #endregion
 }
