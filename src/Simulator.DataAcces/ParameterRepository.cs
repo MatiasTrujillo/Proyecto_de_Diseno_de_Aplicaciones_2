@@ -33,6 +33,8 @@ public class ParameterRepository(SqlContext context) : IParameterRepository
 
     public List<Parameter> FindAll()
     {
-        throw new NotImplementedException();
+        return context.Parameters
+            .Include(p => p.ParameterType)
+            .ToList();
     }
 }
