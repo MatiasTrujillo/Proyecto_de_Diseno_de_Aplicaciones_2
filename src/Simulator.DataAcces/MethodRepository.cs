@@ -1,6 +1,7 @@
-using Microsoft.EntityFrameworkCore; // Necesario para Include y ThenInclude
+using Microsoft.EntityFrameworkCore;
 using Simulator.Domain;
 using Simulator.IDataAcces;
+using Type = Simulator.Domain.Type;
 
 namespace Simulator.DataAcces;
 
@@ -10,7 +11,7 @@ public class MethodRepository(SqlContext context) : IMethodRepository
     {
         if(method.ReturnType != null)
         {
-            var returnType = context.Classes.Find(method.ReturnType.Id);
+            var returnType = context.Set<Type>().Find(method.ReturnType.Id);
             if(returnType != null)
             {
                 method.ReturnType = returnType;
