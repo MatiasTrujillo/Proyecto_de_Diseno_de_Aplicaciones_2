@@ -293,6 +293,86 @@ public class AttributeServiceTest
     }
 
     [TestMethod]
+    public void UpdateAttributeAccessibilityPrivate_ShouldUpdateAttribute_WhenValid()
+    {
+        var id = Guid.NewGuid();
+        var original = new Attribute("OldName", Accessibility.Private, null);
+        var dto = new AttributeDto
+        {
+            Name = "NewName",
+            Accessibility = Accessibility.Public
+        };
+
+        _mockAttributeRepository
+            .Setup(r => r.Find(id))
+            .Returns(original);
+
+        _mockAttributeRepository
+            .Setup(r => r.Update(It.IsAny<Attribute>()));
+
+        _mockClassRepository.Setup(r => r.FindAll())
+            .Returns([]);
+
+        _attributeService.UpdateAttributeAccessibility(id, "Private");
+
+        Assert.AreEqual(Accessibility.Private, original.Accessibility);
+        _mockAttributeRepository.Verify(r => r.Update(original), Times.Once);
+    }
+
+    [TestMethod]
+    public void UpdateAttributeAccessibilityProtected_ShouldUpdateAttribute_WhenValid()
+    {
+        var id = Guid.NewGuid();
+        var original = new Attribute("OldName", Accessibility.Private, null);
+        var dto = new AttributeDto
+        {
+            Name = "NewName",
+            Accessibility = Accessibility.Public
+        };
+
+        _mockAttributeRepository
+            .Setup(r => r.Find(id))
+            .Returns(original);
+
+        _mockAttributeRepository
+            .Setup(r => r.Update(It.IsAny<Attribute>()));
+
+        _mockClassRepository.Setup(r => r.FindAll())
+            .Returns([]);
+
+        _attributeService.UpdateAttributeAccessibility(id, "Protected");
+
+        Assert.AreEqual(Accessibility.Protected, original.Accessibility);
+        _mockAttributeRepository.Verify(r => r.Update(original), Times.Once);
+    }
+
+    [TestMethod]
+    public void UpdateAttributeAccessibility_ShouldThrowException_WhenAccessibilityIsNonValid()
+    {
+        var id = Guid.NewGuid();
+        var original = new Attribute("OldName", Accessibility.Private, null);
+        var dto = new AttributeDto
+        {
+            Name = "NewName",
+            Accessibility = Accessibility.Public
+        };
+
+        _mockAttributeRepository
+            .Setup(r => r.Find(id))
+            .Returns(original);
+
+        _mockAttributeRepository
+            .Setup(r => r.Update(It.IsAny<Attribute>()));
+
+        _mockClassRepository.Setup(r => r.FindAll())
+            .Returns([]);
+
+        var exception = Assert.ThrowsException<InvalidAttributeException>(() => _attributeService.UpdateAttributeAccessibility(id, "Arbitrary"));
+
+        Assert.AreEqual("Invalid accessibility type", exception.Message);
+    }
+
+    [TestMethod]
     public void UpdateAttribute_ShouldThrowAttributeException_WhenAttributeDoesNotExist()
     {
         var id = Guid.NewGuid();

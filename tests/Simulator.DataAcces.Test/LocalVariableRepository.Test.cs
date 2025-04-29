@@ -44,7 +44,7 @@ public class LocalVariableRepositoryTest
 
     #region Add
     [TestMethod]
-    public void Add_WhenValidParameterProvided_ShouldBeSavedInDatabase()
+    public void Add_WhenValidLocalVariableProvided_ShouldBeSavedInDatabase()
     {
         _context.Primitives.Add(_primitive);
         _context.SaveChanges();
@@ -59,6 +59,32 @@ public class LocalVariableRepositoryTest
         saved.LocalVariableType.Should().NotBeNull();
         saved.LocalVariableType!.Id.Should().Be(_primitive.Id);
         saved.LocalVariableType.Name.Should().Be(_primitive.Name);
+    }
+    #endregion
+
+    #region Find
+    [TestMethod]
+    public void Find_WhenLocalVariableExists_ShouldReturnItWithType()
+    {
+        _context.Primitives.Add(_primitive);
+        _context.LocalVariables.Add(_localVariable);
+        _context.SaveChanges();
+
+        var result = _repository.Find(_localVariable.Id);
+
+        result.Should().NotBeNull();
+        result!.Id.Should().Be(_localVariable.Id);
+        result.Name.Should().Be(_localVariable.Name);
+        result.LocalVariableType.Should().NotBeNull();
+        result.LocalVariableType!.Name.Should().Be(_primitive.Name);
+    }
+
+    [TestMethod]
+    public void Find_WhenLocalVariableDoesNotExist_ShouldReturnNull()
+    {
+        var result = _repository.Find(Guid.NewGuid());
+
+        result.Should().BeNull();
     }
     #endregion
 }

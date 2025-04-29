@@ -11,11 +11,12 @@ using Type = Simulator.Domain.Type;
 
 namespace Simulator.BussinesLogic;
 
-public class MethodService(IMethodRepository methodRepository, IClassRepository classRepository, IParameterRepository parameterRepository) : IMethodService
+public class MethodService(IMethodRepository methodRepository, IClassRepository classRepository, IParameterRepository parameterRepository, ILocalVariableRepository localVariableRepository) : IMethodService
 {
     private readonly IMethodRepository _methodRepository = methodRepository;
     private readonly IClassRepository _classRepository = classRepository;
     private readonly IParameterRepository _parameterRepository = parameterRepository;
+    private readonly ILocalVariableRepository _localVariableRepository = localVariableRepository;
     private static int _indentacion = 0;
 
     public Guid CreateMethod(MethodDTO method)
@@ -53,12 +54,24 @@ public class MethodService(IMethodRepository methodRepository, IClassRepository 
         _classRepository.Update(classT);
     }
 
-    public void AddLocalVariableToMethod(Guid methodId, LocalVariableDTO localVariable)
+    public Guid CreateLocalVariable(LocalVariableDTO localVariable)
     {
-        LocalVariable localVariableT = localVariable.ToEntity();
+        ValidateLocalVariableIsNotNull(localVariable);
+        var localVariableT = localVariable.ToEntity();
+        var type = localVariableT.LocalVariableType.Name;
+        var returnType = _classRepository.FindAll().FirstOrDefault(c => c.Name == type);
+        localVariableT.LocalVariableType = returnType;
+        ValidateMethodReturnType(localVariableT.LocalVariableType);
+        _localVariableRepository.Add(localVariableT);
+        return localVariableT.Id;
+    }
+
+    public void AddLocalVariableToMethod(Guid methodId, Guid localVariable)
+    {
         var method = _methodRepository.Find(methodId);
+        var localVariableT = _localVariableRepository.Find(localVariable);
         ValidateMethodExist(method);
-        ValidateNameLocalVariable(localVariable, method);
+        ValidateNameLocalVariable(localVariableT, method);
         method.LocalVariables.Add(localVariableT);
         _methodRepository.Update(method);
     }
@@ -304,7 +317,7 @@ public class MethodService(IMethodRepository methodRepository, IClassRepository 
         }
     }
 
-    private static void ValidateNameLocalVariable(LocalVariableDTO localVariable, Method method)
+    private static void ValidateNameLocalVariable(LocalVariable localVariable, Method method)
     {
         if(method.LocalVariables != null && method.Parameters != null && (method.LocalVariables.Any(v => v.Name.Equals(localVariable.Name, StringComparison.OrdinalIgnoreCase)) ||
                                                                           method.Parameters.Any(p => p.Name.Equals(localVariable.Name, StringComparison.OrdinalIgnoreCase))))
@@ -370,9 +383,9 @@ public class MethodService(IMethodRepository methodRepository, IClassRepository 
     private void ValidateMethodReturnType(Type? methodTReturnType)
     {
         var classes = _classRepository.FindAll();
-        if(methodTReturnType != null && classes.All(c => c.Name != methodTReturnType.Name))
+        if (classes.All(c => c.Name != methodTReturnType.Name))
         {
-            throw new MethodException("Return type not found.");
+            throw new MethodException("Method return type not found.");
         }
     }
 
@@ -389,6 +402,14 @@ public class MethodService(IMethodRepository methodRepository, IClassRepository 
         if(parameter == null)
         {
             throw new ParameterNotFoundException("Parameter cannot be null.");
+        }
+    }
+
+    private void ValidateLocalVariableIsNotNull(LocalVariableDTO parameter)
+    {
+        if(parameter == null)
+        {
+            throw new LocalVariableNotFoundException("Local Variable cannot be null.");
         }
     }
 }

@@ -14,6 +14,7 @@ public class MethodServiceTest
     private Mock<IMethodRepository> _mockMethodRepository = null!;
     private Mock<IClassRepository> _mockClassRepository = null!;
     private Mock<IParameterRepository> _mockParameterRepository = null!;
+    private Mock<ILocalVariableRepository> _mockLocalVariableRepository = null!;
     private MethodService _methodService = null!;
     private MethodDTO _methodDto = new MethodDTO();
     private MethodDTO _otherMethodDto = new MethodDTO();
@@ -46,12 +47,13 @@ public class MethodServiceTest
         _mockMethodRepository = new Mock<IMethodRepository>(MockBehavior.Strict);
         _mockClassRepository = new Mock<IClassRepository>(MockBehavior.Strict);
         _mockParameterRepository = new Mock<IParameterRepository>(MockBehavior.Strict);
+        _mockLocalVariableRepository = new Mock<ILocalVariableRepository>(MockBehavior.Strict);
         _mockMethodRepository
             .Setup(repo => repo.Add(It.IsAny<Method>()));
         _mockMethodRepository
             .Setup(repo => repo.FindAll())
             .Returns([]);
-        _methodService = new MethodService(_mockMethodRepository.Object, _mockClassRepository.Object, _mockParameterRepository.Object);
+        _methodService = new MethodService(_mockMethodRepository.Object, _mockClassRepository.Object, _mockParameterRepository.Object, _mockLocalVariableRepository.Object);
     }
 
     [TestMethod]
@@ -72,6 +74,24 @@ public class MethodServiceTest
                 m.Name.Equals(_methodDto.Name) &&
                 m.Accessibility == _methodDto.Accessibility &&
                 m.Stereotype == null)), Times.Once);
+    }
+
+    [TestMethod]
+    public void CreateMethod_ShouldThrowException_WhenReturnTypeIsNull()
+    {
+        var classT = new TypeDTO { Name = "TestClass" };
+        var method = new MethodDTO
+        {
+            Name = "TestMethod",
+            Accessibility = Accessibility.Public,
+            Stereotype = null,
+            ReturnType = classT
+        };
+        var classes = new List<Class>();
+        _mockClassRepository.Setup(repo => repo.FindAll()).Returns(classes);
+
+        var exception = Assert.ThrowsException<MethodException>(() => _methodService.CreateMethod(method));
+        Assert.AreEqual("Method return type not found.", exception.Message);
     }
 
     [TestMethod]
@@ -209,18 +229,36 @@ public class MethodServiceTest
     }
 
     [TestMethod]
+    public void DeleteMethod_ShouldDeleteMethod_WhenValid()
+    {
+        var methodId = Guid.NewGuid();
+        var method = new Method { Id = methodId, Name = "TestMethod", Methods = [] };
+
+        _mockMethodRepository.Setup(repo => repo.Find(methodId)).Returns(method);
+        _mockMethodRepository.Setup(repo => repo.Delete(It.IsAny<Guid>()));
+
+        _mockClassRepository.Setup(repo => repo.FindAll()).Returns(new List<Class>());
+
+        _methodService.DeleteMethod(methodId);
+
+        _mockMethodRepository.Verify(repo => repo.Delete(methodId), Times.Once);
+    }
+
+    [TestMethod]
     public void AddLocalVariableToMethod_ShouldAddLocalVariable_WhenValidInputsProvided()
     {
         var methodId = Guid.NewGuid();
-        var localVariable = new LocalVariableDTO { Name = "TestVariable" };
-        var method = new Method { Id = methodId, Name = "TestMethod", LocalVariables = [], Parameters = [] };
+        var localVariableId = Guid.NewGuid();
+        var localVariable = new LocalVariable { Id = localVariableId, Name = "TestLocalVariable" };
+        var method = new Method { Id = methodId, Name = "TestMethod", LocalVariables = [] };
 
         _mockMethodRepository.Setup(repo => repo.Find(methodId)).Returns(method);
+        _mockLocalVariableRepository.Setup(repo => repo.Find(localVariableId)).Returns(localVariable);
         _mockMethodRepository.Setup(repo => repo.Update(It.IsAny<Method>()));
 
-        _methodService.AddLocalVariableToMethod(methodId, localVariable);
+        _methodService.AddLocalVariableToMethod(methodId, localVariableId);
 
-        Assert.IsTrue(method.LocalVariables.Any(v => v.Name == localVariable.Name));
+        Assert.IsTrue(method.LocalVariables.Contains(localVariable));
         _mockMethodRepository.Verify(repo => repo.Update(method), Times.Once);
     }
 
@@ -228,39 +266,26 @@ public class MethodServiceTest
     public void AddLocalVariableToMethod_ShouldThrowException_WhenLocalVariableNameConflictsWithExistingVariable()
     {
         var methodId = Guid.NewGuid();
-        var localVariable = new LocalVariableDTO { Name = "TestVariable" };
+        var localVariableId = Guid.NewGuid();
+        var localVariable = new LocalVariable
+        {
+            Id = localVariableId,
+            Name = "TestLocalVariable"
+        };
         var method = new Method
         {
             Id = methodId,
             Name = "TestMethod",
-            LocalVariables = [new LocalVariable { Name = "TestVariable" }],
+            LocalVariables = [localVariable],
             Parameters = []
         };
 
         _mockMethodRepository.Setup(repo => repo.Find(methodId)).Returns(method);
+        _mockLocalVariableRepository.Setup(repo => repo.Find(localVariableId)).Returns(localVariable);
+        _mockMethodRepository.Setup(repo => repo.Update(It.IsAny<Method>()));
 
         var exception = Assert.ThrowsException<InvalidMethodException>(() =>
-            _methodService.AddLocalVariableToMethod(methodId, localVariable));
-        Assert.AreEqual("A variable or parameter with the same name already exists.", exception.Message);
-    }
-
-    [TestMethod]
-    public void AddLocalVariableToMethod_ShouldThrowException_WhenLocalVariableNameConflictsWithExistingParameter()
-    {
-        var methodId = Guid.NewGuid();
-        var localVariable = new LocalVariableDTO { Name = "TestParameter" };
-        var method = new Method
-        {
-            Id = methodId,
-            Name = "TestMethod",
-            LocalVariables = [],
-            Parameters = [new Parameter { Name = "TestParameter" }]
-        };
-
-        _mockMethodRepository.Setup(repo => repo.Find(methodId)).Returns(method);
-
-        var exception = Assert.ThrowsException<InvalidMethodException>(() =>
-            _methodService.AddLocalVariableToMethod(methodId, localVariable));
+            _methodService.AddLocalVariableToMethod(methodId, localVariableId));
         Assert.AreEqual("A variable or parameter with the same name already exists.", exception.Message);
     }
 
@@ -413,6 +438,46 @@ public class MethodServiceTest
 
         Assert.AreNotEqual(Guid.Empty, result);
         _mockParameterRepository.Verify(r => r.Add(It.IsAny<Parameter>()), Times.Once);
+    }
+
+    [TestMethod]
+    public void CreateParameter_ShouldThrowException_WhenParameterIsNotValid()
+    {
+        var exception = Assert.ThrowsException<ParameterNotFoundException>(() => _methodService.CreateParameter(null));
+
+        Assert.AreEqual("Parameter cannot be null.", exception.Message);
+    }
+
+    [TestMethod]
+    public void CreateLocalVariable_ShouldThrowException_WhenLocalVaraiableIsNotValid()
+    {
+        var exception = Assert.ThrowsException<LocalVariableNotFoundException>(() => _methodService.CreateLocalVariable(null));
+
+        Assert.AreEqual("Local Variable cannot be null.", exception.Message);
+    }
+
+    [TestMethod]
+    public void CreateLocalVariable_ShouldAddLocalVariable_WhenLocalVariableIsValid()
+    {
+        var classT = new TypeDTO { Name = "TestClass" };
+
+        var localVariableDto = new LocalVariableDTO
+        {
+            Name = "TestParameter",
+            LocalVariableType = classT
+        };
+
+        _mockLocalVariableRepository
+            .Setup(r => r.Add(It.Is<LocalVariable>(p => p.Name == localVariableDto.Name && p.LocalVariableType.Name == classT.Name)));
+
+        _mockClassRepository
+            .Setup(repo => repo.FindAll())
+            .Returns([new Class { Name = "TestClass" }]);
+
+        var result = _methodService.CreateLocalVariable(localVariableDto);
+
+        Assert.AreNotEqual(Guid.Empty, result);
+        _mockLocalVariableRepository.Verify(r => r.Add(It.IsAny<LocalVariable>()), Times.Once);
     }
 
     [TestMethod]

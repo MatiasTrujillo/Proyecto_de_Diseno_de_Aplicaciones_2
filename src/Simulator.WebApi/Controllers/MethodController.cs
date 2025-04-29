@@ -24,6 +24,13 @@ public class MethodController(IMethodService methodService) : ControllerBase
         return Created(string.Empty, new { id = parameterId });
     }
 
+    [HttpPost("localVariables")]
+    public IActionResult CreateLocalVariable([FromBody] LocalVariableDTO localVariable)
+    {
+        var localVariableId = _amethodService.CreateLocalVariable(localVariable);
+        return Created(string.Empty, new { id = localVariableId });
+    }
+
     [HttpPost("{methodId}/classes/{classId}")]
     public IActionResult AssociateMethodWithClass([FromRoute] Guid methodId, [FromRoute] Guid classId)
     {
@@ -38,10 +45,10 @@ public class MethodController(IMethodService methodService) : ControllerBase
         return Created(string.Empty, new { message = "Method added successfully" });
     }
 
-    [HttpPost("{methodId}/localVariables")]
-    public IActionResult AddLocalVariableToMethod([FromRoute] Guid methodId, [FromBody] LocalVariableDTO localVariable)
+    [HttpPost("{methodId}/localVariables/{localVariableId}")]
+    public IActionResult AddLocalVariableToMethod([FromRoute] Guid methodId, [FromRoute] Guid localVariableId)
     {
-        _amethodService.AddLocalVariableToMethod(methodId, localVariable);
+        _amethodService.AddLocalVariableToMethod(methodId, localVariableId);
         return Created(string.Empty, new { message = "Local variable added successfully" });
     }
 

@@ -76,20 +76,17 @@ public class MethodControllerTest
     public void AddLocalVariableToMethod_ShouldReturnCreated_WhenLocalVariableIsAddedSuccessfully()
     {
         var methodId = Guid.NewGuid();
-        var localVariable = new LocalVariableDTO
-        {
-            Name = "TestVariable",
-        };
-        _methodServiceMock.Setup(service => service.AddLocalVariableToMethod(methodId, localVariable))
+        var localVariableId = Guid.NewGuid();
+        _methodServiceMock.Setup(service => service.AddLocalVariableToMethod(methodId, localVariableId))
             .Verifiable();
 
-        var result = _controller.AddLocalVariableToMethod(methodId, localVariable) as CreatedResult;
+        var result = _controller.AddLocalVariableToMethod(methodId, localVariableId) as CreatedResult;
 
         Assert.IsNotNull(result, "The result should not be null.");
         Assert.AreEqual(201, result.StatusCode, "The status code should be 201 Created.");
         Assert.IsNotNull(result.Value, "The response value should not be null.");
 
-        _methodServiceMock.Verify(service => service.AddLocalVariableToMethod(methodId, localVariable), Times.Once);
+        _methodServiceMock.Verify(service => service.AddLocalVariableToMethod(methodId, localVariableId), Times.Once);
     }
 
     [TestMethod]
@@ -134,5 +131,32 @@ public class MethodControllerTest
         Assert.AreEqual(expectedParameterId, createdValue, "The returned id should match the expected id.");
 
         _methodServiceMock.Verify(service => service.CreateParameter(parameterDto), Times.Once);
+    }
+
+    [TestMethod]
+    public void CreateLocalVariable_ShouldReturnCreated_WhenLocaVariableIsCreated()
+    {
+        var localVariableDto = new LocalVariableDTO
+        {
+            Name = "TestParameter",
+            LocalVariableType = new TypeDTO { Name = "TestType" }
+        };
+        var expectedParameterId = Guid.NewGuid();
+
+        _methodServiceMock.Setup(service => service.CreateLocalVariable(localVariableDto))
+            .Returns(expectedParameterId);
+
+        var result = _controller.CreateLocalVariable(localVariableDto) as CreatedResult;
+
+        Assert.IsNotNull(result, "The result should not be null.");
+        Assert.AreEqual(201, result.StatusCode, "The status code should be 201 Created.");
+        Assert.IsNotNull(result.Value, "The response value should not be null.");
+
+        var createdValue = result.Value?.GetType().GetProperty("id")?.GetValue(result.Value, null);
+
+        Assert.IsNotNull(createdValue, "The created value should contain an 'id'.");
+        Assert.AreEqual(expectedParameterId, createdValue, "The returned id should match the expected id.");
+
+        _methodServiceMock.Verify(service => service.CreateLocalVariable(localVariableDto), Times.Once);
     }
 }
