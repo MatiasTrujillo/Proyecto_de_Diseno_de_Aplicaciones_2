@@ -11,17 +11,19 @@ public class ExceptionFilter : IExceptionFilter
     {
         context.Result = context.Exception switch
         {
-            AttributeNotFoundException _ => new ObjectResult(new { context.Exception.Message }) { StatusCode = 404 },
-            MethodNotFoundException _ => new ObjectResult(new { context.Exception.Message }) { StatusCode = 404 },
             ClassException _ => new ObjectResult(new { context.Exception.Message }) { StatusCode = 400 },
             MethodException _ => new ObjectResult(new { context.Exception.Message }) { StatusCode = 400 },
-            ClassNotFoundException _ => new ObjectResult(new { context.Exception.Message }) { StatusCode = 404 },
+            AttributeException _ => new ObjectResult(new { context.Exception.Message }) { StatusCode = 400 },
             AttributeAlreadyInClassException _ => new ObjectResult(new { context.Exception.Message }) { StatusCode = 409 },
+            AttributeNotFoundException _ => new ObjectResult(new { context.Exception.Message }) { StatusCode = 404 },
             ClassInUseException _ => new ObjectResult(new { context.Exception.Message }) { StatusCode = 409 },
+            ClassNotFoundException _ => new ObjectResult(new { context.Exception.Message }) { StatusCode = 404 },
             InvalidAttributeException _ => new ObjectResult(new { context.Exception.Message }) { StatusCode = 400 },
             InvalidClassException _ => new ObjectResult(new { context.Exception.Message }) { StatusCode = 400 },
             InvalidMethodException _ => new ObjectResult(new { context.Exception.Message }) { StatusCode = 400 },
-            AttributeException _ => new ObjectResult(new { context.Exception.Message }) { StatusCode = 400 },
+            LocalVariableNotFoundException _ => new ObjectResult(new { context.Exception.Message }) { StatusCode = 404 },
+            MethodInUseException _ => new ObjectResult(new { context.Exception.Message }) { StatusCode = 409 },
+            MethodNotFoundException _ => new ObjectResult(new { context.Exception.Message }) { StatusCode = 404 },
             ParameterNotFoundException _ => new ObjectResult(new { context.Exception.Message }) { StatusCode = 404 },
             _ => new ObjectResult(new { context.Exception.Message }) { StatusCode = 500 }
         };

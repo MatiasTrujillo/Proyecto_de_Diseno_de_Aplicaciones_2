@@ -71,6 +71,7 @@ public class MethodService(IMethodRepository methodRepository, IClassRepository 
         var method = _methodRepository.Find(methodId);
         var localVariableT = _localVariableRepository.Find(localVariable);
         ValidateMethodExist(method);
+        ValidateLocalVariableExist(localVariableT);
         ValidateNameLocalVariable(localVariableT, method);
         method.LocalVariables.Add(localVariableT);
         _methodRepository.Update(method);
@@ -93,6 +94,7 @@ public class MethodService(IMethodRepository methodRepository, IClassRepository 
         var param = _parameterRepository.Find(parameterId);
         var method = _methodRepository.Find(methodId);
         ValidateMethodExist(method);
+        ValidateParameterExist(param);
         ValidateNameParameter(param, method);
         method.Parameters.Add(param);
         _methodRepository.Update(method);
@@ -410,6 +412,22 @@ public class MethodService(IMethodRepository methodRepository, IClassRepository 
         if(parameter == null)
         {
             throw new LocalVariableNotFoundException("Local Variable cannot be null.");
+        }
+    }
+
+    private void ValidateLocalVariableExist(LocalVariable localVariableT)
+    {
+        if(localVariableT == null)
+        {
+            throw new LocalVariableNotFoundException("Local Variable not found.");
+        }
+    }
+
+    public void ValidateParameterExist(Parameter parameter)
+    {
+        if(parameter == null)
+        {
+            throw new ParameterNotFoundException("Parameter not found.");
         }
     }
 }
