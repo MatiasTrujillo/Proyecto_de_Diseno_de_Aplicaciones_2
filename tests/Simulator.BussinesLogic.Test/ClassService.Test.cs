@@ -225,6 +225,37 @@ public class ClassServiceTest
 
     [TestMethod]
     [ExpectedException(typeof(InvalidClassException))]
+    public void UpdateClass_WithInvalidNameSpace_ThrowsException()
+    {
+        var id = Guid.NewGuid();
+        var classT = new Class { Id = id, Name = "OldName" };
+
+        _mockClassRepository.Setup(r => r.FindAll()).Returns([classT]);
+        _mockClassRepository.Setup(r => r.Find(id)).Returns(classT);
+
+        var dto = new UpdateClassDTO { Name = "invalid  ame" };
+
+        _classService.UpdateClass(id, dto);
+    }
+
+    [TestMethod]
+    [ExpectedException(typeof(InvalidClassException))]
+    public void UpdateClass_WithInvalidNameEmpty_ThrowsException()
+    {
+        var id = Guid.NewGuid();
+        var classT = new Class { Id = id, Name = "OldName" };
+
+        _mockClassRepository.Setup(r => r.FindAll()).Returns([classT]);
+        _mockClassRepository.Setup(r => r.Find(id)).Returns(classT);
+        _mockClassRepository.Setup(r => r.Update(It.IsAny<Class>()));
+
+        var dto = new UpdateClassDTO { Name = string.Empty };
+
+        _classService.UpdateClass(id, dto);
+    }
+
+    [TestMethod]
+    [ExpectedException(typeof(InvalidClassException))]
     public void UpdateClass_WithDuplicateName_ThrowsException()
     {
         var id = Guid.NewGuid();
@@ -281,10 +312,7 @@ public class ClassServiceTest
         var classInUse = new Class { Id = Guid.NewGuid(), HierarchyClass = new Class { Id = id } };
         var heritageClass = new Class { Id = heritageId };
 
-        _mockClassRepository.Setup(r => r.FindAll()).Returns(new List<Class>
-        {
-            classT, classInUse, heritageClass
-        });
+        _mockClassRepository.Setup(r => r.FindAll()).Returns([classT, classInUse, heritageClass]);
 
         _mockClassRepository.Setup(r => r.Find(id)).Returns(classT);
         _mockClassRepository.Setup(r => r.Find(heritageId)).Returns(heritageClass);
@@ -297,7 +325,6 @@ public class ClassServiceTest
             IdClass = heritageId
         };
 
-        // Act
         _classService.UpdateClass(id, dto);
     }
 }

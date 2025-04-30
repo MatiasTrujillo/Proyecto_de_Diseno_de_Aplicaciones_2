@@ -5,9 +5,13 @@ using Simulator.Domain;
 using Simulator.DTO;
 using Simulator.IBussinesLogic;
 using Simulator.IDataAcces;
+
 namespace Simulator.BussinesLogic;
 
-public class ClassService(IClassRepository classRepository, IAttributeRepository attributeRepository, IMethodRepository methodRepository) : IClassService
+public class ClassService(
+    IClassRepository classRepository,
+    IAttributeRepository attributeRepository,
+    IMethodRepository methodRepository) : IClassService
 {
     private readonly IClassRepository _classRepository = classRepository;
     private readonly IAttributeRepository _attributeRepository = attributeRepository;
@@ -34,36 +38,29 @@ public class ClassService(IClassRepository classRepository, IAttributeRepository
 
         var classT = _classRepository.Find(id);
 
-        if (!string.IsNullOrWhiteSpace(uClass.Name))
+        if(uClass.Name != null)
         {
             ValidateName(uClass.Name);
-            if (uClass.Name != classT.Name)
+            if(uClass.Name != classT.Name)
             {
                 ValidateClassNameIsUnique(uClass.Name);
                 classT.Name = uClass.Name;
             }
         }
 
-        if (!string.IsNullOrWhiteSpace(uClass.Stereotype))
+        if(!string.IsNullOrWhiteSpace(uClass.Stereotype))
         {
             ValidateStereotype(uClass.Stereotype, classT);
         }
 
-        if (uClass.IdClass.HasValue)
+        if(uClass.IdClass.HasValue)
         {
-            if (uClass.IdClass.Value != Guid.Empty)
+            if(classT.HierarchyClass == null || classT.HierarchyClass.Id != uClass.IdClass.Value)
             {
-                if (classT.HierarchyClass == null || classT.HierarchyClass.Id != uClass.IdClass.Value)
-                {
-                    ValidateClassIdExists(uClass.IdClass.Value);
-                    ValidateClassIsNotInUse(id);
-                    var heritageClass = _classRepository.Find(uClass.IdClass.Value);
-                    classT.HierarchyClass = heritageClass;
-                }
-            }
-            else
-            {
-                classT.HierarchyClass = null;
+                ValidateClassIdExists(uClass.IdClass.Value);
+                ValidateClassIsNotInUse(id);
+                var heritageClass = _classRepository.Find(uClass.IdClass.Value);
+                classT.HierarchyClass = heritageClass;
             }
         }
 
