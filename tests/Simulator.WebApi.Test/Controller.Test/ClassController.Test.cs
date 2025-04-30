@@ -39,4 +39,24 @@ public class ClassControllerTest
         Assert.AreEqual(204, result.StatusCode);
         _classServiceMock.Verify(service => service.DeleteClass(id), Times.Once);
     }
+
+    [TestMethod]
+    public void UpdateClass_ShouldReturnOk_WhenClassIsUpdated()
+    {
+        var id = Guid.NewGuid();
+        var dto = new UpdateClassDTO { Name = "UpdatedClassName" };
+
+        _classServiceMock.Setup(service => service.UpdateClass(id, dto)).Verifiable();
+
+        var result = _controller.UpdateClass(id, dto) as OkObjectResult;
+
+        Assert.IsNotNull(result);
+        Assert.AreEqual(200, result.StatusCode);
+        Assert.IsInstanceOfType(result.Value, typeof(object));
+
+        var response = result.Value?.GetType().GetProperty("message")?.GetValue(result.Value, null) as string;
+        Assert.AreEqual("Class updated successfully", response);
+
+        _classServiceMock.Verify(service => service.UpdateClass(id, dto), Times.Once);
+    }
 }
