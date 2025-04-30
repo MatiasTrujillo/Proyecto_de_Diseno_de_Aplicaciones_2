@@ -207,4 +207,19 @@ public class ClassServiceTest
         Assert.AreEqual(KeyWord.Abstract, existingClass.Stereotype);
         Assert.AreEqual(newHeritageClass, existingClass.HierarchyClass);
     }
+
+    [TestMethod]
+    [ExpectedException(typeof(InvalidClassException))]
+    public void UpdateClass_WithInvalidName_ThrowsException()
+    {
+        var id = Guid.NewGuid();
+        var classT = new Class { Id = id, Name = "OldName" };
+
+        _mockClassRepository.Setup(r => r.FindAll()).Returns(new List<Class> { classT });
+        _mockClassRepository.Setup(r => r.Find(id)).Returns(classT);
+
+        var dto = new UpdateClassDTO { Name = "invalidName" };
+
+        _classService.UpdateClass(id, dto);
+    }
 }
