@@ -2,7 +2,7 @@ namespace Simulator.DTO;
 
 public class UpdateClassDTO
 {
-    public string? Name { get; set; } = string.Empty;
-    public string? Stereotype { get; set; } = string.Empty;
+    public string? Name { get; set; } = null;
+    public string? Stereotype { get; set; } = null;
     public Guid? IdClass { get; set; } = null;
 }
