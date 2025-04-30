@@ -27,51 +27,6 @@ public class ClassControllerTest
     }
 
     [TestMethod]
-    public void UpdateClass_ShouldReturnOk_WhenClassIsUpdated()
-    {
-        var id = Guid.NewGuid();
-        var classT = new ClassDTO();
-        _classServiceMock.Setup(service => service.UpdateNameClass(id, classT.Name))
-            .Verifiable();
-
-        var result = _controller.UpdateClassName(id, classT.Name) as OkObjectResult;
-
-        Assert.IsNotNull(result);
-        Assert.AreEqual(200, result.StatusCode);
-        _classServiceMock.Verify(service => service.UpdateNameClass(id, classT.Name), Times.Once);
-    }
-
-    [TestMethod]
-    public void UpdateClassStereotype_ShouldReturnOk_WhenStereotypeIsUpdated()
-    {
-        var id = Guid.NewGuid();
-        var stereotype = "Abstract";
-        _classServiceMock.Setup(service => service.UpdateClassStereotype(id, stereotype))
-            .Verifiable();
-
-        var result = _controller.UpdateClassStereotype(id, stereotype) as OkObjectResult;
-
-        Assert.IsNotNull(result);
-        Assert.AreEqual(200, result.StatusCode);
-        _classServiceMock.Verify(service => service.UpdateClassStereotype(id, stereotype), Times.Once);
-    }
-
-    [TestMethod]
-    public void UpdateClassInherits_ShouldReturnOk_WhenUpdateIsSuccessful()
-    {
-        var classId = Guid.NewGuid();
-        var classId2 = Guid.NewGuid();
-
-        _classServiceMock.Setup(service => service.UpdateClassInherits(classId, classId2));
-
-        var okResult = _controller.UpdateClassInherits(classId, classId2) as OkObjectResult;
-
-        Assert.IsNotNull(okResult);
-        Assert.AreEqual(200, okResult.StatusCode);
-        _classServiceMock.Verify(service => service.UpdateClassInherits(classId, classId2), Times.Once);
-    }
-
-    [TestMethod]
     public void DeleteClass_ShouldReturnNoContent_WhenClassIsDeleted()
     {
         var id = Guid.NewGuid();

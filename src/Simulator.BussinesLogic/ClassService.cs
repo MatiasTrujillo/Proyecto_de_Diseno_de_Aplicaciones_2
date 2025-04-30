@@ -21,34 +21,6 @@ public class ClassService(IClassRepository classRepository, IAttributeRepository
         return aClass.Id;
     }
 
-    public void UpdateNameClass(Guid id, string name)
-    {
-        ValidateClassNameIsUnique(name);
-        ValidateClassIdExists(id);
-        var classT = _classRepository.Find(id);
-        classT.Name = name;
-        _classRepository.Update(classT);
-    }
-
-    public void UpdateClassStereotype(Guid id, string stereotype)
-    {
-        ValidateClassIdExists(id);
-        var classT = _classRepository.Find(id);
-        ValidateStereotype(stereotype, classT);
-        _classRepository.Update(classT);
-    }
-
-    public void UpdateClassInherits(Guid id, Guid idClass)
-    {
-        ValidateClassIdExists(id);
-        ValidateClassIdExists(idClass);
-        ValidateClassIsNotInUse(id);
-        var classT = _classRepository.Find(id);
-        var heritageClass = _classRepository.Find(idClass);
-        classT.HierarchyClass = heritageClass;
-        _classRepository.Update(classT);
-    }
-
     public void DeleteClass(Guid id)
     {
         ValidateClassIdExists(id);
@@ -56,13 +28,55 @@ public class ClassService(IClassRepository classRepository, IAttributeRepository
         _classRepository.Delete(id);
     }
 
+    public void UpdateClass(Guid id, UpdateClassDTO uClass)
+    {
+        ValidateClassIdExists(id);
+
+        var classT = _classRepository.Find(id);
+
+        if (!string.IsNullOrWhiteSpace(uClass.Name))
+        {
+            ValidateName(uClass.Name);
+            if (uClass.Name != classT.Name)
+            {
+                ValidateClassNameIsUnique(uClass.Name);
+                classT.Name = uClass.Name;
+            }
+        }
+
+        if (!string.IsNullOrWhiteSpace(uClass.Stereotype))
+        {
+            ValidateStereotype(uClass.Stereotype, classT);
+        }
+
+        if (uClass.IdClass.HasValue)
+        {
+            if (uClass.IdClass.Value != Guid.Empty)
+            {
+                if (classT.HierarchyClass == null || classT.HierarchyClass.Id != uClass.IdClass.Value)
+                {
+                    ValidateClassIdExists(uClass.IdClass.Value);
+                    ValidateClassIsNotInUse(id);
+                    var heritageClass = _classRepository.Find(uClass.IdClass.Value);
+                    classT.HierarchyClass = heritageClass;
+                }
+            }
+            else
+            {
+                classT.HierarchyClass = null;
+            }
+        }
+
+        _classRepository.Update(classT);
+    }
+
     private static void ValidateStereotype(string stereotype, Class classT)
     {
-        if(stereotype == "Abstract")
+        if(stereotype.ToLower() == "abstract")
         {
             classT.Stereotype = KeyWord.Abstract;
         }
-        else if(stereotype == "Sealed")
+        else if(stereotype.ToLower() == "sealed")
         {
             classT.Stereotype = KeyWord.Sealed;
         }
@@ -103,6 +117,24 @@ public class ClassService(IClassRepository classRepository, IAttributeRepository
         if(!classes.Exists(classT => classT.Id == id))
         {
             throw new ClassNotFoundException("There is no class with this id");
+        }
+    }
+
+    private void ValidateName(string name)
+    {
+        if(name == string.Empty)
+        {
+            throw new InvalidClassException("The class name cannot be empty.");
+        }
+
+        if(!char.IsUpper(name[0]))
+        {
+            throw new InvalidClassException("The class name must start with an uppercase letter.");
+        }
+
+        if(name.Contains(' '))
+        {
+            throw new InvalidClassException("The class name must not contain spaces.");
         }
     }
 }
