@@ -616,7 +616,7 @@ public class MethodServiceTest
         var usuarioParam = new Parameter
         {
             Id = Guid.NewGuid(),
-            Name = "usuario",
+            Name = "Usuario",
             ParameterType = usuario
         };
 
@@ -679,6 +679,7 @@ public class MethodServiceTest
             Name = "Autenticador",
             Stereotype = KeyWord.Abstract,
             Attributes = [loggerLocal],
+            HierarchyClass = null,
             Methods = [autenticar, preparar, logAcceso, validarCredencialesAutenticator],
         };
 

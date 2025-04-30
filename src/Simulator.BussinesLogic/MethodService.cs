@@ -77,13 +77,7 @@ public class MethodService(IMethodRepository methodRepository, IClassRepository 
     {
         _indentacion = 0;
         var result = new List<string>();
-        var flag = false;
-        if(objectToCreate.HierarchyClass != null)
-        {
-            flag = reference.Id != objectToCreate.HierarchyClass.Id;
-        }
-
-        FirstLine(reference, objectToCreate, methodReference, flag, result);
+        FirstLine(reference, objectToCreate, methodReference, result);
         ParametersMethod(methodReference, result);
         Attribute(reference, methodReference, result);
         LocalVariable(methodReference, result);
@@ -209,19 +203,28 @@ public class MethodService(IMethodRepository methodRepository, IClassRepository 
         }
     }
 
-    private static void FirstLine(Type reference, Class objectToCreate, Method methodReference, bool flag,
-        List<string> result)
+    private static void FirstLine(Type reference, Class objectToCreate, Method methodReference, List<string> result)
     {
-        var indentation = new string('\t', _indentacion);
-        if(!flag)
+        var flag = false;
+
+        if (objectToCreate.HierarchyClass != null && objectToCreate.Methods != null)
         {
-            result.Add(
-                $"{indentation}{reference.Name}.{methodReference.Name}() -> {objectToCreate.Name}.{methodReference.Name}()");
+            flag = objectToCreate.Methods.Any(m => m.Name == methodReference.Name);
+        }
+
+        var indentation = new string('\t', _indentacion);
+
+        var parameters = methodReference.Parameters != null
+            ? string.Join(", ", methodReference.Parameters.Select(p => p.Name))
+            : string.Empty;
+
+        if (flag)
+        {
+            result.Add($"{indentation}{reference.Name}.{methodReference.Name}({parameters}) -> {objectToCreate.Name}.{methodReference.Name}({parameters})");
         }
         else
         {
-            result.Add(
-                $"{indentation}{reference.Name}.{methodReference.Name}() -> {reference.Name}.{methodReference.Name}()");
+            result.Add($"{indentation}{reference.Name}.{methodReference.Name}({parameters}) -> {reference.Name}.{methodReference.Name}({parameters})");
         }
 
         _indentacion++;
