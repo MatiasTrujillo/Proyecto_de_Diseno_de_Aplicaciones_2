@@ -222,4 +222,20 @@ public class ClassServiceTest
 
         _classService.UpdateClass(id, dto);
     }
+
+    [TestMethod]
+    [ExpectedException(typeof(InvalidClassException))]
+    public void UpdateClass_WithDuplicateName_ThrowsException()
+    {
+        var id = Guid.NewGuid();
+        var classT = new Class { Id = id, Name = "OldName" };
+        var duplicate = new Class { Id = Guid.NewGuid(), Name = "NewName" };
+
+        _mockClassRepository.Setup(r => r.FindAll()).Returns(new List<Class> { classT, duplicate });
+        _mockClassRepository.Setup(r => r.Find(id)).Returns(classT);
+
+        var dto = new UpdateClassDTO { Name = "NewName" };
+
+        _classService.UpdateClass(id, dto);
+    }
 }
