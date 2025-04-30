@@ -8,11 +8,6 @@ public class ClassRepository(SqlContext context) : IClassRepository
     public void Add(Class aClass)
     {
         context.Classes.Add(aClass);
-        var classObject = context.Classes
-            .Find(Guid.Parse("dddddddd-dddd-dddd-dddd-dddddddddddd"))
-            .Methods.Count;
-
-        Console.WriteLine(classObject);
         context.SaveChanges();
     }
 
