@@ -35,24 +35,23 @@ public class ClassService(
     public void UpdateClass(Guid id, UpdateClassDTO uClass)
     {
         ValidateClassIdExists(id);
-
         var classT = _classRepository.Find(id);
+        ManageName(uClass, classT);
+        ManageStereotype(uClass, classT);
+        ManageHierarchyClass(id, uClass, classT);
+        _classRepository.Update(classT);
+    }
 
-        if(uClass.Name != null)
-        {
-            ValidateName(uClass.Name);
-            if(uClass.Name != classT.Name)
-            {
-                ValidateClassNameIsUnique(uClass.Name);
-                classT.Name = uClass.Name;
-            }
-        }
-
+    private static void ManageStereotype(UpdateClassDTO uClass, Class classT)
+    {
         if(!string.IsNullOrWhiteSpace(uClass.Stereotype))
         {
             ValidateStereotype(uClass.Stereotype, classT);
         }
+    }
 
+    private void ManageHierarchyClass(Guid id, UpdateClassDTO uClass, Class classT)
+    {
         if(uClass.IdClass.HasValue)
         {
             if(classT.HierarchyClass == null || classT.HierarchyClass.Id != uClass.IdClass.Value)
@@ -63,8 +62,19 @@ public class ClassService(
                 classT.HierarchyClass = heritageClass;
             }
         }
+    }
 
-        _classRepository.Update(classT);
+    private void ManageName(UpdateClassDTO uClass, Class classT)
+    {
+        if(uClass.Name != null)
+        {
+            ValidateName(uClass.Name);
+            if(uClass.Name != classT.Name)
+            {
+                ValidateClassNameIsUnique(uClass.Name);
+                classT.Name = uClass.Name;
+            }
+        }
     }
 
     private static void ValidateStereotype(string stereotype, Class classT)
