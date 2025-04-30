@@ -78,5 +78,10 @@ public enum PrimitiveType
     /// <summary>
     /// 16-bit unsigned integer.
     /// </summary>
-    Ushort
+    Ushort,
+
+    /// <summary>
+    /// string type.
+    /// </summary>
+    String
 }

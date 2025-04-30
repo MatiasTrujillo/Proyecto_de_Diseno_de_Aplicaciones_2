@@ -22,6 +22,38 @@ namespace Simulator.DataAcces.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("ClassMethod", b =>
+                {
+                    b.Property<Guid>("ClassesId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("MethodsId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("ClassesId", "MethodsId");
+
+                    b.HasIndex("MethodsId");
+
+                    b.ToTable("ClassMethod", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            ClassesId = new Guid("dddddddd-dddd-dddd-dddd-dddddddddddd"),
+                            MethodsId = new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa")
+                        },
+                        new
+                        {
+                            ClassesId = new Guid("dddddddd-dddd-dddd-dddd-dddddddddddd"),
+                            MethodsId = new Guid("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb")
+                        },
+                        new
+                        {
+                            ClassesId = new Guid("dddddddd-dddd-dddd-dddd-dddddddddddd"),
+                            MethodsId = new Guid("cccccccc-cccc-cccc-cccc-cccccccccccc")
+                        });
+                });
+
             modelBuilder.Entity("MethodMethod", b =>
                 {
                     b.Property<Guid>("MethodId")
@@ -119,6 +151,29 @@ namespace Simulator.DataAcces.Migrations
                     b.HasIndex("ReturnTypeId");
 
                     b.ToTable("Methods");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"),
+                            Accessibility = 0,
+                            Name = "ToString",
+                            ReturnTypeId = new Guid("22222222-2222-2222-2222-222222222222")
+                        },
+                        new
+                        {
+                            Id = new Guid("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb"),
+                            Accessibility = 0,
+                            Name = "Equals",
+                            ReturnTypeId = new Guid("11111111-1111-1111-1111-111111111111")
+                        },
+                        new
+                        {
+                            Id = new Guid("cccccccc-cccc-cccc-cccc-cccccccccccc"),
+                            Accessibility = 0,
+                            Name = "GetHashCode",
+                            ReturnTypeId = new Guid("33333333-3333-3333-3333-333333333333")
+                        });
                 });
 
             modelBuilder.Entity("Simulator.Domain.Parameter", b =>
@@ -183,13 +238,58 @@ namespace Simulator.DataAcces.Migrations
                     b.HasIndex("HierarchyClassId");
 
                     b.HasDiscriminator().HasValue("Class");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("dddddddd-dddd-dddd-dddd-dddddddddddd"),
+                            Name = "Object"
+                        });
                 });
 
             modelBuilder.Entity("Simulator.Domain.Primitive", b =>
                 {
                     b.HasBaseType("Simulator.Domain.Type");
 
+                    b.Property<int>("PrimitiveType")
+                        .HasColumnType("int");
+
                     b.HasDiscriminator().HasValue("Primitive");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("11111111-1111-1111-1111-111111111111"),
+                            Name = "Bool",
+                            PrimitiveType = 0
+                        },
+                        new
+                        {
+                            Id = new Guid("22222222-2222-2222-2222-222222222222"),
+                            Name = "String",
+                            PrimitiveType = 15
+                        },
+                        new
+                        {
+                            Id = new Guid("33333333-3333-3333-3333-333333333333"),
+                            Name = "Int",
+                            PrimitiveType = 7
+                        });
+                });
+
+            modelBuilder.Entity("ClassMethod", b =>
+                {
+                    b.HasOne("Simulator.Domain.Class", null)
+                        .WithMany()
+                        .HasForeignKey("ClassesId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Simulator.Domain.Method", null)
+                        .WithMany()
+                        .HasForeignKey("MethodsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("MethodMethod", b =>

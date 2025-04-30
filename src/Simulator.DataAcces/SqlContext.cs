@@ -23,7 +23,6 @@ public sealed class SqlContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        // Configure Type hierarchy
         modelBuilder.Entity<Type>()
             .HasKey(t => t.Id);
 
@@ -33,7 +32,6 @@ public sealed class SqlContext : DbContext
         modelBuilder.Entity<Primitive>()
             .HasBaseType<Type>();
 
-        // Configure Attribute
         modelBuilder.Entity<Attribute>()
             .HasKey(a => a.Id);
 
@@ -57,16 +55,104 @@ public sealed class SqlContext : DbContext
             .WithMany()
             .OnDelete(DeleteBehavior.Restrict);
 
-        // Configure Parameter
         modelBuilder.Entity<Parameter>()
             .HasKey(p => p.Id);
 
-        // Configure LocalVariable
         modelBuilder.Entity<LocalVariable>()
             .HasKey(l => l.Id);
 
+        modelBuilder.Entity<Class>()
+            .HasMany<Method>()
+            .WithMany()
+            .UsingEntity<Dictionary<string, object>>(
+                "ClassMethod",
+                j => j.HasOne<Method>().WithMany().HasForeignKey("MethodsId"),
+                j => j.HasOne<Class>().WithMany().HasForeignKey("ClassesId"),
+                j =>
+                {
+                    j.HasKey("ClassesId", "MethodsId");
+                    j.ToTable("ClassMethod");
+                });
+
+        ConfigSeedData(modelBuilder);
+
         base.OnModelCreating(modelBuilder);
     }
+
+    private void ConfigSeedData(ModelBuilder modelBuilder)
+{
+    var methodId1 = Guid.Parse("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa");
+    var methodId2 = Guid.Parse("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb");
+    var methodId3 = Guid.Parse("cccccccc-cccc-cccc-cccc-cccccccccccc");
+    var classId = Guid.Parse("dddddddd-dddd-dddd-dddd-dddddddddddd");
+    var boolTypeId = Guid.Parse("11111111-1111-1111-1111-111111111111");
+    var stringTypeId = Guid.Parse("22222222-2222-2222-2222-222222222222");
+    var intTypeId = Guid.Parse("33333333-3333-3333-3333-333333333333");
+
+    modelBuilder.Entity<Primitive>().HasData(
+        new
+        {
+            Id = boolTypeId,
+            Name = "Bool",
+            PrimitiveType = PrimitiveType.Bool
+        },
+        new
+        {
+            Id = stringTypeId,
+            Name = "String",
+            PrimitiveType = PrimitiveType.String
+        },
+        new
+        {
+            Id = intTypeId,
+            Name = "Int",
+            PrimitiveType = PrimitiveType.Int
+        }
+    );
+
+    modelBuilder.Entity<Method>().HasData(
+        new
+        {
+            Id = methodId1,
+            Name = "ToString",
+            Accessibility = Accessibility.Public,
+            Stereotype = (KeyWord?)null,
+            ReturnTypeId = stringTypeId
+        },
+        new
+        {
+            Id = methodId2,
+            Name = "Equals",
+            Accessibility = Accessibility.Public,
+            Stereotype = (KeyWord?)null,
+            ReturnTypeId = boolTypeId
+        },
+        new
+        {
+            Id = methodId3,
+            Name = "GetHashCode",
+            Accessibility = Accessibility.Public,
+            Stereotype = (KeyWord?)null,
+            ReturnTypeId = intTypeId
+        }
+    );
+
+    modelBuilder.Entity<Class>().HasData(
+        new
+        {
+            Id = classId,
+            Name = "Object",
+            Stereotype = (KeyWord?)null,
+            HierarchyClass = (Guid?)null
+        }
+    );
+
+    modelBuilder.Entity("ClassMethod").HasData(
+        new { ClassesId = classId, MethodsId = methodId1 },
+        new { ClassesId = classId, MethodsId = methodId2 },
+        new { ClassesId = classId, MethodsId = methodId3 }
+    );
+}
 }
 
 public class SqlContextFactory : IDesignTimeDbContextFactory<SqlContext>
@@ -74,9 +160,7 @@ public class SqlContextFactory : IDesignTimeDbContextFactory<SqlContext>
     public SqlContext CreateDbContext(string[] args)
     {
         var optionsBuilder = new DbContextOptionsBuilder<SqlContext>();
-
         optionsBuilder.UseSqlServer("Server=127.0.0.1,1433;Database=dataBase;User Id=sa;Password=Passw1rd;TrustServerCertificate=true;");
-
         return new SqlContext(optionsBuilder.Options);
     }
 }

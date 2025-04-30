@@ -2,7 +2,7 @@ namespace Simulator.Domain;
 
 public class Primitive : Type
 {
-    public static PrimitiveType PrimitiveType { get; set; }
+    public PrimitiveType PrimitiveType { get; set; }
 
     public Primitive()
         : base(string.Empty)
