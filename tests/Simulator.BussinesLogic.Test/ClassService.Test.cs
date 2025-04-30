@@ -256,4 +256,17 @@ public class ClassServiceTest
 
         _classService.UpdateClass(id, dto);
     }
+
+    [TestMethod]
+    [ExpectedException(typeof(ClassNotFoundException))]
+    public void UpdateClass_WithNonExistentClassId_ThrowsException()
+    {
+        var id = Guid.NewGuid();
+
+        _mockClassRepository.Setup(r => r.FindAll()).Returns(new List<Class>());
+
+        var dto = new UpdateClassDTO();
+
+        _classService.UpdateClass(id, dto);
+    }
 }
