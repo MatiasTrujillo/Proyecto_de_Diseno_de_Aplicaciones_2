@@ -186,13 +186,13 @@ public class ClassServiceTest
         var existingClass = new Class { Id = classId, Name = "OldName" };
         var newHeritageClass = new Class { Id = heritageId };
 
-        _mockClassRepository.Setup(r => r.FindAll()).Returns(new List<Class> { existingClass, newHeritageClass });
+        _mockClassRepository.Setup(r => r.FindAll()).Returns([existingClass, newHeritageClass]);
         _mockClassRepository.Setup(r => r.Find(classId)).Returns(existingClass);
         _mockClassRepository.Setup(r => r.Find(heritageId)).Returns(newHeritageClass);
         _mockClassRepository.Setup(r => r.Update(It.IsAny<Class>()));
 
-        _mockAttributeRepository.Setup(r => r.FindAll()).Returns(new List<Attribute>());
-        _mockMethodRepository.Setup(r => r.FindAll()).Returns(new List<Method>());
+        _mockAttributeRepository.Setup(r => r.FindAll()).Returns([]);
+        _mockMethodRepository.Setup(r => r.FindAll()).Returns([]);
 
         var dto = new UpdateClassDTO
         {
@@ -215,7 +215,7 @@ public class ClassServiceTest
         var id = Guid.NewGuid();
         var classT = new Class { Id = id, Name = "OldName" };
 
-        _mockClassRepository.Setup(r => r.FindAll()).Returns(new List<Class> { classT });
+        _mockClassRepository.Setup(r => r.FindAll()).Returns([classT]);
         _mockClassRepository.Setup(r => r.Find(id)).Returns(classT);
 
         var dto = new UpdateClassDTO { Name = "invalidName" };
@@ -231,10 +231,28 @@ public class ClassServiceTest
         var classT = new Class { Id = id, Name = "OldName" };
         var duplicate = new Class { Id = Guid.NewGuid(), Name = "NewName" };
 
-        _mockClassRepository.Setup(r => r.FindAll()).Returns(new List<Class> { classT, duplicate });
+        _mockClassRepository.Setup(r => r.FindAll()).Returns([classT, duplicate]);
         _mockClassRepository.Setup(r => r.Find(id)).Returns(classT);
 
         var dto = new UpdateClassDTO { Name = "NewName" };
+
+        _classService.UpdateClass(id, dto);
+    }
+
+    [TestMethod]
+    [ExpectedException(typeof(InvalidClassException))]
+    public void UpdateClass_WithInvalidStereotype_ThrowsException()
+    {
+        var id = Guid.NewGuid();
+        var classT = new Class { Id = id, Name = "OldName" };
+
+        _mockClassRepository.Setup(r => r.FindAll()).Returns([classT]);
+        _mockClassRepository.Setup(r => r.Find(id)).Returns(classT);
+
+        var dto = new UpdateClassDTO
+        {
+            Stereotype = "invalid"
+        };
 
         _classService.UpdateClass(id, dto);
     }
