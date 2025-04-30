@@ -263,10 +263,41 @@ public class ClassServiceTest
     {
         var id = Guid.NewGuid();
 
-        _mockClassRepository.Setup(r => r.FindAll()).Returns(new List<Class>());
+        _mockClassRepository.Setup(r => r.FindAll()).Returns([]);
 
         var dto = new UpdateClassDTO();
 
+        _classService.UpdateClass(id, dto);
+    }
+
+    [TestMethod]
+    [ExpectedException(typeof(ClassInUseException))]
+    public void UpdateClass_WithClassInUse_ThrowsException()
+    {
+        var id = Guid.NewGuid();
+        var heritageId = Guid.NewGuid();
+
+        var classT = new Class { Id = id, Name = "OldName", HierarchyClass = null };
+        var classInUse = new Class { Id = Guid.NewGuid(), HierarchyClass = new Class { Id = id } };
+        var heritageClass = new Class { Id = heritageId };
+
+        _mockClassRepository.Setup(r => r.FindAll()).Returns(new List<Class>
+        {
+            classT, classInUse, heritageClass
+        });
+
+        _mockClassRepository.Setup(r => r.Find(id)).Returns(classT);
+        _mockClassRepository.Setup(r => r.Find(heritageId)).Returns(heritageClass);
+
+        _mockAttributeRepository.Setup(r => r.FindAll()).Returns([]);
+        _mockMethodRepository.Setup(r => r.FindAll()).Returns([]);
+
+        var dto = new UpdateClassDTO
+        {
+            IdClass = heritageId
+        };
+
+        // Act
         _classService.UpdateClass(id, dto);
     }
 }
