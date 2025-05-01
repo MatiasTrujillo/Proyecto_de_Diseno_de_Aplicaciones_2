@@ -111,6 +111,11 @@ public class AttributeService(IAttributeRepository attributeRepository, IClassRe
 
     private void ValidateAttributeTypeUp(Guid? methodTReturnType)
     {
+        var classes = _classRepository.FindAll();
+        if(methodTReturnType != null && classes.All(c => c.Id != methodTReturnType))
+        {
+            throw new MethodException("Return type not found.");
+        }
     }
 
     public void DeleteAttribute(Guid id)
