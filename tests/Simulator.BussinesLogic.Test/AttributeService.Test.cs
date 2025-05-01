@@ -318,4 +318,20 @@ public class AttributeServiceTest
 
         Assert.AreEqual("Name cannot be null or empty", ex.Message);
     }
+
+    [TestMethod]
+    public void UpdateAttribute_ShouldThrow_WhenNameIsTooLong()
+    {
+        var id = Guid.NewGuid();
+        var attribute = new Attribute { Id = id, Name = "Attr" };
+        var dto = new UpdateAttributeDTO { Name = new string('X', 51), Accessibility = "private" };
+
+        _mockAttributeRepository.Setup(r => r.Find(id)).Returns(attribute);
+        _mockClassRepository.Setup(r => r.FindAll()).Returns([]);
+
+        var ex = Assert.ThrowsException<ArgumentException>(() =>
+            _attributeService.UpdateAttribute(id, dto));
+
+        Assert.AreEqual("Name cannot exceed 50 characters", ex.Message);
+    }
 }
