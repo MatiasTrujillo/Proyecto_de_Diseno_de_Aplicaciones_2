@@ -334,4 +334,21 @@ public class AttributeServiceTest
 
         Assert.AreEqual("Name cannot exceed 50 characters", ex.Message);
     }
+
+    [TestMethod]
+    public void UpdateAttribute_ShouldThrow_WhenAttributeIsInClass()
+    {
+        var id = Guid.NewGuid();
+        var attribute = new Attribute { Id = id, Name = "Attr", Accessibility = Accessibility.Private };
+        var classWithAttr = new Class { Attributes = [attribute] };
+        var dto = new UpdateAttributeDTO { Name = "Name", Accessibility = "public" };
+
+        _mockAttributeRepository.Setup(r => r.Find(id)).Returns(attribute);
+        _mockClassRepository.Setup(r => r.FindAll()).Returns([classWithAttr]);
+
+        var ex = Assert.ThrowsException<InvalidAttributeException>(() =>
+            _attributeService.UpdateAttribute(id, dto));
+
+        Assert.AreEqual("Attribute is associated with a class", ex.Message);
+    }
 }
