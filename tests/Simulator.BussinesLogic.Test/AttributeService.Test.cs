@@ -390,4 +390,21 @@ public class AttributeServiceTest
 
         Assert.AreEqual(Accessibility.Protected, existingAttribute.Accessibility);
     }
+
+    [TestMethod]
+    public void UpdateAttribute_ShouldThrow_WhenIdTypeNotFound()
+    {
+        var id = Guid.NewGuid();
+        var fakeTypeId = Guid.NewGuid();
+        var attribute = new Attribute { Id = id, Name = "Attr" };
+        var dto = new UpdateAttributeDTO { Name = "ValidName", Accessibility = "public", IdType = fakeTypeId };
+
+        _mockAttributeRepository.Setup(r => r.Find(id)).Returns(attribute);
+        _mockClassRepository.Setup(r => r.FindAll()).Returns([new Class { Id = Guid.NewGuid() }]); // different ID
+
+        var ex = Assert.ThrowsException<MethodException>(() =>
+            _attributeService.UpdateAttribute(id, dto));
+
+        Assert.AreEqual("Return type not found.", ex.Message);
+    }
 }
