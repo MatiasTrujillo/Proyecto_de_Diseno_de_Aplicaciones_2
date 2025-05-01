@@ -89,8 +89,24 @@ public class AttributeService(IAttributeRepository attributeRepository, IClassRe
         }
     }
 
-    private void ValidateAccessibility(string? newAccessibility, Attribute attribute)
+     private void ValidateAccessibility(string? newAccessibility, Attribute attribute)
     {
+        if(newAccessibility.ToLower() == "public")
+        {
+            attribute.Accessibility = Accessibility.Public;
+        }
+        else if(newAccessibility.ToLower() == "private")
+        {
+            attribute.Accessibility = Accessibility.Private;
+        }
+        else if(newAccessibility.ToLower() == "protected")
+        {
+            attribute.Accessibility = Accessibility.Protected;
+        }
+        else
+        {
+            throw new InvalidAttributeException("Invalid accessibility type");
+        }
     }
 
     private void ValidateAttributeTypeUp(Guid? methodTReturnType)
