@@ -11,7 +11,8 @@ using Type = Simulator.Domain.Type;
 
 namespace Simulator.BussinesLogic;
 
-public class AttributeService(IAttributeRepository attributeRepository, IClassRepository classRepository) : IAttributeService
+public class AttributeService(IAttributeRepository attributeRepository, IClassRepository classRepository)
+    : IAttributeService
 {
     private readonly IAttributeRepository _attributeRepository = attributeRepository;
     private readonly IClassRepository _classRepository = classRepository;
@@ -46,6 +47,43 @@ public class AttributeService(IAttributeRepository attributeRepository, IClassRe
         ValidateAccessibility(uAttribute.Accessibility, attribute);
         ValidateAttributeTypeUp(uAttribute.IdType);
         _attributeRepository.Update(attribute);
+    }
+
+    public void DeleteAttribute(Guid id)
+    {
+        var attributeT = _attributeRepository.Find(id);
+        ValidateAttributeExist(attributeT);
+        ValidateAttributeIsNotInClass(attributeT);
+        _attributeRepository.Delete(id);
+    }
+
+    private void ValidateAttributeType(Type? methodTReturnType)
+    {
+        var classes = _classRepository.FindAll();
+        if(methodTReturnType != null && classes.All(c => c.Name != methodTReturnType.Name))
+        {
+            throw new MethodException("Return type not found.");
+        }
+    }
+
+    private void ValidateClassExists(Guid idClass)
+    {
+        var classT = _classRepository.Find(idClass);
+        if(classT == null)
+        {
+            throw new ClassNotFoundException("Class not found");
+        }
+    }
+
+    private void ValidUniqueNameInClass(Guid idClass, Attribute attribute)
+    {
+        var classT = _classRepository.Find(idClass);
+
+        if(classT.Attributes != null && classT.Attributes.Any(a => a.Name == attribute.Name))
+        {
+            throw new InvalidAttributeException(
+                $"An attribute with the name '{attribute.Name}' already exists in the class");
+        }
     }
 
     private static void ValidateAttributeExist(Attribute attributeT)
@@ -89,7 +127,7 @@ public class AttributeService(IAttributeRepository attributeRepository, IClassRe
         }
     }
 
-     private void ValidateAccessibility(string? newAccessibility, Attribute attribute)
+    private void ValidateAccessibility(string? newAccessibility, Attribute attribute)
     {
         if(newAccessibility.ToLower() == "public")
         {
@@ -115,42 +153,6 @@ public class AttributeService(IAttributeRepository attributeRepository, IClassRe
         if(methodTReturnType != null && classes.All(c => c.Id != methodTReturnType))
         {
             throw new MethodException("Return type not found.");
-        }
-    }
-
-    public void DeleteAttribute(Guid id)
-    {
-        var attributeT = _attributeRepository.Find(id);
-        ValidateAttributeExist(attributeT);
-        ValidateAttributeIsNotInClass(attributeT);
-        _attributeRepository.Delete(id);
-    }
-
-    private void ValidateAttributeType(Type? methodTReturnType)
-    {
-        var classes = _classRepository.FindAll();
-        if(methodTReturnType != null && classes.All(c => c.Name != methodTReturnType.Name))
-        {
-            throw new MethodException("Return type not found.");
-        }
-    }
-
-    private void ValidateClassExists(Guid idClass)
-    {
-        var classT = _classRepository.Find(idClass);
-        if(classT == null)
-        {
-            throw new ClassNotFoundException("Class not found");
-        }
-    }
-
-    private void ValidUniqueNameInClass(Guid idClass, Attribute attribute)
-    {
-        var classT = _classRepository.Find(idClass);
-
-        if(classT.Attributes != null && classT.Attributes.Any(a => a.Name == attribute.Name))
-        {
-            throw new InvalidAttributeException($"An attribute with the name '{attribute.Name}' already exists in the class");
         }
     }
 }
