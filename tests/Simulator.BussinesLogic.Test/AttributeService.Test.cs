@@ -307,7 +307,7 @@ public class AttributeServiceTest
     public void UpdateAttribute_ShouldThrow_WhenNameIsEmpty()
     {
         var id = Guid.NewGuid();
-        var attribute = new Attribute { Id = id, Name = "X" };
+        var attribute = new Attribute { Id = id, Name = "Attribute" };
         var dto = new UpdateAttributeDTO { Name = string.Empty, Accessibility = "private" };
 
         _mockAttributeRepository.Setup(r => r.Find(id)).Returns(attribute);
