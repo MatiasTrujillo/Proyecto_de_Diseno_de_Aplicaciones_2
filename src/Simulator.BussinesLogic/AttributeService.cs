@@ -48,7 +48,7 @@ public class AttributeService(IAttributeRepository attributeRepository, IClassRe
         _attributeRepository.Update(attribute);
     }
 
-    private static void ValidateAttributeExist(Attribute attributeT) // ASA
+    private static void ValidateAttributeExist(Attribute attributeT)
     {
         if(attributeT == null)
         {
@@ -68,6 +68,7 @@ public class AttributeService(IAttributeRepository attributeRepository, IClassRe
 
     private void ValidateName(string? name, Attribute attribute)
     {
+        attribute.Name = name;
     }
 
     private void ValidateAccessibility(string? newAccessibility, Attribute attribute)
@@ -86,7 +87,7 @@ public class AttributeService(IAttributeRepository attributeRepository, IClassRe
         _attributeRepository.Delete(id);
     }
 
-    private void ValidateAttributeType(Type? methodTReturnType) // ASASA
+    private void ValidateAttributeType(Type? methodTReturnType)
     {
         var classes = _classRepository.FindAll();
         if(methodTReturnType != null && classes.All(c => c.Name != methodTReturnType.Name))
@@ -95,7 +96,7 @@ public class AttributeService(IAttributeRepository attributeRepository, IClassRe
         }
     }
 
-    private void ValidateClassExists(Guid idClass) // AS
+    private void ValidateClassExists(Guid idClass)
     {
         var classT = _classRepository.Find(idClass);
         if(classT == null)
@@ -104,7 +105,7 @@ public class AttributeService(IAttributeRepository attributeRepository, IClassRe
         }
     }
 
-    private void ValidUniqueNameInClass(Guid idClass, Attribute attribute) // ASDA
+    private void ValidUniqueNameInClass(Guid idClass, Attribute attribute)
     {
         var classT = _classRepository.Find(idClass);
 
