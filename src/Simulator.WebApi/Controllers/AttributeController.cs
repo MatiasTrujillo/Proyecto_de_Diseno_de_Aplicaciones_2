@@ -24,6 +24,13 @@ public class AttributeController(IAttributeService attributeService) : Controlle
         return Created(string.Empty, new { message = "Attributes associate successfully" });
     }
 
+    [HttpPut("{id}")]
+    public IActionResult UpdateAttribute([FromRoute] Guid id, [FromBody] UpdateAttributeDTO uAttribute)
+    {
+        _attributeService.UpdateAttribute(id, uAttribute);
+        return Ok(new { message = "Attribute updated successfully" });
+    }
+
     [HttpDelete("{id}")]
     public IActionResult DeleteAttribute([FromRoute] Guid id)
     {

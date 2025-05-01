@@ -66,4 +66,23 @@ public class AttributeControllerTest
 
         mockAttributeService.Verify(service => service.AsociateAttribute(classId, attribute.Id), Times.Once);
     }
+
+    [TestMethod]
+    public void UpdateAttribute_ShouldReturnOk_WhenAttributeIsUpdated()
+    {
+        var id = Guid.NewGuid();
+        var dto = new UpdateAttributeDTO { Name = "UpdatedAttribute", Accessibility = "private" };
+
+        AttributeServiceMock.Setup(service => service.UpdateAttribute(id, dto)).Verifiable();
+
+        var result = _controller.UpdateAttribute(id, dto) as OkObjectResult;
+
+        Assert.IsNotNull(result);
+        Assert.AreEqual(200, result.StatusCode);
+
+        dynamic? response = result.Value;
+        Assert.IsNotNull(response);
+
+        AttributeServiceMock.Verify(service => service.UpdateAttribute(id, dto), Times.Once);
+    }
 }
