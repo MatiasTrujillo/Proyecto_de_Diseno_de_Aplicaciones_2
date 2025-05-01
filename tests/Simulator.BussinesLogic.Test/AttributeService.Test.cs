@@ -365,4 +365,29 @@ public class AttributeServiceTest
 
         Assert.AreEqual("Attribute not found", ex.Message);
     }
+
+    [TestMethod]
+    public void UpdateAttribute_ShouldUpdateAccessibility_WhenDataIsValid()
+    {
+        var id = Guid.NewGuid();
+        var existingAttribute = new Attribute
+        {
+            Id = id,
+            Name = "Attr",
+            Accessibility = Accessibility.Private
+        };
+
+        var dto = new UpdateAttributeDTO
+        {
+            Name = "Attr",
+            Accessibility = "protected"
+        };
+
+        _mockAttributeRepository.Setup(r => r.Find(id)).Returns(existingAttribute);
+        _mockClassRepository.Setup(r => r.FindAll()).Returns(new List<Class>());
+
+        _attributeService.UpdateAttribute(id, dto);
+
+        Assert.AreEqual(Accessibility.Protected, existingAttribute.Accessibility);
+    }
 }
