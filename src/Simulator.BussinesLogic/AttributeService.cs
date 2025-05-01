@@ -69,13 +69,16 @@ public class AttributeService(IAttributeRepository attributeRepository, IClassRe
     private void ValidateName(string? name, Attribute attribute)
     {
         ValidateStringIsNotEmptyOrNull(name);
+        ValidateStringLength(name);
+        attribute.Name = name;
+    }
 
+    private static void ValidateStringLength(string? name)
+    {
         if(name.Length > 50)
         {
             throw new ArgumentException("Name cannot exceed 50 characters");
         }
-
-        attribute.Name = name;
     }
 
     private void ValidateStringIsNotEmptyOrNull(string? name)
