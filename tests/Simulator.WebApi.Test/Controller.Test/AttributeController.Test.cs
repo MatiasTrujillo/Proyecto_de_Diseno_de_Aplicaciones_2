@@ -29,22 +29,6 @@ public class AttributeControllerTest
     }
 
     [TestMethod]
-    public void UpdateAttribute_ShouldReturnOk_WhenAttributeIsUpdated()
-    {
-        var id = Guid.NewGuid();
-        var attribute = new AttributeDto();
-        attribute.Name = "TestAttribute";
-        AttributeServiceMock.Setup(service => service.UpdateAttributeName(id, attribute.Name))
-            .Verifiable();
-
-        var result = _controller.UpdateAttribute(id, attribute.Name) as OkObjectResult;
-
-        Assert.IsNotNull(result);
-        Assert.AreEqual(200, result.StatusCode);
-        AttributeServiceMock.Verify(service => service.UpdateAttributeName(id, attribute.Name), Times.Once);
-    }
-
-    [TestMethod]
     public void DeleteAttribute_ShouldReturnNoContent_WhenAttributeIsDeleted()
     {
         var id = Guid.NewGuid();

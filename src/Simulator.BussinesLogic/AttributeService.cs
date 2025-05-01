@@ -37,67 +37,22 @@ public class AttributeService(IAttributeRepository attributeRepository, IClassRe
         _classRepository.Update(classT);
     }
 
-    public void UpdateAttributeName(Guid id, string newName)
+    public void UpdateAttribute(Guid id, UpdateAttributeDTO uAttribute)
     {
         var attribute = _attributeRepository.Find(id);
         ValidateAttributeExist(attribute);
         ValidateAttributeIsNotInClass(attribute);
-        attribute.Name = newName;
+        ValidateName(uAttribute.Name, attribute);
+        ValidateAccessibility(uAttribute.Accessibility, attribute);
+        ValidateAttributeTypeUp(uAttribute.IdType);
         _attributeRepository.Update(attribute);
     }
 
-    public void UpdateAttributeAccessibility(Guid id, string newAccessibility)
+    private static void ValidateAttributeExist(Attribute attributeT) // ASA
     {
-        var attribute = _attributeRepository.Find(id);
-        ValidateAttributeExist(attribute);
-        ValidateAttributeIsNotInClass(attribute);
-        ValidateAccessibility(newAccessibility, attribute);
-        _attributeRepository.Update(attribute);
-    }
-
-    /*public void UpdateAttributeType(Guid id, string type)
-    {
-        var attribute = _attributeRepository.Find(id);
-        ValidateAttributeExist(attribute);
-        ValidateAttributeIsNotInClass(attribute);
-        attribute.Type = type.ToEntity();
-        _attributeRepository.Update(attribute);
-    }*/
-
-    public void DeleteAttribute(Guid id)
-    {
-        var attributeT = _attributeRepository.Find(id);
-        ValidateAttributeExist(attributeT);
-        ValidateAttributeIsNotInClass(attributeT);
-        _attributeRepository.Delete(id);
-    }
-
-    private void ValidateAttributeType(Type? methodTReturnType)
-    {
-        var classes = _classRepository.FindAll();
-        if(methodTReturnType != null && classes.All(c => c.Name != methodTReturnType.Name))
+        if(attributeT == null)
         {
-            throw new MethodException("Return type not found.");
-        }
-    }
-
-    private void ValidateAccessibility(string newAccessibility, Attribute attribute)
-    {
-        if(newAccessibility == "Public")
-        {
-            attribute.Accessibility = Accessibility.Public;
-        }
-        else if(newAccessibility == "Private")
-        {
-            attribute.Accessibility = Accessibility.Private;
-        }
-        else if(newAccessibility == "Protected")
-        {
-            attribute.Accessibility = Accessibility.Protected;
-        }
-        else
-        {
-            throw new InvalidAttributeException("Invalid accessibility type");
+            throw new InvalidAttributeException("Attribute not found");
         }
     }
 
@@ -111,15 +66,36 @@ public class AttributeService(IAttributeRepository attributeRepository, IClassRe
         }
     }
 
-    private static void ValidateAttributeExist(Attribute attributeT)
+    private void ValidateName(string? name, Attribute attribute)
     {
-        if(attributeT == null)
+    }
+
+    private void ValidateAccessibility(string? newAccessibility, Attribute attribute)
+    {
+    }
+
+    private void ValidateAttributeTypeUp(Guid? methodTReturnType)
+    {
+    }
+
+    public void DeleteAttribute(Guid id)
+    {
+        var attributeT = _attributeRepository.Find(id);
+        ValidateAttributeExist(attributeT);
+        ValidateAttributeIsNotInClass(attributeT);
+        _attributeRepository.Delete(id);
+    }
+
+    private void ValidateAttributeType(Type? methodTReturnType) // ASASA
+    {
+        var classes = _classRepository.FindAll();
+        if(methodTReturnType != null && classes.All(c => c.Name != methodTReturnType.Name))
         {
-            throw new InvalidAttributeException("Attribute not found");
+            throw new MethodException("Return type not found.");
         }
     }
 
-    private void ValidateClassExists(Guid idClass)
+    private void ValidateClassExists(Guid idClass) // AS
     {
         var classT = _classRepository.Find(idClass);
         if(classT == null)
@@ -128,7 +104,7 @@ public class AttributeService(IAttributeRepository attributeRepository, IClassRe
         }
     }
 
-    private void ValidUniqueNameInClass(Guid idClass, Attribute attribute)
+    private void ValidUniqueNameInClass(Guid idClass, Attribute attribute) // ASDA
     {
         var classT = _classRepository.Find(idClass);
 
