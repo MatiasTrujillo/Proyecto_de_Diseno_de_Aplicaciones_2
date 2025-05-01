@@ -18,41 +18,12 @@ namespace Simulator.DataAcces.Migrations
 #pragma warning disable 612, 618
             modelBuilder
                 .HasAnnotation("ProductVersion", "8.0.14")
+                .HasAnnotation("Proxies:ChangeTracking", false)
+                .HasAnnotation("Proxies:CheckEquality", false)
+                .HasAnnotation("Proxies:LazyLoading", true)
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
-
-            modelBuilder.Entity("ClassMethod", b =>
-                {
-                    b.Property<Guid>("ClassesId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("MethodsId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("ClassesId", "MethodsId");
-
-                    b.HasIndex("MethodsId");
-
-                    b.ToTable("ClassMethod", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            ClassesId = new Guid("dddddddd-dddd-dddd-dddd-dddddddddddd"),
-                            MethodsId = new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa")
-                        },
-                        new
-                        {
-                            ClassesId = new Guid("dddddddd-dddd-dddd-dddd-dddddddddddd"),
-                            MethodsId = new Guid("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb")
-                        },
-                        new
-                        {
-                            ClassesId = new Guid("dddddddd-dddd-dddd-dddd-dddddddddddd"),
-                            MethodsId = new Guid("cccccccc-cccc-cccc-cccc-cccccccccccc")
-                        });
-                });
 
             modelBuilder.Entity("MethodMethod", b =>
                 {
@@ -277,21 +248,6 @@ namespace Simulator.DataAcces.Migrations
                         });
                 });
 
-            modelBuilder.Entity("ClassMethod", b =>
-                {
-                    b.HasOne("Simulator.Domain.Class", null)
-                        .WithMany()
-                        .HasForeignKey("ClassesId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Simulator.Domain.Method", null)
-                        .WithMany()
-                        .HasForeignKey("MethodsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("MethodMethod", b =>
                 {
                     b.HasOne("Simulator.Domain.Method", null)
@@ -338,7 +294,8 @@ namespace Simulator.DataAcces.Migrations
                 {
                     b.HasOne("Simulator.Domain.Class", null)
                         .WithMany("Methods")
-                        .HasForeignKey("ClassId");
+                        .HasForeignKey("ClassId")
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("Simulator.Domain.Type", "ReturnType")
                         .WithMany()

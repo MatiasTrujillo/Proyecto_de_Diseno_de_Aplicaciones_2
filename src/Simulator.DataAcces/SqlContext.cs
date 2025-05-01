@@ -62,17 +62,10 @@ public sealed class SqlContext : DbContext
             .HasKey(l => l.Id);
 
         modelBuilder.Entity<Class>()
-            .HasMany<Method>()
-            .WithMany()
-            .UsingEntity<Dictionary<string, object>>(
-                "ClassMethod",
-                j => j.HasOne<Method>().WithMany().HasForeignKey("MethodsId"),
-                j => j.HasOne<Class>().WithMany().HasForeignKey("ClassesId"),
-                j =>
-                {
-                    j.HasKey("ClassesId", "MethodsId");
-                    j.ToTable("ClassMethod");
-                });
+            .HasMany(c => c.Methods)
+            .WithOne()
+            .HasForeignKey("ClassId")
+            .OnDelete(DeleteBehavior.Cascade);
 
         ConfigSeedData(modelBuilder);
 
@@ -80,79 +73,157 @@ public sealed class SqlContext : DbContext
     }
 
     private void ConfigSeedData(ModelBuilder modelBuilder)
-{
-    var methodId1 = Guid.Parse("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa");
-    var methodId2 = Guid.Parse("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb");
-    var methodId3 = Guid.Parse("cccccccc-cccc-cccc-cccc-cccccccccccc");
-    var classId = Guid.Parse("dddddddd-dddd-dddd-dddd-dddddddddddd");
-    var boolTypeId = Guid.Parse("11111111-1111-1111-1111-111111111111");
-    var stringTypeId = Guid.Parse("22222222-2222-2222-2222-222222222222");
-    var intTypeId = Guid.Parse("33333333-3333-3333-3333-333333333333");
+    {
+        var methodId1 = Guid.Parse("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa");
+        var methodId2 = Guid.Parse("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb");
+        var methodId3 = Guid.Parse("cccccccc-cccc-cccc-cccc-cccccccccccc");
+        var classId = Guid.Parse("dddddddd-dddd-dddd-dddd-dddddddddddd");
+        var boolTypeId = Guid.Parse("11111111-1111-1111-1111-111111111111");
+        var stringTypeId = Guid.Parse("22222222-2222-2222-2222-222222222222");
+        var intTypeId = Guid.Parse("33333333-3333-3333-3333-333333333333");
 
-    modelBuilder.Entity<Primitive>().HasData(
-        new
-        {
-            Id = boolTypeId,
-            Name = "Bool",
-            PrimitiveType = PrimitiveType.Bool
-        },
-        new
-        {
-            Id = stringTypeId,
-            Name = "String",
-            PrimitiveType = PrimitiveType.String
-        },
-        new
-        {
-            Id = intTypeId,
-            Name = "Int",
-            PrimitiveType = PrimitiveType.Int
-        }
-    );
+        modelBuilder.Entity<Class>().HasData(
+            new
+            {
+                Id = classId,
+                Name = "Object",
+                Stereotype = (KeyWord?)null,
+                HierarchyClass = (Guid?)null
+            }
+        );
 
-    modelBuilder.Entity<Method>().HasData(
-        new
-        {
-            Id = methodId1,
-            Name = "ToString",
-            Accessibility = Accessibility.Public,
-            Stereotype = (KeyWord?)null,
-            ReturnTypeId = stringTypeId
-        },
-        new
-        {
-            Id = methodId2,
-            Name = "Equals",
-            Accessibility = Accessibility.Public,
-            Stereotype = (KeyWord?)null,
-            ReturnTypeId = boolTypeId
-        },
-        new
-        {
-            Id = methodId3,
-            Name = "GetHashCode",
-            Accessibility = Accessibility.Public,
-            Stereotype = (KeyWord?)null,
-            ReturnTypeId = intTypeId
-        }
-    );
+        modelBuilder.Entity<Primitive>().HasData(
+            new
+            {
+                Id = boolTypeId,
+                Name = "Bool",
+                PrimitiveType = PrimitiveType.Bool
+            },
+            new
+            {
+                Id = stringTypeId,
+                Name = "String",
+                PrimitiveType = PrimitiveType.String
+            },
+            new
+            {
+                Id = intTypeId,
+                Name = "Int",
+                PrimitiveType = PrimitiveType.Int
+            },
+            new
+            {
+                Id = Guid.NewGuid(),
+                Name = "Byte",
+                PrimitiveType = PrimitiveType.Byte
+            },
+            new
+            {
+                Id = Guid.NewGuid(),
+                Name = "SByte",
+                PrimitiveType = PrimitiveType.Sbyte
+            },
+            new
+            {
+                Id = Guid.NewGuid(),
+                Name = "Char",
+                PrimitiveType = PrimitiveType.Char
+            },
+            new
+            {
+                Id = Guid.NewGuid(),
+                Name = "Decimal",
+                PrimitiveType = PrimitiveType.Decimal
+            },
+            new
+            {
+                Id = Guid.NewGuid(),
+                Name = "Double",
+                PrimitiveType = PrimitiveType.Double
+            },
+            new
+            {
+                Id = Guid.NewGuid(),
+                Name = "Float",
+                PrimitiveType = PrimitiveType.Float
+            },
+            new
+            {
+                Id = Guid.NewGuid(),
+                Name = "Uint",
+                PrimitiveType = PrimitiveType.Uint
+            },
+            new
+            {
+                Id = Guid.NewGuid(),
+                Name = "Nint",
+                PrimitiveType = PrimitiveType.Nint
+            },
+            new
+            {
+                Id = Guid.NewGuid(),
+                Name = "Nuint",
+                PrimitiveType = PrimitiveType.Nuint
+            },
+            new
+            {
+                Id = Guid.NewGuid(),
+                Name = "Long",
+                PrimitiveType = PrimitiveType.Long
+            },
+            new
+            {
+                Id = Guid.NewGuid(),
+                Name = "Ulong",
+                PrimitiveType = PrimitiveType.Ulong
+            },
+            new
+            {
+                Id = Guid.NewGuid(),
+                Name = "Short",
+                PrimitiveType = PrimitiveType.Short
+            },
+            new
+            {
+                Id = Guid.NewGuid(),
+                Name = "Ushort",
+                PrimitiveType = PrimitiveType.Ushort
+            }
+        );
 
-    modelBuilder.Entity<Class>().HasData(
-        new
-        {
-            Id = classId,
-            Name = "Object",
-            Stereotype = (KeyWord?)null,
-            HierarchyClass = (Guid?)null
-        }
-    );
+        modelBuilder.Entity<Method>().HasData(
+            new
+            {
+                Id = methodId1,
+                Name = "ToString",
+                Accessibility = Accessibility.Public,
+                Stereotype = (KeyWord?)null,
+                ReturnTypeId = stringTypeId,
+            },
+            new
+            {
+                Id = methodId2,
+                Name = "Equals",
+                Accessibility = Accessibility.Public,
+                Stereotype = (KeyWord?)null,
+                ReturnTypeId = boolTypeId,
+            },
+            new
+            {
+                Id = methodId3,
+                Name = "GetHashCode",
+                Accessibility = Accessibility.Public,
+                Stereotype = (KeyWord?)null,
+                ReturnTypeId = intTypeId,
+            }
+        );
+    }
 
-    modelBuilder.Entity("ClassMethod").HasData(
-        new { ClassesId = classId, MethodsId = methodId1 },
-        new { ClassesId = classId, MethodsId = methodId2 },
-        new { ClassesId = classId, MethodsId = methodId3 }
-    );
-}
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    {
+        optionsBuilder
+            .UseLazyLoadingProxies();
+    }
 }
 
 public class SqlContextFactory : IDesignTimeDbContextFactory<SqlContext>
