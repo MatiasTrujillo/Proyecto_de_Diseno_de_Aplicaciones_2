@@ -384,7 +384,7 @@ public class AttributeServiceTest
         };
 
         _mockAttributeRepository.Setup(r => r.Find(id)).Returns(existingAttribute);
-        _mockClassRepository.Setup(r => r.FindAll()).Returns(new List<Class>());
+        _mockClassRepository.Setup(r => r.FindAll()).Returns([]);
 
         _attributeService.UpdateAttribute(id, dto);
 
