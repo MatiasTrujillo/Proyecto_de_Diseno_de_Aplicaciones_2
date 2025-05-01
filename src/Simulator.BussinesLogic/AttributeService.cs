@@ -40,6 +40,7 @@ public class AttributeService(IAttributeRepository attributeRepository, IClassRe
     public void UpdateAttribute(Guid id, UpdateAttributeDTO uAttribute)
     {
         var attribute = _attributeRepository.Find(id);
+        ValidateAttributeExist(attribute);
         ValidateAttributeIsNotInClass(attribute);
         ValidateName(uAttribute.Name, attribute);
         ValidateAccessibility(uAttribute.Accessibility, attribute);
