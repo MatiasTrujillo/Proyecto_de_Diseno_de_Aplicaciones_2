@@ -70,12 +70,17 @@ public class AttributeService(IAttributeRepository attributeRepository, IClassRe
     {
         ValidateStringIsNotEmptyOrNull(name);
 
+        if(name.Length > 50)
+        {
+            throw new ArgumentException("Name cannot exceed 50 characters");
+        }
+
         attribute.Name = name;
     }
 
-    private static void ValidateStringIsNotEmptyOrNull(string? name)
+    private void ValidateStringIsNotEmptyOrNull(string? name)
     {
-        if(string.IsNullOrWhiteSpace(name))
+        if(string.IsNullOrEmpty(name))
         {
             throw new ArgumentException("Name cannot be null or empty");
         }
