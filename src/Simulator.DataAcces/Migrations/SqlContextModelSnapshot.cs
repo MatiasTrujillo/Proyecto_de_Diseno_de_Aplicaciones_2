@@ -242,8 +242,7 @@ namespace Simulator.DataAcces.Migrations
 
                     b.HasOne("Simulator.Domain.Type", "ReturnType")
                         .WithMany()
-                        .HasForeignKey("ReturnTypeId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .HasForeignKey("ReturnTypeId");
 
                     b.Navigation("ReturnType");
                 });
