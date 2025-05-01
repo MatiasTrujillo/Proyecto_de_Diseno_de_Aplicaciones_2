@@ -108,12 +108,17 @@ public class AttributeService(IAttributeRepository attributeRepository, IClassRe
     {
         ValidateStringIsNotEmptyOrNull(name);
         ValidateStringLength(name);
+        if(name == null)
+        {
+            return;
+        }
+
         attribute.Name = name;
     }
 
     private static void ValidateStringLength(string? name)
     {
-        if(name.Length > 50)
+        if(name != null && name.Length > 50)
         {
             throw new ArgumentException("Name cannot exceed 50 characters");
         }
@@ -121,27 +126,27 @@ public class AttributeService(IAttributeRepository attributeRepository, IClassRe
 
     private void ValidateStringIsNotEmptyOrNull(string? name)
     {
-        if(string.IsNullOrEmpty(name))
+        if(name == string.Empty)
         {
-            throw new ArgumentException("Name cannot be null or empty");
+            throw new ArgumentException("Name cannot be empty");
         }
     }
 
     private void ValidateAccessibility(string? newAccessibility, Attribute attribute)
     {
-        if(newAccessibility.ToLower() == "public")
+        if(newAccessibility != null && newAccessibility.ToLower() == "public")
         {
             attribute.Accessibility = Accessibility.Public;
         }
-        else if(newAccessibility.ToLower() == "private")
+        else if(newAccessibility != null && newAccessibility.ToLower() == "private")
         {
             attribute.Accessibility = Accessibility.Private;
         }
-        else if(newAccessibility.ToLower() == "protected")
+        else if(newAccessibility != null && newAccessibility.ToLower() == "protected")
         {
             attribute.Accessibility = Accessibility.Protected;
         }
-        else
+        else if(newAccessibility != null)
         {
             throw new InvalidAttributeException("Invalid accessibility type");
         }

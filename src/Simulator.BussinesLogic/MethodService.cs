@@ -23,11 +23,16 @@ public class MethodService(IMethodRepository methodRepository, IClassRepository 
     {
         ValidateMethodDTOExist(method);
         var methodT = method.ToEntity();
-        var type = methodT.ReturnType.Name;
-        var returnType = _classRepository.FindAll().FirstOrDefault(c => c.Name == type);
+        Type? returnType = null;
+        if(methodT.ReturnType != null)
+        {
+            ValidateMethodReturnTypeString(methodT.ReturnType.Name);
+            var type = methodT.ReturnType.Name;
+            returnType = _classRepository.FindAll().FirstOrDefault(c => c.Name == type);
+        }
+
         ValidateUniqueMethod(methodT);
         methodT.ReturnType = returnType;
-        ValidateMethodReturnType(methodT.ReturnType);
         _methodRepository.Add(methodT);
         return methodT.Id;
     }
@@ -379,6 +384,15 @@ public class MethodService(IMethodRepository methodRepository, IClassRepository 
         if(methods.Any(method => method.Name.Equals(methodT.Name)))
         {
             throw new InvalidMethodException("Method with the same name  already exists.");
+        }
+    }
+
+    private void ValidateMethodReturnTypeString(string? methodTReturnType)
+    {
+        var classes = _classRepository.FindAll();
+        if(classes.All(c => c.Name != methodTReturnType))
+        {
+            throw new MethodException("Method return type not found.");
         }
     }
 

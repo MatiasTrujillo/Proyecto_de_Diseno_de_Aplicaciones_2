@@ -187,7 +187,8 @@ public class AttributeServiceTest
         var dto = new AttributeDto
         {
             Name = string.Empty,
-            Accessibility = Accessibility.Public
+            Accessibility = Accessibility.Public,
+            Type = new TypeDTO { Name = "TestType" }
         };
 
         var classEntity = new Class
@@ -216,7 +217,8 @@ public class AttributeServiceTest
         var dto = new AttributeDto
         {
             Name = longName,
-            Accessibility = Accessibility.Public
+            Accessibility = Accessibility.Public,
+            Type = new TypeDTO { Name = "TestType" }
         };
 
         var classEntity = new Class
@@ -316,7 +318,7 @@ public class AttributeServiceTest
         var ex = Assert.ThrowsException<ArgumentException>(() =>
             _attributeService.UpdateAttribute(id, dto));
 
-        Assert.AreEqual("Name cannot be null or empty", ex.Message);
+        Assert.AreEqual("Name cannot be empty", ex.Message);
     }
 
     [TestMethod]

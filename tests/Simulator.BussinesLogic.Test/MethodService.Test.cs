@@ -27,7 +27,11 @@ public class MethodServiceTest
         {
             Name = "FirstMethodDto",
             Accessibility = Accessibility.Private,
-            Stereotype = null
+            Stereotype = null,
+            ReturnType = new TypeDTO
+            {
+                Name = "TestClass",
+            }
         };
         _otherMethodDto = new MethodDTO()
         {

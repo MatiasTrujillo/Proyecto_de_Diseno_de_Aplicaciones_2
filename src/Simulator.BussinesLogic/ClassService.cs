@@ -42,7 +42,7 @@ public class ClassService(
         _classRepository.Update(classT);
     }
 
-    private static void ManageStereotype(UpdateClassDTO uClass, Class classT)
+    private void ManageStereotype(UpdateClassDTO uClass, Class classT)
     {
         if(!string.IsNullOrWhiteSpace(uClass.Stereotype))
         {
@@ -52,15 +52,12 @@ public class ClassService(
 
     private void ManageHierarchyClass(Guid id, UpdateClassDTO uClass, Class classT)
     {
-        if(uClass.IdClass.HasValue)
+        if(uClass.IdClass != null)
         {
-            if(classT.HierarchyClass == null || classT.HierarchyClass.Id != uClass.IdClass.Value)
-            {
-                ValidateClassIdExists(uClass.IdClass.Value);
-                ValidateClassIsNotInUse(id);
-                var heritageClass = _classRepository.Find(uClass.IdClass.Value);
-                classT.HierarchyClass = heritageClass;
-            }
+            ValidateClassIdExists(uClass.IdClass.Value);
+            ValidateClassIsNotInUse(id);
+            var heritageClass = _classRepository.Find(uClass.IdClass.Value);
+            classT.HierarchyClass = heritageClass;
         }
     }
 

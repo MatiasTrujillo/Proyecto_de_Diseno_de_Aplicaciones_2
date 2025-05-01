@@ -5,9 +5,9 @@ namespace Simulator.DTO;
 public class MethodDTO
 {
     public string Name { get; set; } = string.Empty;
-    public Accessibility Accessibility { get; set; }
-    public KeyWord? Stereotype { get; set; }
-    public TypeDTO? ReturnType { get; set; } = new TypeDTO();
+    public Accessibility Accessibility { get; set; } = Accessibility.Public;
+    public KeyWord? Stereotype { get; set; } = null;
+    public TypeDTO? ReturnType { get; set; } = null;
 
     public Method ToEntity()
     {
