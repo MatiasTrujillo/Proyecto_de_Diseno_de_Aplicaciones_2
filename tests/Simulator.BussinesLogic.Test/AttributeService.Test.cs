@@ -302,4 +302,20 @@ public class AttributeServiceTest
         _mockAttributeRepository.Verify(r => r.Update(attribute), Times.Once);
         Assert.AreEqual("NewName", attribute.Name);
     }
+
+    [TestMethod]
+    public void UpdateAttribute_ShouldThrow_WhenNameIsEmpty()
+    {
+        var id = Guid.NewGuid();
+        var attribute = new Attribute { Id = id, Name = "X" };
+        var dto = new UpdateAttributeDTO { Name = string.Empty, Accessibility = "private" };
+
+        _mockAttributeRepository.Setup(r => r.Find(id)).Returns(attribute);
+        _mockClassRepository.Setup(r => r.FindAll()).Returns([]);
+
+        var ex = Assert.ThrowsException<ArgumentException>(() =>
+            _attributeService.UpdateAttribute(id, dto));
+
+        Assert.AreEqual("Name cannot be null or empty", ex.Message);
+    }
 }
