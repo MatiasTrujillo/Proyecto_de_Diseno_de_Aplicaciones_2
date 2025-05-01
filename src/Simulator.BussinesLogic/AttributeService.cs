@@ -41,6 +41,7 @@ public class AttributeService(IAttributeRepository attributeRepository, IClassRe
     {
         var attribute = _attributeRepository.Find(id);
         ValidateAttributeExist(attribute);
+        ValidateAttributeIsNotInClass(attribute);
         ValidateName(uAttribute.Name, attribute);
         ValidateAccessibility(uAttribute.Accessibility, attribute);
         ValidateAttributeTypeUp(uAttribute.IdType);
