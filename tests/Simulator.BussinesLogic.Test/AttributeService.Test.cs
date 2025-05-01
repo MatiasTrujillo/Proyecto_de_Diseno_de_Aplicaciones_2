@@ -351,4 +351,18 @@ public class AttributeServiceTest
 
         Assert.AreEqual("Attribute is associated with a class", ex.Message);
     }
+
+    [TestMethod]
+    public void UpdateAttribute_ShouldThrow_WhenAttributeNotFound()
+    {
+        var id = Guid.NewGuid();
+        var dto = new UpdateAttributeDTO { Name = "Name", Accessibility = "public" };
+
+        _mockAttributeRepository.Setup(r => r.Find(id)).Returns((Attribute)null!);
+
+        var ex = Assert.ThrowsException<InvalidAttributeException>(() =>
+            _attributeService.UpdateAttribute(id, dto));
+
+        Assert.AreEqual("Attribute not found", ex.Message);
+    }
 }
