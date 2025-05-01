@@ -68,6 +68,11 @@ public class AttributeService(IAttributeRepository attributeRepository, IClassRe
 
     private void ValidateName(string? name, Attribute attribute)
     {
+        if(string.IsNullOrWhiteSpace(name))
+        {
+            throw new ArgumentException("Name cannot be null or empty");
+        }
+
         attribute.Name = name;
     }
 
