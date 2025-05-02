@@ -43,6 +43,7 @@ public sealed class SqlContext : DbContext
         modelBuilder.Entity<Method>()
             .HasMany(m => m.Parameters)
             .WithOne()
+            .HasForeignKey("MethodId")
             .OnDelete(DeleteBehavior.Cascade);
 
         modelBuilder.Entity<Method>()
@@ -63,9 +64,16 @@ public sealed class SqlContext : DbContext
 
         modelBuilder.Entity<Class>()
             .HasMany(c => c.Methods)
-            .WithOne()
-            .HasForeignKey("ClassId")
-            .OnDelete(DeleteBehavior.Cascade);
+            .WithMany()
+            .UsingEntity<Dictionary<string, object>>(
+                "ClassMethod",
+                j => j.HasOne<Method>().WithMany().HasForeignKey("MethodsId"),
+                j => j.HasOne<Class>().WithMany().HasForeignKey("ClassId"),
+                j =>
+                {
+                    j.HasKey("ClassId", "MethodsId");
+                    j.ToTable("ClassMethod");
+                });
 
         ConfigSeedData(modelBuilder);
 
@@ -217,6 +225,33 @@ public sealed class SqlContext : DbContext
                 ReturnTypeId = intTypeId,
             }
         );
+
+        modelBuilder.Entity("ClassMethod").HasData(
+            new Dictionary<string, object>
+            {
+                ["ClassId"] = Guid.Parse("dddddddd-dddd-dddd-dddd-dddddddddddd"),
+                ["MethodsId"] = Guid.Parse("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa")
+            },
+            new Dictionary<string, object>
+            {
+                ["ClassId"] = Guid.Parse("dddddddd-dddd-dddd-dddd-dddddddddddd"),
+                ["MethodsId"] = Guid.Parse("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb")
+            },
+            new Dictionary<string, object>
+            {
+                ["ClassId"] = Guid.Parse("dddddddd-dddd-dddd-dddd-dddddddddddd"),
+                ["MethodsId"] = Guid.Parse("cccccccc-cccc-cccc-cccc-cccccccccccc")
+            }
+        );
+
+        modelBuilder.Entity<Parameter>().HasData(
+            new
+            {
+                Id = Guid.NewGuid(),
+                Name = "Obj",
+                ParameterTypeId = classId,
+                MethodId = methodId2,
+            });
     }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
