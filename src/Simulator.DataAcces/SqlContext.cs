@@ -97,8 +97,7 @@ public sealed class SqlContext : DbContext
                 Name = "Object",
                 Stereotype = (KeyWord?)null,
                 HierarchyClass = (Guid?)null
-            }
-        );
+            });
 
         modelBuilder.Entity<Primitive>().HasData(
             new
