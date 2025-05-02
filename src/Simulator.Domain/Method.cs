@@ -7,7 +7,7 @@ public class Method
     public Guid Id { get; set; }
     public string Name { get; set; }
     public Accessibility Accessibility { get; set; }
-    public virtual List<Method>? Methods { get; set; }
+    public virtual List<InvokedMethod>? Methods { get; set; }
     public virtual List<Parameter>? Parameters { get; set; }
     public virtual List<LocalVariable>? LocalVariables { get; set; }
     public KeyWord? Stereotype { get; set; }
@@ -25,7 +25,7 @@ public class Method
         ReturnType = new Primitive();
     }
 
-    public Method(string name, Accessibility accessibility, KeyWord? stereotype, List<Method> methods,
+    public Method(string name, Accessibility accessibility, KeyWord? stereotype, List<InvokedMethod> methods,
         List<Parameter> parameters,
         List<LocalVariable> localVariables, Type returnType)
     {
