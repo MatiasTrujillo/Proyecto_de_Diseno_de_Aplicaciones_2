@@ -106,17 +106,18 @@ public class ParameterRepositoryTest
 
         var result = _repository.FindAll();
 
-        result.Should().HaveCount(2);
+        result.Should().HaveCount(3);
         result.Should().Contain(p => p.Name == _parameter.Name);
         result.Should().Contain(p => p.Name == anotherParameter.Name);
     }
 
     [TestMethod]
-    public void FindAll_WhenNoParametersExist_ShouldReturnEmptyList()
+    public void FindAll_WhenNoParametersExist_ShouldReturnAListWithOnePreInstalledParameter()
     {
         var result = _repository.FindAll();
 
-        result.Should().BeEmpty();
+        result.Count.Should().Be(1);
+        result.Should().Contain(p => p.Name == "Obj");
     }
     #endregion
 }
