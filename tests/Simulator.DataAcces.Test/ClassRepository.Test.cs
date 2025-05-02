@@ -44,14 +44,23 @@ public class ClassRepositoryTest
         using var otherContext = ProgramTest.BuildTestDbContext();
         var saved = otherContext.Set<Class>().ToList();
 
-        saved.Count.Should().Be(1);
-        saved[0].Id.Should().Be(aClass.Id);
-        saved[0].Name.Should().Be(aClass.Name);
-        saved[0].Stereotype.Should().Be(aClass.Stereotype);
+        saved.Count.Should().Be(2);
+        saved[1].Id.Should().Be(aClass.Id);
+        saved[1].Name.Should().Be(aClass.Name);
+        saved[1].Stereotype.Should().Be(aClass.Stereotype);
     }
     #endregion
 
     #region Find
+
+    [TestMethod]
+    public void Find_WhenNothing_ShouldHaveObjectClass()
+    {
+        var result = _repository.Find(Guid.Parse("dddddddd-dddd-dddd-dddd-dddddddddddd"));
+
+        result.Name.Should().Be("Object");
+    }
+
     [TestMethod]
     public void Find_WhenClassExists_ShouldReturnIt()
     {
@@ -86,7 +95,7 @@ public class ClassRepositoryTest
 
         var result = _repository.FindAll();
 
-        result.Count.Should().Be(2);
+        result.Count.Should().Be(3);
 
         result.Should().Contain(a => a.Name == "Class");
         result.Should().Contain(a => a.Name == "Class1");
