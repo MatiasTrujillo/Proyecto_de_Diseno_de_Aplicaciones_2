@@ -5,9 +5,13 @@ using Simulator.Domain;
 using Simulator.DTO;
 using Simulator.IBussinesLogic;
 using Simulator.IDataAcces;
+
 namespace Simulator.BussinesLogic;
 
-public class ClassService(IClassRepository classRepository, IAttributeRepository attributeRepository, IMethodRepository methodRepository) : IClassService
+public class ClassService(
+    IClassRepository classRepository,
+    IAttributeRepository attributeRepository,
+    IMethodRepository methodRepository) : IClassService
 {
     private readonly IClassRepository _classRepository = classRepository;
     private readonly IAttributeRepository _attributeRepository = attributeRepository;
@@ -21,34 +25,6 @@ public class ClassService(IClassRepository classRepository, IAttributeRepository
         return aClass.Id;
     }
 
-    public void UpdateNameClass(Guid id, string name)
-    {
-        ValidateClassNameIsUnique(name);
-        ValidateClassIdExists(id);
-        var classT = _classRepository.Find(id);
-        classT.Name = name;
-        _classRepository.Update(classT);
-    }
-
-    public void UpdateClassStereotype(Guid id, string stereotype)
-    {
-        ValidateClassIdExists(id);
-        var classT = _classRepository.Find(id);
-        ValidateStereotype(stereotype, classT);
-        _classRepository.Update(classT);
-    }
-
-    public void UpdateClassInherits(Guid id, Guid idClass)
-    {
-        ValidateClassIdExists(id);
-        ValidateClassIdExists(idClass);
-        ValidateClassIsNotInUse(id);
-        var classT = _classRepository.Find(id);
-        var heritageClass = _classRepository.Find(idClass);
-        classT.HierarchyClass = heritageClass;
-        _classRepository.Update(classT);
-    }
-
     public void DeleteClass(Guid id)
     {
         ValidateClassIdExists(id);
@@ -56,13 +32,55 @@ public class ClassService(IClassRepository classRepository, IAttributeRepository
         _classRepository.Delete(id);
     }
 
+    public void UpdateClass(Guid id, UpdateClassDTO uClass)
+    {
+        ValidateClassIdExists(id);
+        var classT = _classRepository.Find(id);
+        ManageName(uClass, classT);
+        ManageStereotype(uClass, classT);
+        ManageHierarchyClass(id, uClass, classT);
+        _classRepository.Update(classT);
+    }
+
+    private void ManageStereotype(UpdateClassDTO uClass, Class classT)
+    {
+        if(!string.IsNullOrWhiteSpace(uClass.Stereotype))
+        {
+            ValidateStereotype(uClass.Stereotype, classT);
+        }
+    }
+
+    private void ManageHierarchyClass(Guid id, UpdateClassDTO uClass, Class classT)
+    {
+        if(uClass.IdClass != null)
+        {
+            ValidateClassIdExists(uClass.IdClass.Value);
+            ValidateClassIsNotInUse(id);
+            var heritageClass = _classRepository.Find(uClass.IdClass.Value);
+            classT.HierarchyClass = heritageClass;
+        }
+    }
+
+    private void ManageName(UpdateClassDTO uClass, Class classT)
+    {
+        if(uClass.Name != null)
+        {
+            ValidateName(uClass.Name);
+            if(uClass.Name != classT.Name)
+            {
+                ValidateClassNameIsUnique(uClass.Name);
+                classT.Name = uClass.Name;
+            }
+        }
+    }
+
     private static void ValidateStereotype(string stereotype, Class classT)
     {
-        if(stereotype == "Abstract")
+        if(stereotype.ToLower() == "abstract")
         {
             classT.Stereotype = KeyWord.Abstract;
         }
-        else if(stereotype == "Sealed")
+        else if(stereotype.ToLower() == "sealed")
         {
             classT.Stereotype = KeyWord.Sealed;
         }
@@ -103,6 +121,24 @@ public class ClassService(IClassRepository classRepository, IAttributeRepository
         if(!classes.Exists(classT => classT.Id == id))
         {
             throw new ClassNotFoundException("There is no class with this id");
+        }
+    }
+
+    private void ValidateName(string name)
+    {
+        if(name == string.Empty)
+        {
+            throw new InvalidClassException("The class name cannot be empty.");
+        }
+
+        if(!char.IsUpper(name[0]))
+        {
+            throw new InvalidClassException("The class name must start with an uppercase letter.");
+        }
+
+        if(name.Contains(' '))
+        {
+            throw new InvalidClassException("The class name must not contain spaces.");
         }
     }
 }

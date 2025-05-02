@@ -24,18 +24,11 @@ public class AttributeController(IAttributeService attributeService) : Controlle
         return Created(string.Empty, new { message = "Attributes associate successfully" });
     }
 
-    [HttpPatch("{id}/names/")]
-    public IActionResult UpdateAttribute([FromRoute] Guid id, [FromQuery] string name)
+    [HttpPut("{id}")]
+    public IActionResult UpdateAttribute([FromRoute] Guid id, [FromBody] UpdateAttributeDTO uAttribute)
     {
-        _attributeService.UpdateAttributeName(id, name);
+        _attributeService.UpdateAttribute(id, uAttribute);
         return Ok(new { message = "Attribute updated successfully" });
-    }
-
-    [HttpPatch("{id}/accessibility/")]
-    public IActionResult UpdateAttributeAccessibiliti([FromRoute] Guid id, [FromQuery] string accessibility)
-    {
-        _attributeService.UpdateAttributeAccessibility(id, accessibility);
-        return Ok(new { message = "Attribute accessibility updated successfully" });
     }
 
     [HttpDelete("{id}")]

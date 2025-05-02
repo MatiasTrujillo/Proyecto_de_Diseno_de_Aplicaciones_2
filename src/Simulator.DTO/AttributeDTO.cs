@@ -7,8 +7,8 @@ namespace Simulator.DTO;
 public class AttributeDto
 {
     public string Name { get; set; } = string.Empty;
-    public Accessibility Accessibility { get; set; }
-    public TypeDTO? Type { get; set; } = new TypeDTO();
+    public Accessibility Accessibility { get; set; } = Accessibility.Public;
+    public TypeDTO? Type { get; set; } = null;
 
     public Attribute ToEntity()
     {

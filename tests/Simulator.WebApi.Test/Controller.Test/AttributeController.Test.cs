@@ -29,22 +29,6 @@ public class AttributeControllerTest
     }
 
     [TestMethod]
-    public void UpdateAttribute_ShouldReturnOk_WhenAttributeIsUpdated()
-    {
-        var id = Guid.NewGuid();
-        var attribute = new AttributeDto();
-        attribute.Name = "TestAttribute";
-        AttributeServiceMock.Setup(service => service.UpdateAttributeName(id, attribute.Name))
-            .Verifiable();
-
-        var result = _controller.UpdateAttribute(id, attribute.Name) as OkObjectResult;
-
-        Assert.IsNotNull(result);
-        Assert.AreEqual(200, result.StatusCode);
-        AttributeServiceMock.Verify(service => service.UpdateAttributeName(id, attribute.Name), Times.Once);
-    }
-
-    [TestMethod]
     public void DeleteAttribute_ShouldReturnNoContent_WhenAttributeIsDeleted()
     {
         var id = Guid.NewGuid();
@@ -81,5 +65,24 @@ public class AttributeControllerTest
         Assert.AreEqual(201, result.StatusCode);
 
         mockAttributeService.Verify(service => service.AsociateAttribute(classId, attribute.Id), Times.Once);
+    }
+
+    [TestMethod]
+    public void UpdateAttribute_ShouldReturnOk_WhenAttributeIsUpdated()
+    {
+        var id = Guid.NewGuid();
+        var dto = new UpdateAttributeDTO { Name = "UpdatedAttribute", Accessibility = "private" };
+
+        AttributeServiceMock.Setup(service => service.UpdateAttribute(id, dto)).Verifiable();
+
+        var result = _controller.UpdateAttribute(id, dto) as OkObjectResult;
+
+        Assert.IsNotNull(result);
+        Assert.AreEqual(200, result.StatusCode);
+
+        dynamic? response = result.Value;
+        Assert.IsNotNull(response);
+
+        AttributeServiceMock.Verify(service => service.UpdateAttribute(id, dto), Times.Once);
     }
 }

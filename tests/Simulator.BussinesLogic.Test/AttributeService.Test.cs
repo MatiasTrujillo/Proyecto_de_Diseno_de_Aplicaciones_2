@@ -187,7 +187,8 @@ public class AttributeServiceTest
         var dto = new AttributeDto
         {
             Name = string.Empty,
-            Accessibility = Accessibility.Public
+            Accessibility = Accessibility.Public,
+            Type = new TypeDTO { Name = "TestType" }
         };
 
         var classEntity = new Class
@@ -216,7 +217,8 @@ public class AttributeServiceTest
         var dto = new AttributeDto
         {
             Name = longName,
-            Accessibility = Accessibility.Public
+            Accessibility = Accessibility.Public,
+            Type = new TypeDTO { Name = "TestType" }
         };
 
         var classEntity = new Class
@@ -236,162 +238,6 @@ public class AttributeServiceTest
         });
 
         Assert.AreEqual("Name cannot exceed 50 characters", ex.Message);
-    }
-
-    [TestMethod]
-    public void UpdateAttributeName_ShouldUpdateAttribute_WhenValid()
-    {
-        var id = Guid.NewGuid();
-        var original = new Attribute("OldName", Accessibility.Private, null);
-        var dto = new AttributeDto
-        {
-            Name = "NewName",
-            Accessibility = Accessibility.Public
-        };
-
-        _mockAttributeRepository
-            .Setup(r => r.Find(id))
-            .Returns(original);
-
-        _mockAttributeRepository
-            .Setup(r => r.Update(It.IsAny<Attribute>()));
-
-        _mockClassRepository.Setup(r => r.FindAll())
-            .Returns([]);
-
-        _attributeService.UpdateAttributeName(id, dto.Name);
-
-        Assert.AreEqual("NewName", original.Name);
-        _mockAttributeRepository.Verify(r => r.Update(original), Times.Once);
-    }
-
-    [TestMethod]
-    public void UpdateAttributeAccessibility_ShouldUpdateAttribute_WhenValid()
-    {
-        var id = Guid.NewGuid();
-        var original = new Attribute("OldName", Accessibility.Private, null);
-        var dto = new AttributeDto
-        {
-            Name = "NewName",
-            Accessibility = Accessibility.Public
-        };
-
-        _mockAttributeRepository
-            .Setup(r => r.Find(id))
-            .Returns(original);
-
-        _mockAttributeRepository
-            .Setup(r => r.Update(It.IsAny<Attribute>()));
-
-        _mockClassRepository.Setup(r => r.FindAll())
-            .Returns([]);
-
-        _attributeService.UpdateAttributeAccessibility(id, "Public");
-
-        Assert.AreEqual(Accessibility.Public, original.Accessibility);
-        _mockAttributeRepository.Verify(r => r.Update(original), Times.Once);
-    }
-
-    [TestMethod]
-    public void UpdateAttributeAccessibilityPrivate_ShouldUpdateAttribute_WhenValid()
-    {
-        var id = Guid.NewGuid();
-        var original = new Attribute("OldName", Accessibility.Private, null);
-        var dto = new AttributeDto
-        {
-            Name = "NewName",
-            Accessibility = Accessibility.Public
-        };
-
-        _mockAttributeRepository
-            .Setup(r => r.Find(id))
-            .Returns(original);
-
-        _mockAttributeRepository
-            .Setup(r => r.Update(It.IsAny<Attribute>()));
-
-        _mockClassRepository.Setup(r => r.FindAll())
-            .Returns([]);
-
-        _attributeService.UpdateAttributeAccessibility(id, "Private");
-
-        Assert.AreEqual(Accessibility.Private, original.Accessibility);
-        _mockAttributeRepository.Verify(r => r.Update(original), Times.Once);
-    }
-
-    [TestMethod]
-    public void UpdateAttributeAccessibilityProtected_ShouldUpdateAttribute_WhenValid()
-    {
-        var id = Guid.NewGuid();
-        var original = new Attribute("OldName", Accessibility.Private, null);
-        var dto = new AttributeDto
-        {
-            Name = "NewName",
-            Accessibility = Accessibility.Public
-        };
-
-        _mockAttributeRepository
-            .Setup(r => r.Find(id))
-            .Returns(original);
-
-        _mockAttributeRepository
-            .Setup(r => r.Update(It.IsAny<Attribute>()));
-
-        _mockClassRepository.Setup(r => r.FindAll())
-            .Returns([]);
-
-        _attributeService.UpdateAttributeAccessibility(id, "Protected");
-
-        Assert.AreEqual(Accessibility.Protected, original.Accessibility);
-        _mockAttributeRepository.Verify(r => r.Update(original), Times.Once);
-    }
-
-    [TestMethod]
-    public void UpdateAttributeAccessibility_ShouldThrowException_WhenAccessibilityIsNonValid()
-    {
-        var id = Guid.NewGuid();
-        var original = new Attribute("OldName", Accessibility.Private, null);
-        var dto = new AttributeDto
-        {
-            Name = "NewName",
-            Accessibility = Accessibility.Public
-        };
-
-        _mockAttributeRepository
-            .Setup(r => r.Find(id))
-            .Returns(original);
-
-        _mockAttributeRepository
-            .Setup(r => r.Update(It.IsAny<Attribute>()));
-
-        _mockClassRepository.Setup(r => r.FindAll())
-            .Returns([]);
-
-        var exception = Assert.ThrowsException<InvalidAttributeException>(() => _attributeService.UpdateAttributeAccessibility(id, "Arbitrary"));
-
-        Assert.AreEqual("Invalid accessibility type", exception.Message);
-    }
-
-    [TestMethod]
-    public void UpdateAttribute_ShouldThrowAttributeException_WhenAttributeDoesNotExist()
-    {
-        var id = Guid.NewGuid();
-        var dto = new AttributeDto
-        {
-            Name = "NewName",
-            Accessibility = Accessibility.Private
-        };
-
-        _mockAttributeRepository
-            .Setup(r => r.Find(id))
-            .Returns((Attribute)null);
-
-        var exception = Assert.ThrowsException<InvalidAttributeException>(() =>
-        {
-            _attributeService.UpdateAttributeName(id, dto.Name);
-        });
-
-        Assert.AreEqual("Attribute not found", exception.Message);
     }
 
     [TestMethod]
@@ -439,5 +285,128 @@ public class AttributeServiceTest
         });
 
         Assert.AreEqual("Attribute is associated with a class", ex.Message);
+    }
+
+    [TestMethod]
+    public void UpdateAttribute_ShouldUpdate_WhenDataIsValid()
+    {
+        var attributeId = Guid.NewGuid();
+        var typeId = Guid.NewGuid();
+        var attribute = new Attribute { Id = attributeId, Name = "OldName", Accessibility = Accessibility.Private };
+        var dto = new UpdateAttributeDTO { Name = "NewName", Accessibility = "public", IdType = typeId };
+
+        _mockAttributeRepository.Setup(r => r.Find(attributeId)).Returns(attribute);
+        _mockClassRepository.Setup(r => r.FindAll()).Returns([new Class { Id = typeId }]);
+        _mockAttributeRepository.Setup(r => r.Update(attribute));
+
+        _attributeService.UpdateAttribute(attributeId, dto);
+
+        _mockAttributeRepository.Verify(r => r.Update(attribute), Times.Once);
+        Assert.AreEqual("NewName", attribute.Name);
+    }
+
+    [TestMethod]
+    public void UpdateAttribute_ShouldThrow_WhenNameIsEmpty()
+    {
+        var id = Guid.NewGuid();
+        var attribute = new Attribute { Id = id, Name = "Attribute" };
+        var dto = new UpdateAttributeDTO { Name = string.Empty, Accessibility = "private" };
+
+        _mockAttributeRepository.Setup(r => r.Find(id)).Returns(attribute);
+        _mockClassRepository.Setup(r => r.FindAll()).Returns([]);
+
+        var ex = Assert.ThrowsException<ArgumentException>(() =>
+            _attributeService.UpdateAttribute(id, dto));
+
+        Assert.AreEqual("Name cannot be empty", ex.Message);
+    }
+
+    [TestMethod]
+    public void UpdateAttribute_ShouldThrow_WhenNameIsTooLong()
+    {
+        var id = Guid.NewGuid();
+        var attribute = new Attribute { Id = id, Name = "Attr" };
+        var dto = new UpdateAttributeDTO { Name = new string('X', 51), Accessibility = "private" };
+
+        _mockAttributeRepository.Setup(r => r.Find(id)).Returns(attribute);
+        _mockClassRepository.Setup(r => r.FindAll()).Returns([]);
+
+        var ex = Assert.ThrowsException<ArgumentException>(() =>
+            _attributeService.UpdateAttribute(id, dto));
+
+        Assert.AreEqual("Name cannot exceed 50 characters", ex.Message);
+    }
+
+    [TestMethod]
+    public void UpdateAttribute_ShouldThrow_WhenAttributeIsInClass()
+    {
+        var id = Guid.NewGuid();
+        var attribute = new Attribute { Id = id, Name = "Attr", Accessibility = Accessibility.Private };
+        var classWithAttr = new Class { Attributes = [attribute] };
+        var dto = new UpdateAttributeDTO { Name = "Name", Accessibility = "public" };
+
+        _mockAttributeRepository.Setup(r => r.Find(id)).Returns(attribute);
+        _mockClassRepository.Setup(r => r.FindAll()).Returns([classWithAttr]);
+
+        var ex = Assert.ThrowsException<InvalidAttributeException>(() =>
+            _attributeService.UpdateAttribute(id, dto));
+
+        Assert.AreEqual("Attribute is associated with a class", ex.Message);
+    }
+
+    [TestMethod]
+    public void UpdateAttribute_ShouldThrow_WhenAttributeNotFound()
+    {
+        var id = Guid.NewGuid();
+        var dto = new UpdateAttributeDTO { Name = "Name", Accessibility = "public" };
+
+        _mockAttributeRepository.Setup(r => r.Find(id)).Returns((Attribute)null!);
+
+        var ex = Assert.ThrowsException<InvalidAttributeException>(() =>
+            _attributeService.UpdateAttribute(id, dto));
+
+        Assert.AreEqual("Attribute not found", ex.Message);
+    }
+
+    [TestMethod]
+    public void UpdateAttribute_ShouldUpdateAccessibility_WhenDataIsValid()
+    {
+        var id = Guid.NewGuid();
+        var existingAttribute = new Attribute
+        {
+            Id = id,
+            Name = "Attr",
+            Accessibility = Accessibility.Private
+        };
+
+        var dto = new UpdateAttributeDTO
+        {
+            Name = "Attr",
+            Accessibility = "protected"
+        };
+
+        _mockAttributeRepository.Setup(r => r.Find(id)).Returns(existingAttribute);
+        _mockClassRepository.Setup(r => r.FindAll()).Returns([]);
+
+        _attributeService.UpdateAttribute(id, dto);
+
+        Assert.AreEqual(Accessibility.Protected, existingAttribute.Accessibility);
+    }
+
+    [TestMethod]
+    public void UpdateAttribute_ShouldThrow_WhenIdTypeNotFound()
+    {
+        var id = Guid.NewGuid();
+        var fakeTypeId = Guid.NewGuid();
+        var attribute = new Attribute { Id = id, Name = "Attr" };
+        var dto = new UpdateAttributeDTO { Name = "ValidName", Accessibility = "public", IdType = fakeTypeId };
+
+        _mockAttributeRepository.Setup(r => r.Find(id)).Returns(attribute);
+        _mockClassRepository.Setup(r => r.FindAll()).Returns([new Class { Id = Guid.NewGuid() }]); // different ID
+
+        var ex = Assert.ThrowsException<MethodException>(() =>
+            _attributeService.UpdateAttribute(id, dto));
+
+        Assert.AreEqual("Return type not found.", ex.Message);
     }
 }
