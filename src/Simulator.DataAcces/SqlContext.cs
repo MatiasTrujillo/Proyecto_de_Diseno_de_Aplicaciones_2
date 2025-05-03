@@ -37,9 +37,7 @@ public sealed class SqlContext : DbContext
             .HasKey(a => a.Id);
 
         modelBuilder.Entity<Method>()
-            .HasMany(m => m.Methods)
-            .WithOne(im => im.Method)
-            .HasForeignKey(im => im.MethodId);
+            .HasMany(m => m.Methods);
 
         modelBuilder.Entity<Method>()
             .HasMany(m => m.Parameters)

@@ -18,13 +18,6 @@ public class InvokedMethodRepository_Test
         _invokedMethod = new InvokedMethod
         {
             Id = Guid.NewGuid(),
-            Method = new Method
-            {
-                Id = Guid.NewGuid(),
-                Name = "TestMethod",
-                ReturnType = new Primitive(PrimitiveType.Int),
-                Parameters = new List<Parameter>()
-            },
             ReferenceName = "TestReference",
         };
     }
@@ -50,7 +43,7 @@ public class InvokedMethodRepository_Test
             Id = Guid.NewGuid(),
             Name = "TestMethod",
             ReturnType = new Primitive(PrimitiveType.Int),
-            Parameters = new List<Parameter>()
+            Parameters = []
         };
 
         _context.Methods.Add(method);
@@ -60,7 +53,6 @@ public class InvokedMethodRepository_Test
         {
             Id = Guid.NewGuid(),
             MethodId = method.Id,
-            Method = method,
             ReferenceName = "TestReference"
         };
 
@@ -68,13 +60,10 @@ public class InvokedMethodRepository_Test
 
         using var refreshedContext = ProgramTest.BuildTestDbContext();
         var saved = refreshedContext.InvokedMethods
-            .Include(i => i.Method)
             .FirstOrDefault(i => i.Id == invokedMethod.Id);
 
         saved.Should().NotBeNull();
         saved!.ReferenceName.Should().Be("TestReference");
-        saved.Method.Should().NotBeNull();
-        saved.Method.Name.Should().Be("TestMethod");
     }
     #endregion
 
@@ -87,14 +76,13 @@ public class InvokedMethodRepository_Test
             Id = Guid.NewGuid(),
             Name = "ExistingMethod",
             ReturnType = new Primitive(PrimitiveType.Int),
-            Parameters = new List<Parameter>()
+            Parameters = []
         };
 
         var invokedMethod = new InvokedMethod
         {
             Id = Guid.NewGuid(),
             MethodId = method.Id,
-            Method = method,
             ReferenceName = "RefMethod"
         };
 
@@ -107,9 +95,6 @@ public class InvokedMethodRepository_Test
         result.Should().NotBeNull();
         result!.Id.Should().Be(invokedMethod.Id);
         result.ReferenceName.Should().Be("RefMethod");
-        result.Method.Should().NotBeNull();
-        result.Method.Id.Should().Be(method.Id);
-        result.Method.Name.Should().Be("ExistingMethod");
     }
 
     [TestMethod]

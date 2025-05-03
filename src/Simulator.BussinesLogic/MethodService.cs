@@ -11,12 +11,13 @@ using Type = Simulator.Domain.Type;
 
 namespace Simulator.BussinesLogic;
 
-public class MethodService(IMethodRepository methodRepository, IClassRepository classRepository, IParameterRepository parameterRepository, ILocalVariableRepository localVariableRepository) : IMethodService
+public class MethodService(IMethodRepository methodRepository, IClassRepository classRepository, IParameterRepository parameterRepository, ILocalVariableRepository localVariableRepository, IInvokedMethodRepository invokedMethodRepository) : IMethodService
 {
     private readonly IMethodRepository _methodRepository = methodRepository;
     private readonly IClassRepository _classRepository = classRepository;
     private readonly IParameterRepository _parameterRepository = parameterRepository;
     private readonly ILocalVariableRepository _localVariableRepository = localVariableRepository;
+    private readonly IInvokedMethodRepository _invokedMethodRepository = invokedMethodRepository;
 
     public Guid CreateMethod(MethodDTO method)
     {
@@ -36,19 +37,35 @@ public class MethodService(IMethodRepository methodRepository, IClassRepository 
         return methodT.Id;
     }
 
-    public void AddAMethod(Guid id, InvokedMethodDTO invokedMethodDto)
+    public Guid AssociateInvokeMethod(InvokedMethodDTO invokedMethod)
     {
-        var method = _methodRepository.Find(id);
-        var methodToAdd = _methodRepository.Find(invokedMethodDto.MethodId);
-
+        ValidateInvokedMethodDTOExist(invokedMethod);
+        var method = _methodRepository.Find(invokedMethod.MethodId);
         ValidateMethodExist(method);
-        ValidateMethodExist(methodToAdd);
-        ValidateMethodIsNotInRepeted(id, invokedMethodDto.MethodId);
+        ValidateInvokedMethodReferenceNameIsNotNull(invokedMethod.ReferenceName);
+        var invokedMethodT = invokedMethod.ToEntity();
+        return invokedMethodT.Id;
+    }
 
-        var invokedMethod = invokedMethodDto.ToEntity(methodToAdd);
+    private void ValidateInvokedMethodReferenceNameIsNotNull(string? invokedMethodReferenceName)
+    {
+        if(string.IsNullOrEmpty(invokedMethodReferenceName))
+        {
+            throw new InvokedMethodNotFoundException("Invoked Method Reference Name cannot be null or empty.");
+        }
+    }
 
-        method.Methods.Add(invokedMethod);
-        _methodRepository.Update(method);
+    private void ValidateInvokedMethodDTOExist(InvokedMethodDTO invokedMethod)
+    {
+        if(invokedMethod == null)
+        {
+            throw new InvokedMethodNotFoundException("Invoked Method cannot be null.");
+        }
+    }
+
+    public void AddAMethod(Guid id, Guid invokedMethodId)
+    {
+        var invokedMethod = _invokedMethodRepository.Find(invokedMethodId);
     }
 
     public void AssociateMethodWithClass(Guid methodId, Guid classId)

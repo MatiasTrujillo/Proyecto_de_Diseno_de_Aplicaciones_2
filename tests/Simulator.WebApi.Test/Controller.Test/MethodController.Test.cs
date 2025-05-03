@@ -57,23 +57,6 @@ public class MethodControllerTest
     }
 
     [TestMethod]
-    public void AddAMethod_ShouldReturnCreated_WhenMethodIsAddedSuccessfully()
-    {
-        var id = Guid.NewGuid();
-        var idToAdd = Guid.NewGuid();
-        var invokedMethodDto = new InvokedMethodDTO();
-        _methodServiceMock.Setup(service => service.AddAMethod(id, invokedMethodDto))
-            .Verifiable();
-
-        var result = _controller.AddAMethod(id, invokedMethodDto) as CreatedResult;
-
-        Assert.IsNotNull(result);
-        Assert.AreEqual(201, result.StatusCode);
-
-        _methodServiceMock.Verify(service => service.AddAMethod(id, invokedMethodDto), Times.Once);
-    }
-
-    [TestMethod]
     public void AddLocalVariableToMethod_ShouldReturnCreated_WhenLocalVariableIsAddedSuccessfully()
     {
         var methodId = Guid.NewGuid();

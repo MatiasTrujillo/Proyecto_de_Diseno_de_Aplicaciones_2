@@ -7,12 +7,8 @@ public class InvokedMethodDTO
     public Guid MethodId { get; set; }
     public string ReferenceName { get; set; } = null!;
 
-    public InvokedMethod ToEntity(Method method)
+    public InvokedMethod ToEntity()
     {
-        return new InvokedMethod
-        {
-            Method = method,
-            ReferenceName = ReferenceName
-        };
+        return new InvokedMethod(MethodId, ReferenceName);
     }
 }

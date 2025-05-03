@@ -52,7 +52,6 @@ public class MethodRepositoryTest
         _invokedMethod = new InvokedMethod
         {
             Id = Guid.NewGuid(),
-            Method = _secondMethod,
             ReferenceName = "this"
         };
         _oneMethod = new Method(_oneMethodName, _accessibilityPublic, null, [_invokedMethod],
@@ -72,7 +71,7 @@ public class MethodRepositoryTest
         var parameter = new Parameter { Id = Guid.NewGuid(), Name = "param1" };
         var localVariable = new LocalVariable { Id = Guid.NewGuid(), Name = "localVar1" };
         var calledMethod = new Method { Id = Guid.NewGuid(), Name = "CalledMethod" };
-        var invokedMethod = new InvokedMethod { Id = Guid.NewGuid(), Method = calledMethod, ReferenceName = "this" };
+        var invokedMethod = new InvokedMethod { Id = Guid.NewGuid(), ReferenceName = "this" };
 
         _context.Classes.Add(returnType);
         _context.Parameters.Add(parameter);
@@ -121,12 +120,20 @@ public class MethodRepositoryTest
         var parameter = new Parameter { Id = Guid.NewGuid(), Name = "Parameter1", ParameterType = returnType };
         var localVariable = new LocalVariable { Id = Guid.NewGuid(), Name = "LocalVar1", LocalVariableType = returnType };
         var relatedMethod = new Method { Id = Guid.NewGuid(), Name = "RelatedMethod" };
-        var invokedMethod = new InvokedMethod { Id = Guid.NewGuid(), Method = relatedMethod, ReferenceName = "this" };
 
         _context.Classes.Add(returnType);
         _context.Parameters.Add(parameter);
         _context.LocalVariables.Add(localVariable);
         _context.Methods.Add(relatedMethod);
+        _context.SaveChanges();
+
+        var invokedMethod = new InvokedMethod
+        {
+            Id = Guid.NewGuid(),
+            ReferenceName = "this",
+            MethodId = relatedMethod.Id
+        };
+
         _context.InvokedMethods.Add(invokedMethod);
         _context.SaveChanges();
 
