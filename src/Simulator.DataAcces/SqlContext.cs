@@ -57,6 +57,9 @@ public sealed class SqlContext : DbContext
             .WithMany()
             .OnDelete(DeleteBehavior.Restrict);
 
+        modelBuilder.Entity<InvokedMethod>()
+            .HasKey(i => i.Id);
+
         modelBuilder.Entity<Parameter>()
             .HasKey(p => p.Id);
 
