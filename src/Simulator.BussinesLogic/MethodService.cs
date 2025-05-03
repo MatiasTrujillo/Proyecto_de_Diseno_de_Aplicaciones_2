@@ -36,14 +36,15 @@ public class MethodService(IMethodRepository methodRepository, IClassRepository 
         return methodT.Id;
     }
 
-    public void AddAMethod(Guid id, InvokeMethodDTO idToAdd)
+    public void AddAMethod(Guid id, InvokedMethodDTO invokedMethodDto)
     {
+        var invokedMethod = invokedMethodDto.ToEntity();
         var method = _methodRepository.Find(id);
-        var methodToAdd = _methodRepository.Find(idToAdd);
+        var methodToAdd = _methodRepository.Find(invokedMethod.Method.Id);
         ValidateMethodExist(method);
         ValidateMethodExist(methodToAdd);
-        ValidateMethodIsNotInRepeted(id, idToAdd);
-        method.Methods.Add(methodToAdd);
+        ValidateMethodIsNotInRepeted(id, invokedMethod.Method.Id);
+        method.Methods.Add(invokedMethod);
         _methodRepository.Update(method);
     }
 
