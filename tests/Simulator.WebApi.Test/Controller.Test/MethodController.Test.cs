@@ -61,15 +61,16 @@ public class MethodControllerTest
     {
         var id = Guid.NewGuid();
         var idToAdd = Guid.NewGuid();
-        _methodServiceMock.Setup(service => service.AddAMethod(id, idToAdd))
+        var invokedMethodDto = new InvokedMethodDTO();
+        _methodServiceMock.Setup(service => service.AddAMethod(id, invokedMethodDto))
             .Verifiable();
 
-        var result = _controller.AddAMethod(id, idToAdd) as CreatedResult;
+        var result = _controller.AddAMethod(id, invokedMethodDto) as CreatedResult;
 
         Assert.IsNotNull(result);
         Assert.AreEqual(201, result.StatusCode);
 
-        _methodServiceMock.Verify(service => service.AddAMethod(id, idToAdd), Times.Once);
+        _methodServiceMock.Verify(service => service.AddAMethod(id, invokedMethodDto), Times.Once);
     }
 
     [TestMethod]

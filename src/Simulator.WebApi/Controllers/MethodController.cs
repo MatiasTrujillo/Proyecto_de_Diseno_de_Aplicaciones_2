@@ -38,10 +38,10 @@ public class MethodController(IMethodService methodService) : ControllerBase
         return Created(string.Empty, new { message = "Method associated with class successfully" });
     }
 
-    [HttpPost("{id}/\nmethods/{idToAdd}")]
-    public IActionResult AddAMethod([FromRoute] Guid id, [FromRoute] Guid idToAdd)
+    [HttpPost("{id}/\nmethods/invokedMethod")]
+    public IActionResult AddAMethod([FromRoute] Guid id, [FromRoute] InvokedMethodDTO invokedMethodDto)
     {
-        _amethodService.AddAMethod(id, idToAdd);
+        _amethodService.AddAMethod(id, invokedMethodDto);
         return Created(string.Empty, new { message = "Method added successfully" });
     }
 
