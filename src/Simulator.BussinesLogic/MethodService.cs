@@ -36,7 +36,7 @@ public class MethodService(IMethodRepository methodRepository, IClassRepository 
         return methodT.Id;
     }
 
-    public void AddAMethod(Guid id, Guid idToAdd)
+    public void AddAMethod(Guid id, InvokeMethodDTO idToAdd)
     {
         var method = _methodRepository.Find(id);
         var methodToAdd = _methodRepository.Find(idToAdd);

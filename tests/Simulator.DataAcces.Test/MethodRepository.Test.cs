@@ -23,6 +23,7 @@ public class MethodRepositoryTest
     private Method _thirdMethod = new Method();
     private Parameter _parameter = new Parameter();
     private LocalVariable _localVariable = new LocalVariable();
+    private InvokedMethod _invokedMethod = new InvokedMethod();
 
     public MethodRepositoryTest()
     {
@@ -48,7 +49,13 @@ public class MethodRepositoryTest
             _class);
         _parameter = new Parameter("Parameter", _class);
         _localVariable = new LocalVariable("LocalVariable", null);
-        _oneMethod = new Method(_oneMethodName, _accessibilityPublic, null, [_secondMethod],
+        _invokedMethod = new InvokedMethod
+        {
+            Id = Guid.NewGuid(),
+            Method = _secondMethod,
+            ReferenceName = "this"
+        };
+        _oneMethod = new Method(_oneMethodName, _accessibilityPublic, null, [_invokedMethod],
             [_parameter], [_localVariable], null);
     }
 
@@ -65,6 +72,7 @@ public class MethodRepositoryTest
         var parameter = new Parameter { Id = Guid.NewGuid(), Name = "param1" };
         var localVariable = new LocalVariable { Id = Guid.NewGuid(), Name = "localVar1" };
         var calledMethod = new Method { Id = Guid.NewGuid(), Name = "CalledMethod" };
+        var invokedMethod = new InvokedMethod { Id = Guid.NewGuid(),  Method = calledMethod, ReferenceName = "this" };
 
         _context.Classes.Add(returnType);
         _context.Parameters.Add(parameter);
@@ -79,7 +87,7 @@ public class MethodRepositoryTest
             ReturnType = returnType,
             Parameters = [parameter],
             LocalVariables = [localVariable],
-            Methods = [calledMethod]
+            Methods = [invokedMethod]
         };
 
         _repositoryTest.Add(method);
@@ -103,7 +111,7 @@ public class MethodRepositoryTest
         saved.LocalVariables[0].Id.Should().Be(localVariable.Id);
 
         saved.Methods.Should().HaveCount(1);
-        saved.Methods[0].Id.Should().Be(calledMethod.Id);
+        saved.Methods[0].Id.Should().Be(invokedMethod.Id);
     }
 
     [TestMethod]
@@ -113,11 +121,13 @@ public class MethodRepositoryTest
         var parameter = new Parameter { Id = Guid.NewGuid(), Name = "Parameter1", ParameterType = returnType };
         var localVariable = new LocalVariable { Id = Guid.NewGuid(), Name = "LocalVar1", LocalVariableType = returnType };
         var relatedMethod = new Method { Id = Guid.NewGuid(), Name = "RelatedMethod" };
+        var invokedMethod = new InvokedMethod { Id = Guid.NewGuid(), Method = relatedMethod, ReferenceName = "this" };
 
         _context.Classes.Add(returnType);
         _context.Parameters.Add(parameter);
         _context.LocalVariables.Add(localVariable);
         _context.Methods.Add(relatedMethod);
+        _context.InvokedMethods.Add(invokedMethod);
         _context.SaveChanges();
 
         var mainMethod = new Method
@@ -127,7 +137,7 @@ public class MethodRepositoryTest
             ReturnType = returnType,
             Parameters = [parameter],
             LocalVariables = [localVariable],
-            Methods = [relatedMethod]
+            Methods = [invokedMethod]
         };
 
         _context.Methods.Add(mainMethod);
@@ -149,7 +159,7 @@ public class MethodRepositoryTest
         result.LocalVariables[0].Id.Should().Be(localVariable.Id);
 
         result.Methods.Should().HaveCount(1);
-        result.Methods[0].Id.Should().Be(relatedMethod.Id);
+        result.Methods[0].Id.Should().Be(invokedMethod.Id);
     }
 
     [TestMethod]

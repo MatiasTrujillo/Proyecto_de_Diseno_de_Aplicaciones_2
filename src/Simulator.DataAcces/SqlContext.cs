@@ -20,6 +20,7 @@ public sealed class SqlContext : DbContext
     public DbSet<Primitive> Primitives { get; set; }
     public DbSet<Parameter> Parameters { get; set; }
     public DbSet<LocalVariable> LocalVariables { get; set; }
+    public DbSet<InvokedMethod> InvokedMethods { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
