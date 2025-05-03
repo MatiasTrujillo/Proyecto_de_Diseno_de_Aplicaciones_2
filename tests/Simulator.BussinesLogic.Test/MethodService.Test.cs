@@ -4,7 +4,6 @@ using Simulator.Domain;
 using Simulator.Domain.Exception;
 using Simulator.DTO;
 using Simulator.IDataAcces;
-using Attribute = Simulator.Domain.Attribute;
 
 namespace Simulator.BussinesLogic.Test;
 
@@ -188,18 +187,23 @@ public class MethodServiceTest
     {
         var methodId = Guid.NewGuid();
         var methodToAddId = Guid.NewGuid();
+
         var method = new Method { Id = methodId, Name = "ParentMethod", Methods = [] };
         var methodToAdd = new Method { Id = methodToAddId, Name = "ChildMethod" };
-        var methodToAddDto = new MethodDTO { Name = "ChildMethod" };
-        var invokedMethod = new InvokedMethodDTO { Method = methodToAddDto, ReferenceName = "this" };
+
+        var invokedMethodDTO = new InvokedMethodDTO
+        {
+            MethodId = methodToAddId,
+            ReferenceName = "this"
+        };
 
         _mockMethodRepository.Setup(repo => repo.Find(methodId)).Returns(method);
         _mockMethodRepository.Setup(repo => repo.Find(methodToAddId)).Returns(methodToAdd);
         _mockMethodRepository.Setup(repo => repo.Update(It.IsAny<Method>()));
 
-        _methodService.AddAMethod(methodId, invokedMethod);
+        _methodService.AddAMethod(methodId, invokedMethodDTO);
 
-        Assert.IsTrue(method.Methods.Any(x => x.Method.Name == invokedMethod.Method.Name));
+        Assert.IsTrue(method.Methods.Any(x => x.Method.Id == methodToAddId));
         _mockMethodRepository.Verify(repo => repo.Update(method), Times.Once);
     }
 
@@ -208,19 +212,39 @@ public class MethodServiceTest
     {
         var methodId = Guid.NewGuid();
         var methodToAddId = Guid.NewGuid();
-        var invokedMethodId = Guid.NewGuid();
+
         var methodToAdd = new Method { Id = methodToAddId, Name = "ChildMethod" };
-        var methodToAddDto = new MethodDTO { Name = "ChildMethod" };
-        var invokedMethodDTO = new InvokedMethodDTO { Method = methodToAddDto, ReferenceName = "this" };
-        var invokedMethod = new InvokedMethod { Id = invokedMethodId, Method = methodToAdd, ReferenceName = "this" };
-        var method = new Method { Id = methodId, Name = "ParentMethod", Methods = [invokedMethod] };
+        var invokedMethod = new InvokedMethod
+        {
+            Id = Guid.NewGuid(),
+            Method = methodToAdd,
+            ReferenceName = "this"
+        };
+
+        var method = new Method
+        {
+            Id = methodId,
+            Name = "ParentMethod",
+            Methods = [invokedMethod]
+        };
 
         _mockMethodRepository.Setup(repo => repo.Find(methodId)).Returns(method);
-        _mockMethodRepository.Setup(repo => repo.Find(invokedMethod.Method.Id)).Returns(methodToAdd);
+        _mockMethodRepository.Setup(repo => repo.Find(methodToAddId)).Returns(methodToAdd);
+
+        _mockMethodRepository.Setup(repo => repo.Update(It.IsAny<Method>())).Verifiable();
+
+        var invokedMethodDTO = new InvokedMethodDTO
+        {
+            MethodId = methodId,
+            ReferenceName = "this"
+        };
 
         var exception = Assert.ThrowsException<MethodInUseException>(() =>
             _methodService.AddAMethod(methodId, invokedMethodDTO));
+
         Assert.AreEqual("Method is already associated with this method.", exception.Message);
+
+        _mockMethodRepository.Verify(repo => repo.Update(It.IsAny<Method>()), Times.Never);
     }
 
     [TestMethod]

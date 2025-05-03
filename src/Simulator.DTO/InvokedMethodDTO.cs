@@ -4,15 +4,13 @@ namespace Simulator.DTO;
 
 public class InvokedMethodDTO
 {
-    public MethodDTO Method { get; set; } = null!;
+    public Guid MethodId { get; set; }
     public string ReferenceName { get; set; } = null!;
 
-    public InvokedMethod ToEntity()
+    public InvokedMethod ToEntity(Method method)
     {
-        var method = Method?.ToEntity() ?? new Method();
         return new InvokedMethod
         {
-            Id = Guid.NewGuid(),
             Method = method,
             ReferenceName = ReferenceName
         };

@@ -38,12 +38,15 @@ public class MethodService(IMethodRepository methodRepository, IClassRepository 
 
     public void AddAMethod(Guid id, InvokedMethodDTO invokedMethodDto)
     {
-        var invokedMethod = invokedMethodDto.ToEntity();
         var method = _methodRepository.Find(id);
-        var methodToAdd = _methodRepository.Find(invokedMethod.Method.Id);
+        var methodToAdd = _methodRepository.Find(invokedMethodDto.MethodId);
+
         ValidateMethodExist(method);
         ValidateMethodExist(methodToAdd);
-        ValidateMethodIsNotInRepeted(id, invokedMethod.Method.Id);
+        ValidateMethodIsNotInRepeted(id, invokedMethodDto.MethodId);
+
+        var invokedMethod = invokedMethodDto.ToEntity(methodToAdd);
+
         method.Methods.Add(invokedMethod);
         _methodRepository.Update(method);
     }
@@ -144,8 +147,8 @@ public class MethodService(IMethodRepository methodRepository, IClassRepository 
     private void ValidateMethodIsNotInRepeted(Guid idMethod, Guid idMethodToAdd)
     {
         var method = _methodRepository.Find(idMethod);
-        var methodToAdd = _methodRepository.Find(idMethodToAdd);
-        if(method.Methods != null && method.Methods.Any(m => m.Id == idMethodToAdd))
+        Console.WriteLine(method.Methods.Count);
+        if(idMethod == idMethodToAdd)
         {
             throw new MethodInUseException("Method is already associated with this method.");
         }

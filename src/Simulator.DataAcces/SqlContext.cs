@@ -199,8 +199,7 @@ public sealed class SqlContext : DbContext
                 Id = Guid.NewGuid(),
                 Name = "Ushort",
                 PrimitiveType = PrimitiveType.Ushort
-            }
-        );
+            });
 
         modelBuilder.Entity<Method>().HasData(
             new
@@ -226,8 +225,7 @@ public sealed class SqlContext : DbContext
                 Accessibility = Accessibility.Public,
                 Stereotype = (KeyWord?)null,
                 ReturnTypeId = intTypeId,
-            }
-        );
+            });
 
         modelBuilder.Entity("ClassMethod").HasData(
             new Dictionary<string, object>
@@ -244,8 +242,7 @@ public sealed class SqlContext : DbContext
             {
                 ["ClassId"] = Guid.Parse("dddddddd-dddd-dddd-dddd-dddddddddddd"),
                 ["MethodsId"] = Guid.Parse("cccccccc-cccc-cccc-cccc-cccccccccccc")
-            }
-        );
+            });
 
         modelBuilder.Entity<Parameter>().HasData(
             new

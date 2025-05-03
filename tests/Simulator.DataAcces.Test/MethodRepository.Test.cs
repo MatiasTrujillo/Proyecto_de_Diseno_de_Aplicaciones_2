@@ -72,7 +72,7 @@ public class MethodRepositoryTest
         var parameter = new Parameter { Id = Guid.NewGuid(), Name = "param1" };
         var localVariable = new LocalVariable { Id = Guid.NewGuid(), Name = "localVar1" };
         var calledMethod = new Method { Id = Guid.NewGuid(), Name = "CalledMethod" };
-        var invokedMethod = new InvokedMethod { Id = Guid.NewGuid(),  Method = calledMethod, ReferenceName = "this" };
+        var invokedMethod = new InvokedMethod { Id = Guid.NewGuid(), Method = calledMethod, ReferenceName = "this" };
 
         _context.Classes.Add(returnType);
         _context.Parameters.Add(parameter);
