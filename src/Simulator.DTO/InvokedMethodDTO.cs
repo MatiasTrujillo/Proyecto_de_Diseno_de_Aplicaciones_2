@@ -12,6 +12,7 @@ public class InvokedMethodDTO
         var method = Method?.ToEntity() ?? new Method();
         return new InvokedMethod
         {
+            Id = Guid.NewGuid(),
             Method = method,
             ReferenceName = ReferenceName
         };

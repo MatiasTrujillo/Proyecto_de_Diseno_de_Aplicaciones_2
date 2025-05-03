@@ -216,7 +216,7 @@ public class MethodServiceTest
         var method = new Method { Id = methodId, Name = "ParentMethod", Methods = [invokedMethod] };
 
         _mockMethodRepository.Setup(repo => repo.Find(methodId)).Returns(method);
-        _mockMethodRepository.Setup(repo => repo.Find(methodToAddId)).Returns(methodToAdd);
+        _mockMethodRepository.Setup(repo => repo.Find(invokedMethod.Method.Id)).Returns(methodToAdd);
 
         var exception = Assert.ThrowsException<MethodInUseException>(() =>
             _methodService.AddAMethod(methodId, invokedMethodDTO));

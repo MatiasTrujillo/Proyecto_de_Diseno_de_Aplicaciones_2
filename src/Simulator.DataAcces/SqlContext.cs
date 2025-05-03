@@ -38,8 +38,8 @@ public sealed class SqlContext : DbContext
 
         modelBuilder.Entity<Method>()
             .HasMany(m => m.Methods)
-            .WithMany()
-            .UsingEntity(j => j.ToTable("MethodRelations"));
+            .WithOne(im => im.Method)
+            .HasForeignKey(im => im.MethodId);
 
         modelBuilder.Entity<Method>()
             .HasMany(m => m.Parameters)
