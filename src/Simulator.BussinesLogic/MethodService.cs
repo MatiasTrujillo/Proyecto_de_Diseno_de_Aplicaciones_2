@@ -53,10 +53,7 @@ public class MethodService(IMethodRepository methodRepository, IClassRepository 
         var method = _methodRepository.Find(id);
         var invokedMethod = _invokedMethodRepository.Find(invokedMethodId);
         ValidateMethodExist(method);
-        if(invokedMethod == null)
-        {
-            throw new InvokedMethodNotFoundException("Invoked Method not found.");
-        }
+        ValidateInvokedMethodExist(invokedMethod);
     }
 
     private void ValidateInvokedMethodExist(InvokedMethod invokedMethod)
