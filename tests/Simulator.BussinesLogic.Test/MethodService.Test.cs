@@ -538,8 +538,8 @@ public class MethodServiceTest
         {
             Id = methodId,
             Name = "MyMethod",
-            Parameters = new List<Parameter> { new Parameter { Name = "SomeName" } },
-            Methods = new List<InvokedMethod>()
+            Parameters = [new Parameter { Name = "SomeName" }],
+            Methods = []
         };
 
         _mockMethodRepository.Setup(repo => repo.Find(methodId)).Returns(method);
@@ -559,18 +559,18 @@ public class MethodServiceTest
         {
             Id = methodId,
             Name = "MyMethod",
-            Parameters = new List<Parameter>(),
-            LocalVariables = new List<LocalVariable>(),
+            Parameters = [],
+            LocalVariables = [],
             Methods = new List<InvokedMethod>()
         };
         var classWithMethod = new Class
         {
-            Methods = new List<Method> { method }
+            Methods = [method]
         };
 
         _mockMethodRepository.Setup(repo => repo.Find(methodId)).Returns(method);
         _mockInvokedMethodRepository.Setup(repo => repo.Find(invokedMethodId)).Returns(invokedMethod);
-        _mockClassRepository.Setup(repo => repo.FindAll()).Returns(new List<Class> { classWithMethod });
+        _mockClassRepository.Setup(repo => repo.FindAll()).Returns([classWithMethod]);
 
         _methodService.AddAMethod(methodId, invokedMethodId);
     }
@@ -585,17 +585,17 @@ public class MethodServiceTest
         {
             Id = methodId,
             Name = "MyMethod",
-            Parameters = new List<Parameter> { new Parameter { Name = "TestReference" } },
+            Parameters = [new Parameter { Name = "TestReference" }],
             Methods = new List<InvokedMethod>()
         };
         var classWithMethod = new Class
         {
-            Methods = new List<Method> { method },
+            Methods = [method],
         };
 
         _mockMethodRepository.Setup(repo => repo.Find(methodId)).Returns(method);
         _mockInvokedMethodRepository.Setup(repo => repo.Find(invokedMethodId)).Returns(invokedMethod);
-        _mockClassRepository.Setup(repo => repo.FindAll()).Returns(new List<Class> { classWithMethod });
+        _mockClassRepository.Setup(repo => repo.FindAll()).Returns([classWithMethod]);
         _mockMethodRepository.Setup(repo => repo.Update(It.IsAny<Method>()));
 
         _methodService.AddAMethod(methodId, invokedMethodId);
