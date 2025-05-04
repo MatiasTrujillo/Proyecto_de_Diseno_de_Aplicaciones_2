@@ -105,97 +105,97 @@ public sealed class SqlContext : DbContext
             new
             {
                 Id = boolTypeId,
-                Name = "Bool",
+                Name = "bool",
                 PrimitiveType = PrimitiveType.Bool
             },
             new
             {
                 Id = stringTypeId,
-                Name = "String",
+                Name = "string",
                 PrimitiveType = PrimitiveType.String
             },
             new
             {
                 Id = intTypeId,
-                Name = "Int",
+                Name = "int",
                 PrimitiveType = PrimitiveType.Int
             },
             new
             {
                 Id = Guid.NewGuid(),
-                Name = "Byte",
+                Name = "byte",
                 PrimitiveType = PrimitiveType.Byte
             },
             new
             {
                 Id = Guid.NewGuid(),
-                Name = "SByte",
+                Name = "sByte",
                 PrimitiveType = PrimitiveType.Sbyte
             },
             new
             {
                 Id = Guid.NewGuid(),
-                Name = "Char",
+                Name = "char",
                 PrimitiveType = PrimitiveType.Char
             },
             new
             {
                 Id = Guid.NewGuid(),
-                Name = "Decimal",
+                Name = "decimal",
                 PrimitiveType = PrimitiveType.Decimal
             },
             new
             {
                 Id = Guid.NewGuid(),
-                Name = "Double",
+                Name = "double",
                 PrimitiveType = PrimitiveType.Double
             },
             new
             {
                 Id = Guid.NewGuid(),
-                Name = "Float",
+                Name = "float",
                 PrimitiveType = PrimitiveType.Float
             },
             new
             {
                 Id = Guid.NewGuid(),
-                Name = "Uint",
+                Name = "uint",
                 PrimitiveType = PrimitiveType.Uint
             },
             new
             {
                 Id = Guid.NewGuid(),
-                Name = "Nint",
+                Name = "nint",
                 PrimitiveType = PrimitiveType.Nint
             },
             new
             {
                 Id = Guid.NewGuid(),
-                Name = "Nuint",
+                Name = "nuint",
                 PrimitiveType = PrimitiveType.Nuint
             },
             new
             {
                 Id = Guid.NewGuid(),
-                Name = "Long",
+                Name = "long",
                 PrimitiveType = PrimitiveType.Long
             },
             new
             {
                 Id = Guid.NewGuid(),
-                Name = "Ulong",
+                Name = "ulong",
                 PrimitiveType = PrimitiveType.Ulong
             },
             new
             {
                 Id = Guid.NewGuid(),
-                Name = "Short",
+                Name = "short",
                 PrimitiveType = PrimitiveType.Short
             },
             new
             {
                 Id = Guid.NewGuid(),
-                Name = "Ushort",
+                Name = "ushort",
                 PrimitiveType = PrimitiveType.Ushort
             });
 

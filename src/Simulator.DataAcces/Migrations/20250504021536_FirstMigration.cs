@@ -178,20 +178,20 @@ namespace Simulator.DataAcces.Migrations
                 columns: new[] { "Id", "Discriminator", "Name", "PrimitiveType" },
                 values: new object[,]
                 {
-                    { new Guid("11111111-1111-1111-1111-111111111111"), "Primitive", "Bool", 0 },
-                    { new Guid("22222222-2222-2222-2222-222222222222"), "Primitive", "String", 15 },
-                    { new Guid("23014a03-91f5-4165-b686-d4601cb9dff5"), "Primitive", "Short", 13 },
-                    { new Guid("33333333-3333-3333-3333-333333333333"), "Primitive", "Int", 7 },
-                    { new Guid("48e1136d-5685-4bba-9fc7-5807cb9871ac"), "Primitive", "Double", 5 },
-                    { new Guid("51241764-a152-4133-a5b6-d2f587258aa7"), "Primitive", "Uint", 8 },
-                    { new Guid("5473a65b-5264-490d-8656-8b05ff1a5519"), "Primitive", "Long", 11 },
-                    { new Guid("554b096b-1176-4a80-9da2-2044162de1c2"), "Primitive", "Byte", 1 },
-                    { new Guid("583d5a15-a61f-4864-8634-6f08b9351c73"), "Primitive", "Ulong", 12 },
-                    { new Guid("7fd5d1fe-ba4a-418d-b999-b54a37871ea6"), "Primitive", "Nuint", 10 },
-                    { new Guid("ab2e837c-0ea0-42fb-90dc-0ea726c66174"), "Primitive", "Char", 3 },
-                    { new Guid("b8fab0a5-07f5-4b46-860b-ea3c8c45a933"), "Primitive", "Float", 6 },
-                    { new Guid("c00165d4-9aae-4d50-84d2-b528b44955c4"), "Primitive", "SByte", 2 },
-                    { new Guid("d1a6b88e-2d51-4643-84ee-44b6b124db77"), "Primitive", "Nint", 9 }
+                    { new Guid("01820ae6-18b0-45bb-b357-afe004cd4dc4"), "Primitive", "nuint", 10 },
+                    { new Guid("04137227-fecc-4e94-9977-34a424bb86f6"), "Primitive", "float", 6 },
+                    { new Guid("11111111-1111-1111-1111-111111111111"), "Primitive", "bool", 0 },
+                    { new Guid("22222222-2222-2222-2222-222222222222"), "Primitive", "string", 15 },
+                    { new Guid("3266c213-9bfa-499e-9112-7914a1b18fa0"), "Primitive", "decimal", 4 },
+                    { new Guid("33333333-3333-3333-3333-333333333333"), "Primitive", "int", 7 },
+                    { new Guid("3a594898-b4e3-45ea-bf52-ad81e047bdec"), "Primitive", "long", 11 },
+                    { new Guid("3ac3234b-ee84-4ad5-873f-33c1ed165c59"), "Primitive", "byte", 1 },
+                    { new Guid("433bd90b-f076-4736-8366-08949cc4c3d6"), "Primitive", "short", 13 },
+                    { new Guid("59075d40-d193-46cb-94a4-4e1cbc2dff54"), "Primitive", "sByte", 2 },
+                    { new Guid("a570de13-013e-48a1-a20c-b048a08aaf79"), "Primitive", "uint", 8 },
+                    { new Guid("a76f684d-ceba-4fb4-8f0c-35f6fafbfb30"), "Primitive", "double", 5 },
+                    { new Guid("ceac46b7-1983-4d9f-ba11-ac5267c859a3"), "Primitive", "ulong", 12 },
+                    { new Guid("d13a84fd-b311-4557-a9d0-c7ce386b0706"), "Primitive", "char", 3 }
                 });
 
             migrationBuilder.InsertData(
@@ -204,8 +204,8 @@ namespace Simulator.DataAcces.Migrations
                 columns: new[] { "Id", "Discriminator", "Name", "PrimitiveType" },
                 values: new object[,]
                 {
-                    { new Guid("df9d9707-0f04-482c-af92-f3f0b2d2c80c"), "Primitive", "Ushort", 14 },
-                    { new Guid("f158d763-7a20-486f-832e-df94ddf1fcf3"), "Primitive", "Decimal", 4 }
+                    { new Guid("e71c4e14-8924-47b1-8f2f-4172146d52ca"), "Primitive", "nint", 9 },
+                    { new Guid("f362917b-0eab-4781-b058-41fb7eaec2aa"), "Primitive", "ushort", 14 }
                 });
 
             migrationBuilder.InsertData(
@@ -231,7 +231,7 @@ namespace Simulator.DataAcces.Migrations
             migrationBuilder.InsertData(
                 table: "Parameters",
                 columns: new[] { "Id", "MethodId", "Name", "ParameterTypeId" },
-                values: new object[] { new Guid("28777538-f4b9-4ae9-ab57-a7ae9339969f"), new Guid("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb"), "Obj", new Guid("dddddddd-dddd-dddd-dddd-dddddddddddd") });
+                values: new object[] { new Guid("a7ca113e-f6d9-480f-b008-5f4ae1913c07"), new Guid("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb"), "Obj", new Guid("dddddddd-dddd-dddd-dddd-dddddddddddd") });
 
             migrationBuilder.CreateIndex(
                 name: "IX_Attributes_ClassId",

@@ -1,5 +1,4 @@
 using FluentAssertions;
-using Microsoft.EntityFrameworkCore;
 using Simulator.Domain;
 
 namespace Simulator.DataAcces.Test;
@@ -7,7 +6,7 @@ namespace Simulator.DataAcces.Test;
 [TestClass]
 public class InvokedMethodRepository_Test
 {
- private readonly SqlContext _context = ProgramTest.BuildTestDbContext();
+    private readonly SqlContext _context = ProgramTest.BuildTestDbContext();
     private readonly InvokedMethodRepository _repository;
     private readonly InvokedMethod _invokedMethod;
 

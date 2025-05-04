@@ -4,7 +4,6 @@ using Simulator.Domain;
 using Simulator.Domain.Exception;
 using Simulator.DTO;
 using Simulator.IDataAcces;
-using Attribute = Simulator.Domain.Attribute;
 
 namespace Simulator.BussinesLogic.Test;
 
@@ -447,19 +446,19 @@ public class MethodServiceTest
         var method = new Method
         {
             Id = methodId,
-            Parameters = new List<Parameter> { new Parameter { Name = "someVariable" } },
-            LocalVariables = new List<LocalVariable>(),
+            Parameters = [new Parameter { Name = "someVariable" }],
+            LocalVariables = [],
         };
 
         var classT = new Class
         {
-            Methods = new List<Method> { method },
-            Attributes = new List<Attribute>(),
+            Methods = [method],
+            Attributes = [],
         };
 
         _mockMethodRepository.Setup(repo => repo.Find(methodId)).Returns(method);
         _mockInvokedMethodRepository.Setup(repo => repo.Add(It.IsAny<InvokedMethod>()));
-        _mockClassRepository.Setup(repo => repo.FindAll()).Returns(new List<Class> { classT });
+        _mockClassRepository.Setup(repo => repo.FindAll()).Returns([classT]);
 
         _methodService.AssociateInvokeMethod(invokedMethodDto);
 
@@ -561,7 +560,7 @@ public class MethodServiceTest
             Name = "MyMethod",
             Parameters = [],
             LocalVariables = [],
-            Methods = new List<InvokedMethod>()
+            Methods = []
         };
         var classWithMethod = new Class
         {
@@ -586,7 +585,7 @@ public class MethodServiceTest
             Id = methodId,
             Name = "MyMethod",
             Parameters = [new Parameter { Name = "TestReference" }],
-            Methods = new List<InvokedMethod>()
+            Methods = []
         };
         var classWithMethod = new Class
         {
@@ -651,9 +650,9 @@ public class MethodServiceTest
         {
             Id = methodId,
             Name = methodName,
-            Parameters = new List<Parameter>(),
-            LocalVariables = new List<LocalVariable>(),
-            Methods = new List<InvokedMethod>()
+            Parameters = [],
+            LocalVariables = [],
+            Methods = []
         };
 
         var invokedMethod = new InvokedMethod
@@ -664,18 +663,18 @@ public class MethodServiceTest
 
         var hierarchyClass = new Class
         {
-            Methods = new List<Method> { new Method { Name = methodName } }
+            Methods = [new Method { Name = methodName }]
         };
 
         var classWithMethod = new Class
         {
-            Methods = new List<Method> { method },
+            Methods = [method],
             HierarchyClass = hierarchyClass
         };
 
         _mockMethodRepository.Setup(r => r.Find(methodId)).Returns(method);
         _mockInvokedMethodRepository.Setup(r => r.Find(invokedMethodId)).Returns(invokedMethod);
-        _mockClassRepository.Setup(r => r.FindAll()).Returns(new List<Class> { classWithMethod });
+        _mockClassRepository.Setup(r => r.FindAll()).Returns([classWithMethod]);
         _mockMethodRepository.Setup(r => r.Update(It.IsAny<Method>()));
 
         _methodService.AddAMethod(methodId, invokedMethodId);
