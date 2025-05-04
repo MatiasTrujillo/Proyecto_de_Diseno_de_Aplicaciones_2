@@ -547,4 +547,31 @@ public class MethodServiceTest
 
         _methodService.AddAMethod(methodId, invokedMethodId);
     }
+
+    [TestMethod]
+    [ExpectedException(typeof(MethodException))]
+    public void AddAMethod_ShouldThrow_WhenReferenceNameIsInvalid()
+    {
+        var methodId = Guid.NewGuid();
+        var invokedMethodId = Guid.NewGuid();
+        var invokedMethod = new InvokedMethod { Id = invokedMethodId, ReferenceName = "InvalidReference" };
+        var method = new Method
+        {
+            Id = methodId,
+            Name = "MyMethod",
+            Parameters = new List<Parameter>(),
+            LocalVariables = new List<LocalVariable>(),
+            Methods = new List<InvokedMethod>()
+        };
+        var classWithMethod = new Class
+        {
+            Methods = new List<Method> { method }
+        };
+
+        _mockMethodRepository.Setup(repo => repo.Find(methodId)).Returns(method);
+        _mockInvokedMethodRepository.Setup(repo => repo.Find(invokedMethodId)).Returns(invokedMethod);
+        _mockClassRepository.Setup(repo => repo.FindAll()).Returns(new List<Class> { classWithMethod });
+
+        _methodService.AddAMethod(methodId, invokedMethodId);
+    }
 }
