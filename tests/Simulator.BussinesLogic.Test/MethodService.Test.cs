@@ -639,4 +639,47 @@ public class MethodServiceTest
 
         _mockMethodRepository.Verify(r => r.Update(It.Is<Method>(m => m.Methods.Contains(invokedMethod))), Times.Once);
     }
+
+    [TestMethod]
+    public void AddAMethod_ShouldSucceed_WhenReferenceNameIsBase()
+    {
+        var methodId = Guid.NewGuid();
+        var invokedMethodId = Guid.NewGuid();
+        var methodName = "BaseMethod";
+
+        var method = new Method
+        {
+            Id = methodId,
+            Name = methodName,
+            Parameters = new List<Parameter>(),
+            LocalVariables = new List<LocalVariable>(),
+            Methods = new List<InvokedMethod>()
+        };
+
+        var invokedMethod = new InvokedMethod
+        {
+            Id = invokedMethodId,
+            ReferenceName = "base"
+        };
+
+        var hierarchyClass = new Class
+        {
+            Methods = new List<Method> { new Method { Name = methodName } }
+        };
+
+        var classWithMethod = new Class
+        {
+            Methods = new List<Method> { method },
+            HierarchyClass = hierarchyClass
+        };
+
+        _mockMethodRepository.Setup(r => r.Find(methodId)).Returns(method);
+        _mockInvokedMethodRepository.Setup(r => r.Find(invokedMethodId)).Returns(invokedMethod);
+        _mockClassRepository.Setup(r => r.FindAll()).Returns(new List<Class> { classWithMethod });
+        _mockMethodRepository.Setup(r => r.Update(It.IsAny<Method>()));
+
+        _methodService.AddAMethod(methodId, invokedMethodId);
+
+        _mockMethodRepository.Verify(r => r.Update(It.Is<Method>(m => m.Methods.Contains(invokedMethod))), Times.Once);
+    }
 }
