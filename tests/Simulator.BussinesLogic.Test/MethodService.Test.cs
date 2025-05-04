@@ -602,4 +602,41 @@ public class MethodServiceTest
 
         _mockMethodRepository.Verify(repo => repo.Update(It.Is<Method>(m => m.Methods.Contains(invokedMethod))), Times.Once);
     }
+
+    [TestMethod]
+    public void AddAMethod_ShouldSucceed_WhenReferenceNameIsThis()
+    {
+        var methodId = Guid.NewGuid();
+        var invokedMethodId = Guid.NewGuid();
+
+        var method = new Method
+        {
+            Id = methodId,
+            Name = "TestMethod",
+            Parameters = new List<Parameter>(),
+            LocalVariables = new List<LocalVariable>(),
+            Methods = new List<InvokedMethod>()
+        };
+
+        var invokedMethod = new InvokedMethod
+        {
+            Id = invokedMethodId,
+            ReferenceName = "this"
+        };
+
+        var classT = new Class
+        {
+            Methods = new List<Method> { new Method { Id = methodId, Name = "TestMethod" } },
+            Attributes = new List<Attribute>()
+        };
+
+        _mockMethodRepository.Setup(r => r.Find(methodId)).Returns(method);
+        _mockInvokedMethodRepository.Setup(r => r.Find(invokedMethodId)).Returns(invokedMethod);
+        _mockClassRepository.Setup(r => r.FindAll()).Returns(new List<Class> { classT });
+        _mockMethodRepository.Setup(r => r.Update(It.IsAny<Method>()));
+
+        _methodService.AddAMethod(methodId, invokedMethodId);
+
+        _mockMethodRepository.Verify(r => r.Update(It.Is<Method>(m => m.Methods.Contains(invokedMethod))), Times.Once);
+    }
 }
