@@ -159,6 +159,22 @@ public class ClassServiceTest
     }
 
     [TestMethod]
+    public void DeleteClass_ShouldThrowException_WhenDeletingObjectClass()
+    {
+        var objectClass = new Class { Id = Guid.NewGuid(), Name = "Object" };
+
+        _mockClassRepository.Setup(r => r.Find(objectClass.Id)).Returns(objectClass);
+        _mockClassRepository.Setup(r => r.FindAll()).Returns(new List<Class> { objectClass });
+
+        var exception = Assert.ThrowsException<InvalidClassException>(() =>
+        {
+            _classService.DeleteClass(objectClass.Id);
+        });
+
+        Assert.AreEqual("The 'Object' class cannot be deleted.", exception.Message);
+    }
+
+    [TestMethod]
     public void DeleteClass_ShouldNotDeleteClass_WhenIdDoesNotExist()
     {
         var id = Guid.NewGuid();
