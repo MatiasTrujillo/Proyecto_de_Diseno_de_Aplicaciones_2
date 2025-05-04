@@ -50,15 +50,19 @@ public class ClassService(
         ValidateClassIdExists(id);
 
         var classT = _classRepository.Find(id);
-        if (classT.Name == "Object")
-        {
-            throw new InvalidClassException("The 'Object' class cannot be updated.");
-        }
-
+        ValidateDontUpdateObjectClass(classT);
         ManageName(uClass, classT);
         ManageStereotype(uClass, classT);
         ManageHierarchyClass(id, uClass, classT);
         _classRepository.Update(classT);
+    }
+
+    private static void ValidateDontUpdateObjectClass(Class classT)
+    {
+        if (classT.Name == "Object")
+        {
+            throw new InvalidClassException("The 'Object' class cannot be updated.");
+        }
     }
 
     private void ManageStereotype(UpdateClassDTO uClass, Class classT)
