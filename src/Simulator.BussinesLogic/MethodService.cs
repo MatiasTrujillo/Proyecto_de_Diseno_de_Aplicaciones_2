@@ -61,10 +61,24 @@ public class MethodService(IMethodRepository methodRepository, IClassRepository 
 
     private void ValidateInvokedMethodReferenceName(string invokedMethodReferenceName, Method method)
     {
+        var classT = _classRepository.FindAll()
+            .FirstOrDefault(c => c.Methods != null && c.Methods.Any(m => m.Id == method.Id));
         var existsInParameters = method.Parameters?.Any(p => p.Name == invokedMethodReferenceName) ?? false;
         var existsInLocalVariables = method.LocalVariables?.Any(lv => lv.Name == invokedMethodReferenceName) ?? false;
 
-        if (!existsInParameters && !existsInLocalVariables)
+        var existsInAttributes = false;
+        var existsInMethods = false;
+        if (classT != null)
+        {
+            existsInAttributes = classT.Attributes?.Any(a => a.Name == invokedMethodReferenceName) ?? false;
+
+            if (invokedMethodReferenceName == "this")
+            {
+                existsInMethods = classT.Methods?.Any(m => m.Name == method.Name) ?? false;
+            }
+        }
+
+        if (!existsInParameters && !existsInLocalVariables && !existsInAttributes && !existsInMethods)
         {
             throw new MethodException($"Reference name '{invokedMethodReferenceName}' does not match any parameter, local variable, or attribute in method '{method.Name}'.");
         }
