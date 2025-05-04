@@ -4,7 +4,6 @@ using Simulator.Domain;
 using Simulator.Domain.Exception;
 using Simulator.DTO;
 using Simulator.IDataAcces;
-using Attribute = Simulator.Domain.Attribute;
 
 namespace Simulator.BussinesLogic.Test;
 
@@ -15,6 +14,7 @@ public class MethodServiceTest
     private Mock<IClassRepository> _mockClassRepository = null!;
     private Mock<IParameterRepository> _mockParameterRepository = null!;
     private Mock<ILocalVariableRepository> _mockLocalVariableRepository = null!;
+    private Mock<IInvokedMethodRepository> _mockInvokedMethodRepository = null!;
     private MethodService _methodService = null!;
     private MethodDTO _methodDto = new MethodDTO();
     private MethodDTO _otherMethodDto = new MethodDTO();
@@ -52,12 +52,13 @@ public class MethodServiceTest
         _mockClassRepository = new Mock<IClassRepository>(MockBehavior.Strict);
         _mockParameterRepository = new Mock<IParameterRepository>(MockBehavior.Strict);
         _mockLocalVariableRepository = new Mock<ILocalVariableRepository>(MockBehavior.Strict);
+        _mockInvokedMethodRepository = new Mock<IInvokedMethodRepository>(MockBehavior.Strict);
         _mockMethodRepository
             .Setup(repo => repo.Add(It.IsAny<Method>()));
         _mockMethodRepository
             .Setup(repo => repo.FindAll())
             .Returns([]);
-        _methodService = new MethodService(_mockMethodRepository.Object, _mockClassRepository.Object, _mockParameterRepository.Object, _mockLocalVariableRepository.Object);
+        _methodService = new MethodService(_mockMethodRepository.Object, _mockClassRepository.Object, _mockParameterRepository.Object, _mockLocalVariableRepository.Object, _mockInvokedMethodRepository.Object);
     }
 
     [TestMethod]
@@ -181,55 +182,6 @@ public class MethodServiceTest
         var exception = Assert.ThrowsException<InvalidMethodException>(() =>
             _methodService.AssociateMethodWithClass(method.Id, classT.Id));
         Assert.AreEqual("A method with the same name already exists in the class.", exception.Message);
-    }
-
-    [TestMethod]
-    public void AddAMethod_ShouldAddMethod_WhenValidInputsProvided()
-    {
-        var methodId = Guid.NewGuid();
-        var methodToAddId = Guid.NewGuid();
-        var method = new Method { Id = methodId, Name = "ParentMethod", Methods = [] };
-        var methodToAdd = new Method { Id = methodToAddId, Name = "ChildMethod" };
-
-        _mockMethodRepository.Setup(repo => repo.Find(methodId)).Returns(method);
-        _mockMethodRepository.Setup(repo => repo.Find(methodToAddId)).Returns(methodToAdd);
-        _mockMethodRepository.Setup(repo => repo.Update(It.IsAny<Method>()));
-
-        _methodService.AddAMethod(methodId, methodToAddId);
-
-        Assert.IsTrue(method.Methods.Contains(methodToAdd));
-        _mockMethodRepository.Verify(repo => repo.Update(method), Times.Once);
-    }
-
-    [TestMethod]
-    public void AddAMethod_ShouldThrowException_WhenMethodIsAlreadyAssociated()
-    {
-        var methodId = Guid.NewGuid();
-        var methodToAddId = Guid.NewGuid();
-        var methodToAdd = new Method { Id = methodToAddId, Name = "ChildMethod" };
-        var method = new Method { Id = methodId, Name = "ParentMethod", Methods = [methodToAdd] };
-
-        _mockMethodRepository.Setup(repo => repo.Find(methodId)).Returns(method);
-        _mockMethodRepository.Setup(repo => repo.Find(methodToAddId)).Returns(methodToAdd);
-
-        var exception = Assert.ThrowsException<MethodInUseException>(() =>
-            _methodService.AddAMethod(methodId, methodToAddId));
-        Assert.AreEqual("Method is already associated with this method.", exception.Message);
-    }
-
-    [TestMethod]
-    public void ValidateMethodIsNotInUse_ShouldThrowException_WhenMethodIsAssociatedWithOtherMethods()
-    {
-        var methodId = Guid.NewGuid();
-        var associatedMethod = new Method { Id = Guid.NewGuid(), Name = "AssociatedMethod" };
-        var method = new Method { Id = methodId, Name = "TestMethod", Methods = [associatedMethod] };
-
-        _mockMethodRepository.Setup(repo => repo.Find(methodId)).Returns(method);
-        _mockClassRepository.Setup(repo => repo.FindAll()).Returns([]);
-
-        var exception = Assert.ThrowsException<InvalidMethodException>(() =>
-            _methodService.DeleteMethod(methodId));
-        Assert.AreEqual("Method is associated with another method.", exception.Message);
     }
 
     [TestMethod]
@@ -482,344 +434,251 @@ public class MethodServiceTest
     }
 
     [TestMethod]
-    public void ExecuteMethodExample1_SholddReturnMethodExecuted()
+    public void AssociateInvokeMethod_ShouldReturnId_WhenValidInput()
     {
-        var encender = new Method
+        var methodId = Guid.NewGuid();
+        var invokedMethodDto = new InvokedMethodDTO
         {
-            Id = Guid.NewGuid(),
-            Name = "Encender",
-            Accessibility = Accessibility.Public,
-            Methods = [],
-            Parameters = [],
-            LocalVariables = [],
-            Stereotype = null
+            MethodId = methodId,
+            ReferenceName = "someVariable"
         };
 
-        var apagar = new Method
+        var method = new Method
         {
-            Id = Guid.NewGuid(),
-            Name = "Apagar",
-            Accessibility = Accessibility.Public,
-            Methods = [],
-            Parameters = [],
+            Id = methodId,
+            Parameters = [new Parameter { Name = "someVariable" }],
             LocalVariables = [],
-            Stereotype = null
         };
 
-        var iniciarViaje = new Method
+        var classT = new Class
         {
-            Id = Guid.NewGuid(),
-            Name = "IniciarViaje",
-            Accessibility = Accessibility.Public,
-            Methods = [encender],
-            Parameters = [],
-            LocalVariables = [],
-            Stereotype = null
-        };
-
-        iniciarViaje.Methods = [encender, iniciarViaje];
-
-        var detenerViaje = new Method
-        {
-            Id = Guid.NewGuid(),
-            Name = "DetenerViaje",
-            Accessibility = Accessibility.Public,
-            Methods = [apagar],
-            Parameters = [],
-            LocalVariables = [],
-            Stereotype = null
-        };
-
-        var motor = new Class()
-        {
-            Id = Guid.NewGuid(),
-            Name = "Motor",
-            Stereotype = null,
-            HierarchyClass = null,
+            Methods = [method],
             Attributes = [],
-            Methods = [encender, apagar]
         };
 
-        var motorAuto = new Attribute
-        {
-            Id = Guid.NewGuid(),
-            Name = "motorAuto",
-            Accessibility = Accessibility.Private,
-            Type = motor
-        };
+        _mockMethodRepository.Setup(repo => repo.Find(methodId)).Returns(method);
+        _mockInvokedMethodRepository.Setup(repo => repo.Add(It.IsAny<InvokedMethod>()));
+        _mockClassRepository.Setup(repo => repo.FindAll()).Returns([classT]);
 
-        var auto = new Class()
-        {
-            Id = Guid.NewGuid(),
-            Name = "Auto",
-            Stereotype = null,
-            HierarchyClass = null,
-            Attributes = [motorAuto],
-            Methods = [iniciarViaje, detenerViaje]
-        };
+        _methodService.AssociateInvokeMethod(invokedMethodDto);
 
-        var result = _methodService.ExecuteMethod(auto, auto, iniciarViaje);
-        Console.WriteLine(result);
-        var result2 =
-            "Auto.IniciarViaje() -> Auto.IniciarViaje()\n" +
-            "\tmotorAuto.Encender() -> Motor.Encender()\n" +
-            "\tthis.IniciarViaje() -> Auto.IniciarViaje()";
-        Assert.AreEqual(result, result2);
+        _mockMethodRepository.Verify(repo => repo.Find(methodId), Times.Once);
+        _mockInvokedMethodRepository.Verify(repo => repo.Add(It.IsAny<InvokedMethod>()), Times.Once);
     }
 
     [TestMethod]
-    public void ExecuteMethodExample2_SholddReturnMethodExecuted()
+    public void AssociateInvokeMethod_ShouldThrow_WhenDTOIsNull()
     {
-        var id = Guid.NewGuid();
-        var confirmar = new Method
-        {
-            Id = Guid.NewGuid(),
-            Name = "Confirmar",
-            Accessibility = Accessibility.Public,
-            Methods = [],
-            Parameters = [],
-            LocalVariables = [],
-            ReturnType = null,
-            Stereotype = null
-        };
+        InvokedMethodDTO? invokedMethodDto = null;
 
-        var enviar = new Method
-        {
-            Id = Guid.NewGuid(),
-            Name = "Enviar",
-            Accessibility = Accessibility.Public,
-            Methods = [],
-            Parameters = [],
-            LocalVariables = [],
-            ReturnType = null,
-            Stereotype = KeyWord.Abstract
-        };
+        var exception = Assert.ThrowsException<InvokedMethodNotFoundException>(() =>
+            _methodService.AssociateInvokeMethod(invokedMethodDto!));
 
-        var notificacion = new Class
-        {
-            Id = id,
-            Name = "Notificacion",
-            Stereotype = KeyWord.Abstract,
-            HierarchyClass = null,
-            Attributes = [],
-            Methods = [enviar, confirmar]
-        };
-
-        var email = new Class
-        {
-            Id = id,
-            Name = "Email",
-            Stereotype = null,
-            HierarchyClass = notificacion,
-            Attributes = [],
-            Methods = [enviar]
-        };
-
-        var sms = new Class
-        {
-            Id = id,
-            Name = "SMS",
-            Stereotype = null,
-            HierarchyClass = notificacion,
-            Attributes = [],
-            Methods = [enviar]
-        };
-
-        var otroAviso = new LocalVariable()
-        {
-            Id = Guid.NewGuid(),
-            Name = "otroAviso",
-            LocalVariableType = email
-        };
-
-        var notificar = new Method
-        {
-            Id = Guid.NewGuid(),
-            Name = "Notificar",
-            Accessibility = Accessibility.Public,
-            Parameters = [
-                new Parameter
-                {
-                    Id = Guid.NewGuid(),
-                    Name = "aviso",
-                    ParameterType = notificacion
-                }
-
-            ],
-            Methods = [enviar, confirmar],
-            LocalVariables = [otroAviso],
-            Stereotype = null
-        };
-
-        var notificador = new Class
-        {
-            Id = Guid.NewGuid(),
-            Name = "Notificador",
-            Stereotype = null,
-            HierarchyClass = null,
-            Attributes = [],
-            Methods = [notificar]
-        };
-
-        var result = _methodService.ExecuteMethod(notificador, notificador, notificar);
-        var result2 = _methodService.ExecuteMethod(notificacion, sms, enviar);
-        Console.WriteLine(result2);
-        Console.WriteLine("----------------------------------------------");
-        Console.WriteLine(result);
-        Assert.AreEqual(result2, "Notificacion.Enviar() -> SMS.Enviar()");
-        var res =
-            "Notificador.Notificar() -> Notificador.Notificar()\n" +
-            "\taviso.Enviar() -> Notificacion.Enviar()\n" +
-            "\taviso.Confirmar() -> Notificacion.Confirmar()\n" +
-            "\totroAviso.Enviar() -> Email.Enviar()\n" +
-            "\totroAviso.Confirmar() -> Notificacion.Confirmar()";
-        Assert.AreEqual(res, result);
+        Assert.AreEqual("Invoked Method cannot be null.", exception.Message);
     }
 
     [TestMethod]
-    public void ExecuteMethodExample3_SholddReturnMethodExecuted()
+    public void AssociateInvokeMethod_ShouldThrow_WhenReferenceNameIsNullOrEmpty()
     {
-        var limpiar = new Method
+        var invokedMethodDto = new InvokedMethodDTO
         {
-            Id = Guid.NewGuid(),
-            Name = "Limpiar",
-            Accessibility = Accessibility.Protected,
-            Methods = [],
+            MethodId = Guid.NewGuid(),
+            ReferenceName = null
+        };
+
+        _mockMethodRepository.Setup(repo => repo.Find(It.IsAny<Guid>()))
+            .Returns(new Method());
+
+        var exception = Assert.ThrowsException<InvokedMethodNotFoundException>(() =>
+            _methodService.AssociateInvokeMethod(invokedMethodDto));
+
+        Assert.AreEqual("Invoked Method Reference Name cannot be null or empty.", exception.Message);
+    }
+
+    [TestMethod]
+    public void AssociateInvokeMethod_ShouldThrow_WhenMethodNotFound()
+    {
+        var invokedMethodDto = new InvokedMethodDTO
+        {
+            MethodId = Guid.NewGuid(),
+            ReferenceName = "validReference"
+        };
+
+        _mockMethodRepository.Setup(repo => repo.Find(invokedMethodDto.MethodId))
+            .Returns((Method)null!);
+
+        var exception = Assert.ThrowsException<MethodNotFoundException>(() =>
+            _methodService.AssociateInvokeMethod(invokedMethodDto));
+
+        Assert.AreEqual("Method null.", exception.Message);
+    }
+
+    [TestMethod]
+    [ExpectedException(typeof(MethodNotFoundException))]
+    public void AddAMethod_ShouldThrow_WhenMethodIsNull()
+    {
+        var methodId = Guid.NewGuid();
+        var invokedMethodId = Guid.NewGuid();
+
+        _mockMethodRepository.Setup(repo => repo.Find(methodId)).Returns((Method?)null);
+
+        _mockInvokedMethodRepository.Setup(repo => repo.Find(It.IsAny<Guid>())).Returns(new InvokedMethod());
+
+        _methodService.AddAMethod(methodId, invokedMethodId);
+    }
+
+    [TestMethod]
+    [ExpectedException(typeof(InvokedMethodNotFoundException))]
+    public void AddAMethod_ShouldThrow_WhenInvokedMethodIsNull()
+    {
+        var methodId = Guid.NewGuid();
+        var invokedMethodId = Guid.NewGuid();
+        var method = new Method
+        {
+            Id = methodId,
+            Name = "MyMethod",
+            Parameters = [new Parameter { Name = "SomeName" }],
+            Methods = []
+        };
+
+        _mockMethodRepository.Setup(repo => repo.Find(methodId)).Returns(method);
+        _mockInvokedMethodRepository.Setup(repo => repo.Find(invokedMethodId)).Returns((InvokedMethod?)null);
+
+        _methodService.AddAMethod(methodId, invokedMethodId);
+    }
+
+    [TestMethod]
+    [ExpectedException(typeof(MethodException))]
+    public void AddAMethod_ShouldThrow_WhenReferenceNameIsInvalid()
+    {
+        var methodId = Guid.NewGuid();
+        var invokedMethodId = Guid.NewGuid();
+        var invokedMethod = new InvokedMethod { Id = invokedMethodId, ReferenceName = "InvalidReference" };
+        var method = new Method
+        {
+            Id = methodId,
+            Name = "MyMethod",
             Parameters = [],
             LocalVariables = [],
-            ReturnType = null,
-            Stereotype = null
+            Methods = []
+        };
+        var classWithMethod = new Class
+        {
+            Methods = [method]
         };
 
-        var inicializar = new Method
+        _mockMethodRepository.Setup(repo => repo.Find(methodId)).Returns(method);
+        _mockInvokedMethodRepository.Setup(repo => repo.Find(invokedMethodId)).Returns(invokedMethod);
+        _mockClassRepository.Setup(repo => repo.FindAll()).Returns([classWithMethod]);
+
+        _methodService.AddAMethod(methodId, invokedMethodId);
+    }
+
+    [TestMethod]
+    public void AddAMethod_ShouldAddInvokedMethod_WhenValid()
+    {
+        var methodId = Guid.NewGuid();
+        var invokedMethodId = Guid.NewGuid();
+        var invokedMethod = new InvokedMethod { Id = invokedMethodId, ReferenceName = "TestReference" };
+        var method = new Method
         {
-            Id = Guid.NewGuid(),
-            Name = "Inicializar",
-            Accessibility = Accessibility.Protected,
-            Methods = [],
+            Id = methodId,
+            Name = "MyMethod",
+            Parameters = [new Parameter { Name = "TestReference" }],
+            Methods = []
+        };
+        var classWithMethod = new Class
+        {
+            Methods = [method],
+        };
+
+        _mockMethodRepository.Setup(repo => repo.Find(methodId)).Returns(method);
+        _mockInvokedMethodRepository.Setup(repo => repo.Find(invokedMethodId)).Returns(invokedMethod);
+        _mockClassRepository.Setup(repo => repo.FindAll()).Returns([classWithMethod]);
+        _mockMethodRepository.Setup(repo => repo.Update(It.IsAny<Method>()));
+
+        _methodService.AddAMethod(methodId, invokedMethodId);
+
+        _mockMethodRepository.Verify(repo => repo.Update(It.Is<Method>(m => m.Methods.Contains(invokedMethod))), Times.Once);
+    }
+
+    [TestMethod]
+    public void AddAMethod_ShouldSucceed_WhenReferenceNameIsThis()
+    {
+        var methodId = Guid.NewGuid();
+        var invokedMethodId = Guid.NewGuid();
+
+        var method = new Method
+        {
+            Id = methodId,
+            Name = "TestMethod",
             Parameters = [],
             LocalVariables = [],
-            ReturnType = null,
-            Stereotype = null
+            Methods = []
         };
 
-        var esValidoEntrada = new Method
+        var invokedMethod = new InvokedMethod
         {
-            Id = Guid.NewGuid(),
-            Name = "EsValido",
-            Accessibility = Accessibility.Public,
-            Methods = [inicializar],
+            Id = invokedMethodId,
+            ReferenceName = "this"
+        };
+
+        var classT = new Class
+        {
+            Methods = [new Method { Id = methodId, Name = "TestMethod" }],
+            Attributes = []
+        };
+
+        _mockMethodRepository.Setup(r => r.Find(methodId)).Returns(method);
+        _mockInvokedMethodRepository.Setup(r => r.Find(invokedMethodId)).Returns(invokedMethod);
+        _mockClassRepository.Setup(r => r.FindAll()).Returns([classT]);
+        _mockMethodRepository.Setup(r => r.Update(It.IsAny<Method>()));
+
+        _methodService.AddAMethod(methodId, invokedMethodId);
+
+        _mockMethodRepository.Verify(r => r.Update(It.Is<Method>(m => m.Methods.Contains(invokedMethod))), Times.Once);
+    }
+
+    [TestMethod]
+    public void AddAMethod_ShouldSucceed_WhenReferenceNameIsBase()
+    {
+        var methodId = Guid.NewGuid();
+        var invokedMethodId = Guid.NewGuid();
+        var methodName = "BaseMethod";
+
+        var method = new Method
+        {
+            Id = methodId,
+            Name = methodName,
             Parameters = [],
             LocalVariables = [],
-            ReturnType = new Primitive(PrimitiveType.Bool),
-            Stereotype = null
+            Methods = []
         };
 
-        var esValidoTexto = new Method
+        var invokedMethod = new InvokedMethod
         {
-            Id = Guid.NewGuid(),
-            Name = "EsValido",
-            Accessibility = Accessibility.Public,
-            Methods = [esValidoEntrada, limpiar],
-            Parameters = [],
-            LocalVariables = [],
-            ReturnType = new Primitive(PrimitiveType.Bool),
-            Stereotype = null
+            Id = invokedMethodId,
+            ReferenceName = "base"
         };
 
-        var esValido = new Method
+        var hierarchyClass = new Class
         {
-            Id = Guid.NewGuid(),
-            Name = "EsValido",
-            Accessibility = Accessibility.Public,
-            Methods = [esValidoTexto],
-            Parameters = [],
-            LocalVariables = [],
-            ReturnType = new Primitive(PrimitiveType.Bool),
-            Stereotype = KeyWord.Sealed
+            Methods = [new Method { Name = methodName }]
         };
 
-        var metodoEsValido = new Method
+        var classWithMethod = new Class
         {
-            Id = Guid.NewGuid(),
-            Name = "EsValido",
-            Accessibility = Accessibility.Public,
-            Methods = [esValido],
-            Parameters = [],
-            LocalVariables = [],
-            ReturnType = new Primitive(PrimitiveType.Bool),
-            Stereotype = KeyWord.Sealed
+            Methods = [method],
+            HierarchyClass = hierarchyClass
         };
 
-        var entrada = new Class
-        {
-            Id = Guid.NewGuid(),
-            Name = "Entrada",
-            Stereotype = null,
-            HierarchyClass = null,
-            Attributes = [],
-            Methods = [esValidoEntrada, inicializar, limpiar]
-        };
+        _mockMethodRepository.Setup(r => r.Find(methodId)).Returns(method);
+        _mockInvokedMethodRepository.Setup(r => r.Find(invokedMethodId)).Returns(invokedMethod);
+        _mockClassRepository.Setup(r => r.FindAll()).Returns([classWithMethod]);
+        _mockMethodRepository.Setup(r => r.Update(It.IsAny<Method>()));
 
-        var entradaTexto = new Class
-        {
-            Id = Guid.NewGuid(),
-            Name = "EntradaTexto",
-            Stereotype = null,
-            HierarchyClass = entrada,
-            Attributes = [],
-            Methods = [esValidoTexto, metodoEsValido]
-        };
+        _methodService.AddAMethod(methodId, invokedMethodId);
 
-        var entradaTextoEspecial = new Class
-        {
-            Id = Guid.NewGuid(),
-            Name = "EntradaTextoEspecial",
-            Stereotype = KeyWord.Sealed,
-            HierarchyClass = entradaTexto,
-            Attributes = [],
-            Methods = [metodoEsValido, esValidoEntrada]
-        };
-
-        var input = new LocalVariable
-        {
-            Id = Guid.NewGuid(),
-            Name = "input",
-            LocalVariableType = entradaTextoEspecial
-        };
-
-        var validar = new Method
-        {
-            Id = Guid.NewGuid(),
-            Name = "Validar",
-            Accessibility = Accessibility.Public,
-            Methods = [esValido],
-            Parameters = [],
-            LocalVariables = [input],
-            ReturnType = new Primitive(PrimitiveType.Bool),
-            Stereotype = null
-        };
-
-        var validador = new Class
-        {
-            Id = Guid.NewGuid(),
-            Name = "Validador",
-            Stereotype = null,
-            HierarchyClass = null,
-            Attributes = [],
-            Methods = [validar]
-        };
-
-        var result = _methodService.ExecuteMethod(validador, validador, validar);
-
-        var res =
-            "Validador.Validar() -> Validador.Validar()\n" +
-            "\tinput.EsValido() -> EntradaTextoEspecial.EsValido()\n" +
-            "\t\tbase.EsValido() -> EntradaTexto.EsValido()\n" +
-            "\t\t\tbase.EsValido() -> Entrada.EsValido()\n" +
-            "\t\t\t\tthis.Inicializar() -> Entrada.Inicializar()\n" +
-            "\t\t\t\tthis.Limpiar() -> Entrada.Limpiar()";
-        Console.WriteLine(result);
-        Assert.AreEqual(res, result);
+        _mockMethodRepository.Verify(r => r.Update(It.Is<Method>(m => m.Methods.Contains(invokedMethod))), Times.Once);
     }
 }

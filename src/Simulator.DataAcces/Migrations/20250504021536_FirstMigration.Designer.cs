@@ -12,8 +12,8 @@ using Simulator.DataAcces;
 namespace Simulator.DataAcces.Migrations
 {
     [DbContext(typeof(SqlContext))]
-    [Migration("20250430192816_SeedObjectClassAndMethods")]
-    partial class SeedObjectClassAndMethods
+    [Migration("20250504021536_FirstMigration")]
+    partial class FirstMigration
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -21,19 +21,22 @@ namespace Simulator.DataAcces.Migrations
 #pragma warning disable 612, 618
             modelBuilder
                 .HasAnnotation("ProductVersion", "8.0.14")
+                .HasAnnotation("Proxies:ChangeTracking", false)
+                .HasAnnotation("Proxies:CheckEquality", false)
+                .HasAnnotation("Proxies:LazyLoading", true)
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
             modelBuilder.Entity("ClassMethod", b =>
                 {
-                    b.Property<Guid>("ClassesId")
+                    b.Property<Guid>("ClassId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid>("MethodsId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.HasKey("ClassesId", "MethodsId");
+                    b.HasKey("ClassId", "MethodsId");
 
                     b.HasIndex("MethodsId");
 
@@ -42,34 +45,19 @@ namespace Simulator.DataAcces.Migrations
                     b.HasData(
                         new
                         {
-                            ClassesId = new Guid("dddddddd-dddd-dddd-dddd-dddddddddddd"),
+                            ClassId = new Guid("dddddddd-dddd-dddd-dddd-dddddddddddd"),
                             MethodsId = new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa")
                         },
                         new
                         {
-                            ClassesId = new Guid("dddddddd-dddd-dddd-dddd-dddddddddddd"),
+                            ClassId = new Guid("dddddddd-dddd-dddd-dddd-dddddddddddd"),
                             MethodsId = new Guid("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb")
                         },
                         new
                         {
-                            ClassesId = new Guid("dddddddd-dddd-dddd-dddd-dddddddddddd"),
+                            ClassId = new Guid("dddddddd-dddd-dddd-dddd-dddddddddddd"),
                             MethodsId = new Guid("cccccccc-cccc-cccc-cccc-cccccccccccc")
                         });
-                });
-
-            modelBuilder.Entity("MethodMethod", b =>
-                {
-                    b.Property<Guid>("MethodId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("MethodsId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("MethodId", "MethodsId");
-
-                    b.HasIndex("MethodsId");
-
-                    b.ToTable("MethodRelations", (string)null);
                 });
 
             modelBuilder.Entity("Simulator.Domain.Attribute", b =>
@@ -98,6 +86,26 @@ namespace Simulator.DataAcces.Migrations
                     b.HasIndex("TypeId");
 
                     b.ToTable("Attributes");
+                });
+
+            modelBuilder.Entity("Simulator.Domain.InvokedMethod", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("MethodId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("ReferenceName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("MethodId");
+
+                    b.ToTable("InvokedMethods");
                 });
 
             modelBuilder.Entity("Simulator.Domain.LocalVariable", b =>
@@ -134,9 +142,6 @@ namespace Simulator.DataAcces.Migrations
                     b.Property<int>("Accessibility")
                         .HasColumnType("int");
 
-                    b.Property<Guid?>("ClassId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -148,8 +153,6 @@ namespace Simulator.DataAcces.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("ClassId");
 
                     b.HasIndex("ReturnTypeId");
 
@@ -202,6 +205,15 @@ namespace Simulator.DataAcces.Migrations
                     b.HasIndex("ParameterTypeId");
 
                     b.ToTable("Parameters");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("a7ca113e-f6d9-480f-b008-5f4ae1913c07"),
+                            MethodId = new Guid("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb"),
+                            Name = "Obj",
+                            ParameterTypeId = new Guid("dddddddd-dddd-dddd-dddd-dddddddddddd")
+                        });
                 });
 
             modelBuilder.Entity("Simulator.Domain.Type", b =>
@@ -263,20 +275,98 @@ namespace Simulator.DataAcces.Migrations
                         new
                         {
                             Id = new Guid("11111111-1111-1111-1111-111111111111"),
-                            Name = "Bool",
+                            Name = "bool",
                             PrimitiveType = 0
                         },
                         new
                         {
                             Id = new Guid("22222222-2222-2222-2222-222222222222"),
-                            Name = "String",
+                            Name = "string",
                             PrimitiveType = 15
                         },
                         new
                         {
                             Id = new Guid("33333333-3333-3333-3333-333333333333"),
-                            Name = "Int",
+                            Name = "int",
                             PrimitiveType = 7
+                        },
+                        new
+                        {
+                            Id = new Guid("3ac3234b-ee84-4ad5-873f-33c1ed165c59"),
+                            Name = "byte",
+                            PrimitiveType = 1
+                        },
+                        new
+                        {
+                            Id = new Guid("59075d40-d193-46cb-94a4-4e1cbc2dff54"),
+                            Name = "sByte",
+                            PrimitiveType = 2
+                        },
+                        new
+                        {
+                            Id = new Guid("d13a84fd-b311-4557-a9d0-c7ce386b0706"),
+                            Name = "char",
+                            PrimitiveType = 3
+                        },
+                        new
+                        {
+                            Id = new Guid("3266c213-9bfa-499e-9112-7914a1b18fa0"),
+                            Name = "decimal",
+                            PrimitiveType = 4
+                        },
+                        new
+                        {
+                            Id = new Guid("a76f684d-ceba-4fb4-8f0c-35f6fafbfb30"),
+                            Name = "double",
+                            PrimitiveType = 5
+                        },
+                        new
+                        {
+                            Id = new Guid("04137227-fecc-4e94-9977-34a424bb86f6"),
+                            Name = "float",
+                            PrimitiveType = 6
+                        },
+                        new
+                        {
+                            Id = new Guid("a570de13-013e-48a1-a20c-b048a08aaf79"),
+                            Name = "uint",
+                            PrimitiveType = 8
+                        },
+                        new
+                        {
+                            Id = new Guid("e71c4e14-8924-47b1-8f2f-4172146d52ca"),
+                            Name = "nint",
+                            PrimitiveType = 9
+                        },
+                        new
+                        {
+                            Id = new Guid("01820ae6-18b0-45bb-b357-afe004cd4dc4"),
+                            Name = "nuint",
+                            PrimitiveType = 10
+                        },
+                        new
+                        {
+                            Id = new Guid("3a594898-b4e3-45ea-bf52-ad81e047bdec"),
+                            Name = "long",
+                            PrimitiveType = 11
+                        },
+                        new
+                        {
+                            Id = new Guid("ceac46b7-1983-4d9f-ba11-ac5267c859a3"),
+                            Name = "ulong",
+                            PrimitiveType = 12
+                        },
+                        new
+                        {
+                            Id = new Guid("433bd90b-f076-4736-8366-08949cc4c3d6"),
+                            Name = "short",
+                            PrimitiveType = 13
+                        },
+                        new
+                        {
+                            Id = new Guid("f362917b-0eab-4781-b058-41fb7eaec2aa"),
+                            Name = "ushort",
+                            PrimitiveType = 14
                         });
                 });
 
@@ -284,7 +374,7 @@ namespace Simulator.DataAcces.Migrations
                 {
                     b.HasOne("Simulator.Domain.Class", null)
                         .WithMany()
-                        .HasForeignKey("ClassesId")
+                        .HasForeignKey("ClassId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -292,21 +382,6 @@ namespace Simulator.DataAcces.Migrations
                         .WithMany()
                         .HasForeignKey("MethodsId")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("MethodMethod", b =>
-                {
-                    b.HasOne("Simulator.Domain.Method", null)
-                        .WithMany()
-                        .HasForeignKey("MethodId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Simulator.Domain.Method", null)
-                        .WithMany()
-                        .HasForeignKey("MethodsId")
-                        .OnDelete(DeleteBehavior.ClientCascade)
                         .IsRequired();
                 });
 
@@ -321,6 +396,15 @@ namespace Simulator.DataAcces.Migrations
                         .HasForeignKey("TypeId");
 
                     b.Navigation("Type");
+                });
+
+            modelBuilder.Entity("Simulator.Domain.InvokedMethod", b =>
+                {
+                    b.HasOne("Simulator.Domain.Method", null)
+                        .WithMany("Methods")
+                        .HasForeignKey("MethodId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Simulator.Domain.LocalVariable", b =>
@@ -339,10 +423,6 @@ namespace Simulator.DataAcces.Migrations
 
             modelBuilder.Entity("Simulator.Domain.Method", b =>
                 {
-                    b.HasOne("Simulator.Domain.Class", null)
-                        .WithMany("Methods")
-                        .HasForeignKey("ClassId");
-
                     b.HasOne("Simulator.Domain.Type", "ReturnType")
                         .WithMany()
                         .HasForeignKey("ReturnTypeId")
@@ -367,7 +447,7 @@ namespace Simulator.DataAcces.Migrations
 
             modelBuilder.Entity("Simulator.Domain.Class", b =>
                 {
-                    b.HasOne("Simulator.Domain.Type", "HierarchyClass")
+                    b.HasOne("Simulator.Domain.Class", "HierarchyClass")
                         .WithMany()
                         .HasForeignKey("HierarchyClassId");
 
@@ -378,14 +458,14 @@ namespace Simulator.DataAcces.Migrations
                 {
                     b.Navigation("LocalVariables");
 
+                    b.Navigation("Methods");
+
                     b.Navigation("Parameters");
                 });
 
             modelBuilder.Entity("Simulator.Domain.Class", b =>
                 {
                     b.Navigation("Attributes");
-
-                    b.Navigation("Methods");
                 });
 #pragma warning restore 612, 618
         }

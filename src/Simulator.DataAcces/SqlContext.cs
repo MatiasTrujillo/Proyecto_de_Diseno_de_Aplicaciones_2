@@ -20,6 +20,7 @@ public sealed class SqlContext : DbContext
     public DbSet<Primitive> Primitives { get; set; }
     public DbSet<Parameter> Parameters { get; set; }
     public DbSet<LocalVariable> LocalVariables { get; set; }
+    public DbSet<InvokedMethod> InvokedMethods { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -36,9 +37,7 @@ public sealed class SqlContext : DbContext
             .HasKey(a => a.Id);
 
         modelBuilder.Entity<Method>()
-            .HasMany(m => m.Methods)
-            .WithMany()
-            .UsingEntity(j => j.ToTable("MethodRelations"));
+            .HasMany(m => m.Methods);
 
         modelBuilder.Entity<Method>()
             .HasMany(m => m.Parameters)
@@ -55,6 +54,9 @@ public sealed class SqlContext : DbContext
             .HasOne(m => m.ReturnType)
             .WithMany()
             .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<InvokedMethod>()
+            .HasKey(i => i.Id);
 
         modelBuilder.Entity<Parameter>()
             .HasKey(p => p.Id);
@@ -103,100 +105,99 @@ public sealed class SqlContext : DbContext
             new
             {
                 Id = boolTypeId,
-                Name = "Bool",
+                Name = "bool",
                 PrimitiveType = PrimitiveType.Bool
             },
             new
             {
                 Id = stringTypeId,
-                Name = "String",
+                Name = "string",
                 PrimitiveType = PrimitiveType.String
             },
             new
             {
                 Id = intTypeId,
-                Name = "Int",
+                Name = "int",
                 PrimitiveType = PrimitiveType.Int
             },
             new
             {
                 Id = Guid.NewGuid(),
-                Name = "Byte",
+                Name = "byte",
                 PrimitiveType = PrimitiveType.Byte
             },
             new
             {
                 Id = Guid.NewGuid(),
-                Name = "SByte",
+                Name = "sByte",
                 PrimitiveType = PrimitiveType.Sbyte
             },
             new
             {
                 Id = Guid.NewGuid(),
-                Name = "Char",
+                Name = "char",
                 PrimitiveType = PrimitiveType.Char
             },
             new
             {
                 Id = Guid.NewGuid(),
-                Name = "Decimal",
+                Name = "decimal",
                 PrimitiveType = PrimitiveType.Decimal
             },
             new
             {
                 Id = Guid.NewGuid(),
-                Name = "Double",
+                Name = "double",
                 PrimitiveType = PrimitiveType.Double
             },
             new
             {
                 Id = Guid.NewGuid(),
-                Name = "Float",
+                Name = "float",
                 PrimitiveType = PrimitiveType.Float
             },
             new
             {
                 Id = Guid.NewGuid(),
-                Name = "Uint",
+                Name = "uint",
                 PrimitiveType = PrimitiveType.Uint
             },
             new
             {
                 Id = Guid.NewGuid(),
-                Name = "Nint",
+                Name = "nint",
                 PrimitiveType = PrimitiveType.Nint
             },
             new
             {
                 Id = Guid.NewGuid(),
-                Name = "Nuint",
+                Name = "nuint",
                 PrimitiveType = PrimitiveType.Nuint
             },
             new
             {
                 Id = Guid.NewGuid(),
-                Name = "Long",
+                Name = "long",
                 PrimitiveType = PrimitiveType.Long
             },
             new
             {
                 Id = Guid.NewGuid(),
-                Name = "Ulong",
+                Name = "ulong",
                 PrimitiveType = PrimitiveType.Ulong
             },
             new
             {
                 Id = Guid.NewGuid(),
-                Name = "Short",
+                Name = "short",
                 PrimitiveType = PrimitiveType.Short
             },
             new
             {
                 Id = Guid.NewGuid(),
-                Name = "Ushort",
+                Name = "ushort",
                 PrimitiveType = PrimitiveType.Ushort
-            }
-        );
+            });
 
         modelBuilder.Entity<Method>().HasData(
             new
@@ -222,8 +223,7 @@ public sealed class SqlContext : DbContext
                 Accessibility = Accessibility.Public,
                 Stereotype = (KeyWord?)null,
                 ReturnTypeId = intTypeId,
-            }
-        );
+            });
 
         modelBuilder.Entity("ClassMethod").HasData(
             new Dictionary<string, object>
@@ -240,8 +240,7 @@ public sealed class SqlContext : DbContext
             {
                 ["ClassId"] = Guid.Parse("dddddddd-dddd-dddd-dddd-dddddddddddd"),
                 ["MethodsId"] = Guid.Parse("cccccccc-cccc-cccc-cccc-cccccccccccc")
-            }
-        );
+            });
 
         modelBuilder.Entity<Parameter>().HasData(
             new

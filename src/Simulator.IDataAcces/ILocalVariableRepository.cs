@@ -6,4 +6,5 @@ public interface ILocalVariableRepository
 {
     void Add(LocalVariable localVariable);
     LocalVariable Find(Guid id);
+    List<LocalVariable> FindAll();
 }

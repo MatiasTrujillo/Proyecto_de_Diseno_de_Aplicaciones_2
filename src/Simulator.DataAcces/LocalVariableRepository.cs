@@ -30,4 +30,11 @@ public class LocalVariableRepository(SqlContext context) : ILocalVariableReposit
 
         return localVariable;
     }
+
+    public List<LocalVariable> FindAll()
+    {
+        return context.LocalVariables
+            .Include(p => p.LocalVariableType)
+            .ToList();
+    }
 }

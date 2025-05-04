@@ -11,13 +11,13 @@ using Type = Simulator.Domain.Type;
 
 namespace Simulator.BussinesLogic;
 
-public class MethodService(IMethodRepository methodRepository, IClassRepository classRepository, IParameterRepository parameterRepository, ILocalVariableRepository localVariableRepository) : IMethodService
+public class MethodService(IMethodRepository methodRepository, IClassRepository classRepository, IParameterRepository parameterRepository, ILocalVariableRepository localVariableRepository, IInvokedMethodRepository invokedMethodRepository) : IMethodService
 {
     private readonly IMethodRepository _methodRepository = methodRepository;
     private readonly IClassRepository _classRepository = classRepository;
     private readonly IParameterRepository _parameterRepository = parameterRepository;
     private readonly ILocalVariableRepository _localVariableRepository = localVariableRepository;
-    private static int _indentacion = 0;
+    private readonly IInvokedMethodRepository _invokedMethodRepository = invokedMethodRepository;
 
     public Guid CreateMethod(MethodDTO method)
     {
@@ -37,15 +37,80 @@ public class MethodService(IMethodRepository methodRepository, IClassRepository 
         return methodT.Id;
     }
 
-    public void AddAMethod(Guid id, Guid idToAdd)
+    public Guid AssociateInvokeMethod(InvokedMethodDTO invokedMethod)
+    {
+        ValidateInvokedMethodDTOExist(invokedMethod);
+        var method = _methodRepository.Find(invokedMethod.MethodId);
+        ValidateMethodExist(method);
+        ValidateInvokedMethodReferenceNameIsNotNull(invokedMethod.ReferenceName);
+        var invokedMethodT = invokedMethod.ToEntity();
+        _invokedMethodRepository.Add(invokedMethodT);
+        return invokedMethodT.Id;
+    }
+
+    public void AddAMethod(Guid id, Guid invokedMethodId)
     {
         var method = _methodRepository.Find(id);
-        var methodToAdd = _methodRepository.Find(idToAdd);
+        var invokedMethod = _invokedMethodRepository.Find(invokedMethodId);
         ValidateMethodExist(method);
-        ValidateMethodExist(methodToAdd);
-        ValidateMethodIsNotInRepeted(id, idToAdd);
-        method.Methods.Add(methodToAdd);
+        ValidateInvokedMethodExist(invokedMethod);
+        ValidateInvokedMethodReferenceName(invokedMethod.ReferenceName, method);
+        method.Methods.Add(invokedMethod);
         _methodRepository.Update(method);
+    }
+
+    private void ValidateInvokedMethodReferenceName(string invokedMethodReferenceName, Method method)
+    {
+        var classT = _classRepository.FindAll()
+            .FirstOrDefault(c => c.Methods != null && c.Methods.Any(m => m.Id == method.Id));
+
+        var existsInParameters = method.Parameters?.Any(p => p.Name == invokedMethodReferenceName) ?? false;
+        var existsInLocalVariables = method.LocalVariables?.Any(lv => lv.Name == invokedMethodReferenceName) ?? false;
+
+        var existsInAttributes = false;
+        var existsInMethods = false;
+        var existingInHeredity = false;
+        if(classT != null)
+        {
+            existsInAttributes = classT.Attributes?.Any(a => a.Name == invokedMethodReferenceName) ?? false;
+            existsInMethods = InvokeMethodReferenceThis(invokedMethodReferenceName, method, existsInMethods, classT);
+            existingInHeredity = InvokeMethodReferenceBase(invokedMethodReferenceName, method, classT, existingInHeredity);
+        }
+
+        if(!existsInParameters && !existsInLocalVariables && !existsInAttributes && !existsInMethods && !existingInHeredity)
+        {
+            throw new MethodException($"Reference name '{invokedMethodReferenceName}' does not match any parameter, local variable, or attribute in method '{method.Name}'.");
+        }
+    }
+
+    private static bool InvokeMethodReferenceBase(string invokedMethodReferenceName, Method method, Class classT,
+        bool existingInHeredity)
+    {
+        if(invokedMethodReferenceName == "base" && classT.HierarchyClass != null)
+        {
+            existingInHeredity = classT.HierarchyClass.Methods?.Any(m => m.Name == method.Name) ?? false;
+        }
+
+        return existingInHeredity;
+    }
+
+    private static bool InvokeMethodReferenceThis(string invokedMethodReferenceName, Method method, bool existsInMethods,
+        Class classT)
+    {
+        if(invokedMethodReferenceName == "this")
+        {
+            existsInMethods = classT.Methods?.Any(m => m.Name == method.Name) ?? false;
+        }
+
+        return existsInMethods;
+    }
+
+    private void ValidateInvokedMethodExist(InvokedMethod invokedMethod)
+    {
+        if(invokedMethod == null)
+        {
+            throw new InvokedMethodNotFoundException("Invoked Method not found.");
+        }
     }
 
     public void AssociateMethodWithClass(Guid methodId, Guid classId)
@@ -114,198 +179,6 @@ public class MethodService(IMethodRepository methodRepository, IClassRepository 
         _methodRepository.Delete(id);
     }
 
-    public string ExecuteMethod(Type reference, Class objectToCreate, Method methodReference)
-    {
-        _indentacion = 0;
-        var result = new List<string>();
-        var flag = false;
-        if(objectToCreate.HierarchyClass != null)
-        {
-            flag = reference.Id != objectToCreate.HierarchyClass.Id;
-        }
-
-        FirstLine(reference, objectToCreate, methodReference, flag, result);
-        ParametersMethod(methodReference, result);
-        Attribute(reference, methodReference, result);
-        LocalVariable(methodReference, result);
-        return string.Join("\n", result);
-    }
-
-    private void LocalVariable(Method methodReference, List<string> result)
-    {
-        foreach(var calledMethod in methodReference.Methods)
-        {
-            var slead = true;
-            foreach(var localVar in methodReference.LocalVariables)
-            {
-                var classType = localVar.LocalVariableType as Class;
-                var c = classType.Methods != null && classType.Methods.Any(m => m.Name == calledMethod.Name);
-                var aux = classType;
-                var i = 0;
-                if(classType != null && c)
-                {
-                    var classInherited = classType.HierarchyClass as Class;
-                    var cant = classInherited.Methods.Count;
-                    while(aux != null && i < cant)
-                    {
-                        if(classInherited != null && classInherited.Methods[i].Stereotype != KeyWord.Sealed)
-                        {
-                            var indentation = new string('\t', _indentacion);
-                            result.Add(
-                                $"{indentation}{localVar.Name}.{classInherited.Methods[i].Name}() -> {aux.Name}.{classInherited.Methods[i].Name}()");
-                        }
-
-                        aux = (Class)aux.HierarchyClass;
-                        i++;
-                    }
-
-                    while(classInherited != null)
-                    {
-                        Sobreescrito(classType, result, classInherited);
-                        classType = classInherited;
-                        classInherited = (Class)classInherited.HierarchyClass;
-                    }
-
-                    MethodTThis(classType, result);
-                }
-            }
-        }
-    }
-
-    private static void Attribute(Type reference, Method methodReference, List<string> result)
-    {
-        foreach(var calledMethod in methodReference.Methods)
-        {
-            if(reference is Class referenceClass)
-            {
-                var indentation = new string('\t', _indentacion);
-                foreach(var attr in referenceClass.Attributes)
-                {
-                    if(attr.Type is Class attrClass)
-                    {
-                        if(attrClass.Methods != null && attrClass.Methods.Any(m => m.Name == calledMethod.Name))
-                        {
-                            result.Add(
-                                $"{indentation}{attr.Name}.{calledMethod.Name}() -> {attrClass.Name}.{calledMethod.Name}()");
-                            break;
-                        }
-
-                        var parent = attrClass.HierarchyClass as Class;
-                        while(parent != null)
-                        {
-                            if(parent.Methods != null)
-                            {
-                                var methodInParent = parent.Methods.FirstOrDefault(m => m.Name == calledMethod.Name);
-                                if(methodInParent != null)
-                                {
-                                    result.Add(
-                                        $"{indentation}{attr.Name}.{calledMethod.Name}() -> {parent.Name}.{methodInParent.Name}()");
-                                    break;
-                                }
-                            }
-
-                            parent = (Class)parent.HierarchyClass;
-                        }
-                    }
-                }
-
-                if(referenceClass.Methods != null && referenceClass.Methods.Any(m => m.Name == calledMethod.Name))
-                {
-                    result.Add(
-                        $"{indentation}this.{calledMethod.Name}() -> {referenceClass.Name}.{calledMethod.Name}()");
-                }
-            }
-        }
-    }
-
-    private static void ParametersMethod(Method methodReference, List<string> result)
-    {
-        foreach(var calledMethod in methodReference.Methods)
-        {
-            foreach(var param in methodReference.Parameters)
-            {
-                if(param.ParameterType is Class paramClass)
-                {
-                    if(paramClass.Methods != null && paramClass.Methods.Any(m => m.Name == calledMethod.Name))
-                    {
-                        var indentation = new string('\t', _indentacion);
-                        result.Add(
-                            $"{indentation}{param.Name}.{calledMethod.Name}() -> {paramClass.Name}.{calledMethod.Name}()");
-                    }
-                }
-            }
-        }
-    }
-
-    private static void MethodTThis(Class classType, List<string> result)
-    {
-        var indentation = new string('\t', _indentacion + 1);
-        if(classType.Stereotype == null)
-        {
-            foreach(var m in classType.Methods)
-            {
-                if(!(m.Methods.Count > 0))
-                {
-                    result.Add($"{indentation}this.{m.Name}() -> {classType.Name}.{m.Name}()");
-                    _indentacion++;
-                }
-            }
-        }
-    }
-
-    private static void FirstLine(Type reference, Class objectToCreate, Method methodReference, bool flag,
-        List<string> result)
-    {
-        var indentation = new string('\t', _indentacion);
-        if(!flag)
-        {
-            result.Add(
-                $"{indentation}{reference.Name}.{methodReference.Name}() -> {objectToCreate.Name}.{methodReference.Name}()");
-        }
-        else
-        {
-            result.Add(
-                $"{indentation}{reference.Name}.{methodReference.Name}() -> {reference.Name}.{methodReference.Name}()");
-        }
-
-        _indentacion++;
-    }
-
-    private void Sobreescrito(Class classType, List<string> result, Class parent)
-    {
-        foreach(var methodInParent in classType.Methods)
-        {
-            var cant = ContarOcurrenciasMetodoEnJerarquia(methodInParent);
-            var indentation = new string('\t', _indentacion + 1);
-            if(cant > 1)
-            {
-                result.Add($"{indentation}base.{methodInParent.Name}() -> {parent.Name}.{methodInParent.Name}()");
-                _indentacion++;
-            }
-        }
-    }
-
-    public int ContarOcurrenciasMetodoEnJerarquia(Method metodoNombre)
-    {
-        var count = 0;
-        var met = metodoNombre;
-
-        foreach(var m in met.Methods)
-        {
-            if(m.Name == metodoNombre.Name)
-            {
-                count++;
-            }
-
-            if(m.Methods.Count > 0)
-            {
-                count += ContarOcurrenciasMetodoEnJerarquia(m);
-            }
-        }
-
-        return count;
-    }
-
     private void ValidateMethodIsNotInUse(Guid id)
     {
         var method = _methodRepository.Find(id);
@@ -330,16 +203,6 @@ public class MethodService(IMethodRepository methodRepository, IClassRepository 
                                                                           method.Parameters.Any(p => p.Name.Equals(localVariable.Name, StringComparison.OrdinalIgnoreCase))))
         {
             throw new InvalidMethodException("A variable or parameter with the same name already exists.");
-        }
-    }
-
-    private void ValidateMethodIsNotInRepeted(Guid idMethod, Guid idMethodToAdd)
-    {
-        var method = _methodRepository.Find(idMethod);
-        var methodToAdd = _methodRepository.Find(idMethodToAdd);
-        if(method.Methods != null && method.Methods.Any(m => m.Id == idMethodToAdd))
-        {
-            throw new MethodInUseException("Method is already associated with this method.");
         }
     }
 
@@ -437,11 +300,27 @@ public class MethodService(IMethodRepository methodRepository, IClassRepository 
         }
     }
 
-    public void ValidateParameterExist(Parameter parameter)
+    private void ValidateParameterExist(Parameter parameter)
     {
         if(parameter == null)
         {
             throw new ParameterNotFoundException("Parameter not found.");
+        }
+    }
+
+    private void ValidateInvokedMethodReferenceNameIsNotNull(string? invokedMethodReferenceName)
+    {
+        if(string.IsNullOrEmpty(invokedMethodReferenceName))
+        {
+            throw new InvokedMethodNotFoundException("Invoked Method Reference Name cannot be null or empty.");
+        }
+    }
+
+    private void ValidateInvokedMethodDTOExist(InvokedMethodDTO invokedMethod)
+    {
+        if(invokedMethod == null)
+        {
+            throw new InvokedMethodNotFoundException("Invoked Method cannot be null.");
         }
     }
 }
