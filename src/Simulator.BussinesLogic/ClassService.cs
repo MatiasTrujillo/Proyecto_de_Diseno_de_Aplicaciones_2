@@ -31,6 +31,12 @@ public class ClassService(
     public void DeleteClass(Guid id)
     {
         ValidateClassIdExists(id);
+        var aClass = _classRepository.Find(id);
+        if (aClass != null && aClass.Name == "Object")
+        {
+            throw new InvalidClassException("The 'Object' class cannot be deleted.");
+        }
+
         ValidateClassIsNotInUse(id);
         _classRepository.Delete(id);
     }
