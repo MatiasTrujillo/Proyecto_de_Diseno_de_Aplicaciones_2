@@ -25,6 +25,7 @@ public class ExceptionFilter : IExceptionFilter
             MethodInUseException _ => new ObjectResult(new { context.Exception.Message }) { StatusCode = 409 },
             MethodNotFoundException _ => new ObjectResult(new { context.Exception.Message }) { StatusCode = 404 },
             ParameterNotFoundException _ => new ObjectResult(new { context.Exception.Message }) { StatusCode = 404 },
+            InvokedMethodNotFoundException _ => new ObjectResult(new { context.Exception.Message }) { StatusCode = 404 },
             _ => new ObjectResult(new { context.Exception.Message }) { StatusCode = 500 }
         };
         context.ExceptionHandled = true;

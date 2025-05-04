@@ -17,8 +17,7 @@ public class ClassRepositoryTest
     {
         _id = Guid.NewGuid();
         _repository = new ClassRepository(_context);
-        aClass = new Class(KeyWord.Abstract, null, [], [], "Class1");
-        aClass.Id = _id;
+        aClass = new Class(KeyWord.Abstract, null, [], [], "Class1") { Id = _id };
         anotherClass = new Class(null, null, [], [], "Class1");
         aClass.Name = "Class";
     }
@@ -99,6 +98,25 @@ public class ClassRepositoryTest
 
         result.Should().Contain(a => a.Name == "Class");
         result.Should().Contain(a => a.Name == "Class1");
+    }
+    #endregion
+
+    #region FindAllTypes
+    [TestMethod]
+    public void FindAllTypes_WhenTypesExist_ShouldReturnAllTypes()
+    {
+        var aClassType = new Simulator.Domain.Class { Name = "MyTypeClass" };
+        var anotherClassType = new Simulator.Domain.Primitive { Name = "MyTypeClass1" };
+        _context.Classes.Add(aClassType);
+        _context.Primitives.Add(anotherClassType);
+        _context.SaveChanges();
+
+        var result = _repository.FindAllTypes();
+
+        result.Should().NotBeNull();
+        result.Count.Should().BeGreaterThanOrEqualTo(2);
+        result.Should().Contain(t => t.Name == "MyTypeClass1");
+        result.Should().Contain(t => t.Name == "MyTypeClass");
     }
     #endregion
 

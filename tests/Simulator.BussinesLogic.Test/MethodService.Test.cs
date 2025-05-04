@@ -4,6 +4,7 @@ using Simulator.Domain;
 using Simulator.Domain.Exception;
 using Simulator.DTO;
 using Simulator.IDataAcces;
+using Type = Simulator.Domain.Type;
 
 namespace Simulator.BussinesLogic.Test;
 
@@ -64,8 +65,8 @@ public class MethodServiceTest
     [TestMethod]
     public void CreateMethod_ShouldCallRepositoryAdd_WithValidMethod()
     {
-        var classes = new List<Class>();
-        _mockClassRepository.Setup(repo => repo.FindAll()).Returns(classes);
+        var classes = new List<Type>();
+        _mockClassRepository.Setup(repo => repo.FindAllTypes()).Returns(classes);
 
         if(_methodDto.ReturnType != null)
         {
@@ -92,8 +93,8 @@ public class MethodServiceTest
             Stereotype = null,
             ReturnType = classT
         };
-        var classes = new List<Class>();
-        _mockClassRepository.Setup(repo => repo.FindAll()).Returns(classes);
+        var classes = new List<Type>();
+        _mockClassRepository.Setup(repo => repo.FindAllTypes()).Returns(classes);
 
         var exception = Assert.ThrowsException<MethodException>(() => _methodService.CreateMethod(method));
         Assert.AreEqual("Method return type not found.", exception.Message);
@@ -125,7 +126,7 @@ public class MethodServiceTest
             .Returns([existingMethod]);
 
         _mockClassRepository
-            .Setup(repo => repo.FindAll())
+            .Setup(repo => repo.FindAllTypes())
             .Returns([new Class { Name = _methodDto.ReturnType.Name }]);
 
         var exception = Assert.ThrowsException<InvalidMethodException>(() => _methodService.CreateMethod(_methodDto));
@@ -384,7 +385,7 @@ public class MethodServiceTest
             .Setup(r => r.Add(It.Is<Parameter>(p => p.Name == parameterDto.Name && p.ParameterType.Name == classT.Name)));
 
         _mockClassRepository
-            .Setup(repo => repo.FindAll())
+            .Setup(repo => repo.FindAllTypes())
             .Returns([new Class { Name = "TestClass" }]);
 
         var result = _methodService.CreateParameter(parameterDto);
@@ -424,7 +425,7 @@ public class MethodServiceTest
             .Setup(r => r.Add(It.Is<LocalVariable>(p => p.Name == localVariableDto.Name && p.LocalVariableType.Name == classT.Name)));
 
         _mockClassRepository
-            .Setup(repo => repo.FindAll())
+            .Setup(repo => repo.FindAllTypes())
             .Returns([new Class { Name = "TestClass" }]);
 
         var result = _methodService.CreateLocalVariable(localVariableDto);

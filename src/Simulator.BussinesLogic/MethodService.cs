@@ -28,7 +28,7 @@ public class MethodService(IMethodRepository methodRepository, IClassRepository 
         {
             ValidateMethodReturnTypeString(methodT.ReturnType.Name);
             var type = methodT.ReturnType.Name;
-            returnType = _classRepository.FindAll().FirstOrDefault(c => c.Name == type);
+            returnType = _classRepository.FindAllTypes().FirstOrDefault(c => c.Name == type);
         }
 
         ValidateUniqueMethod(methodT);
@@ -129,7 +129,7 @@ public class MethodService(IMethodRepository methodRepository, IClassRepository 
         ValidateLocalVariableIsNotNull(localVariable);
         var localVariableT = localVariable.ToEntity();
         var type = localVariableT.LocalVariableType.Name;
-        var returnType = _classRepository.FindAll().FirstOrDefault(c => c.Name == type);
+        var returnType = _classRepository.FindAllTypes().FirstOrDefault(c => c.Name == type);
         localVariableT.LocalVariableType = returnType;
         ValidateMethodReturnType(localVariableT.LocalVariableType);
         _localVariableRepository.Add(localVariableT);
@@ -152,7 +152,7 @@ public class MethodService(IMethodRepository methodRepository, IClassRepository 
         ValidateParameterIsNotNull(parameter);
         var parameterT = parameter.ToEntity();
         var type = parameterT.ParameterType.Name;
-        var returnType = _classRepository.FindAll().FirstOrDefault(c => c.Name == type);
+        var returnType = _classRepository.FindAllTypes().FirstOrDefault(c => c.Name == type);
         parameterT.ParameterType = returnType;
         ValidateMethodReturnType(parameterT.ParameterType);
         _parameterRepository.Add(parameterT);
@@ -252,7 +252,7 @@ public class MethodService(IMethodRepository methodRepository, IClassRepository 
 
     private void ValidateMethodReturnTypeString(string? methodTReturnType)
     {
-        var classes = _classRepository.FindAll();
+        var classes = _classRepository.FindAllTypes();
         if(classes.All(c => c.Name != methodTReturnType))
         {
             throw new MethodException("Method return type not found.");
@@ -261,7 +261,7 @@ public class MethodService(IMethodRepository methodRepository, IClassRepository 
 
     private void ValidateMethodReturnType(Type? methodTReturnType)
     {
-        var classes = _classRepository.FindAll();
+        var classes = _classRepository.FindAllTypes();
         if(classes.All(c => c.Name != methodTReturnType.Name))
         {
             throw new MethodException("Method return type not found.");

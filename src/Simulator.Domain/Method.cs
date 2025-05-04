@@ -27,7 +27,7 @@ public class Method
 
     public Method(string name, Accessibility accessibility, KeyWord? stereotype, List<InvokedMethod> methods,
         List<Parameter> parameters,
-        List<LocalVariable> localVariables, Type returnType)
+        List<LocalVariable> localVariables, Type? returnType)
     {
         ValidateMethodName(name);
         Id = Guid.NewGuid();

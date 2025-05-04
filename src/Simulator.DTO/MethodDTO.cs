@@ -11,7 +11,7 @@ public class MethodDTO
 
     public Method ToEntity()
     {
-        var returnType = ReturnType?.ToEntity() ?? new Primitive();
+        var returnType = ReturnType?.ToEntity() ?? null;
         return new Method(Name, Accessibility, Stereotype, [], [], [], returnType);
     }
 }
