@@ -527,4 +527,24 @@ public class MethodServiceTest
 
         _methodService.AddAMethod(methodId, invokedMethodId);
     }
+
+    [TestMethod]
+    [ExpectedException(typeof(InvokedMethodNotFoundException))]
+    public void AddAMethod_ShouldThrow_WhenInvokedMethodIsNull()
+    {
+        var methodId = Guid.NewGuid();
+        var invokedMethodId = Guid.NewGuid();
+        var method = new Method
+        {
+            Id = methodId,
+            Name = "MyMethod",
+            Parameters = new List<Parameter> { new Parameter { Name = "SomeName" } },
+            Methods = new List<InvokedMethod>()
+        };
+
+        _mockMethodRepository.Setup(repo => repo.Find(methodId)).Returns(method);
+        _mockInvokedMethodRepository.Setup(repo => repo.Find(invokedMethodId)).Returns((InvokedMethod?)null);
+
+        _methodService.AddAMethod(methodId, invokedMethodId);
+    }
 }
