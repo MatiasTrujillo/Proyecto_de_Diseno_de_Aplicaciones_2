@@ -229,6 +229,33 @@ public class ClassServiceTest
     }
 
     [TestMethod]
+    public void UpdateClass_ShouldThrowException_WhenUpdatingObjectClass()
+    {
+        var objectClassId = Guid.NewGuid();
+        var objectClass = new Class
+        {
+            Id = objectClassId,
+            Name = "Object",
+            Stereotype = KeyWord.Abstract
+        };
+
+        var updateDto = new UpdateClassDTO
+        {
+            Name = "NewName",
+        };
+
+        _mockClassRepository.Setup(r => r.Find(objectClassId)).Returns(objectClass);
+        _mockClassRepository.Setup(r => r.FindAll()).Returns(new List<Class> { objectClass });
+
+        var exception = Assert.ThrowsException<InvalidClassException>(() =>
+        {
+            _classService.UpdateClass(objectClassId, updateDto);
+        });
+
+        Assert.AreEqual("The 'Object' class cannot be updated.", exception.Message);
+    }
+
+    [TestMethod]
     [ExpectedException(typeof(InvalidClassException))]
     public void UpdateClass_WithInvalidName_ThrowsException()
     {
