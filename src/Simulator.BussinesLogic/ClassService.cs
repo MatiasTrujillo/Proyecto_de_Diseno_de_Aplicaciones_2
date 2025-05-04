@@ -20,7 +20,10 @@ public class ClassService(
     public Guid CreateClass(ClassDTO classDto)
     {
         var aClass = classDto.ToEntity();
+        var classes = _classRepository.FindAll();
+        var objectClass = classes.FirstOrDefault(c => c.Name == "Object");
         ValidateClassNameIsUnique(aClass.Name);
+        aClass.HierarchyClass = objectClass;
         _classRepository.Add(aClass);
         return aClass.Id;
     }
