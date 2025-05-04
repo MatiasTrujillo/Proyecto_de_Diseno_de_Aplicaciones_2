@@ -1,5 +1,6 @@
 using Simulator.Domain;
 using Simulator.IDataAcces;
+using Type = Simulator.Domain.Type;
 
 namespace Simulator.DataAcces;
 
@@ -27,6 +28,11 @@ public class ClassRepository(SqlContext context) : IClassRepository
     public List<Class> FindAll()
     {
         return context.Set<Class>().ToList();
+    }
+
+    public List<Type> FindAllTypes()
+    {
+        return context.Set<Type>().ToList();
     }
 
     public bool Exist(Guid id)

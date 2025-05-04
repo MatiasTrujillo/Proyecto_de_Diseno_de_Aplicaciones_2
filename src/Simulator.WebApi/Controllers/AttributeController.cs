@@ -5,7 +5,7 @@ using Simulator.IBussinesLogic;
 namespace Simulator.WebApi.Controllers;
 
 [ApiController]
-[Route("[controller]")]
+[Route("api/v1/attributes")]
 public class AttributeController(IAttributeService attributeService) : ControllerBase
 {
     private readonly IAttributeService _attributeService = attributeService;

@@ -1,0 +1,41 @@
+using Microsoft.AspNetCore.Mvc;
+using Moq;
+using Simulator.DTO;
+using Simulator.IBussinesLogic;
+using Simulator.WebApi.Controllers;
+
+namespace Simulator.WebApi.Test.Controller.Test;
+
+[TestClass]
+public class LocalVariableTest
+{
+    private static readonly Mock<IMethodService> _methodServiceMock = new Mock<IMethodService>();
+    private readonly LocalVariableController _controller = new LocalVariableController(_methodServiceMock.Object);
+
+    [TestMethod]
+    public void CreateLocalVariable_ShouldReturnCreated_WhenLocaVariableIsCreated()
+    {
+        var localVariableDto = new LocalVariableDTO
+        {
+            Name = "TestParameter",
+            LocalVariableType = new TypeDTO { Name = "TestType" }
+        };
+        var expectedParameterId = Guid.NewGuid();
+
+        _methodServiceMock.Setup(service => service.CreateLocalVariable(localVariableDto))
+            .Returns(expectedParameterId);
+
+        var result = _controller.CreateLocalVariable(localVariableDto) as CreatedResult;
+
+        Assert.IsNotNull(result, "The result should not be null.");
+        Assert.AreEqual(201, result.StatusCode, "The status code should be 201 Created.");
+        Assert.IsNotNull(result.Value, "The response value should not be null.");
+
+        var createdValue = result.Value?.GetType().GetProperty("id")?.GetValue(result.Value, null);
+
+        Assert.IsNotNull(createdValue, "The created value should contain an 'id'.");
+        Assert.AreEqual(expectedParameterId, createdValue, "The returned id should match the expected id.");
+
+        _methodServiceMock.Verify(service => service.CreateLocalVariable(localVariableDto), Times.Once);
+    }
+}

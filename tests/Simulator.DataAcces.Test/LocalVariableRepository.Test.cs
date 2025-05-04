@@ -87,4 +87,40 @@ public class LocalVariableRepositoryTest
         result.Should().BeNull();
     }
     #endregion
+
+    #region FindAll
+    [TestMethod]
+    public void FindAll_WhenLocalVariablesExist_ShouldReturnAllWithTypes()
+    {
+        var secondPrimitive = new Primitive
+        {
+            Id = Guid.NewGuid(),
+            Name = "string"
+        };
+
+        var secondLocalVariable = new LocalVariable
+        {
+            Id = Guid.NewGuid(),
+            Name = "myOtherParam",
+            LocalVariableType = secondPrimitive
+        };
+
+        _context.Primitives.AddRange(_primitive, secondPrimitive);
+        _context.LocalVariables.AddRange(_localVariable, secondLocalVariable);
+        _context.SaveChanges();
+
+        var results = _repository.FindAll();
+
+        results.Should().NotBeNull();
+        results.Should().HaveCount(2);
+
+        results.Should().ContainSingle(v => v.Id == _localVariable.Id &&
+                                            v.LocalVariableType != null &&
+                                            v.LocalVariableType.Name == _primitive.Name);
+
+        results.Should().ContainSingle(v => v.Id == secondLocalVariable.Id &&
+                                            v.LocalVariableType != null &&
+                                            v.LocalVariableType.Name == secondPrimitive.Name);
+    }
+    #endregion
 }

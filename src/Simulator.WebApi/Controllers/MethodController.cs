@@ -5,7 +5,7 @@ using Simulator.IBussinesLogic;
 namespace Simulator.WebApi.Controllers;
 
 [ApiController]
-[Route("[controller]")]
+[Route("api/v1/methods")]
 public class MethodController(IMethodService methodService) : ControllerBase
 {
     private readonly IMethodService _amethodService = methodService;
@@ -15,20 +15,6 @@ public class MethodController(IMethodService methodService) : ControllerBase
     {
         var methodId = _amethodService.CreateMethod(method);
         return Created(string.Empty, new { id = methodId });
-    }
-
-    [HttpPost("parameters")]
-    public IActionResult CreateParameter([FromBody] ParameterDTO parameter)
-    {
-        var parameterId = _amethodService.CreateParameter(parameter);
-        return Created(string.Empty, new { id = parameterId });
-    }
-
-    [HttpPost("localVariables")]
-    public IActionResult CreateLocalVariable([FromBody] LocalVariableDTO localVariable)
-    {
-        var localVariableId = _amethodService.CreateLocalVariable(localVariable);
-        return Created(string.Empty, new { id = localVariableId });
     }
 
     [HttpPost("{methodId}/classes/{classId}")]
