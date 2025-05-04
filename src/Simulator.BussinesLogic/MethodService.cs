@@ -70,25 +70,39 @@ public class MethodService(IMethodRepository methodRepository, IClassRepository 
         var existsInAttributes = false;
         var existsInMethods = false;
         var existingInHeredity = false;
-        if (classT != null)
+        if(classT != null)
         {
             existsInAttributes = classT.Attributes?.Any(a => a.Name == invokedMethodReferenceName) ?? false;
-
-            if (invokedMethodReferenceName == "this")
-            {
-                existsInMethods = classT.Methods?.Any(m => m.Name == method.Name) ?? false;
-            }
-
-            if (invokedMethodReferenceName == "base" && classT.HierarchyClass != null)
-            {
-                existingInHeredity = classT.HierarchyClass.Methods?.Any(m => m.Name == method.Name) ?? false;
-            }
+            existsInMethods = InvokeMethodReferenceThis(invokedMethodReferenceName, method, existsInMethods, classT);
+            existingInHeredity = InvokeMethodReferenceBase(invokedMethodReferenceName, method, classT, existingInHeredity);
         }
 
-        if (!existsInParameters && !existsInLocalVariables && !existsInAttributes && !existsInMethods && !existingInHeredity)
+        if(!existsInParameters && !existsInLocalVariables && !existsInAttributes && !existsInMethods && !existingInHeredity)
         {
             throw new MethodException($"Reference name '{invokedMethodReferenceName}' does not match any parameter, local variable, or attribute in method '{method.Name}'.");
         }
+    }
+
+    private static bool InvokeMethodReferenceBase(string invokedMethodReferenceName, Method method, Class classT,
+        bool existingInHeredity)
+    {
+        if(invokedMethodReferenceName == "base" && classT.HierarchyClass != null)
+        {
+            existingInHeredity = classT.HierarchyClass.Methods?.Any(m => m.Name == method.Name) ?? false;
+        }
+
+        return existingInHeredity;
+    }
+
+    private static bool InvokeMethodReferenceThis(string invokedMethodReferenceName, Method method, bool existsInMethods,
+        Class classT)
+    {
+        if(invokedMethodReferenceName == "this")
+        {
+            existsInMethods = classT.Methods?.Any(m => m.Name == method.Name) ?? false;
+        }
+
+        return existsInMethods;
     }
 
     private void ValidateInvokedMethodExist(InvokedMethod invokedMethod)
