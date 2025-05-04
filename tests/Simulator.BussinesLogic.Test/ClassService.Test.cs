@@ -38,15 +38,19 @@ public class ClassServiceTest
             Stereotype = KeyWord.Sealed,
         };
 
+        var objectClass = new Class { Name = "Object" };
+        var existingClasses = new List<Class> { objectClass };
+
         _mockClassRepository.Setup(r => r.FindAll())
-            .Returns([]);
+            .Returns(existingClasses);
 
         _classService.CreateClass(dto);
 
         _mockClassRepository.Verify(repo => repo.Add(
             It.Is<Class>(a =>
                 a.Name == dto.Name &&
-                a.Stereotype == dto.Stereotype)), Times.Once);
+                a.Stereotype == dto.Stereotype &&
+                a.HierarchyClass == objectClass)), Times.Once);
     }
 
     [TestMethod]
@@ -155,6 +159,22 @@ public class ClassServiceTest
     }
 
     [TestMethod]
+    public void DeleteClass_ShouldThrowException_WhenDeletingObjectClass()
+    {
+        var objectClass = new Class { Id = Guid.NewGuid(), Name = "Object" };
+
+        _mockClassRepository.Setup(r => r.Find(objectClass.Id)).Returns(objectClass);
+        _mockClassRepository.Setup(r => r.FindAll()).Returns([objectClass]);
+
+        var exception = Assert.ThrowsException<InvalidClassException>(() =>
+        {
+            _classService.DeleteClass(objectClass.Id);
+        });
+
+        Assert.AreEqual("The 'Object' class cannot be deleted.", exception.Message);
+    }
+
+    [TestMethod]
     public void DeleteClass_ShouldNotDeleteClass_WhenIdDoesNotExist()
     {
         var id = Guid.NewGuid();
@@ -206,6 +226,33 @@ public class ClassServiceTest
         Assert.AreEqual("NewName", existingClass.Name);
         Assert.AreEqual(KeyWord.Abstract, existingClass.Stereotype);
         Assert.AreEqual(newHeritageClass, existingClass.HierarchyClass);
+    }
+
+    [TestMethod]
+    public void UpdateClass_ShouldThrowException_WhenUpdatingObjectClass()
+    {
+        var objectClassId = Guid.NewGuid();
+        var objectClass = new Class
+        {
+            Id = objectClassId,
+            Name = "Object",
+            Stereotype = KeyWord.Abstract
+        };
+
+        var updateDto = new UpdateClassDTO
+        {
+            Name = "NewName",
+        };
+
+        _mockClassRepository.Setup(r => r.Find(objectClassId)).Returns(objectClass);
+        _mockClassRepository.Setup(r => r.FindAll()).Returns([objectClass]);
+
+        var exception = Assert.ThrowsException<InvalidClassException>(() =>
+        {
+            _classService.UpdateClass(objectClassId, updateDto);
+        });
+
+        Assert.AreEqual("The 'Object' class cannot be updated.", exception.Message);
     }
 
     [TestMethod]

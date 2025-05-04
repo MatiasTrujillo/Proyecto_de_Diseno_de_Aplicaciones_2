@@ -20,7 +20,10 @@ public class ClassService(
     public Guid CreateClass(ClassDTO classDto)
     {
         var aClass = classDto.ToEntity();
+        var classes = _classRepository.FindAll();
+        var objectClass = classes.FirstOrDefault(c => c.Name == "Object");
         ValidateClassNameIsUnique(aClass.Name);
+        aClass.HierarchyClass = objectClass;
         _classRepository.Add(aClass);
         return aClass.Id;
     }
@@ -28,18 +31,38 @@ public class ClassService(
     public void DeleteClass(Guid id)
     {
         ValidateClassIdExists(id);
+        var aClass = _classRepository.Find(id);
+        ValidateClassIsNotObject(aClass);
         ValidateClassIsNotInUse(id);
         _classRepository.Delete(id);
+    }
+
+    private static void ValidateClassIsNotObject(Class aClass)
+    {
+        if(aClass is { Name: "Object" })
+        {
+            throw new InvalidClassException("The 'Object' class cannot be deleted.");
+        }
     }
 
     public void UpdateClass(Guid id, UpdateClassDTO uClass)
     {
         ValidateClassIdExists(id);
+
         var classT = _classRepository.Find(id);
+        ValidateDontUpdateObjectClass(classT);
         ManageName(uClass, classT);
         ManageStereotype(uClass, classT);
         ManageHierarchyClass(id, uClass, classT);
         _classRepository.Update(classT);
+    }
+
+    private static void ValidateDontUpdateObjectClass(Class classT)
+    {
+        if(classT.Name == "Object")
+        {
+            throw new InvalidClassException("The 'Object' class cannot be updated.");
+        }
     }
 
     private void ManageStereotype(UpdateClassDTO uClass, Class classT)
