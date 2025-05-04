@@ -4,6 +4,7 @@ using Simulator.Domain;
 using Simulator.Domain.Exception;
 using Simulator.DTO;
 using Simulator.IDataAcces;
+using Attribute = Simulator.Domain.Attribute;
 using Type = Simulator.Domain.Type;
 
 namespace Simulator.BussinesLogic.Test;
@@ -681,5 +682,115 @@ public class MethodServiceTest
         _methodService.AddAMethod(methodId, invokedMethodId);
 
         _mockMethodRepository.Verify(r => r.Update(It.Is<Method>(m => m.Methods.Contains(invokedMethod))), Times.Once);
+    }
+
+    [TestMethod]
+    public void ExecuteMethodExample1_SholddReturnMethodExecuted()
+    {
+        var encender = new Method
+        {
+            Id = Guid.NewGuid(),
+            Name = "Encender",
+            Accessibility = Accessibility.Public,
+            Methods = [],
+            Parameters = [],
+            LocalVariables = [],
+            Stereotype = null
+        };
+
+        var encenderInvoked = new InvokedMethod
+        {
+            Id = Guid.NewGuid(),
+            MethodId = encender.Id,
+            ReferenceName = "motorAuto"
+        };
+
+        var apagar = new Method
+        {
+            Id = Guid.NewGuid(),
+            Name = "Apagar",
+            Accessibility = Accessibility.Public,
+            Methods = [],
+            Parameters = [],
+            LocalVariables = [],
+            Stereotype = null
+        };
+
+        var apagarInvoked = new InvokedMethod
+        {
+            Id = Guid.NewGuid(),
+            MethodId = apagar.Id,
+            ReferenceName = "motorAuto"
+        };
+
+        var iniciarViaje = new Method
+        {
+            Id = Guid.NewGuid(),
+            Name = "IniciarViaje",
+            Accessibility = Accessibility.Public,
+            Methods = [],
+            Parameters = [],
+            LocalVariables = [],
+            Stereotype = null
+        };
+
+        var iniciarViajeInvoked = new InvokedMethod
+        {
+            Id = iniciarViaje.Id,
+            MethodId = iniciarViaje.Id,
+            ReferenceName = "this"
+        };
+
+        iniciarViaje.Methods = [encenderInvoked, iniciarViajeInvoked];
+
+        var detenerViaje = new Method
+        {
+            Id = Guid.NewGuid(),
+            Name = "DetenerViaje",
+            Accessibility = Accessibility.Public,
+            Methods = [],
+            Parameters = [],
+            LocalVariables = [],
+            Stereotype = null
+        };
+        detenerViaje.Methods = [apagarInvoked];
+
+        var motor = new Class()
+        {
+            Id = Guid.NewGuid(),
+            Name = "Motor",
+            Stereotype = null,
+            HierarchyClass = null,
+            Attributes = [],
+            Methods = [encender, apagar]
+        };
+
+        var motorAuto = new Attribute
+        {
+            Id = Guid.NewGuid(),
+            Name = "motorAuto",
+            Accessibility = Accessibility.Private,
+            Type = motor
+        };
+
+        var auto = new Class()
+        {
+            Id = Guid.NewGuid(),
+            Name = "Auto",
+            Stereotype = null,
+            HierarchyClass = null,
+            Attributes = [motorAuto],
+            Methods = [iniciarViaje, detenerViaje]
+        };
+
+        _mockClassRepository.Setup(repo => repo.FindAll()).Returns([motor, auto]);
+
+        var result = _methodService.ExecuteMethod(auto, auto, iniciarViaje);
+        Console.WriteLine(result);
+        var result2 =
+            "Auto.IniciarViaje() -> Auto.IniciarViaje()\n" +
+            "\tmotorAuto.Encender() -> Motor.Encender()\n" +
+            "\tthis.IniciarViaje() -> Auto.IniciarViaje()";
+        Assert.AreEqual(result, result2);
     }
 }
