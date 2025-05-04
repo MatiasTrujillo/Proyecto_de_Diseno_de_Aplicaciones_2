@@ -685,7 +685,7 @@ public class MethodServiceTest
     }
 
     [TestMethod]
-    public void ExecuteMethodExample1_SholddReturnMethodExecuted()
+    public void ExecuteMethodExample1_ShouldReturnMethodExecuted_WhenValidInputProvided()
     {
         var encender = new Method
         {
@@ -784,6 +784,8 @@ public class MethodServiceTest
         };
 
         _mockClassRepository.Setup(repo => repo.FindAll()).Returns([motor, auto]);
+        _mockMethodRepository.Setup(repo => repo.Find(encenderInvoked.MethodId)).Returns(encender);
+        _mockMethodRepository.Setup(repo => repo.Find(iniciarViajeInvoked.MethodId)).Returns(iniciarViaje);
 
         var result = _methodService.ExecuteMethod(auto, auto, iniciarViaje);
         Console.WriteLine(result);

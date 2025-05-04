@@ -7,6 +7,7 @@ using Simulator.Domain.Exception;
 using Simulator.DTO;
 using Simulator.IBussinesLogic;
 using Simulator.IDataAcces;
+using Attribute = Simulator.Domain.Attribute;
 using Type = Simulator.Domain.Type;
 
 namespace Simulator.BussinesLogic;
@@ -18,6 +19,7 @@ public class MethodService(IMethodRepository methodRepository, IClassRepository 
     private readonly IParameterRepository _parameterRepository = parameterRepository;
     private readonly ILocalVariableRepository _localVariableRepository = localVariableRepository;
     private readonly IInvokedMethodRepository _invokedMethodRepository = invokedMethodRepository;
+    private int _identation = 0;
 
     public Guid CreateMethod(MethodDTO method)
     {
@@ -177,6 +179,70 @@ public class MethodService(IMethodRepository methodRepository, IClassRepository 
         ValidateMehodIsNotInClass(id);
         ValidateMethodIsNotInUse(id);
         _methodRepository.Delete(id);
+    }
+
+    public string ExecuteMethod(Class reference, Class objectToCreate, Method method)
+    {
+        // var reference = referenceDTO.ToEntity();
+        // var objectToCreate = objectToCreateDTO.ToEntity();
+        // var method = _methodRepository.Find(reference.Id);
+        var result = new List<string>();
+        _identation = 0;
+
+        result.Add($"{reference.Name}.{method.Name}() -> {reference.Name}.{method.Name}()");
+        _identation++;
+
+        result = result.Concat(WriteOtherLines(reference, objectToCreate, method, method)).ToList();
+
+        return string.Join("\n", result);
+    }
+
+    private List<string> WriteOtherLines(Class refe, Class oTC, Method method, Method originalMethod)
+    {
+        var result = new List<string>();
+        var indentation = new string('\t', _identation);
+
+        for(var i = 0; i < method.Methods.Count; i++) // recorro los metodos que invoca el metodo actual
+        {
+            var invokedMethod = method.Methods[i];
+            var invokedMethodMethod = _methodRepository.Find(invokedMethod.MethodId);
+
+            if(invokedMethod.ReferenceName == "this") // en caso que quien invoca al metodo actual sea la clase actual (aka this)
+            {
+                result.Add(
+                    $"{indentation}{invokedMethod.ReferenceName}.{invokedMethodMethod.Name}() -> {refe.Name}.{invokedMethodMethod.Name}()");
+
+                if(invokedMethodMethod.Equals(originalMethod))
+                {
+                    return result;
+                }
+
+                _identation++;
+                result = result.Concat(WriteOtherLines(oTC, oTC, invokedMethodMethod, originalMethod)).ToList();
+                _identation--;
+            }
+            else if(invokedMethod.ReferenceName != "this" && refe.Attributes != null)// en caso que quien invoca al metodo actual sea una atributo de la clase actual
+            {
+                var anAttribute = refe.Attributes.FirstOrDefault(x => x.Name == invokedMethod.ReferenceName);
+                if(anAttribute != null)
+                {
+                    var aClass = _classRepository.FindAll().FirstOrDefault(x => x.Name == anAttribute.Type.Name);
+
+                    if(aClass != null && aClass.Methods != null &&
+                       aClass.Methods.Any(x => x.Id == invokedMethodMethod.Id))
+                    {
+                        result.Add(
+                            $"{indentation}{anAttribute.Name}.{invokedMethodMethod.Name}() -> {aClass.Name}.{invokedMethodMethod.Name}()");
+                        _identation++;
+                        result = result.Concat(WriteOtherLines(aClass, aClass, invokedMethodMethod, originalMethod))
+                            .ToList();
+                        _identation--;
+                    }
+                }
+            }
+        }
+
+        return result;
     }
 
     private void ValidateMethodIsNotInUse(Guid id)
