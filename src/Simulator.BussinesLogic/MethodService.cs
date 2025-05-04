@@ -55,6 +55,8 @@ public class MethodService(IMethodRepository methodRepository, IClassRepository 
         ValidateMethodExist(method);
         ValidateInvokedMethodExist(invokedMethod);
         ValidateInvokedMethodReferenceName(invokedMethod.ReferenceName, method);
+        method.Methods.Add(invokedMethod);
+        _methodRepository.Update(method);
     }
 
     private void ValidateInvokedMethodReferenceName(string invokedMethodReferenceName, Method method)
