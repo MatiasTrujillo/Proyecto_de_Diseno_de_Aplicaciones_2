@@ -54,6 +54,18 @@ public class MethodService(IMethodRepository methodRepository, IClassRepository 
         var invokedMethod = _invokedMethodRepository.Find(invokedMethodId);
         ValidateMethodExist(method);
         ValidateInvokedMethodExist(invokedMethod);
+        ValidateInvokedMethodReferenceName(invokedMethod.ReferenceName, method);
+    }
+
+    private void ValidateInvokedMethodReferenceName(string invokedMethodReferenceName, Method method)
+    {
+        var existsInParameters = method.Parameters?.Any(p => p.Name == invokedMethodReferenceName) ?? false;
+        var existsInLocalVariables = method.LocalVariables?.Any(lv => lv.Name == invokedMethodReferenceName) ?? false;
+
+        if (!existsInParameters && !existsInLocalVariables)
+        {
+            throw new MethodException($"Reference name '{invokedMethodReferenceName}' does not match any parameter, local variable, or attribute in method '{method.Name}'.");
+        }
     }
 
     private void ValidateInvokedMethodExist(InvokedMethod invokedMethod)
