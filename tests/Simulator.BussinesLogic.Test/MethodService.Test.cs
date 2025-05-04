@@ -613,9 +613,9 @@ public class MethodServiceTest
         {
             Id = methodId,
             Name = "TestMethod",
-            Parameters = new List<Parameter>(),
-            LocalVariables = new List<LocalVariable>(),
-            Methods = new List<InvokedMethod>()
+            Parameters = [],
+            LocalVariables = [],
+            Methods = []
         };
 
         var invokedMethod = new InvokedMethod
@@ -626,13 +626,13 @@ public class MethodServiceTest
 
         var classT = new Class
         {
-            Methods = new List<Method> { new Method { Id = methodId, Name = "TestMethod" } },
-            Attributes = new List<Attribute>()
+            Methods = [new Method { Id = methodId, Name = "TestMethod" }],
+            Attributes = []
         };
 
         _mockMethodRepository.Setup(r => r.Find(methodId)).Returns(method);
         _mockInvokedMethodRepository.Setup(r => r.Find(invokedMethodId)).Returns(invokedMethod);
-        _mockClassRepository.Setup(r => r.FindAll()).Returns(new List<Class> { classT });
+        _mockClassRepository.Setup(r => r.FindAll()).Returns([classT]);
         _mockMethodRepository.Setup(r => r.Update(It.IsAny<Method>()));
 
         _methodService.AddAMethod(methodId, invokedMethodId);
