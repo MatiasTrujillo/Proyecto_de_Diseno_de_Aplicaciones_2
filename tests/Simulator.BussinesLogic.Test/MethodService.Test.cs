@@ -574,4 +574,32 @@ public class MethodServiceTest
 
         _methodService.AddAMethod(methodId, invokedMethodId);
     }
+
+    [TestMethod]
+    public void AddAMethod_ShouldAddInvokedMethod_WhenValid()
+    {
+        var methodId = Guid.NewGuid();
+        var invokedMethodId = Guid.NewGuid();
+        var invokedMethod = new InvokedMethod { Id = invokedMethodId, ReferenceName = "TestReference" };
+        var method = new Method
+        {
+            Id = methodId,
+            Name = "MyMethod",
+            Parameters = new List<Parameter> { new Parameter { Name = "TestReference" } },
+            Methods = new List<InvokedMethod>()
+        };
+        var classWithMethod = new Class
+        {
+            Methods = new List<Method> { method },
+        };
+
+        _mockMethodRepository.Setup(repo => repo.Find(methodId)).Returns(method);
+        _mockInvokedMethodRepository.Setup(repo => repo.Find(invokedMethodId)).Returns(invokedMethod);
+        _mockClassRepository.Setup(repo => repo.FindAll()).Returns(new List<Class> { classWithMethod });
+        _mockMethodRepository.Setup(repo => repo.Update(It.IsAny<Method>()));
+
+        _methodService.AddAMethod(methodId, invokedMethodId);
+
+        _mockMethodRepository.Verify(repo => repo.Update(It.Is<Method>(m => m.Methods.Contains(invokedMethod))), Times.Once);
+    }
 }
