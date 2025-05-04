@@ -183,15 +183,10 @@ public class MethodService(IMethodRepository methodRepository, IClassRepository 
 
     public string ExecuteMethod(Class reference, Class objectToCreate, Method method)
     {
-        // var reference = referenceDTO.ToEntity();
-        // var objectToCreate = objectToCreateDTO.ToEntity();
-        // var method = _methodRepository.Find(reference.Id);
         var result = new List<string>();
         _identation = 0;
 
-        result.Add($"{reference.Name}.{method.Name}() -> {reference.Name}.{method.Name}()");
-        _identation++;
-
+        result = result.Concat(FirstLine(reference, objectToCreate, method)).ToList();
         result = result.Concat(WriteOtherLines(reference, objectToCreate, method, method)).ToList();
 
         return string.Join("\n", result);
@@ -200,49 +195,83 @@ public class MethodService(IMethodRepository methodRepository, IClassRepository 
     private List<string> WriteOtherLines(Class refe, Class oTC, Method method, Method originalMethod)
     {
         var result = new List<string>();
-        var indentation = new string('\t', _identation);
 
-        for(var i = 0; i < method.Methods.Count; i++) // recorro los metodos que invoca el metodo actual
+        for(var i = 0; i < method.Methods.Count; i++)
         {
             var invokedMethod = method.Methods[i];
             var invokedMethodMethod = _methodRepository.Find(invokedMethod.MethodId);
 
-            if(invokedMethod.ReferenceName == "this") // en caso que quien invoca al metodo actual sea la clase actual (aka this)
+            if(invokedMethod.ReferenceName == "this")
             {
-                result.Add(
-                    $"{indentation}{invokedMethod.ReferenceName}.{invokedMethodMethod.Name}() -> {refe.Name}.{invokedMethodMethod.Name}()");
+                result.Add(AddToResult(invokedMethod.ReferenceName, refe.Name,  invokedMethodMethod.Name));
 
-                if(invokedMethodMethod.Equals(originalMethod))
+                if(CheckOriginal(invokedMethodMethod, originalMethod))
                 {
                     return result;
                 }
 
-                _identation++;
-                result = result.Concat(WriteOtherLines(oTC, oTC, invokedMethodMethod, originalMethod)).ToList();
-                _identation--;
+                result = result.Concat(ConcatNext(oTC, oTC, invokedMethodMethod, originalMethod)).ToList();
             }
-            else if(invokedMethod.ReferenceName != "this" && refe.Attributes != null)// en caso que quien invoca al metodo actual sea una atributo de la clase actual
+            else if(invokedMethod.ReferenceName != "this" && refe.Attributes != null)
             {
                 var anAttribute = refe.Attributes.FirstOrDefault(x => x.Name == invokedMethod.ReferenceName);
                 if(anAttribute != null)
                 {
                     var aClass = _classRepository.FindAll().FirstOrDefault(x => x.Name == anAttribute.Type.Name);
 
-                    if(aClass != null && aClass.Methods != null &&
-                       aClass.Methods.Any(x => x.Id == invokedMethodMethod.Id))
+                    if(aClass != null && CheckClassHasMethod(aClass, invokedMethodMethod))
                     {
-                        result.Add(
-                            $"{indentation}{anAttribute.Name}.{invokedMethodMethod.Name}() -> {aClass.Name}.{invokedMethodMethod.Name}()");
-                        _identation++;
-                        result = result.Concat(WriteOtherLines(aClass, aClass, invokedMethodMethod, originalMethod))
-                            .ToList();
-                        _identation--;
+                        result.Add(AddToResult(anAttribute.Name, aClass.Name, invokedMethodMethod.Name));
+
+                        if(CheckOriginal(invokedMethodMethod, originalMethod))
+                        {
+                            return result;
+                        }
+
+                        result = result.Concat(ConcatNext(aClass, aClass, invokedMethodMethod, originalMethod)).ToList();
                     }
                 }
             }
         }
 
         return result;
+    }
+
+    private List<string> FirstLine(Class refe, Class oTC, Method method)
+    {
+        var result = new List<string>();
+
+        result.Add($"{refe.Name}.{method.Name}() -> {refe.Name}.{method.Name}()");
+        _identation++;
+
+        return result;
+    }
+
+    private string AddToResult(string objName, string className, string methodName)
+    {
+        var indentation = new string('\t', _identation);
+        return $"{indentation}{objName}.{methodName}() -> {className}.{methodName}()";
+    }
+
+    private bool CheckOriginal(Method actualMethod, Method originalMethod)
+    {
+        return actualMethod.Equals(originalMethod);
+    }
+
+    private List<string> ConcatNext(Class refe, Class oTC, Method method, Method originalMethod)
+    {
+        List<string> result = new List<string>();
+
+        _identation++;
+        result = WriteOtherLines(refe, oTC, method, originalMethod);
+        _identation--;
+
+        return result;
+    }
+
+    private bool CheckClassHasMethod(Class aClass, Method method)
+    {
+        return aClass.Methods != null && aClass.Methods.Any(x => x.Id == method.Id);
     }
 
     private void ValidateMethodIsNotInUse(Guid id)
