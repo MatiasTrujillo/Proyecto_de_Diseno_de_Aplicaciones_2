@@ -773,7 +773,7 @@ public class MethodServiceTest
             Type = motor
         };
 
-        var auto = new Class()
+        var auto = new Class
         {
             Id = Guid.NewGuid(),
             Name = "Auto",
@@ -783,11 +783,21 @@ public class MethodServiceTest
             Methods = [iniciarViaje, detenerViaje]
         };
 
+        var autoDTO = new ClassDTO
+        {
+            Name = auto.Name,
+        };
+
+        var iniciarViajeDTO = new MethodDTO
+        {
+            Name = iniciarViaje.Name,
+        };
+
         _mockClassRepository.Setup(repo => repo.FindAll()).Returns([motor, auto]);
         _mockMethodRepository.Setup(repo => repo.Find(encenderInvoked.MethodId)).Returns(encender);
         _mockMethodRepository.Setup(repo => repo.Find(iniciarViajeInvoked.MethodId)).Returns(iniciarViaje);
 
-        var result = _methodService.ExecuteMethod(auto, auto, iniciarViaje);
+        var result = _methodService.ExecuteMethod(autoDTO, autoDTO, iniciarViajeDTO);
         Console.WriteLine(result);
         var result2 =
             "Auto.IniciarViaje() -> Auto.IniciarViaje()\n" +
