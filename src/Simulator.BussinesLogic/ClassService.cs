@@ -48,7 +48,13 @@ public class ClassService(
     public void UpdateClass(Guid id, UpdateClassDTO uClass)
     {
         ValidateClassIdExists(id);
+
         var classT = _classRepository.Find(id);
+        if (classT.Name == "Object")
+        {
+            throw new InvalidClassException("The 'Object' class cannot be updated.");
+        }
+
         ManageName(uClass, classT);
         ManageStereotype(uClass, classT);
         ManageHierarchyClass(id, uClass, classT);
