@@ -164,7 +164,7 @@ public class ClassServiceTest
         var objectClass = new Class { Id = Guid.NewGuid(), Name = "Object" };
 
         _mockClassRepository.Setup(r => r.Find(objectClass.Id)).Returns(objectClass);
-        _mockClassRepository.Setup(r => r.FindAll()).Returns(new List<Class> { objectClass });
+        _mockClassRepository.Setup(r => r.FindAll()).Returns([objectClass]);
 
         var exception = Assert.ThrowsException<InvalidClassException>(() =>
         {
@@ -245,7 +245,7 @@ public class ClassServiceTest
         };
 
         _mockClassRepository.Setup(r => r.Find(objectClassId)).Returns(objectClass);
-        _mockClassRepository.Setup(r => r.FindAll()).Returns(new List<Class> { objectClass });
+        _mockClassRepository.Setup(r => r.FindAll()).Returns([objectClass]);
 
         var exception = Assert.ThrowsException<InvalidClassException>(() =>
         {

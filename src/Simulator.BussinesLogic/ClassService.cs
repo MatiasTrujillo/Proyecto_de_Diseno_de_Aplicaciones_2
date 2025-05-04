@@ -39,7 +39,7 @@ public class ClassService(
 
     private static void ValidateClassIsNotObject(Class aClass)
     {
-        if (aClass != null && aClass.Name == "Object")
+        if(aClass is { Name: "Object" })
         {
             throw new InvalidClassException("The 'Object' class cannot be deleted.");
         }
@@ -59,7 +59,7 @@ public class ClassService(
 
     private static void ValidateDontUpdateObjectClass(Class classT)
     {
-        if (classT.Name == "Object")
+        if(classT.Name == "Object")
         {
             throw new InvalidClassException("The 'Object' class cannot be updated.");
         }
