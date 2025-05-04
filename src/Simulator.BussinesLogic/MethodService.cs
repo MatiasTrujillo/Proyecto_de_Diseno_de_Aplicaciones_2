@@ -63,11 +63,13 @@ public class MethodService(IMethodRepository methodRepository, IClassRepository 
     {
         var classT = _classRepository.FindAll()
             .FirstOrDefault(c => c.Methods != null && c.Methods.Any(m => m.Id == method.Id));
+
         var existsInParameters = method.Parameters?.Any(p => p.Name == invokedMethodReferenceName) ?? false;
         var existsInLocalVariables = method.LocalVariables?.Any(lv => lv.Name == invokedMethodReferenceName) ?? false;
 
         var existsInAttributes = false;
         var existsInMethods = false;
+        var existingInHeredity = false;
         if (classT != null)
         {
             existsInAttributes = classT.Attributes?.Any(a => a.Name == invokedMethodReferenceName) ?? false;
@@ -76,9 +78,14 @@ public class MethodService(IMethodRepository methodRepository, IClassRepository 
             {
                 existsInMethods = classT.Methods?.Any(m => m.Name == method.Name) ?? false;
             }
+
+            if (invokedMethodReferenceName == "base" && classT.HierarchyClass != null)
+            {
+                existingInHeredity = classT.HierarchyClass.Methods?.Any(m => m.Name == method.Name) ?? false;
+            }
         }
 
-        if (!existsInParameters && !existsInLocalVariables && !existsInAttributes && !existsInMethods)
+        if (!existsInParameters && !existsInLocalVariables && !existsInAttributes && !existsInMethods && !existingInHeredity)
         {
             throw new MethodException($"Reference name '{invokedMethodReferenceName}' does not match any parameter, local variable, or attribute in method '{method.Name}'.");
         }
