@@ -38,15 +38,19 @@ public class ClassServiceTest
             Stereotype = KeyWord.Sealed,
         };
 
+        var objectClass = new Class { Name = "Object" };
+        var existingClasses = new List<Class> { objectClass };
+
         _mockClassRepository.Setup(r => r.FindAll())
-            .Returns([]);
+            .Returns(existingClasses);
 
         _classService.CreateClass(dto);
 
         _mockClassRepository.Verify(repo => repo.Add(
             It.Is<Class>(a =>
                 a.Name == dto.Name &&
-                a.Stereotype == dto.Stereotype)), Times.Once);
+                a.Stereotype == dto.Stereotype &&
+                a.HierarchyClass == objectClass)), Times.Once);
     }
 
     [TestMethod]
