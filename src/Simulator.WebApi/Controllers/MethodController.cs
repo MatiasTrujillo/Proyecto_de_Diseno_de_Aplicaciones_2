@@ -38,6 +38,13 @@ public class MethodController(IMethodService methodService) : ControllerBase
         return Created(string.Empty, new { message = "Method associated with class successfully" });
     }
 
+    [HttpPost("{id}/invokedMethods/{invokedMethodId}")]
+    public IActionResult AddAMethod([FromRoute] Guid id, [FromRoute] Guid invokedMethodId)
+    {
+        _amethodService.AddAMethod(id, invokedMethodId);
+        return Created(string.Empty, new { message = "Method added successfully" });
+    }
+
     [HttpPost("{methodId}/localVariables/{localVariableId}")]
     public IActionResult AddLocalVariableToMethod([FromRoute] Guid methodId, [FromRoute] Guid localVariableId)
     {

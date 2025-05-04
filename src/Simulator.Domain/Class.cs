@@ -5,7 +5,7 @@ namespace Simulator.Domain;
 public class Class : Type
 {
     public KeyWord? Stereotype { get; set; }
-    public virtual Type? HierarchyClass { get; set; }
+    public virtual Class? HierarchyClass { get; set; }
     public virtual List<Attribute>? Attributes { get; set; }
     public virtual List<Method>? Methods { get; set; }
 
@@ -18,7 +18,7 @@ public class Class : Type
         Methods = [];
     }
 
-    public Class(KeyWord? stereotype, Type? hierarchyClass, List<Attribute> attributes, List<Method> methods, string name)
+    public Class(KeyWord? stereotype, Class? hierarchyClass, List<Attribute> attributes, List<Method> methods, string name)
         : base(name)
     {
         ValidateName(name);

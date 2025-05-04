@@ -44,28 +44,20 @@ public class MethodService(IMethodRepository methodRepository, IClassRepository 
         ValidateMethodExist(method);
         ValidateInvokedMethodReferenceNameIsNotNull(invokedMethod.ReferenceName);
         var invokedMethodT = invokedMethod.ToEntity();
+        _invokedMethodRepository.Add(invokedMethodT);
         return invokedMethodT.Id;
-    }
-
-    private void ValidateInvokedMethodReferenceNameIsNotNull(string? invokedMethodReferenceName)
-    {
-        if(string.IsNullOrEmpty(invokedMethodReferenceName))
-        {
-            throw new InvokedMethodNotFoundException("Invoked Method Reference Name cannot be null or empty.");
-        }
-    }
-
-    private void ValidateInvokedMethodDTOExist(InvokedMethodDTO invokedMethod)
-    {
-        if(invokedMethod == null)
-        {
-            throw new InvokedMethodNotFoundException("Invoked Method cannot be null.");
-        }
     }
 
     public void AddAMethod(Guid id, Guid invokedMethodId)
     {
-        var invokedMethod = _invokedMethodRepository.Find(invokedMethodId);
+    }
+
+    private void ValidateInvokedMethodExist(InvokedMethod invokedMethod)
+    {
+        if(invokedMethod == null)
+        {
+            throw new InvokedMethodNotFoundException("Invoked Method not found.");
+        }
     }
 
     public void AssociateMethodWithClass(Guid methodId, Guid classId)
@@ -158,16 +150,6 @@ public class MethodService(IMethodRepository methodRepository, IClassRepository 
                                                                           method.Parameters.Any(p => p.Name.Equals(localVariable.Name, StringComparison.OrdinalIgnoreCase))))
         {
             throw new InvalidMethodException("A variable or parameter with the same name already exists.");
-        }
-    }
-
-    private void ValidateMethodIsNotInRepeted(Guid idMethod, Guid idMethodToAdd)
-    {
-        var method = _methodRepository.Find(idMethod);
-        Console.WriteLine(method.Methods.Count);
-        if(idMethod == idMethodToAdd)
-        {
-            throw new MethodInUseException("Method is already associated with this method.");
         }
     }
 
@@ -265,11 +247,27 @@ public class MethodService(IMethodRepository methodRepository, IClassRepository 
         }
     }
 
-    public void ValidateParameterExist(Parameter parameter)
+    private void ValidateParameterExist(Parameter parameter)
     {
         if(parameter == null)
         {
             throw new ParameterNotFoundException("Parameter not found.");
+        }
+    }
+
+    private void ValidateInvokedMethodReferenceNameIsNotNull(string? invokedMethodReferenceName)
+    {
+        if(string.IsNullOrEmpty(invokedMethodReferenceName))
+        {
+            throw new InvokedMethodNotFoundException("Invoked Method Reference Name cannot be null or empty.");
+        }
+    }
+
+    private void ValidateInvokedMethodDTOExist(InvokedMethodDTO invokedMethod)
+    {
+        if(invokedMethod == null)
+        {
+            throw new InvokedMethodNotFoundException("Invoked Method cannot be null.");
         }
     }
 }
