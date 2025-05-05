@@ -290,7 +290,6 @@ public class MethodService(IMethodRepository methodRepository, IClassRepository 
 
                             result = result.Concat(ConcatNext(aClass, aClass, invokedMethodMethod, originalMethod))
                                 .ToList();
-                            success = true;
                         }
                     }
                 }
