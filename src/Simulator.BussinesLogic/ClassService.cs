@@ -71,12 +71,19 @@ public class ClassService(
         {
             ValidateClassIdExists(uClass.IdClass.Value);
             ValidateClassIsNotInUse(id);
-            if(classT.Stereotype == KeyWord.Sealed)
+            var heritageClassT = _classRepository.Find(uClass.IdClass.Value);
+
+            if (classT.Stereotype == KeyWord.Sealed)
             {
-                throw new InvalidClassException("A sealed class cannot inherit.");
+                throw new InvalidClassException("A sealed class cannot inherit from any class.");
             }
 
-            if(uClass.Stereotype == "abstract")
+            if (heritageClassT.Stereotype == KeyWord.Sealed)
+            {
+                throw new InvalidClassException("A class cannot inherit from a sealed class.");
+            }
+
+            if (heritageClassT.Stereotype == KeyWord.Abstract)
             {
                 throw new InvalidClassException("An abstract class cannot inherit from a concrete class.");
             }
