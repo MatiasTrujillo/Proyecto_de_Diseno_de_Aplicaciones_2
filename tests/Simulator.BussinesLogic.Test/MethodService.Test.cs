@@ -805,4 +805,193 @@ public class MethodServiceTest
             "\tthis.IniciarViaje() -> Auto.IniciarViaje()";
         Assert.AreEqual(result, result2);
     }
+
+    [TestMethod]
+    public void ExecuteMethodExample2_ShouldReturnMethodExecuted_WhenValidInputProvided()
+    {
+        var id = Guid.NewGuid();
+        var confirmar = new Method
+        {
+            Id = Guid.NewGuid(),
+            Name = "Confirmar",
+            Accessibility = Accessibility.Public,
+            Methods = [],
+            Parameters = [],
+            LocalVariables = [],
+            ReturnType = null,
+            Stereotype = null
+        };
+
+        var confirmarInvoked1 = new InvokedMethod
+        {
+            Id = Guid.NewGuid(),
+            MethodId = confirmar.Id,
+            ReferenceName = "aviso"
+        };
+
+        var confirmarInvoked2 = new InvokedMethod
+        {
+            Id = Guid.NewGuid(),
+            MethodId = confirmar.Id,
+            ReferenceName = "otroAviso"
+        };
+
+        var enviar = new Method
+        {
+            Id = Guid.NewGuid(),
+            Name = "Enviar",
+            Accessibility = Accessibility.Public,
+            Methods = [],
+            Parameters = [],
+            LocalVariables = [],
+            ReturnType = null,
+            Stereotype = KeyWord.Abstract
+        };
+
+        var enviarInvoked1 = new InvokedMethod
+        {
+            Id = Guid.NewGuid(),
+            MethodId = enviar.Id,
+            ReferenceName = "aviso"
+        };
+
+        var enviarInvoked2 = new InvokedMethod
+        {
+            Id = Guid.NewGuid(),
+            MethodId = enviar.Id,
+            ReferenceName = "otroAviso"
+        };
+
+        var enviarEmail = new Method
+        {
+            Id = Guid.NewGuid(),
+            Name = "Enviar",
+            Accessibility = Accessibility.Public,
+            Methods = [],
+            Parameters = [],
+            LocalVariables = [],
+            ReturnType = null,
+            Stereotype = null
+        };
+
+        var enviarSMS = new Method
+        {
+            Id = Guid.NewGuid(),
+            Name = "Enviar",
+            Accessibility = Accessibility.Public,
+            Methods = [],
+            Parameters = [],
+            LocalVariables = [],
+            ReturnType = null,
+            Stereotype = null
+        };
+
+        var notificacion = new Class
+        {
+            Id = id,
+            Name = "Notificacion",
+            Stereotype = KeyWord.Abstract,
+            HierarchyClass = null,
+            Attributes = [],
+            Methods = [enviar, confirmar]
+        };
+
+        var email = new Class
+        {
+            Id = id,
+            Name = "Email",
+            Stereotype = null,
+            HierarchyClass = notificacion,
+            Attributes = [],
+            Methods = [enviarEmail]
+        };
+
+        var sms = new Class
+        {
+            Id = id,
+            Name = "SMS",
+            Stereotype = null,
+            HierarchyClass = notificacion,
+            Attributes = [],
+            Methods = [enviarSMS]
+        };
+
+        var otroAviso = new LocalVariable()
+        {
+            Id = Guid.NewGuid(),
+            Name = "otroAviso",
+            LocalVariableType = email
+        };
+
+        var notificar = new Method
+        {
+            Id = Guid.NewGuid(),
+            Name = "Notificar",
+            Accessibility = Accessibility.Public,
+            Parameters = [
+                new Parameter
+                {
+                    Id = Guid.NewGuid(),
+                    Name = "aviso",
+                    ParameterType = notificacion
+                }
+
+            ],
+            Methods = [enviarInvoked1, confirmarInvoked1, enviarInvoked2, confirmarInvoked2],
+            LocalVariables = [otroAviso],
+            Stereotype = null
+        };
+
+        var notificador = new Class
+        {
+            Id = Guid.NewGuid(),
+            Name = "Notificador",
+            Stereotype = null,
+            HierarchyClass = null,
+            Attributes = [],
+            Methods = [notificar]
+        };
+
+        var notificadorDTO = new ClassDTO
+        {
+            Name = notificar.Name,
+        };
+
+        var notificacionDTO = new ClassDTO
+        {
+            Name = notificacion.Name,
+        };
+
+        var smsDTO = new ClassDTO
+        {
+            Name = sms.Name,
+        };
+
+        var notificarDTO = new MethodDTO
+        {
+            Name = notificar.Name,
+        };
+
+        var enviarDTO = new MethodDTO
+        {
+            Name = enviar.Name,
+        };
+
+        _mockClassRepository.Setup(repo => repo.FindAll()).Returns([notificador, sms, email, notificacion]);
+
+        var result = _methodService.ExecuteMethod(notificadorDTO, notificadorDTO, notificarDTO);
+        var result2 = _methodService.ExecuteMethod(notificacionDTO, smsDTO, enviarDTO);
+        Console.WriteLine(result2);
+        Console.WriteLine("----------------------------------------------");
+        Console.WriteLine(result);
+        Assert.AreEqual(result2, "Notificacion.Enviar() -> SMS.Enviar()");
+        var res =
+            "Notificador.Notificar() -> Notificador.Notificar()\n" +
+            "\taviso.Enviar() -> Notificacion.Enviar()\n" +
+            "\taviso.Confirmar() -> Notificacion.Confirmar()\n" +
+            "\totroAviso.Enviar() -> Email.Enviar()\n" +
+            "\totroAviso.Confirmar() -> Notificacion.Confirmar()";
+
+        Assert.AreEqual(res, result);
+    }
 }
