@@ -106,6 +106,7 @@ public class MethodService(
         var invokedMethod = _invokedMethodRepository.Find(idInvokeGuid);
         ValidateLocalVariableExist(localVariable);
         ValidateInvokedMethodExist(invokedMethod);
+        ValidateTypeIsPrimitive(localVariable.LocalVariableType);
         localVariable.InvokedMethod = invokedMethod;
         _localVariableRepository.Update(localVariable);
     }
@@ -144,8 +145,17 @@ public class MethodService(
         var invokedMethod = _invokedMethodRepository.Find(idInvokeGuid);
         ValidateParameterExist(parameter);
         ValidateInvokedMethodExist(invokedMethod);
+        ValidateTypeIsPrimitive(parameter.ParameterType);
         parameter.InvokedMethod = invokedMethod;
         _parameterRepository.Update(parameter);
+    }
+
+    private void ValidateTypeIsPrimitive(Type? attributeTType)
+    {
+        if(attributeTType == null || attributeTType is not Primitive)
+        {
+            throw new InvalidAttributeException("In v1 of this program only primitive types are accepted.");
+        }
     }
 
     public void AddParameterToMethod(Guid methodId, Guid parameterId)

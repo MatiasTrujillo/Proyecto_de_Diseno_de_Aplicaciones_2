@@ -779,6 +779,50 @@ public class MethodServiceTest
     }
 
     [TestMethod]
+    public void SetInvokeMethodToALocalVariable_ShouldThrowException_WhenTypeIsNotPrimitive()
+    {
+        var localVariableId = Guid.NewGuid();
+        var invokedMethodId = Guid.NewGuid();
+
+        var localVariable = new LocalVariable { Id = localVariableId, Name = "myVar", LocalVariableType = new Class()};
+
+        var invokedMethod = new InvokedMethod
+        {
+            Id = invokedMethodId, MethodId = Guid.NewGuid(), ReferenceName = "ref"
+        };
+
+        _mockLocalVariableRepository.Setup(repo => repo.Find(localVariableId)).Returns(localVariable);
+        _mockInvokedMethodRepository.Setup(repo => repo.Find(invokedMethodId)).Returns(invokedMethod);
+        _mockLocalVariableRepository.Setup(repo => repo.Update(localVariable)).Verifiable();
+
+        var exception = Assert.ThrowsException<InvalidAttributeException>(() => _methodService.SetInvokeMethodToLocalVariable(localVariableId, invokedMethodId));
+
+        Assert.AreEqual("In v1 of this program only primitive types are accepted.", exception.Message);
+    }
+
+    [TestMethod]
+    public void SetInvokeMethodToAParameter_ShouldThrowException_WhenTypeIsNotPrimitive()
+    {
+        var Id = Guid.NewGuid();
+        var invokedMethodId = Guid.NewGuid();
+
+        var parameter = new Parameter { Id = Id, Name = "myVar", ParameterType = new Class()};
+
+        var invokedMethod = new InvokedMethod
+        {
+            Id = invokedMethodId, MethodId = Guid.NewGuid(), ReferenceName = "ref"
+        };
+
+        _mockParameterRepository.Setup(repo => repo.Find(Id)).Returns(parameter);
+        _mockInvokedMethodRepository.Setup(repo => repo.Find(invokedMethodId)).Returns(invokedMethod);
+        _mockParameterRepository.Setup(repo => repo.Update(parameter)).Verifiable();
+
+        var exception = Assert.ThrowsException<InvalidAttributeException>(() => _methodService.SetInvokeMethodToParameter(Id, invokedMethodId));
+
+        Assert.AreEqual("In v1 of this program only primitive types are accepted.", exception.Message);
+    }
+
+    [TestMethod]
     [ExpectedException(typeof(InvokedMethodNotFoundException))]
     public void SetInvokeMethodToLocalVariable_ShouldThrowException_WhenInvokedMethodNotFound()
     {

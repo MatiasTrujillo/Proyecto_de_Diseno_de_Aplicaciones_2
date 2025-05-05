@@ -63,8 +63,27 @@ public class AttributeService(IAttributeRepository attributeRepository, IClassRe
     {
         var attributeT = _attributeRepository.Find(id);
         var invokeT = _invokeMethodRepository.Find(idInvokeGuid);
+        ValidateAttributeExist(attributeT);
+        ValidateInvokedMethodExist(invokeT);
+        ValidateTypeIsPrimitive(attributeT.Type);
         attributeT.InvokedMethod = invokeT;
         _attributeRepository.Update(attributeT);
+    }
+
+    private void ValidateTypeIsPrimitive(Type? attributeTType)
+    {
+        if(attributeTType == null || attributeTType is not Primitive)
+        {
+            throw new InvalidAttributeException("In v1 of this program only primitive types are accepted.");
+        }
+    }
+
+    private void ValidateInvokedMethodExist(InvokedMethod invokedMethod)
+    {
+        if(invokedMethod == null)
+        {
+            throw new InvokedMethodNotFoundException("Invoked Method not found.");
+        }
     }
 
     private void ValidateAttributeType(Type? methodTReturnType)
