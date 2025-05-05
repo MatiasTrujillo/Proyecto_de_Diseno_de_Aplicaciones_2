@@ -954,7 +954,7 @@ public class MethodServiceTest
 
         var notificadorDTO = new ClassDTO
         {
-            Name = notificar.Name,
+            Name = notificador.Name,
         };
 
         var notificacionDTO = new ClassDTO
@@ -978,13 +978,17 @@ public class MethodServiceTest
         };
 
         _mockClassRepository.Setup(repo => repo.FindAll()).Returns([notificador, sms, email, notificacion]);
+        _mockMethodRepository.Setup(repo => repo.Find(confirmarInvoked1.MethodId)).Returns(confirmar);
+        _mockMethodRepository.Setup(repo => repo.Find(confirmarInvoked2.MethodId)).Returns(confirmar);
+        _mockMethodRepository.Setup(repo => repo.Find(enviarInvoked1.MethodId)).Returns(enviar);
+        _mockMethodRepository.Setup(repo => repo.Find(enviarInvoked2.MethodId)).Returns(enviar);
 
         var result = _methodService.ExecuteMethod(notificadorDTO, notificadorDTO, notificarDTO);
         var result2 = _methodService.ExecuteMethod(notificacionDTO, smsDTO, enviarDTO);
         Console.WriteLine(result2);
         Console.WriteLine("----------------------------------------------");
         Console.WriteLine(result);
-        Assert.AreEqual(result2, "Notificacion.Enviar() -> SMS.Enviar()");
+        Assert.AreEqual("Notificacion.Enviar() -> SMS.Enviar()", result2);
         var res =
             "Notificador.Notificar() -> Notificador.Notificar()\n" +
             "\taviso.Enviar() -> Notificacion.Enviar()\n" +

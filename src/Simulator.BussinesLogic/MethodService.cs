@@ -200,13 +200,13 @@ public class MethodService(IMethodRepository methodRepository, IClassRepository 
     private List<string> WriteOtherLines(Class refe, Class oTC, Method method, Method originalMethod)
     {
         var result = new List<string>();
-
         for(var i = 0; i < method.Methods.Count; i++)
         {
             var invokedMethod = method.Methods[i];
             var invokedMethodMethod = _methodRepository.Find(invokedMethod.MethodId);
+            var success = false;
 
-            if(invokedMethod.ReferenceName == "this")
+            if(!success && invokedMethod.ReferenceName == "this")
             {
                 result.Add(AddToResult(invokedMethod.ReferenceName, refe.Name,  invokedMethodMethod.Name));
 
@@ -216,8 +216,10 @@ public class MethodService(IMethodRepository methodRepository, IClassRepository 
                 }
 
                 result = result.Concat(ConcatNext(oTC, oTC, invokedMethodMethod, originalMethod)).ToList();
+                success = true;
             }
-            else if(invokedMethod.ReferenceName != "this" && refe.Attributes != null)
+
+            if(!success && refe.Attributes != null)
             {
                 var anAttribute = refe.Attributes.FirstOrDefault(x => x.Name == invokedMethod.ReferenceName);
                 if(anAttribute != null)
@@ -234,6 +236,51 @@ public class MethodService(IMethodRepository methodRepository, IClassRepository 
                         }
 
                         result = result.Concat(ConcatNext(aClass, aClass, invokedMethodMethod, originalMethod)).ToList();
+                        success = true;
+                    }
+                }
+            }
+
+            if(!success && method.Parameters != null)
+            {
+                var aParameter = method.Parameters.FirstOrDefault(x => x.Name == invokedMethod.ReferenceName);
+                if(aParameter != null)
+                {
+                    var aClass = _classRepository.FindAll().FirstOrDefault(x => x.Name == aParameter.ParameterType.Name);
+
+                    if(aClass != null && CheckClassHasMethod(aClass, invokedMethodMethod))
+                    {
+                        result.Add(AddToResult(aParameter.Name, aClass.Name, invokedMethodMethod.Name));
+
+                        if(CheckOriginal(invokedMethodMethod, originalMethod))
+                        {
+                            return result;
+                        }
+
+                        result = result.Concat(ConcatNext(aClass, aClass, invokedMethodMethod, originalMethod)).ToList();
+                        success = true;
+                    }
+                }
+            }
+
+            if(!success && method.LocalVariables != null)
+            {
+                var aLocal = method.LocalVariables.FirstOrDefault(x => x.Name == invokedMethod.ReferenceName);
+                if(aLocal != null)
+                {
+                    var aClass = _classRepository.FindAll().FirstOrDefault(x => x.Name == aLocal.LocalVariableType.Name);
+
+                    if(aClass != null && CheckClassHasMethod(aClass, invokedMethodMethod))
+                    {
+                        result.Add(AddToResult(aLocal.Name, aClass.Name, invokedMethodMethod.Name));
+
+                        if(CheckOriginal(invokedMethodMethod, originalMethod))
+                        {
+                            return result;
+                        }
+
+                        result = result.Concat(ConcatNext(aClass, aClass, invokedMethodMethod, originalMethod)).ToList();
+                        success = true;
                     }
                 }
             }
@@ -263,7 +310,7 @@ public class MethodService(IMethodRepository methodRepository, IClassRepository 
     {
         var result = new List<string>();
 
-        result.Add($"{refe.Name}.{method.Name}() -> {refe.Name}.{method.Name}()");
+        result.Add($"{refe.Name}.{method.Name}() -> {oTC.Name}.{method.Name}()");
         _identation++;
 
         return result;
