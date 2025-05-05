@@ -26,6 +26,7 @@ public class ParameterRepository(SqlContext context) : IParameterRepository
     {
         var parameter = context.Parameters
             .Include(p => p.ParameterType)
+            .Include(iv => iv.InvokedMethod)
             .FirstOrDefault(p => p.Id == id);
 
         return parameter;
@@ -35,6 +36,7 @@ public class ParameterRepository(SqlContext context) : IParameterRepository
     {
         return context.Parameters
             .Include(p => p.ParameterType)
+            .Include(iv => iv.InvokedMethod)
             .ToList();
     }
 }

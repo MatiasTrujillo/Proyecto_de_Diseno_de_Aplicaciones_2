@@ -217,15 +217,74 @@ public class ClassServiceTest
         var dto = new UpdateClassDTO
         {
             Name = "NewName",
-            Stereotype = "abstract",
             IdClass = heritageId
         };
 
         _classService.UpdateClass(classId, dto);
 
         Assert.AreEqual("NewName", existingClass.Name);
-        Assert.AreEqual(KeyWord.Abstract, existingClass.Stereotype);
         Assert.AreEqual(newHeritageClass, existingClass.HierarchyClass);
+    }
+
+    [TestMethod]
+    public void UpdateClass_ShouldThrowException_WhenAbstractClassinherits()
+    {
+        var classId = Guid.NewGuid();
+        var heritageId = Guid.NewGuid();
+
+        var existingClass = new Class { Id = classId, Name = "OldName" };
+        var newHeritageClass = new Class { Id = heritageId };
+
+        _mockClassRepository.Setup(r => r.FindAll()).Returns([existingClass, newHeritageClass]);
+        _mockClassRepository.Setup(r => r.Find(classId)).Returns(existingClass);
+        _mockClassRepository.Setup(r => r.Find(heritageId)).Returns(newHeritageClass);
+        _mockClassRepository.Setup(r => r.Update(It.IsAny<Class>()));
+
+        _mockAttributeRepository.Setup(r => r.FindAll()).Returns([]);
+        _mockMethodRepository.Setup(r => r.FindAll()).Returns([]);
+
+        var dto = new UpdateClassDTO
+        {
+            Name = "NewName",
+            Stereotype = "abstract",
+            IdClass = heritageId
+        };
+
+        var exception = Assert.ThrowsException<InvalidClassException>(() =>
+        {
+            _classService.UpdateClass(classId, dto);
+        });
+        Assert.AreEqual("An abstract class cannot inherit from a concrete class.", exception.Message);
+    }
+
+    [TestMethod]
+    public void UpdateClass_ShouldThrowException_WhenSealedClassinherits()
+    {
+        var classId = Guid.NewGuid();
+        var heritageId = Guid.NewGuid();
+
+        var existingClass = new Class { Id = classId, Name = "OldName", Stereotype = KeyWord.Sealed };
+        var newHeritageClass = new Class { Id = heritageId };
+
+        _mockClassRepository.Setup(r => r.FindAll()).Returns([existingClass, newHeritageClass]);
+        _mockClassRepository.Setup(r => r.Find(classId)).Returns(existingClass);
+        _mockClassRepository.Setup(r => r.Find(heritageId)).Returns(newHeritageClass);
+        _mockClassRepository.Setup(r => r.Update(It.IsAny<Class>()));
+
+        _mockAttributeRepository.Setup(r => r.FindAll()).Returns([]);
+        _mockMethodRepository.Setup(r => r.FindAll()).Returns([]);
+
+        var dto = new UpdateClassDTO
+        {
+            Name = "NewName",
+            IdClass = heritageId
+        };
+
+        var exception = Assert.ThrowsException<InvalidClassException>(() =>
+        {
+            _classService.UpdateClass(classId, dto);
+        });
+        Assert.AreEqual("A sealed class cannot inherit.", exception.Message);
     }
 
     [TestMethod]

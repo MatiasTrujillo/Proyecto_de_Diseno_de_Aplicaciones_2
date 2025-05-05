@@ -11,11 +11,12 @@ using Type = Simulator.Domain.Type;
 
 namespace Simulator.BussinesLogic;
 
-public class AttributeService(IAttributeRepository attributeRepository, IClassRepository classRepository)
+public class AttributeService(IAttributeRepository attributeRepository, IClassRepository classRepository, IInvokedMethodRepository invokeMethodRepository)
     : IAttributeService
 {
     private readonly IAttributeRepository _attributeRepository = attributeRepository;
     private readonly IClassRepository _classRepository = classRepository;
+    private readonly IInvokedMethodRepository _invokeMethodRepository = invokeMethodRepository;
 
     public Guid CreateAttribute(AttributeDto aDTO)
     {
@@ -55,6 +56,14 @@ public class AttributeService(IAttributeRepository attributeRepository, IClassRe
         ValidateAttributeExist(attributeT);
         ValidateAttributeIsNotInClass(attributeT);
         _attributeRepository.Delete(id);
+    }
+
+    public void SetInvokeMethodToAttribute(Guid id, Guid idInvokeGuid)
+    {
+        var attributeT = _attributeRepository.Find(id);
+        var invokeT = _invokeMethodRepository.Find(idInvokeGuid);
+        attributeT.InvokedMethod = invokeT;
+        _attributeRepository.Update(attributeT);
     }
 
     private void ValidateAttributeType(Type? methodTReturnType)

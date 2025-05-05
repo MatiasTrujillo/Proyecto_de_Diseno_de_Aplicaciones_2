@@ -50,6 +50,7 @@ public class MethodRepository(SqlContext context) : IMethodRepository
             .Include(m => m.Parameters)
             .Include(m => m.LocalVariables)
             .Include(m => m.ReturnType)
+            .Include(m => m.Methods)
             .ToList();
     }
 

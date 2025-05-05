@@ -14,6 +14,7 @@ public class AttributeServiceTest
 {
     private Mock<IAttributeRepository> _mockAttributeRepository = null!;
     private Mock<IClassRepository> _mockClassRepository = null!;
+    private Mock<IInvokedMethodRepository> _mockInvokeMethodRepository = null!;
     private AttributeService _attributeService = null!;
     private Guid _classId;
 
@@ -22,13 +23,14 @@ public class AttributeServiceTest
     {
         _mockAttributeRepository = new Mock<IAttributeRepository>(MockBehavior.Strict);
         _mockClassRepository = new Mock<IClassRepository>(MockBehavior.Strict);
+        _mockInvokeMethodRepository = new Mock<IInvokedMethodRepository>(MockBehavior.Strict);
 
         _mockAttributeRepository
             .Setup(repo => repo.Add(It.IsAny<Attribute>()));
         _mockAttributeRepository
             .Setup(repo => repo.Update(It.IsAny<Attribute>()));
 
-        _attributeService = new AttributeService(_mockAttributeRepository.Object, _mockClassRepository.Object);
+        _attributeService = new AttributeService(_mockAttributeRepository.Object, _mockClassRepository.Object, _mockInvokeMethodRepository.Object);
         _classId = Guid.NewGuid();
     }
 
@@ -408,5 +410,23 @@ public class AttributeServiceTest
             _attributeService.UpdateAttribute(id, dto));
 
         Assert.AreEqual("Return type not found.", ex.Message);
+    }
+
+    [TestMethod]
+    public void SetInvokeMethod_ShouldAssignInvokedMethodAndUpdateAttribute()
+    {
+        var attributeId = Guid.NewGuid();
+        var invokeId = Guid.NewGuid();
+
+        var attribute = new Simulator.Domain.Attribute { Id = attributeId, Name = "attr1" };
+        var invoked = new InvokedMethod { Id = invokeId, ReferenceName = "refName" };
+
+        _mockAttributeRepository.Setup(r => r.Find(attributeId)).Returns(attribute);
+        _mockInvokeMethodRepository.Setup(r => r.Find(invokeId)).Returns(invoked);
+
+        _attributeService.SetInvokeMethodToAttribute(attributeId, invokeId);
+
+        Assert.AreEqual(invoked, attribute.InvokedMethod);
+        _mockAttributeRepository.Verify(r => r.Update(attribute), Times.Once);
     }
 }

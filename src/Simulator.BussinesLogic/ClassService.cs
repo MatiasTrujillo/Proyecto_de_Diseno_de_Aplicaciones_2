@@ -23,6 +23,11 @@ public class ClassService(
         var classes = _classRepository.FindAll();
         var objectClass = classes.FirstOrDefault(c => c.Name == "Object");
         ValidateClassNameIsUnique(aClass.Name);
+        if(aClass.Stereotype == KeyWord.Abstract)
+        {
+            throw new InvalidClassException("The class cannot be abstract.");
+        }
+
         aClass.HierarchyClass = objectClass;
         _classRepository.Add(aClass);
         return aClass.Id;
@@ -79,6 +84,16 @@ public class ClassService(
         {
             ValidateClassIdExists(uClass.IdClass.Value);
             ValidateClassIsNotInUse(id);
+            if(classT.Stereotype == KeyWord.Sealed)
+            {
+                throw new InvalidClassException("A sealed class cannot inherit.");
+            }
+
+            if(uClass.Stereotype == "abstract")
+            {
+                throw new InvalidClassException("An abstract class cannot inherit from a concrete class.");
+            }
+
             var heritageClass = _classRepository.Find(uClass.IdClass.Value);
             classT.HierarchyClass = heritageClass;
         }
