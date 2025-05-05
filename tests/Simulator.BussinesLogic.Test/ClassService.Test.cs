@@ -82,6 +82,27 @@ public class ClassServiceTest
     }
 
     [TestMethod]
+    public void CreateClass_ShouldThrowException_WhenKeyWordIsNotValid()
+    {
+        var invalidStereoType = (KeyWord)99;
+        var dto = new ClassDTO
+        {
+            Name = "Class",
+            Stereotype = invalidStereoType,
+        };
+
+        _mockClassRepository.Setup(r => r.FindAll())
+            .Returns([]);
+
+        var exception = Assert.ThrowsException<InvalidClassException>(() =>
+        {
+            _classService.CreateClass(dto);
+        });
+
+        Assert.AreEqual("Invalid stereotype value.", exception.Message);
+    }
+
+    [TestMethod]
     public void CreateClass_ShouldThrowException_WhenNameIsWhitespace()
     {
         var dto = new ClassDTO
@@ -227,18 +248,20 @@ public class ClassServiceTest
     }
 
     [TestMethod]
-    public void UpdateClass_ShouldThrowException_WhenAbstractClassinherits()
+    public void UpdateClass_ShouldThrowException_WhenAbstractClassInheritsFromConcrete()
     {
         var classId = Guid.NewGuid();
         var heritageId = Guid.NewGuid();
 
-        var existingClass = new Class { Id = classId, Name = "OldName" };
-        var newHeritageClass = new Class { Id = heritageId };
+        var existingClass = new Class { Id = classId, Name = "OldName", Stereotype = KeyWord.Abstract };
 
-        _mockClassRepository.Setup(r => r.FindAll()).Returns([existingClass, newHeritageClass]);
+        var concreteParentClass = new Class { Id = heritageId, Name = "ConcreteClass", Stereotype = KeyWord.Abstract };
+
+        _mockClassRepository.Setup(r => r.FindAll()).Returns([existingClass, concreteParentClass]);
         _mockClassRepository.Setup(r => r.Find(classId)).Returns(existingClass);
-        _mockClassRepository.Setup(r => r.Find(heritageId)).Returns(newHeritageClass);
-        _mockClassRepository.Setup(r => r.Update(It.IsAny<Class>()));
+        _mockClassRepository.Setup(r => r.Find(heritageId)).Returns(concreteParentClass);
+
+        _mockClassRepository.Setup(r => r.Update(It.IsAny<Class>())).Verifiable();
 
         _mockAttributeRepository.Setup(r => r.FindAll()).Returns([]);
         _mockMethodRepository.Setup(r => r.FindAll()).Returns([]);
@@ -254,22 +277,25 @@ public class ClassServiceTest
         {
             _classService.UpdateClass(classId, dto);
         });
+
         Assert.AreEqual("An abstract class cannot inherit from a concrete class.", exception.Message);
     }
 
     [TestMethod]
-    public void UpdateClass_ShouldThrowException_WhenSealedClassinherits()
+    public void UpdateClass_ShouldThrowException_WhenSealedClassTriesToInherit()
     {
         var classId = Guid.NewGuid();
         var heritageId = Guid.NewGuid();
 
-        var existingClass = new Class { Id = classId, Name = "OldName", Stereotype = KeyWord.Sealed };
-        var newHeritageClass = new Class { Id = heritageId };
+        var sealedClass = new Class { Id = classId, Name = "OldName", Stereotype = KeyWord.Sealed };
 
-        _mockClassRepository.Setup(r => r.FindAll()).Returns([existingClass, newHeritageClass]);
-        _mockClassRepository.Setup(r => r.Find(classId)).Returns(existingClass);
-        _mockClassRepository.Setup(r => r.Find(heritageId)).Returns(newHeritageClass);
-        _mockClassRepository.Setup(r => r.Update(It.IsAny<Class>()));
+        var parentClass = new Class { Id = heritageId, Name = "ParentClass" };
+
+        _mockClassRepository.Setup(r => r.FindAll()).Returns([sealedClass, parentClass]);
+        _mockClassRepository.Setup(r => r.Find(classId)).Returns(sealedClass);
+        _mockClassRepository.Setup(r => r.Find(heritageId)).Returns(parentClass);
+
+        _mockClassRepository.Setup(r => r.Update(It.IsAny<Class>())).Verifiable();
 
         _mockAttributeRepository.Setup(r => r.FindAll()).Returns([]);
         _mockMethodRepository.Setup(r => r.FindAll()).Returns([]);
@@ -284,7 +310,8 @@ public class ClassServiceTest
         {
             _classService.UpdateClass(classId, dto);
         });
-        Assert.AreEqual("A sealed class cannot inherit.", exception.Message);
+
+        Assert.AreEqual("A sealed class cannot inherit from any class.", exception.Message);
     }
 
     [TestMethod]

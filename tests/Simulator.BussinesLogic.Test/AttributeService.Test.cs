@@ -232,6 +232,39 @@ public class AttributeServiceTest
     }
 
     [TestMethod]
+    public void CreateAttribute_ShouldThrowInvalidAttributeException_WhenAccesibilityIsWrong()
+    {
+        var invalidAccessibility = (Accessibility)99;
+        var dto = new AttributeDto
+        {
+            Name = "Name",
+            Accessibility = invalidAccessibility,
+            Type = new TypeDTO { Name = "SomeClass" }
+        };
+
+        var classEntity = new Class
+        {
+            Id = _classId,
+            Name = "SomeClass",
+            Attributes = []
+        };
+
+        _mockClassRepository
+            .Setup(repo => repo.Find(_classId))
+            .Returns(classEntity);
+        _mockClassRepository
+            .Setup(repo => repo.FindAll())
+            .Returns([]);
+
+        var ex = Assert.ThrowsException<InvalidAttributeException>(() =>
+        {
+            _attributeService.CreateAttribute(dto);
+        });
+
+        Assert.AreEqual("Invalid accessibility value.", ex.Message);
+    }
+
+    [TestMethod]
     public void DeleteAttribute_ShouldDeleteAttribute_WhenAttributeIsValidAndNotInClass()
     {
         var id = Guid.NewGuid();

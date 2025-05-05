@@ -24,6 +24,8 @@ public class MethodService(IMethodRepository methodRepository, IClassRepository 
         ValidateMethodDTOExist(method);
         var methodT = method.ToEntity();
         Type? returnType = null;
+        ValidateAccesibility(methodT.Accessibility);
+        ValidateKeyWord(methodT.Stereotype);
         if(methodT.ReturnType != null)
         {
             ValidateMethodReturnTypeString(methodT.ReturnType.Name);
@@ -42,6 +44,11 @@ public class MethodService(IMethodRepository methodRepository, IClassRepository 
         ValidateInvokedMethodDTOExist(invokedMethod);
         var method = _methodRepository.Find(invokedMethod.MethodId);
         ValidateMethodExist(method);
+        if(invokedMethod.ReferenceName == string.Empty)
+        {
+            throw new InvokedMethodNotFoundException("Invoked Method Reference Name cannot be empty.");
+        }
+
         ValidateInvokedMethodReferenceNameIsNotNull(invokedMethod.ReferenceName);
         var invokedMethodT = invokedMethod.ToEntity();
         _invokedMethodRepository.Add(invokedMethodT);
@@ -73,6 +80,11 @@ public class MethodService(IMethodRepository methodRepository, IClassRepository 
     public Guid CreateLocalVariable(LocalVariableDTO localVariable)
     {
         ValidateLocalVariableIsNotNull(localVariable);
+        if(localVariable.Name == string.Empty)
+        {
+            throw new LocalVariableNotFoundException("Local Variable Name cannot be empty.");
+        }
+
         var localVariableT = localVariable.ToEntity();
         var type = localVariableT.LocalVariableType.Name;
         var returnType = _classRepository.FindAllTypes().FirstOrDefault(c => c.Name == type);
@@ -107,6 +119,11 @@ public class MethodService(IMethodRepository methodRepository, IClassRepository 
     {
         ValidateParameterIsNotNull(parameter);
         var parameterT = parameter.ToEntity();
+        if(parameter.Name == string.Empty)
+        {
+            throw new LocalVariableNotFoundException("Parameter Name cannot be empty.");
+        }
+
         var type = parameterT.ParameterType.Name;
         var returnType = _classRepository.FindAllTypes().FirstOrDefault(c => c.Name == type);
         parameterT.ParameterType = returnType;
@@ -142,7 +159,17 @@ public class MethodService(IMethodRepository methodRepository, IClassRepository 
         ValidateMethodExist(method);
         ValidateMehodIsNotInClass(id);
         ValidateMethodIsNotInUse(id);
+        ValidateMethodIsNotInInvokedMethod(id);
         _methodRepository.Delete(id);
+    }
+
+    private void ValidateMethodIsNotInInvokedMethod(Guid id)
+    {
+        var iVAll = _invokedMethodRepository.FindAll();
+        if(iVAll.Any(iV => iV.MethodId == id))
+        {
+            throw new InvalidMethodException("Method is associated with invokedMethod.");
+        }
     }
 
     private void ValidateMethodIsNotInUse(Guid id)
@@ -284,7 +311,7 @@ public class MethodService(IMethodRepository methodRepository, IClassRepository 
 
     private void ValidateInvokedMethodDTOExist(InvokedMethodDTO invokedMethod)
     {
-        if(invokedMethod == null)
+        if(invokedMethod == null || invokedMethod.MethodId == Guid.Empty)
         {
             throw new InvokedMethodNotFoundException("Invoked Method cannot be null.");
         }
@@ -341,6 +368,22 @@ public class MethodService(IMethodRepository methodRepository, IClassRepository 
         if(invokedMethod == null)
         {
             throw new InvokedMethodNotFoundException("Invoked Method not found.");
+        }
+    }
+
+    private void ValidateKeyWord(KeyWord? stereotype)
+    {
+        if(stereotype != null && !Enum.IsDefined(typeof(KeyWord), stereotype))
+        {
+            throw new InvalidMethodException("Invalid stereotype value.");
+        }
+    }
+
+    private void ValidateAccesibility(Accessibility methodTAccessibility)
+    {
+        if(!Enum.IsDefined(typeof(Accessibility), methodTAccessibility))
+        {
+            throw new InvalidMethodException("Invalid accessibility value.");
         }
     }
 }
