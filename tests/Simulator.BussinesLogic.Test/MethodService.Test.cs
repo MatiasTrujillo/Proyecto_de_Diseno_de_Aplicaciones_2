@@ -945,4 +945,45 @@ public class MethodServiceTest
 
         _methodService.SetInvokeMethodToParameter(parameterId, invokedMethodId);
     }
+
+    [TestMethod]
+    public void ToEntity_ShouldThrowArgumentNullException_WhenLocalVariableTypeIsNull()
+    {
+        var dto = new LocalVariableDTO
+        {
+            Name = "myVar",
+            LocalVariableType = null
+        };
+
+        var exception = Assert.ThrowsException<ArgumentNullException>(() => dto.ToEntity());
+
+        Assert.AreEqual("The Type property cannot be null. (Parameter 'Type')", exception.Message);
+    }
+
+        [TestMethod]
+        public void ToEntity_ShouldThrowArgumentNullException_WhenParameterTypeIsNull()
+        {
+            var dto = new ParameterDTO
+            {
+                Name = "myVar",
+                ParameterType = null
+            };
+            var exception = Assert.ThrowsException<ArgumentNullException>(() => dto.ToEntity());
+            Assert.AreEqual("The Type property cannot be null. (Parameter 'Type')", exception.Message);
+        }
+
+        [TestMethod]
+        public void ToEntity_ShouldThrowArgumentNullException_WhenTypeArgumentIsNull()
+        {
+            var dto = new AttributeDto
+            {
+                Name = "attr1",
+                Accessibility = Accessibility.Private,
+                Type = null
+            };
+
+            var exception = Assert.ThrowsException<ArgumentNullException>(() => dto.ToEntity());
+
+            Assert.AreEqual("The Type property cannot be null. (Parameter 'Type')", exception.Message);
+        }
 }

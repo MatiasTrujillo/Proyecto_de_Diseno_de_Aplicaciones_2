@@ -10,4 +10,8 @@
       <ProjectReference Include="..\Simulator.Domain\Simulator.Domain.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <PackageReference Include="FluentValidation" Version="12.0.0" />
+    </ItemGroup>
+
 </Project>
