@@ -181,13 +181,26 @@ public class MethodService(IMethodRepository methodRepository, IClassRepository 
         _methodRepository.Delete(id);
     }
 
-    public string ExecuteMethod(Class reference, Class objectToCreate, Method method)
+    public string ExecuteMethod(ClassDTO referenceDTO, ClassDTO objectToCreateDTO, MethodDTO methodDTO)
     {
+        var reference = _classRepository.FindAll().FirstOrDefault(x => x.Name == referenceDTO.Name);
+        var objectToCreate = _classRepository.FindAll().FirstOrDefault(x => x.Name == objectToCreateDTO.Name);
+        Method method = null;
         var result = new List<string>();
         _identation = 0;
 
-        result = result.Concat(FirstLine(reference, objectToCreate, method)).ToList();
-        result = result.Concat(WriteOtherLines(reference, objectToCreate, method, method)).ToList();
+        var success = false;
+        for(var i = 0; i < reference.Methods.Count && !success; i++)
+        {
+            method = reference.Methods.FirstOrDefault(x => x.Name == methodDTO.Name);
+            if(method != null)
+            {
+                success = true;
+            }
+        }
+
+        result = result.Concat(FirstLine(reference, objectToCreate!, method!)).ToList();
+        result = result.Concat(WriteOtherLines(reference, objectToCreate!, method!, method!)).ToList();
 
         return string.Join("\n", result);
     }
