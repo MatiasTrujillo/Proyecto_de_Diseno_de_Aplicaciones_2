@@ -30,14 +30,6 @@ public class AttributeService(IAttributeRepository attributeRepository, IClassRe
         return attribute.Id;
     }
 
-    private void ValidateAccesibility(Accessibility aDtoAccessibility)
-    {
-        if (!Enum.IsDefined(typeof(Accessibility), aDtoAccessibility))
-        {
-            throw new InvalidAttributeException("Invalid accessibility value.");
-        }
-    }
-
     public void AsociateAttribute(Guid id, Guid idClass)
     {
         var attributeT = _attributeRepository.Find(id);
@@ -176,6 +168,14 @@ public class AttributeService(IAttributeRepository attributeRepository, IClassRe
         if(methodTReturnType != null && classes.All(c => c.Id != methodTReturnType))
         {
             throw new MethodException("Return type not found.");
+        }
+    }
+
+    private void ValidateAccesibility(Accessibility aDtoAccessibility)
+    {
+        if (!Enum.IsDefined(typeof(Accessibility), aDtoAccessibility))
+        {
+            throw new InvalidAttributeException("Invalid accessibility value.");
         }
     }
 }

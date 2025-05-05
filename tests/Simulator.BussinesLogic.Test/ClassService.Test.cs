@@ -82,6 +82,27 @@ public class ClassServiceTest
     }
 
     [TestMethod]
+    public void CreateClass_ShouldThrowException_WhenKeyWordIsNotValid()
+    {
+        var invalidStereoType = (KeyWord)99;
+        var dto = new ClassDTO
+        {
+            Name = "Class",
+            Stereotype = invalidStereoType,
+        };
+
+        _mockClassRepository.Setup(r => r.FindAll())
+            .Returns([]);
+
+        var exception = Assert.ThrowsException<InvalidClassException>(() =>
+        {
+            _classService.CreateClass(dto);
+        });
+
+        Assert.AreEqual("Invalid stereotype value.", exception.Message);
+    }
+
+    [TestMethod]
     public void CreateClass_ShouldThrowException_WhenNameIsWhitespace()
     {
         var dto = new ClassDTO

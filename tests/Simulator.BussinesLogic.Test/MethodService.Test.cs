@@ -101,6 +101,44 @@ public class MethodServiceTest
     }
 
     [TestMethod]
+    public void CreateMethod_ShouldThrowException_WhenKeyAccessibilityIsNotValid()
+    {
+        var invalidAccessibility = (Accessibility)100;
+        var classT = new TypeDTO { Name = "TestClass" };
+        var method = new MethodDTO
+        {
+            Name = "TestMethod",
+            Accessibility = invalidAccessibility,
+            Stereotype = null,
+            ReturnType = classT
+        };
+        var classes = new List<Type>();
+        _mockClassRepository.Setup(repo => repo.FindAllTypes()).Returns(classes);
+
+        var exception = Assert.ThrowsException<InvalidMethodException>(() => _methodService.CreateMethod(method));
+        Assert.AreEqual("Invalid accessibility value.", exception.Message);
+    }
+
+    [TestMethod]
+    public void CreateMethod_ShouldThrowException_WhenKeyWordIsNotValid()
+    {
+        var invalidStereotype = (KeyWord)100;
+        var classT = new TypeDTO { Name = "TestClass" };
+        var method = new MethodDTO
+        {
+            Name = "TestMethod",
+            Accessibility = Accessibility.Public,
+            Stereotype = invalidStereotype,
+            ReturnType = classT
+        };
+        var classes = new List<Type>();
+        _mockClassRepository.Setup(repo => repo.FindAllTypes()).Returns(classes);
+
+        var exception = Assert.ThrowsException<InvalidMethodException>(() => _methodService.CreateMethod(method));
+        Assert.AreEqual("Invalid stereotype value.", exception.Message);
+    }
+
+    [TestMethod]
     public void CreateMethod_ShouldThrowException_WhenMethodIsNull()
     {
         MethodDTO nullMethodDto = null!;

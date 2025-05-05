@@ -24,6 +24,8 @@ public class MethodService(IMethodRepository methodRepository, IClassRepository 
         ValidateMethodDTOExist(method);
         var methodT = method.ToEntity();
         Type? returnType = null;
+        ValidateAccesibility(methodT.Accessibility);
+        ValidateKeyWord(methodT.Stereotype);
         if(methodT.ReturnType != null)
         {
             ValidateMethodReturnTypeString(methodT.ReturnType.Name);
@@ -351,6 +353,22 @@ public class MethodService(IMethodRepository methodRepository, IClassRepository 
         if(invokedMethod == null)
         {
             throw new InvokedMethodNotFoundException("Invoked Method not found.");
+        }
+    }
+
+    private void ValidateKeyWord(KeyWord? stereotype)
+    {
+        if (stereotype != null && !Enum.IsDefined(typeof(KeyWord), stereotype))
+        {
+            throw new InvalidMethodException("Invalid stereotype value.");
+        }
+    }
+
+    private void ValidateAccesibility(Accessibility methodTAccessibility)
+    {
+        if (!Enum.IsDefined(typeof(Accessibility), methodTAccessibility))
+        {
+            throw new InvalidMethodException("Invalid accessibility value.");
         }
     }
 }
