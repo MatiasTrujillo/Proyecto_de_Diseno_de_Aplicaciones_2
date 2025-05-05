@@ -23,10 +23,19 @@ public class AttributeService(IAttributeRepository attributeRepository, IClassRe
         var attribute = aDTO.ToEntity();
         var type = aDTO.Type.Name;
         var typeT = _classRepository.FindAll().FirstOrDefault(c => c.Name == type);
+        ValidateAccesibility(attribute.Accessibility);
         ValidateAttributeType(attribute.Type);
         attribute.Type = typeT;
         _attributeRepository.Add(attribute);
         return attribute.Id;
+    }
+
+    private void ValidateAccesibility(Accessibility aDtoAccessibility)
+    {
+        if (!Enum.IsDefined(typeof(Accessibility), aDtoAccessibility))
+        {
+            throw new InvalidAttributeException("Invalid accessibility value.");
+        }
     }
 
     public void AsociateAttribute(Guid id, Guid idClass)

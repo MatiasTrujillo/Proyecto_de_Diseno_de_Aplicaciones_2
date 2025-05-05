@@ -193,6 +193,7 @@ public class MethodServiceTest
 
         _mockMethodRepository.Setup(repo => repo.Find(methodId)).Returns(method);
         _mockMethodRepository.Setup(repo => repo.Delete(It.IsAny<Guid>()));
+        _mockInvokedMethodRepository.Setup(repo => repo.FindAll()).Returns([]);
 
         _mockClassRepository.Setup(repo => repo.FindAll()).Returns([]);
 
