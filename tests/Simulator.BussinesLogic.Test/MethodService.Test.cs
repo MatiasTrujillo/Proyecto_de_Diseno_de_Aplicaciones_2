@@ -121,7 +121,7 @@ public class MethodServiceTest
     }
 
     [TestMethod]
-    public void CreateMethod_ShouldThrowException_WhenKeyWordIsNotValid()
+    public void CreateMethod_ShouldThrowExcepton_WhenKeyWordIsNotValid()
     {
         var invalidStereotype = (KeyWord)100;
         var classT = new TypeDTO { Name = "TestClass" };
