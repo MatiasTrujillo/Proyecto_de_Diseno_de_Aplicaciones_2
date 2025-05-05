@@ -39,4 +39,11 @@ public class ParameterRepository(SqlContext context) : IParameterRepository
             .Include(iv => iv.InvokedMethod)
             .ToList();
     }
+
+    public void Update(Parameter parameter)
+    {
+        var existingParameter = Find(parameter.Id);
+        context.Entry(existingParameter).CurrentValues.SetValues(parameter);
+        context.SaveChanges();
+    }
 }

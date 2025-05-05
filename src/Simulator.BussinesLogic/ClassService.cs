@@ -23,11 +23,6 @@ public class ClassService(
         var classes = _classRepository.FindAll();
         var objectClass = classes.FirstOrDefault(c => c.Name == "Object");
         ValidateClassNameIsUnique(aClass.Name);
-        if(aClass.Stereotype == KeyWord.Abstract)
-        {
-            throw new InvalidClassException("The class cannot be abstract.");
-        }
-
         aClass.HierarchyClass = objectClass;
         _classRepository.Add(aClass);
         return aClass.Id;

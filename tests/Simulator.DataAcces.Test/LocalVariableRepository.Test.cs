@@ -123,4 +123,31 @@ public class LocalVariableRepositoryTest
                                             v.LocalVariableType.Name == secondPrimitive.Name);
     }
     #endregion
+
+    #region Update
+    [TestMethod]
+    public void Update_WhenLocalVariableExists_ShouldUpdateValuesInDatabase()
+    {
+        _context.Primitives.Add(_primitive);
+        _context.LocalVariables.Add(_localVariable);
+        _context.SaveChanges();
+
+        var updatedVariable = new LocalVariable
+        {
+            Id = _localVariable.Id,
+            Name = "updatedParam",
+            LocalVariableType = _primitive
+        };
+
+        _repository.Update(updatedVariable);
+
+        using var refreshedContext = ProgramTest.BuildTestDbContext();
+        var updatedInDb = refreshedContext.LocalVariables.Include(l => l.LocalVariableType).FirstOrDefault(l => l.Id == _localVariable.Id);
+
+        updatedInDb.Should().NotBeNull();
+        updatedInDb!.Name.Should().Be("updatedParam");
+        updatedInDb.LocalVariableType.Should().NotBeNull();
+        updatedInDb.LocalVariableType!.Id.Should().Be(_primitive.Id);
+    }
+    #endregion
 }

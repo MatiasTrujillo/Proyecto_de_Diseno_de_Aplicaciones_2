@@ -682,4 +682,144 @@ public class MethodServiceTest
 
         _mockMethodRepository.Verify(r => r.Update(It.Is<Method>(m => m.Methods.Contains(invokedMethod))), Times.Once);
     }
+
+    [TestMethod]
+    public void SetInvokeMethodToALocalVariable_ShouldAssociateInvokedMethodToLocalVariable()
+    {
+        var localVariableId = Guid.NewGuid();
+        var invokedMethodId = Guid.NewGuid();
+
+        var localVariable = new LocalVariable
+        {
+            Id = localVariableId,
+            Name = "myVar"
+        };
+
+        var invokedMethod = new InvokedMethod
+        {
+            Id = invokedMethodId,
+            MethodId = Guid.NewGuid(),
+            ReferenceName = "ref"
+        };
+
+        _mockLocalVariableRepository.Setup(repo => repo.Find(localVariableId)).Returns(localVariable);
+        _mockInvokedMethodRepository.Setup(repo => repo.Find(invokedMethodId)).Returns(invokedMethod);
+        _mockLocalVariableRepository.Setup(repo => repo.Update(localVariable)).Verifiable();
+
+        _methodService.SetInvokeMethodToLocalVariable(localVariableId, invokedMethodId);
+
+        Assert.AreEqual(invokedMethod, localVariable.InvokedMethod);
+        _mockLocalVariableRepository.Verify(repo => repo.Update(localVariable), Times.Once);
+    }
+
+    [TestMethod]
+    [ExpectedException(typeof(InvokedMethodNotFoundException))]
+    public void SetInvokeMethodToLocalVariable_ShouldThrowException_WhenInvokedMethodNotFound()
+    {
+        var localVariableId = Guid.NewGuid();
+        var invokedMethodId = Guid.NewGuid();
+
+        var localVariable = new LocalVariable
+        {
+            Id = localVariableId,
+            Name = "myVar"
+        };
+
+        _mockLocalVariableRepository.Setup(repo => repo.Find(localVariableId)).Returns(localVariable);
+        _mockInvokedMethodRepository.Setup(repo => repo.Find(invokedMethodId)).Returns((InvokedMethod?)null);
+
+        _methodService.SetInvokeMethodToLocalVariable(localVariableId, invokedMethodId);
+    }
+
+    [TestMethod]
+    public void SetInvokeMethodToParameter_ShouldAssociateInvokedMethodToParameter()
+    {
+        var parameterId = Guid.NewGuid();
+        var invokedMethodId = Guid.NewGuid();
+
+        var parameter = new Parameter
+        {
+            Id = parameterId,
+            Name = "param",
+        };
+
+        var invokedMethod = new InvokedMethod
+        {
+            Id = invokedMethodId,
+            MethodId = Guid.NewGuid(),
+            ReferenceName = "ref"
+        };
+
+        _mockParameterRepository.Setup(repo => repo.Find(parameterId)).Returns(parameter);
+        _mockInvokedMethodRepository.Setup(repo => repo.Find(invokedMethodId)).Returns(invokedMethod);
+        _mockParameterRepository.Setup(repo => repo.Update(parameter)).Verifiable();
+
+        _methodService.SetInvokeMethodToParameter(parameterId, invokedMethodId);
+
+        Assert.AreEqual(invokedMethod, parameter.InvokedMethod);
+        _mockParameterRepository.Verify(repo => repo.Update(parameter), Times.Once);
+    }
+
+    [TestMethod]
+    [ExpectedException(typeof(InvokedMethodNotFoundException))]
+    public void SetInvokeMethodToParameter_ShouldThrow_WhenInvokedMethodNotFound()
+    {
+        var parameterId = Guid.NewGuid();
+        var invokedMethodId = Guid.NewGuid();
+
+        var parameter = new Parameter
+        {
+            Id = parameterId,
+            Name = "param"
+        };
+
+        _mockParameterRepository.Setup(repo => repo.Find(parameterId)).Returns(parameter);
+        _mockInvokedMethodRepository.Setup(repo => repo.Find(invokedMethodId)).Returns((InvokedMethod?)null);
+
+        _methodService.SetInvokeMethodToParameter(parameterId, invokedMethodId);
+    }
+
+    [TestMethod]
+    public void SetInvokeMethodToParameter_ShouldAssociateInvokedMethod_WhenBothExist()
+    {
+        var parameterId = Guid.NewGuid();
+        var invokedMethodId = Guid.NewGuid();
+
+        var parameter = new Parameter { Id = parameterId };
+        var invokedMethod = new InvokedMethod { Id = invokedMethodId };
+
+        _mockParameterRepository
+            .Setup(repo => repo.Find(parameterId))
+            .Returns(parameter);
+
+        _mockInvokedMethodRepository
+            .Setup(repo => repo.Find(invokedMethodId))
+            .Returns(invokedMethod);
+
+        _mockParameterRepository
+            .Setup(repo => repo.Update(It.Is<Parameter>(p => p == parameter && p.InvokedMethod == invokedMethod)));
+
+        _methodService.SetInvokeMethodToParameter(parameterId, invokedMethodId);
+
+        Assert.AreEqual(invokedMethod, parameter.InvokedMethod);
+        _mockParameterRepository.Verify(repo => repo.Update(parameter), Times.Once);
+    }
+
+    [TestMethod]
+    [ExpectedException(typeof(ParameterNotFoundException))]
+    public void SetInvokeMethodToParameter_ShouldThrow_WhenParameterDoesNotExist()
+    {
+        var parameterId = Guid.NewGuid();
+        var invokedMethodId = Guid.NewGuid();
+
+        _mockParameterRepository
+            .Setup(repo => repo.Find(parameterId))
+            .Returns((Parameter?)null);
+
+        _mockInvokedMethodRepository
+            .Setup(repo => repo.Find(It.IsAny<Guid>()))
+            .Returns(new InvokedMethod());
+
+        _methodService.SetInvokeMethodToParameter(parameterId, invokedMethodId);
+    }
 }

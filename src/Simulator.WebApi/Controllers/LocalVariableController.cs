@@ -16,4 +16,11 @@ public class LocalVariableController(IMethodService methodService) : ControllerB
         var localVariableId = _amethodService.CreateLocalVariable(localVariable);
         return Created(string.Empty, new { id = localVariableId });
     }
+
+    [HttpGet("{localVariableId}/invokedMethods/{invokedMethodId}")]
+    public IActionResult SetInvokeMethodToLocalVariable([FromRoute] Guid localVariableId, [FromRoute] Guid invokedMethodId)
+    {
+        _amethodService.SetInvokeMethodToLocalVariable(localVariableId, invokedMethodId);
+        return Created(string.Empty, new { message = "Local variable associated with invoked method successfully" });
+    }
 }

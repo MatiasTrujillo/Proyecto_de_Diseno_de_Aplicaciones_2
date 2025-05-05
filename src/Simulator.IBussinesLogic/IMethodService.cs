@@ -10,6 +10,8 @@ public interface IMethodService
     void AssociateMethodWithClass(Guid methodId, Guid classId);
     void DeleteMethod(Guid id);
     Guid AssociateInvokeMethod(InvokedMethodDTO invokedMethod);
+    void SetInvokeMethodToLocalVariable(Guid id, Guid idInvokeGuid);
+    void SetInvokeMethodToParameter(Guid id, Guid idInvokeGuid);
     void AddAMethod(Guid id, Guid invokedMethodId);
     void AddLocalVariableToMethod(Guid methodId, Guid localVariableId);
     void AddParameterToMethod(Guid methodId, Guid parameterId);

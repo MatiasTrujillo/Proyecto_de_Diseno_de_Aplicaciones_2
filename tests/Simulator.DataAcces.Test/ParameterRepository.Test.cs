@@ -120,4 +120,31 @@ public class ParameterRepositoryTest
         result.Should().Contain(p => p.Name == "Obj");
     }
     #endregion
+
+    #region Update
+    [TestMethod]
+    public void Update_WhenParameterExists_ShouldUpdateValuesInDatabase()
+    {
+        _context.Primitives.Add(_primitive);
+        _context.Parameters.Add(_parameter);
+        _context.SaveChanges();
+
+        var updatedParameter = new Parameter
+        {
+            Id = _parameter.Id,
+            Name = "updatedParam",
+            ParameterType = _primitive
+        };
+
+        _repository.Update(updatedParameter);
+
+        using var refreshedContext = ProgramTest.BuildTestDbContext();
+        var updatedInDb = refreshedContext.Parameters.Include(p => p.ParameterType).FirstOrDefault(p => p.Id == _parameter.Id);
+
+        updatedInDb.Should().NotBeNull();
+        updatedInDb!.Name.Should().Be("updatedParam");
+        updatedInDb.ParameterType.Should().NotBeNull();
+        updatedInDb.ParameterType!.Id.Should().Be(_primitive.Id);
+    }
+    #endregion
 }
