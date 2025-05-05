@@ -189,18 +189,10 @@ public class MethodService(IMethodRepository methodRepository, IClassRepository 
         var result = new List<string>();
         _identation = 0;
 
-        var success = false;
-        for(var i = 0; i < reference.Methods.Count && !success; i++)
-        {
-            method = reference.Methods.FirstOrDefault(x => x.Name == methodDTO.Name);
-            if(method != null)
-            {
-                success = true;
-            }
-        }
+        method = FindMethod(reference.Methods!, methodDTO.Name);
 
-        result = result.Concat(FirstLine(reference, objectToCreate!, method!)).ToList();
-        result = result.Concat(WriteOtherLines(reference, objectToCreate!, method!, method!)).ToList();
+        result = result.Concat(FirstLine(reference, objectToCreate!, method)).ToList();
+        result = result.Concat(WriteOtherLines(reference, objectToCreate!, method, method)).ToList();
 
         return string.Join("\n", result);
     }
@@ -248,6 +240,23 @@ public class MethodService(IMethodRepository methodRepository, IClassRepository 
         }
 
         return result;
+    }
+
+    private Method FindMethod(List<Method> referenceMethods, string methodName)
+    {
+        var success = false;
+        Method method = null;
+
+        for(var i = 0; i < referenceMethods.Count && !success; i++)
+        {
+            method = referenceMethods.FirstOrDefault(x => x.Name == methodName);
+            if(method != null)
+            {
+                success = true;
+            }
+        }
+
+        return method;
     }
 
     private List<string> FirstLine(Class refe, Class oTC, Method method)
