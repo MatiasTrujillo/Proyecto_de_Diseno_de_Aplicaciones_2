@@ -7,11 +7,17 @@ using Simulator.Domain.Exception;
 using Simulator.DTO;
 using Simulator.IBussinesLogic;
 using Simulator.IDataAcces;
+using Attribute = Simulator.Domain.Attribute;
 using Type = Simulator.Domain.Type;
 
 namespace Simulator.BussinesLogic;
 
-public class MethodService(IMethodRepository methodRepository, IClassRepository classRepository, IParameterRepository parameterRepository, ILocalVariableRepository localVariableRepository, IInvokedMethodRepository invokedMethodRepository) : IMethodService
+public class MethodService(
+    IMethodRepository methodRepository,
+    IClassRepository classRepository,
+    IParameterRepository parameterRepository,
+    ILocalVariableRepository localVariableRepository,
+    IInvokedMethodRepository invokedMethodRepository) : IMethodService
 {
     private readonly IMethodRepository _methodRepository = methodRepository;
     private readonly IClassRepository _classRepository = classRepository;
@@ -183,8 +189,9 @@ public class MethodService(IMethodRepository methodRepository, IClassRepository 
 
     private void ValidateNameParameter(Parameter parameter, Method method)
     {
-        if(method.LocalVariables != null && method.Parameters != null && (method.LocalVariables.Any(v => v.Name.Equals(parameter.Name, StringComparison.OrdinalIgnoreCase)) ||
-                                                                          method.Parameters.Any(p => p.Name.Equals(parameter.Name, StringComparison.OrdinalIgnoreCase))))
+        if(method.LocalVariables != null && method.Parameters != null &&
+           (method.LocalVariables.Any(v => v.Name.Equals(parameter.Name, StringComparison.OrdinalIgnoreCase)) ||
+            method.Parameters.Any(p => p.Name.Equals(parameter.Name, StringComparison.OrdinalIgnoreCase))))
         {
             throw new InvalidMethodException("A variable or parameter with the same name already exists.");
         }
@@ -192,8 +199,9 @@ public class MethodService(IMethodRepository methodRepository, IClassRepository 
 
     private static void ValidateNameLocalVariable(LocalVariable localVariable, Method method)
     {
-        if(method.LocalVariables != null && method.Parameters != null && (method.LocalVariables.Any(v => v.Name.Equals(localVariable.Name, StringComparison.OrdinalIgnoreCase)) ||
-                                                                          method.Parameters.Any(p => p.Name.Equals(localVariable.Name, StringComparison.OrdinalIgnoreCase))))
+        if(method.LocalVariables != null && method.Parameters != null &&
+           (method.LocalVariables.Any(v => v.Name.Equals(localVariable.Name, StringComparison.OrdinalIgnoreCase)) ||
+            method.Parameters.Any(p => p.Name.Equals(localVariable.Name, StringComparison.OrdinalIgnoreCase))))
         {
             throw new InvalidMethodException("A variable or parameter with the same name already exists.");
         }
@@ -328,17 +336,81 @@ public class MethodService(IMethodRepository methodRepository, IClassRepository 
         var existsInAttributes = false;
         var existsInMethods = false;
         var existingInHeredity = false;
+
         if(classT != null)
         {
-            existsInAttributes = classT.Attributes?.Any(a => a.Name == invokedMethodReferenceName) ?? false;
+            var attribute = classT.Attributes?.FirstOrDefault(a => a.Name == invokedMethodReferenceName);
+            existsInAttributes = attribute != null;
+            ManageAttribute(method, attribute);
             existsInMethods = InvokeMethodReferenceThis(invokedMethodReferenceName, method, existsInMethods, classT);
             existingInHeredity = InvokeMethodReferenceBase(invokedMethodReferenceName, method, classT, existingInHeredity);
         }
 
-        if(!existsInParameters && !existsInLocalVariables && !existsInAttributes && !existsInMethods && !existingInHeredity)
+        ManageParams(invokedMethodReferenceName, method);
+        var localVar = method.LocalVariables?.FirstOrDefault(v => v.Name == invokedMethodReferenceName);
+        ManageLocalVariable(method, localVar);
+
+        if(!existsInParameters && !existsInLocalVariables && !existsInAttributes && !existsInMethods &&
+           !existingInHeredity)
         {
-            throw new MethodException($"Reference name '{invokedMethodReferenceName}' does not match any parameter, local variable, or attribute in method '{method.Name}'.");
+            throw new MethodException(
+                $"Reference name '{invokedMethodReferenceName}' does not match any parameter, local variable, or attribute in method '{method.Name}'.");
         }
+    }
+
+    private void ManageAttribute(Method method, Attribute? attribute)
+    {
+        if(attribute?.Type is Class classAttrType)
+        {
+            var attrClass = _classRepository.Find(classAttrType.Id);
+            if(attrClass == null || !HasMethodInHierarchy(attrClass, method.Id))
+            {
+                throw new MethodException(
+                    $"The method with ID '{method.Id}' does not exist in the class of attribute '{attribute.Name}' or its ancestors.");
+            }
+        }
+    }
+
+    private void ManageLocalVariable(Method method, LocalVariable? localVar)
+    {
+        if(localVar?.LocalVariableType is Class classLocalVarType)
+        {
+            var localVarClass = _classRepository.Find(classLocalVarType.Id);
+            if(localVarClass == null || !HasMethodInHierarchy(localVarClass, method.Id))
+            {
+                throw new MethodException(
+                    $"The method with ID '{method.Id}' does not exist in the class of local variable '{localVar.Name}' or its ancestors.");
+            }
+        }
+    }
+
+    private void ManageParams(string invokedMethodReferenceName, Method method)
+    {
+        var param = method.Parameters?.FirstOrDefault(p => p.Name == invokedMethodReferenceName);
+        if(param?.ParameterType is Class classParamType)
+        {
+            var paramClass = _classRepository.Find(classParamType.Id);
+            if(paramClass == null || !HasMethodInHierarchy(paramClass, method.Id))
+            {
+                throw new MethodException(
+                    $"The method with ID '{method.Id}' does not exist in the class of parameter '{param.Name}' or its ancestors.");
+            }
+        }
+    }
+
+    private bool HasMethodInHierarchy(Class targetClass, Guid methodId)
+    {
+        while(targetClass != null)
+        {
+            if(targetClass.Methods?.Any(m => m.Id == methodId) == true)
+            {
+                return true;
+            }
+
+            targetClass = targetClass.HierarchyClass;
+        }
+
+        return false;
     }
 
     private static bool InvokeMethodReferenceBase(string invokedMethodReferenceName, Method method, Class classT,
@@ -352,8 +424,7 @@ public class MethodService(IMethodRepository methodRepository, IClassRepository 
         return existingInHeredity;
     }
 
-    private static bool InvokeMethodReferenceThis(string invokedMethodReferenceName, Method method, bool existsInMethods,
-        Class classT)
+    private static bool InvokeMethodReferenceThis(string invokedMethodReferenceName, Method method, bool existsInMethods, Class classT)
     {
         if(invokedMethodReferenceName == "this")
         {
