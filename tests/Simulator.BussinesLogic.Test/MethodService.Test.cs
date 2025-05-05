@@ -464,6 +464,27 @@ public class MethodServiceTest
     }
 
     [TestMethod]
+    public void CreateParameter_ShouldThrowException_WhenParameterNameIsEmpty()
+    {
+        var classT = new TypeDTO { Name = "TestClass" };
+
+        var parameterDto = new ParameterDTO
+        {
+            Name = string.Empty,
+            ParameterType = classT
+        };
+
+        _mockClassRepository
+            .Setup(repo => repo.FindAllTypes())
+            .Returns([new Class { Name = "TestClass" }]);
+
+        var exception = Assert.ThrowsException<LocalVariableNotFoundException>(() =>
+            _methodService.CreateParameter(parameterDto));
+
+        Assert.AreEqual("Parameter Name cannot be empty.", exception.Message);
+    }
+
+    [TestMethod]
     public void CreateLocalVariable_ShouldThrowException_WhenLocalVaraiableIsNotValid()
     {
         var exception = Assert.ThrowsException<LocalVariableNotFoundException>(() => _methodService.CreateLocalVariable(null));
@@ -526,6 +547,27 @@ public class MethodServiceTest
 
         _mockMethodRepository.Verify(repo => repo.Find(methodId), Times.Once);
         _mockInvokedMethodRepository.Verify(repo => repo.Add(It.IsAny<InvokedMethod>()), Times.Once);
+    }
+
+    [TestMethod]
+    public void CreateLocalVariable_ShouldThrowException_WhenNameIsEmpty()
+    {
+        var classT = new TypeDTO { Name = "TestClass" };
+
+        var localVariableDto = new LocalVariableDTO
+        {
+            Name = string.Empty,
+            LocalVariableType = classT
+        };
+
+        _mockClassRepository
+            .Setup(repo => repo.FindAllTypes())
+            .Returns([new Class { Name = "TestClass" }]);
+
+        var exception = Assert.ThrowsException<LocalVariableNotFoundException>(() =>
+            _methodService.CreateLocalVariable(localVariableDto));
+
+        Assert.AreEqual("Local Variable Name cannot be empty.", exception.Message);
     }
 
     [TestMethod]

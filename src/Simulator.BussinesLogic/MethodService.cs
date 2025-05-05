@@ -80,6 +80,11 @@ public class MethodService(IMethodRepository methodRepository, IClassRepository 
     public Guid CreateLocalVariable(LocalVariableDTO localVariable)
     {
         ValidateLocalVariableIsNotNull(localVariable);
+        if(localVariable.Name == String.Empty)
+        {
+            throw new LocalVariableNotFoundException("Local Variable Name cannot be empty.");
+        }
+
         var localVariableT = localVariable.ToEntity();
         var type = localVariableT.LocalVariableType.Name;
         var returnType = _classRepository.FindAllTypes().FirstOrDefault(c => c.Name == type);
@@ -114,6 +119,11 @@ public class MethodService(IMethodRepository methodRepository, IClassRepository 
     {
         ValidateParameterIsNotNull(parameter);
         var parameterT = parameter.ToEntity();
+        if(parameter.Name == String.Empty)
+        {
+            throw new LocalVariableNotFoundException("Parameter Name cannot be empty.");
+        }
+
         var type = parameterT.ParameterType.Name;
         var returnType = _classRepository.FindAllTypes().FirstOrDefault(c => c.Name == type);
         parameterT.ParameterType = returnType;
