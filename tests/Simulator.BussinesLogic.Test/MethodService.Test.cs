@@ -515,10 +515,34 @@ public class MethodServiceTest
             .Setup(repo => repo.FindAllTypes())
             .Returns([new Class { Name = "TestClass" }]);
 
-        var exception = Assert.ThrowsException<LocalVariableNotFoundException>(() =>
+        var exception = Assert.ThrowsException<ParameterException>(() =>
             _methodService.CreateParameter(parameterDto));
 
-        Assert.AreEqual("Parameter Name cannot be empty.", exception.Message);
+        Assert.AreEqual("Name cannot be null or empty", exception.Message);
+    }
+
+    [DataTestMethod]
+    [DataRow("base")]
+    [DataRow("this")]
+    [DataRow("Object")]
+    public void CreateParameter_ShouldThrowException_WhenNameIsReservedKeyword(string reservedName)
+    {
+        var dto = new ParameterDTO
+        {
+            Name = reservedName,
+            ParameterType = new TypeDTO { Name = "SomeType" },
+        };
+
+        _mockClassRepository
+            .Setup(repo => repo.FindAllTypes())
+            .Returns([new Class { Name = "SomeType", Id = Guid.NewGuid() }]);
+
+        var ex = Assert.ThrowsException<ParameterException>(() =>
+        {
+            _methodService.CreateParameter(dto);
+        });
+
+        Assert.AreEqual("The name is a reserved keyword and is not allowed.", ex.Message);
     }
 
     [TestMethod]
