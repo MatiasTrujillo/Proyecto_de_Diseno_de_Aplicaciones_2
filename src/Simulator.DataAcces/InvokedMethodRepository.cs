@@ -15,4 +15,9 @@ public class InvokedMethodRepository(SqlContext context) : IInvokedMethodReposit
     {
         return context.Set<InvokedMethod>().Find(id);
     }
+
+    public List<InvokedMethod> FindAll()
+    {
+        return context.Set<InvokedMethod>().ToList();
+    }
 }

@@ -202,6 +202,28 @@ public class MethodServiceTest
     }
 
     [TestMethod]
+    public void DeleteMethod_ShouldThrowException_WhenMethodIsAssociatedWithInvokedMethod()
+    {
+        var methodId = Guid.NewGuid();
+        var method = new Method { Id = methodId, Name = "TestMethod" };
+
+        _mockMethodRepository.Setup(repo => repo.Find(methodId)).Returns(method);
+        _mockClassRepository.Setup(repo => repo.FindAll()).Returns([]);
+
+        var invokedMethods = new List<InvokedMethod>
+        {
+            new InvokedMethod { Id = Guid.NewGuid(), MethodId = methodId }
+        };
+
+        _mockInvokedMethodRepository.Setup(repo => repo.FindAll()).Returns(invokedMethods);
+
+        var exception = Assert.ThrowsException<InvalidMethodException>(() => _methodService.DeleteMethod(methodId));
+
+        Assert.AreEqual("Method is associated with invokedMethod.", exception.Message);
+        _mockMethodRepository.Verify(repo => repo.Delete(It.IsAny<Guid>()), Times.Never);
+    }
+
+    [TestMethod]
     public void AddLocalVariableToMethod_ShouldAddLocalVariable_WhenValidInputsProvided()
     {
         var methodId = Guid.NewGuid();

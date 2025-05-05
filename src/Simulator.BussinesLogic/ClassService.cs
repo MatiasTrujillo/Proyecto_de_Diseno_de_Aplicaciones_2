@@ -48,9 +48,9 @@ public class ClassService(
     public void UpdateClass(Guid id, UpdateClassDTO uClass)
     {
         ValidateClassIdExists(id);
-
         var classT = _classRepository.Find(id);
         ValidateDontUpdateObjectClass(classT);
+        ValidateClassIsNotInUse(id);
         ManageName(uClass, classT);
         ManageStereotype(uClass, classT);
         ManageHierarchyClass(id, uClass, classT);

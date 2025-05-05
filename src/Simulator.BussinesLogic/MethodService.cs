@@ -142,7 +142,17 @@ public class MethodService(IMethodRepository methodRepository, IClassRepository 
         ValidateMethodExist(method);
         ValidateMehodIsNotInClass(id);
         ValidateMethodIsNotInUse(id);
+        ValidateMethodIsNotInInvokedMethod(id);
         _methodRepository.Delete(id);
+    }
+
+    private void ValidateMethodIsNotInInvokedMethod(Guid id)
+    {
+        var iVAll = _invokedMethodRepository.FindAll();
+        if(iVAll.Any(iV => iV.MethodId == id))
+        {
+            throw new InvalidMethodException("Method is associated with invokedMethod.");
+        }
     }
 
     private void ValidateMethodIsNotInUse(Guid id)
