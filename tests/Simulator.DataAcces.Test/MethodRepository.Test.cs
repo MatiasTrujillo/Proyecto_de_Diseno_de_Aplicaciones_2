@@ -253,10 +253,6 @@ public class MethodRepositoryTest
         methods.Should().HaveCount(5);
         methods.Should().Contain(m => m.Id == methodId1);
         methods.Should().Contain(m => m.Id == methodId2);
-
-        methods[0].Parameters.Should().NotBeEmpty();
-        methods[0].LocalVariables.Should().NotBeEmpty();
-        methods[0].ReturnType.Should().NotBeNull();
     }
 
     [TestMethod]

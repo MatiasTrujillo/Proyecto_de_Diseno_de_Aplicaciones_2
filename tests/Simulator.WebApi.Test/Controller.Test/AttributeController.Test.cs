@@ -85,4 +85,22 @@ public class AttributeControllerTest
 
         AttributeServiceMock.Verify(service => service.UpdateAttribute(id, dto), Times.Once);
     }
+
+    [TestMethod]
+    public void SetInvokeMethodToAttribute_ShouldCallServiceAndReturnCreated()
+    {
+        var attributeId = Guid.NewGuid();
+        var methodInvokeId = Guid.NewGuid();
+
+        AttributeServiceMock.Setup(service => service.SetInvokeMethodToAttribute(attributeId, methodInvokeId))
+            .Verifiable();
+
+        var result = _controller.SetInvokeMethodToAttribute(attributeId, methodInvokeId) as CreatedResult;
+
+        Assert.IsNotNull(result);
+        Assert.AreEqual(201, result.StatusCode);
+        Assert.IsNotNull(result.Value);
+
+        AttributeServiceMock.Verify(service => service.SetInvokeMethodToAttribute(attributeId, methodInvokeId), Times.Once);
+    }
 }

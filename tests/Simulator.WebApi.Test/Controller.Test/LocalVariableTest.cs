@@ -38,4 +38,26 @@ public class LocalVariableTest
 
         _methodServiceMock.Verify(service => service.CreateLocalVariable(localVariableDto), Times.Once);
     }
+
+    [TestMethod]
+    public void SetInvokeMethodToLocalVariable_ShouldReturnCreated_WhenLocalVariableIsAssociatedWithInvokedMethod()
+    {
+        var localVariableId = Guid.NewGuid();
+        var invokedMethodId = Guid.NewGuid();
+
+        _methodServiceMock
+            .Setup(service => service.SetInvokeMethodToLocalVariable(localVariableId, invokedMethodId))
+            .Verifiable();
+
+        var result = _controller.SetInvokeMethodToLocalVariable(localVariableId, invokedMethodId) as CreatedResult;
+
+        Assert.IsNotNull(result, "The result should not be null.");
+        Assert.AreEqual(201, result.StatusCode, "The status code should be 201 Created.");
+        Assert.IsNotNull(result.Value, "The response value should not be null.");
+
+        var responseMessage = result.Value?.GetType().GetProperty("message")?.GetValue(result.Value, null);
+        Assert.AreEqual("Local variable associated with invoked method successfully", responseMessage);
+
+        _methodServiceMock.Verify(service => service.SetInvokeMethodToLocalVariable(localVariableId, invokedMethodId), Times.Once);
+    }
 }

@@ -6,6 +6,7 @@ public class Attribute
     public string Name { get; set; }
     public Accessibility Accessibility { get; set; }
     public virtual Type? Type { get; set; }
+    public virtual InvokedMethod? InvokedMethod { get; set; }
 
     public Attribute()
     {
@@ -13,6 +14,7 @@ public class Attribute
         Name = string.Empty;
         Accessibility = Accessibility.Public;
         Type = new Primitive(PrimitiveType.Int);
+        InvokedMethod = null;
     }
 
     public Attribute(string name, Accessibility accessibility, Type type)
@@ -22,6 +24,7 @@ public class Attribute
         Name = name;
         Accessibility = accessibility;
         Type = type;
+        InvokedMethod = null;
     }
 
     private void ValidateAttributes(string name)

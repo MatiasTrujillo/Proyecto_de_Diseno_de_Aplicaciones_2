@@ -26,6 +26,7 @@ public class LocalVariableRepository(SqlContext context) : ILocalVariableReposit
     {
         var localVariable = context.LocalVariables
             .Include(p => p.LocalVariableType)
+            .Include(p => p.InvokedMethod)
             .FirstOrDefault(p => p.Id == id);
 
         return localVariable;
@@ -35,6 +36,14 @@ public class LocalVariableRepository(SqlContext context) : ILocalVariableReposit
     {
         return context.LocalVariables
             .Include(p => p.LocalVariableType)
+            .Include(p => p.InvokedMethod)
             .ToList();
+    }
+
+    public void Update(LocalVariable localVariable)
+    {
+        var existingLocalVariable = Find(localVariable.Id);
+        context.Entry(existingLocalVariable).CurrentValues.SetValues(localVariable);
+        context.SaveChanges();
     }
 }

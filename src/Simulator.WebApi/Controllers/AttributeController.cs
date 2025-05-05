@@ -31,6 +31,13 @@ public class AttributeController(IAttributeService attributeService) : Controlle
         return Ok(new { message = "Attribute updated successfully" });
     }
 
+    [HttpPost("{id}/invokedMethods/{idMethodInvoke}")]
+    public IActionResult SetInvokeMethodToAttribute([FromRoute] Guid id, [FromRoute] Guid idMethodInvoke)
+    {
+        _attributeService.SetInvokeMethodToAttribute(id, idMethodInvoke);
+        return Created(string.Empty, new { message = "Method invoke associate successfully" });
+    }
+
     [HttpDelete("{id}")]
     public IActionResult DeleteAttribute([FromRoute] Guid id)
     {
