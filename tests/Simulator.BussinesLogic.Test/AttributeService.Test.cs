@@ -254,7 +254,7 @@ public class AttributeServiceTest
             .Returns(classEntity);
         _mockClassRepository
             .Setup(repo => repo.FindAll())
-            .Returns(new List<Class>());
+            .Returns([]);
 
         var ex = Assert.ThrowsException<InvalidAttributeException>(() =>
         {

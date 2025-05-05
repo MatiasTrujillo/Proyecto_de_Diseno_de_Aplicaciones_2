@@ -169,9 +169,9 @@ public class ClassServiceTest
         var original = new Class(KeyWord.Sealed, null, [], [], "Class2") { Id = id };
 
         _mockClassRepository.Setup(r => r.Find(id)).Returns(original);
-        _mockClassRepository.Setup(r => r.FindAll()).Returns(new List<Class> { original });
-        _mockAttributeRepository.Setup(r => r.FindAll()).Returns(new List<Attribute>());
-        _mockMethodRepository.Setup(r => r.FindAll()).Returns(new List<Method>());
+        _mockClassRepository.Setup(r => r.FindAll()).Returns([original]);
+        _mockAttributeRepository.Setup(r => r.FindAll()).Returns([]);
+        _mockMethodRepository.Setup(r => r.FindAll()).Returns([]);
         _mockClassRepository.Setup(r => r.Delete(It.IsAny<Guid>()));
 
         _classService.DeleteClass(id);
@@ -185,7 +185,7 @@ public class ClassServiceTest
         var objectClass = new Class { Id = Guid.NewGuid(), Name = "Object" };
 
         _mockClassRepository.Setup(r => r.Find(objectClass.Id)).Returns(objectClass);
-        _mockClassRepository.Setup(r => r.FindAll()).Returns(new List<Class> { objectClass });
+        _mockClassRepository.Setup(r => r.FindAll()).Returns([objectClass]);
 
         var exception = Assert.ThrowsException<InvalidClassException>(() =>
         {
@@ -227,7 +227,7 @@ public class ClassServiceTest
         var existingClass = new Class { Id = classId, Name = "OldName" };
         var newHeritageClass = new Class { Id = heritageId };
 
-        _mockClassRepository.Setup(r => r.FindAll()).Returns(new List<Class> { existingClass, newHeritageClass });
+        _mockClassRepository.Setup(r => r.FindAll()).Returns([existingClass, newHeritageClass]);
         _mockClassRepository.Setup(r => r.Find(classId)).Returns(existingClass);
         _mockClassRepository.Setup(r => r.Find(heritageId)).Returns(newHeritageClass);
         _mockClassRepository.Setup(r => r.Update(It.IsAny<Class>()));
@@ -257,14 +257,14 @@ public class ClassServiceTest
 
         var concreteParentClass = new Class { Id = heritageId, Name = "ConcreteClass", Stereotype = KeyWord.Abstract };
 
-        _mockClassRepository.Setup(r => r.FindAll()).Returns(new List<Class> { existingClass, concreteParentClass });
+        _mockClassRepository.Setup(r => r.FindAll()).Returns([existingClass, concreteParentClass]);
         _mockClassRepository.Setup(r => r.Find(classId)).Returns(existingClass);
         _mockClassRepository.Setup(r => r.Find(heritageId)).Returns(concreteParentClass);
 
         _mockClassRepository.Setup(r => r.Update(It.IsAny<Class>())).Verifiable();
 
-        _mockAttributeRepository.Setup(r => r.FindAll()).Returns(new List<Attribute>());
-        _mockMethodRepository.Setup(r => r.FindAll()).Returns(new List<Method>());
+        _mockAttributeRepository.Setup(r => r.FindAll()).Returns([]);
+        _mockMethodRepository.Setup(r => r.FindAll()).Returns([]);
 
         var dto = new UpdateClassDTO
         {
@@ -291,7 +291,7 @@ public class ClassServiceTest
 
         var parentClass = new Class { Id = heritageId, Name = "ParentClass" };
 
-        _mockClassRepository.Setup(r => r.FindAll()).Returns(new List<Class> { sealedClass, parentClass });
+        _mockClassRepository.Setup(r => r.FindAll()).Returns([sealedClass, parentClass]);
         _mockClassRepository.Setup(r => r.Find(classId)).Returns(sealedClass);
         _mockClassRepository.Setup(r => r.Find(heritageId)).Returns(parentClass);
 
@@ -348,7 +348,7 @@ public class ClassServiceTest
         var id = Guid.NewGuid();
         var classT = new Class { Id = id, Name = "OldName" };
 
-        _mockClassRepository.Setup(r => r.FindAll()).Returns(new List<Class> { classT });
+        _mockClassRepository.Setup(r => r.FindAll()).Returns([classT]);
         _mockClassRepository.Setup(r => r.Find(id)).Returns(classT);
 
         var dto = new UpdateClassDTO { Name = "invalidName" };

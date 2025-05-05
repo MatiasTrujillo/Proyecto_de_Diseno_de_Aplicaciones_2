@@ -140,7 +140,7 @@ public class InvokedMethodRepository_Test
 
         result.Should().NotBeNull();
         result.Should().HaveCount(2);
-        result.Select(r => r.ReferenceName).Should().Contain(new[] { "Ref1", "Ref2" });
+        result.Select(r => r.ReferenceName).Should().Contain(["Ref1", "Ref2"]);
     }
     #endregion
 }

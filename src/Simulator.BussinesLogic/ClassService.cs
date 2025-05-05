@@ -73,17 +73,17 @@ public class ClassService(
             ValidateClassIsNotInUse(id);
             var heritageClassT = _classRepository.Find(uClass.IdClass.Value);
 
-            if (classT.Stereotype == KeyWord.Sealed)
+            if(classT.Stereotype == KeyWord.Sealed)
             {
                 throw new InvalidClassException("A sealed class cannot inherit from any class.");
             }
 
-            if (heritageClassT.Stereotype == KeyWord.Sealed)
+            if(heritageClassT.Stereotype == KeyWord.Sealed)
             {
                 throw new InvalidClassException("A class cannot inherit from a sealed class.");
             }
 
-            if (heritageClassT.Stereotype == KeyWord.Abstract)
+            if(heritageClassT.Stereotype == KeyWord.Abstract)
             {
                 throw new InvalidClassException("An abstract class cannot inherit from a concrete class.");
             }
@@ -176,7 +176,7 @@ public class ClassService(
 
     private void ValidateAccesibility(KeyWord? stereotype)
     {
-        if (stereotype != null && !Enum.IsDefined(typeof(KeyWord), stereotype))
+        if(stereotype != null && !Enum.IsDefined(typeof(KeyWord), stereotype))
         {
             throw new InvalidClassException("Invalid stereotype value.");
         }

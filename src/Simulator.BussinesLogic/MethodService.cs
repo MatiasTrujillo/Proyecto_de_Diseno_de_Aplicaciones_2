@@ -44,7 +44,7 @@ public class MethodService(IMethodRepository methodRepository, IClassRepository 
         ValidateInvokedMethodDTOExist(invokedMethod);
         var method = _methodRepository.Find(invokedMethod.MethodId);
         ValidateMethodExist(method);
-        if(invokedMethod.ReferenceName == String.Empty)
+        if(invokedMethod.ReferenceName == string.Empty)
         {
             throw new InvokedMethodNotFoundException("Invoked Method Reference Name cannot be empty.");
         }
@@ -80,7 +80,7 @@ public class MethodService(IMethodRepository methodRepository, IClassRepository 
     public Guid CreateLocalVariable(LocalVariableDTO localVariable)
     {
         ValidateLocalVariableIsNotNull(localVariable);
-        if(localVariable.Name == String.Empty)
+        if(localVariable.Name == string.Empty)
         {
             throw new LocalVariableNotFoundException("Local Variable Name cannot be empty.");
         }
@@ -119,7 +119,7 @@ public class MethodService(IMethodRepository methodRepository, IClassRepository 
     {
         ValidateParameterIsNotNull(parameter);
         var parameterT = parameter.ToEntity();
-        if(parameter.Name == String.Empty)
+        if(parameter.Name == string.Empty)
         {
             throw new LocalVariableNotFoundException("Parameter Name cannot be empty.");
         }
@@ -373,7 +373,7 @@ public class MethodService(IMethodRepository methodRepository, IClassRepository 
 
     private void ValidateKeyWord(KeyWord? stereotype)
     {
-        if (stereotype != null && !Enum.IsDefined(typeof(KeyWord), stereotype))
+        if(stereotype != null && !Enum.IsDefined(typeof(KeyWord), stereotype))
         {
             throw new InvalidMethodException("Invalid stereotype value.");
         }
@@ -381,7 +381,7 @@ public class MethodService(IMethodRepository methodRepository, IClassRepository 
 
     private void ValidateAccesibility(Accessibility methodTAccessibility)
     {
-        if (!Enum.IsDefined(typeof(Accessibility), methodTAccessibility))
+        if(!Enum.IsDefined(typeof(Accessibility), methodTAccessibility))
         {
             throw new InvalidMethodException("Invalid accessibility value.");
         }

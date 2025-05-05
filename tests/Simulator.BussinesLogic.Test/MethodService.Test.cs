@@ -29,10 +29,7 @@ public class MethodServiceTest
             Name = "FirstMethodDto",
             Accessibility = Accessibility.Private,
             Stereotype = null,
-            ReturnType = new TypeDTO
-            {
-                Name = "TestClass",
-            }
+            ReturnType = new TypeDTO { Name = "TestClass", }
         };
         _otherMethodDto = new MethodDTO()
         {
@@ -44,10 +41,7 @@ public class MethodServiceTest
         _parameterDto = new ParameterDTO
         {
             Name = "TestParameter",
-            ParameterType = new TypeDTO
-            {
-                Name = "TestClass",
-            }
+            ParameterType = new TypeDTO { Name = "TestClass", }
         };
         _mockMethodRepository = new Mock<IMethodRepository>(MockBehavior.Strict);
         _mockClassRepository = new Mock<IClassRepository>(MockBehavior.Strict);
@@ -59,7 +53,8 @@ public class MethodServiceTest
         _mockMethodRepository
             .Setup(repo => repo.FindAll())
             .Returns([]);
-        _methodService = new MethodService(_mockMethodRepository.Object, _mockClassRepository.Object, _mockParameterRepository.Object, _mockLocalVariableRepository.Object, _mockInvokedMethodRepository.Object);
+        _methodService = new MethodService(_mockMethodRepository.Object, _mockClassRepository.Object,
+            _mockParameterRepository.Object, _mockLocalVariableRepository.Object, _mockInvokedMethodRepository.Object);
     }
 
     [TestMethod]
@@ -85,7 +80,10 @@ public class MethodServiceTest
     [TestMethod]
     public void CreateMethod_ShouldThrowException_WhenReturnTypeIsNull()
     {
-        var classT = new TypeDTO { Name = "TestClass" };
+        var classT = new TypeDTO
+        {
+            Name = "TestClass"
+        };
         var method = new MethodDTO
         {
             Name = "TestMethod",
@@ -104,7 +102,10 @@ public class MethodServiceTest
     public void CreateMethod_ShouldThrowException_WhenKeyAccessibilityIsNotValid()
     {
         var invalidAccessibility = (Accessibility)100;
-        var classT = new TypeDTO { Name = "TestClass" };
+        var classT = new TypeDTO
+        {
+            Name = "TestClass"
+        };
         var method = new MethodDTO
         {
             Name = "TestMethod",
@@ -143,7 +144,8 @@ public class MethodServiceTest
     {
         MethodDTO nullMethodDto = null!;
 
-        var exception = Assert.ThrowsException<MethodNotFoundException>(() => _methodService.CreateMethod(nullMethodDto));
+        var exception =
+            Assert.ThrowsException<MethodNotFoundException>(() => _methodService.CreateMethod(nullMethodDto));
         Assert.AreEqual("Method cannot be null.", exception.Message);
     }
 
@@ -195,8 +197,17 @@ public class MethodServiceTest
     [TestMethod]
     public void AssociateMethodWithClass_ShouldAddMethodToClass_WhenValidInputsProvided()
     {
-        var method = new Method { Id = Guid.NewGuid(), Name = "TestMethod" };
-        var classT = new Class { Id = Guid.NewGuid(), Name = "TestClass", Methods = [] };
+        var method = new Method
+        {
+            Id = Guid.NewGuid(),
+            Name = "TestMethod"
+        };
+        var classT = new Class
+        {
+            Id = Guid.NewGuid(),
+            Name = "TestClass",
+            Methods = []
+        };
 
         _mockMethodRepository.Setup(repo => repo.Find(method.Id)).Returns(method);
         _mockClassRepository.Setup(repo => repo.Find(classT.Id)).Returns(classT);
@@ -211,9 +222,22 @@ public class MethodServiceTest
     [TestMethod]
     public void ValidateClassUniqueNameMethod_ShouldThrowException_WhenMethodNameAlreadyExists()
     {
-        var method = new Method { Id = Guid.NewGuid(), Name = "TestMethod" };
-        var existingMethod = new Method { Id = Guid.NewGuid(), Name = "TestMethod" };
-        var classT = new Class { Id = Guid.NewGuid(), Name = "TestClass", Methods = [existingMethod] };
+        var method = new Method
+        {
+            Id = Guid.NewGuid(),
+            Name = "TestMethod"
+        };
+        var existingMethod = new Method
+        {
+            Id = Guid.NewGuid(),
+            Name = "TestMethod"
+        };
+        var classT = new Class
+        {
+            Id = Guid.NewGuid(),
+            Name = "TestClass",
+            Methods = [existingMethod]
+        };
 
         _mockMethodRepository.Setup(repo => repo.Find(method.Id)).Returns(method);
         _mockClassRepository.Setup(repo => repo.Find(classT.Id)).Returns(classT);
@@ -227,7 +251,12 @@ public class MethodServiceTest
     public void DeleteMethod_ShouldDeleteMethod_WhenValid()
     {
         var methodId = Guid.NewGuid();
-        var method = new Method { Id = methodId, Name = "TestMethod", Methods = [] };
+        var method = new Method
+        {
+            Id = methodId,
+            Name = "TestMethod",
+            Methods = []
+        };
 
         _mockMethodRepository.Setup(repo => repo.Find(methodId)).Returns(method);
         _mockMethodRepository.Setup(repo => repo.Delete(It.IsAny<Guid>()));
@@ -244,15 +273,16 @@ public class MethodServiceTest
     public void DeleteMethod_ShouldThrowException_WhenMethodIsAssociatedWithInvokedMethod()
     {
         var methodId = Guid.NewGuid();
-        var method = new Method { Id = methodId, Name = "TestMethod" };
+        var method = new Method
+        {
+            Id = methodId,
+            Name = "TestMethod"
+        };
 
         _mockMethodRepository.Setup(repo => repo.Find(methodId)).Returns(method);
         _mockClassRepository.Setup(repo => repo.FindAll()).Returns([]);
 
-        var invokedMethods = new List<InvokedMethod>
-        {
-            new InvokedMethod { Id = Guid.NewGuid(), MethodId = methodId }
-        };
+        var invokedMethods = new List<InvokedMethod> { new InvokedMethod { Id = Guid.NewGuid(), MethodId = methodId } };
 
         _mockInvokedMethodRepository.Setup(repo => repo.FindAll()).Returns(invokedMethods);
 
@@ -267,8 +297,17 @@ public class MethodServiceTest
     {
         var methodId = Guid.NewGuid();
         var localVariableId = Guid.NewGuid();
-        var localVariable = new LocalVariable { Id = localVariableId, Name = "TestLocalVariable" };
-        var method = new Method { Id = methodId, Name = "TestMethod", LocalVariables = [] };
+        var localVariable = new LocalVariable
+        {
+            Id = localVariableId,
+            Name = "TestLocalVariable"
+        };
+        var method = new Method
+        {
+            Id = methodId,
+            Name = "TestMethod",
+            LocalVariables = []
+        };
 
         _mockMethodRepository.Setup(repo => repo.Find(methodId)).Returns(method);
         _mockLocalVariableRepository.Setup(repo => repo.Find(localVariableId)).Returns(localVariable);
@@ -312,8 +351,17 @@ public class MethodServiceTest
     {
         var methodId = Guid.NewGuid();
         var parameterId = Guid.NewGuid();
-        var parameter = new Parameter { Id = parameterId, Name = "TestParameter" };
-        var method = new Method { Id = methodId, Name = "TestMethod", Parameters = [] };
+        var parameter = new Parameter
+        {
+            Id = parameterId,
+            Name = "TestParameter"
+        };
+        var method = new Method
+        {
+            Id = methodId,
+            Name = "TestMethod",
+            Parameters = []
+        };
 
         _mockMethodRepository.Setup(repo => repo.Find(methodId)).Returns(method);
         _mockParameterRepository.Setup(repo => repo.Find(parameterId)).Returns(parameter);
@@ -367,7 +415,12 @@ public class MethodServiceTest
             Id = methodId,
             Name = "TestMethod",
             LocalVariables = [],
-            Parameters = [new Parameter { Name = "TestParameter" }]
+            Parameters = [new Parameter
+            {
+                Name = "TestParameter"
+            }
+
+            ]
         };
 
         _mockMethodRepository.Setup(repo => repo.Find(methodId)).Returns(method);
@@ -382,19 +435,9 @@ public class MethodServiceTest
     public void AddParameterToMethod_ShouldAddParameter_WhenValidInputsProvided()
     {
         var methodId = Guid.NewGuid();
-        var method = new Method
-        {
-            Id = methodId,
-            Name = "TestMethod",
-            LocalVariables = [],
-            Parameters = []
-        };
+        var method = new Method { Id = methodId, Name = "TestMethod", LocalVariables = [], Parameters = [] };
         var parameterId = Guid.NewGuid();
-        var parameter = new Parameter
-        {
-            Id = parameterId,
-            Name = "TestParameter"
-        };
+        var parameter = new Parameter { Id = parameterId, Name = "TestParameter" };
 
         _mockMethodRepository.Setup(repo => repo.Find(methodId)).Returns(method);
         _mockParameterRepository.Setup(repo => repo.Find(parameterId)).Returns(parameter);
@@ -436,14 +479,11 @@ public class MethodServiceTest
     {
         var classT = new TypeDTO { Name = "TestClass" };
 
-        var parameterDto = new ParameterDTO
-        {
-            Name = "TestParameter",
-            ParameterType = classT
-        };
+        var parameterDto = new ParameterDTO { Name = "TestParameter", ParameterType = classT };
 
         _mockParameterRepository
-            .Setup(r => r.Add(It.Is<Parameter>(p => p.Name == parameterDto.Name && p.ParameterType.Name == classT.Name)));
+            .Setup(r => r.Add(It.Is<Parameter>(p =>
+                p.Name == parameterDto.Name && p.ParameterType.Name == classT.Name)));
 
         _mockClassRepository
             .Setup(repo => repo.FindAllTypes())
@@ -468,11 +508,7 @@ public class MethodServiceTest
     {
         var classT = new TypeDTO { Name = "TestClass" };
 
-        var parameterDto = new ParameterDTO
-        {
-            Name = string.Empty,
-            ParameterType = classT
-        };
+        var parameterDto = new ParameterDTO { Name = string.Empty, ParameterType = classT };
 
         _mockClassRepository
             .Setup(repo => repo.FindAllTypes())
@@ -487,7 +523,8 @@ public class MethodServiceTest
     [TestMethod]
     public void CreateLocalVariable_ShouldThrowException_WhenLocalVaraiableIsNotValid()
     {
-        var exception = Assert.ThrowsException<LocalVariableNotFoundException>(() => _methodService.CreateLocalVariable(null));
+        var exception =
+            Assert.ThrowsException<LocalVariableNotFoundException>(() => _methodService.CreateLocalVariable(null));
 
         Assert.AreEqual("Local Variable cannot be null.", exception.Message);
     }
@@ -497,14 +534,11 @@ public class MethodServiceTest
     {
         var classT = new TypeDTO { Name = "TestClass" };
 
-        var localVariableDto = new LocalVariableDTO
-        {
-            Name = "TestParameter",
-            LocalVariableType = classT
-        };
+        var localVariableDto = new LocalVariableDTO { Name = "TestParameter", LocalVariableType = classT };
 
         _mockLocalVariableRepository
-            .Setup(r => r.Add(It.Is<LocalVariable>(p => p.Name == localVariableDto.Name && p.LocalVariableType.Name == classT.Name)));
+            .Setup(r => r.Add(It.Is<LocalVariable>(p =>
+                p.Name == localVariableDto.Name && p.LocalVariableType.Name == classT.Name)));
 
         _mockClassRepository
             .Setup(repo => repo.FindAllTypes())
@@ -520,23 +554,24 @@ public class MethodServiceTest
     public void AssociateInvokeMethod_ShouldReturnId_WhenValidInput()
     {
         var methodId = Guid.NewGuid();
-        var invokedMethodDto = new InvokedMethodDTO
-        {
-            MethodId = methodId,
-            ReferenceName = "someVariable"
-        };
+        var invokedMethodDto = new InvokedMethodDTO { MethodId = methodId, ReferenceName = "someVariable" };
 
         var method = new Method
         {
             Id = methodId,
-            Parameters = [new Parameter { Name = "someVariable" }],
+            Parameters = [new Parameter
+            {
+                Name = "someVariable"
+            }
+
+            ],
             LocalVariables = [],
         };
 
         var classT = new Class
         {
             Methods = [method],
-            Attributes = [],
+            Attributes = []
         };
 
         _mockMethodRepository.Setup(repo => repo.Find(methodId)).Returns(method);
@@ -554,11 +589,7 @@ public class MethodServiceTest
     {
         var classT = new TypeDTO { Name = "TestClass" };
 
-        var localVariableDto = new LocalVariableDTO
-        {
-            Name = string.Empty,
-            LocalVariableType = classT
-        };
+        var localVariableDto = new LocalVariableDTO { Name = string.Empty, LocalVariableType = classT };
 
         _mockClassRepository
             .Setup(repo => repo.FindAllTypes())
@@ -584,11 +615,7 @@ public class MethodServiceTest
     [TestMethod]
     public void AssociateInvokeMethod_ShouldThrow_WhenDTOReferenceNameISEmpty()
     {
-        var invoked = new InvokedMethodDTO
-        {
-            MethodId = Guid.NewGuid(),
-            ReferenceName = string.Empty
-        };
+        var invoked = new InvokedMethodDTO { MethodId = Guid.NewGuid(), ReferenceName = string.Empty };
 
         // Setup para evitar MockException del repositorio de métodos
         _mockMethodRepository
@@ -604,11 +631,7 @@ public class MethodServiceTest
     [TestMethod]
     public void AssociateInvokeMethod_ShouldThrow_WhenReferenceNameIsNullOrEmpty()
     {
-        var invokedMethodDto = new InvokedMethodDTO
-        {
-            MethodId = Guid.NewGuid(),
-            ReferenceName = null
-        };
+        var invokedMethodDto = new InvokedMethodDTO { MethodId = Guid.NewGuid(), ReferenceName = null };
 
         _mockMethodRepository.Setup(repo => repo.Find(It.IsAny<Guid>()))
             .Returns(new Method());
@@ -622,11 +645,7 @@ public class MethodServiceTest
     [TestMethod]
     public void AssociateInvokeMethod_ShouldThrow_WhenMethodNotFound()
     {
-        var invokedMethodDto = new InvokedMethodDTO
-        {
-            MethodId = Guid.NewGuid(),
-            ReferenceName = "validReference"
-        };
+        var invokedMethodDto = new InvokedMethodDTO { MethodId = Guid.NewGuid(), ReferenceName = "validReference" };
 
         _mockMethodRepository.Setup(repo => repo.Find(invokedMethodDto.MethodId))
             .Returns((Method)null!);
@@ -661,7 +680,12 @@ public class MethodServiceTest
         {
             Id = methodId,
             Name = "MyMethod",
-            Parameters = [new Parameter { Name = "SomeName" }],
+            Parameters = [new Parameter
+            {
+                Name = "SomeName"
+            }
+
+            ],
             Methods = []
         };
 
@@ -686,10 +710,7 @@ public class MethodServiceTest
             LocalVariables = [],
             Methods = []
         };
-        var classWithMethod = new Class
-        {
-            Methods = [method]
-        };
+        var classWithMethod = new Class { Methods = [method] };
 
         _mockMethodRepository.Setup(repo => repo.Find(methodId)).Returns(method);
         _mockInvokedMethodRepository.Setup(repo => repo.Find(invokedMethodId)).Returns(invokedMethod);
@@ -703,12 +724,21 @@ public class MethodServiceTest
     {
         var methodId = Guid.NewGuid();
         var invokedMethodId = Guid.NewGuid();
-        var invokedMethod = new InvokedMethod { Id = invokedMethodId, ReferenceName = "TestReference" };
+        var invokedMethod = new InvokedMethod
+        {
+            Id = invokedMethodId,
+            ReferenceName = "TestReference"
+        };
         var method = new Method
         {
             Id = methodId,
             Name = "MyMethod",
-            Parameters = [new Parameter { Name = "TestReference" }],
+            Parameters = [new Parameter
+            {
+                Name = "TestReference"
+            }
+
+            ],
             Methods = []
         };
         var classWithMethod = new Class
@@ -723,7 +753,8 @@ public class MethodServiceTest
 
         _methodService.AddAMethod(methodId, invokedMethodId);
 
-        _mockMethodRepository.Verify(repo => repo.Update(It.Is<Method>(m => m.Methods.Contains(invokedMethod))), Times.Once);
+        _mockMethodRepository.Verify(repo => repo.Update(It.Is<Method>(m => m.Methods.Contains(invokedMethod))),
+            Times.Once);
     }
 
     [TestMethod]
@@ -747,11 +778,7 @@ public class MethodServiceTest
             ReferenceName = "this"
         };
 
-        var classT = new Class
-        {
-            Methods = [new Method { Id = methodId, Name = "TestMethod" }],
-            Attributes = []
-        };
+        var classT = new Class { Methods = [new Method { Id = methodId, Name = "TestMethod" }], Attributes = [] };
 
         _mockMethodRepository.Setup(r => r.Find(methodId)).Returns(method);
         _mockInvokedMethodRepository.Setup(r => r.Find(invokedMethodId)).Returns(invokedMethod);
@@ -785,16 +812,9 @@ public class MethodServiceTest
             ReferenceName = "base"
         };
 
-        var hierarchyClass = new Class
-        {
-            Methods = [new Method { Name = methodName }]
-        };
+        var hierarchyClass = new Class { Methods = [new Method { Name = methodName }] };
 
-        var classWithMethod = new Class
-        {
-            Methods = [method],
-            HierarchyClass = hierarchyClass
-        };
+        var classWithMethod = new Class { Methods = [method], HierarchyClass = hierarchyClass };
 
         _mockMethodRepository.Setup(r => r.Find(methodId)).Returns(method);
         _mockInvokedMethodRepository.Setup(r => r.Find(invokedMethodId)).Returns(invokedMethod);
@@ -863,7 +883,7 @@ public class MethodServiceTest
         var parameter = new Parameter
         {
             Id = parameterId,
-            Name = "param",
+            Name = "param"
         };
 
         var invokedMethod = new InvokedMethod
@@ -908,8 +928,14 @@ public class MethodServiceTest
         var parameterId = Guid.NewGuid();
         var invokedMethodId = Guid.NewGuid();
 
-        var parameter = new Parameter { Id = parameterId };
-        var invokedMethod = new InvokedMethod { Id = invokedMethodId };
+        var parameter = new Parameter
+        {
+            Id = parameterId
+        };
+        var invokedMethod = new InvokedMethod
+        {
+            Id = invokedMethodId
+        };
 
         _mockParameterRepository
             .Setup(repo => repo.Find(parameterId))
@@ -955,35 +981,35 @@ public class MethodServiceTest
             LocalVariableType = null
         };
 
-        var exception = Assert.ThrowsException<ArgumentNullException>(() => dto.ToEntity());
+        var exception = Assert.ThrowsException<ArgumentNullException>(dto.ToEntity);
 
         Assert.AreEqual("The Type property cannot be null. (Parameter 'Type')", exception.Message);
     }
 
-        [TestMethod]
-        public void ToEntity_ShouldThrowArgumentNullException_WhenParameterTypeIsNull()
+    [TestMethod]
+    public void ToEntity_ShouldThrowArgumentNullException_WhenParameterTypeIsNull()
+    {
+        var dto = new ParameterDTO
         {
-            var dto = new ParameterDTO
-            {
-                Name = "myVar",
-                ParameterType = null
-            };
-            var exception = Assert.ThrowsException<ArgumentNullException>(() => dto.ToEntity());
-            Assert.AreEqual("The Type property cannot be null. (Parameter 'Type')", exception.Message);
-        }
+            Name = "myVar",
+            ParameterType = null
+        };
+        var exception = Assert.ThrowsException<ArgumentNullException>(dto.ToEntity);
+        Assert.AreEqual("The Type property cannot be null. (Parameter 'Type')", exception.Message);
+    }
 
-        [TestMethod]
-        public void ToEntity_ShouldThrowArgumentNullException_WhenTypeArgumentIsNull()
+    [TestMethod]
+    public void ToEntity_ShouldThrowArgumentNullException_WhenTypeArgumentIsNull()
+    {
+        var dto = new AttributeDto
         {
-            var dto = new AttributeDto
-            {
-                Name = "attr1",
-                Accessibility = Accessibility.Private,
-                Type = null
-            };
+            Name = "attr1",
+            Accessibility = Accessibility.Private,
+            Type = null
+        };
 
-            var exception = Assert.ThrowsException<ArgumentNullException>(() => dto.ToEntity());
+        var exception = Assert.ThrowsException<ArgumentNullException>(dto.ToEntity);
 
-            Assert.AreEqual("The Type property cannot be null. (Parameter 'Type')", exception.Message);
-        }
+        Assert.AreEqual("The Type property cannot be null. (Parameter 'Type')", exception.Message);
+    }
 }

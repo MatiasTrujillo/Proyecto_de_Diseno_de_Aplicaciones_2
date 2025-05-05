@@ -173,7 +173,7 @@ public class AttributeService(IAttributeRepository attributeRepository, IClassRe
 
     private void ValidateAccesibility(Accessibility aDtoAccessibility)
     {
-        if (!Enum.IsDefined(typeof(Accessibility), aDtoAccessibility))
+        if(!Enum.IsDefined(typeof(Accessibility), aDtoAccessibility))
         {
             throw new InvalidAttributeException("Invalid accessibility value.");
         }
