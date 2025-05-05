@@ -44,6 +44,11 @@ public class MethodService(IMethodRepository methodRepository, IClassRepository 
         ValidateInvokedMethodDTOExist(invokedMethod);
         var method = _methodRepository.Find(invokedMethod.MethodId);
         ValidateMethodExist(method);
+        if(invokedMethod.ReferenceName == String.Empty)
+        {
+            throw new InvokedMethodNotFoundException("Invoked Method Reference Name cannot be empty.");
+        }
+
         ValidateInvokedMethodReferenceNameIsNotNull(invokedMethod.ReferenceName);
         var invokedMethodT = invokedMethod.ToEntity();
         _invokedMethodRepository.Add(invokedMethodT);
@@ -296,7 +301,7 @@ public class MethodService(IMethodRepository methodRepository, IClassRepository 
 
     private void ValidateInvokedMethodDTOExist(InvokedMethodDTO invokedMethod)
     {
-        if(invokedMethod == null)
+        if(invokedMethod == null || invokedMethod.MethodId == Guid.Empty)
         {
             throw new InvokedMethodNotFoundException("Invoked Method cannot be null.");
         }

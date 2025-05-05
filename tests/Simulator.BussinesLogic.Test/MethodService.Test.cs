@@ -540,6 +540,26 @@ public class MethodServiceTest
     }
 
     [TestMethod]
+    public void AssociateInvokeMethod_ShouldThrow_WhenDTOReferenceNameISEmpty()
+    {
+        var invoked = new InvokedMethodDTO
+        {
+            MethodId = Guid.NewGuid(),
+            ReferenceName = string.Empty
+        };
+
+        // Setup para evitar MockException del repositorio de métodos
+        _mockMethodRepository
+            .Setup(r => r.Find(invoked.MethodId))
+            .Returns(new Method());
+
+        var exception = Assert.ThrowsException<InvokedMethodNotFoundException>(() =>
+            _methodService.AssociateInvokeMethod(invoked!));
+
+        Assert.AreEqual("Invoked Method Reference Name cannot be empty.", exception.Message);
+    }
+
+    [TestMethod]
     public void AssociateInvokeMethod_ShouldThrow_WhenReferenceNameIsNullOrEmpty()
     {
         var invokedMethodDto = new InvokedMethodDTO

@@ -4,8 +4,8 @@ namespace Simulator.DTO;
 
 public class InvokedMethodDTO
 {
-    public Guid MethodId { get; set; }
-    public string ReferenceName { get; set; } = null!;
+    public Guid MethodId { get; set; } = Guid.Empty;
+    public string ReferenceName { get; set; } = String.Empty;
 
     public InvokedMethod ToEntity()
     {
