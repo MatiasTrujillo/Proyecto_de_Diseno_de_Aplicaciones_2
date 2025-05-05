@@ -225,18 +225,22 @@ public class MethodService(IMethodRepository methodRepository, IClassRepository 
                 if(anAttribute != null)
                 {
                     var aClass = _classRepository.FindAll().FirstOrDefault(x => x.Name == anAttribute.Type.Name);
-
-                    if(aClass != null && CheckClassHasMethod(aClass, invokedMethodMethod))
+                    if(aClass != null)
                     {
-                        result.Add(AddToResult(anAttribute.Name, aClass.Name, invokedMethodMethod.Name));
-
-                        if(CheckOriginal(invokedMethodMethod, originalMethod))
+                        aClass = FindClassWithMethod(aClass, invokedMethodMethod);
+                        if(CheckClassHasMethod(aClass, invokedMethodMethod))
                         {
-                            return result;
-                        }
+                            result.Add(AddToResult(anAttribute.Name, aClass.Name, invokedMethodMethod.Name));
 
-                        result = result.Concat(ConcatNext(aClass, aClass, invokedMethodMethod, originalMethod)).ToList();
-                        success = true;
+                            if(CheckOriginal(invokedMethodMethod, originalMethod))
+                            {
+                                return result;
+                            }
+
+                            result = result.Concat(ConcatNext(aClass, aClass, invokedMethodMethod, originalMethod))
+                                .ToList();
+                            success = true;
+                        }
                     }
                 }
             }
@@ -247,18 +251,22 @@ public class MethodService(IMethodRepository methodRepository, IClassRepository 
                 if(aParameter != null)
                 {
                     var aClass = _classRepository.FindAll().FirstOrDefault(x => x.Name == aParameter.ParameterType.Name);
-
-                    if(aClass != null && CheckClassHasMethod(aClass, invokedMethodMethod))
+                    if(aClass != null)
                     {
-                        result.Add(AddToResult(aParameter.Name, aClass.Name, invokedMethodMethod.Name));
-
-                        if(CheckOriginal(invokedMethodMethod, originalMethod))
+                        aClass = FindClassWithMethod(aClass, invokedMethodMethod);
+                        if(CheckClassHasMethod(aClass, invokedMethodMethod))
                         {
-                            return result;
-                        }
+                            result.Add(AddToResult(aParameter.Name, aClass.Name, invokedMethodMethod.Name));
 
-                        result = result.Concat(ConcatNext(aClass, aClass, invokedMethodMethod, originalMethod)).ToList();
-                        success = true;
+                            if(CheckOriginal(invokedMethodMethod, originalMethod))
+                            {
+                                return result;
+                            }
+
+                            result = result.Concat(ConcatNext(aClass, aClass, invokedMethodMethod, originalMethod))
+                                .ToList();
+                            success = true;
+                        }
                     }
                 }
             }
@@ -269,18 +277,21 @@ public class MethodService(IMethodRepository methodRepository, IClassRepository 
                 if(aLocal != null)
                 {
                     var aClass = _classRepository.FindAll().FirstOrDefault(x => x.Name == aLocal.LocalVariableType.Name);
-
-                    if(aClass != null && CheckClassHasMethod(aClass, invokedMethodMethod))
+                    if(aClass != null)
                     {
-                        result.Add(AddToResult(aLocal.Name, aClass.Name, invokedMethodMethod.Name));
-
-                        if(CheckOriginal(invokedMethodMethod, originalMethod))
+                        aClass = FindClassWithMethod(aClass, invokedMethodMethod);
+                        if(CheckClassHasMethod(aClass, invokedMethodMethod))
                         {
-                            return result;
-                        }
+                            result.Add(AddToResult(aLocal.Name, aClass.Name, invokedMethodMethod.Name));
+                            if(CheckOriginal(invokedMethodMethod, originalMethod))
+                            {
+                                return result;
+                            }
 
-                        result = result.Concat(ConcatNext(aClass, aClass, invokedMethodMethod, originalMethod)).ToList();
-                        success = true;
+                            result = result.Concat(ConcatNext(aClass, aClass, invokedMethodMethod, originalMethod))
+                                .ToList();
+                            success = true;
+                        }
                     }
                 }
             }
@@ -336,6 +347,16 @@ public class MethodService(IMethodRepository methodRepository, IClassRepository 
         _identation--;
 
         return result;
+    }
+
+    private Class FindClassWithMethod(Class aClass, Method method)
+    {
+        if(aClass.HierarchyClass != null && !CheckClassHasMethod(aClass, method))
+        {
+            return FindClassWithMethod(aClass.HierarchyClass, method);
+        }
+
+        return aClass;
     }
 
     private bool CheckClassHasMethod(Class aClass, Method method)

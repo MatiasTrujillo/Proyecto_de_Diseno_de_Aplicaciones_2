@@ -855,13 +855,6 @@ public class MethodServiceTest
             ReferenceName = "aviso"
         };
 
-        var enviarInvoked2 = new InvokedMethod
-        {
-            Id = Guid.NewGuid(),
-            MethodId = enviar.Id,
-            ReferenceName = "otroAviso"
-        };
-
         var enviarEmail = new Method
         {
             Id = Guid.NewGuid(),
@@ -872,6 +865,12 @@ public class MethodServiceTest
             LocalVariables = [],
             ReturnType = null,
             Stereotype = null
+        };
+        var enviarInvoked2 = new InvokedMethod
+        {
+            Id = Guid.NewGuid(),
+            MethodId = enviarEmail.Id,
+            ReferenceName = "otroAviso"
         };
 
         var enviarSMS = new Method
@@ -981,7 +980,7 @@ public class MethodServiceTest
         _mockMethodRepository.Setup(repo => repo.Find(confirmarInvoked1.MethodId)).Returns(confirmar);
         _mockMethodRepository.Setup(repo => repo.Find(confirmarInvoked2.MethodId)).Returns(confirmar);
         _mockMethodRepository.Setup(repo => repo.Find(enviarInvoked1.MethodId)).Returns(enviar);
-        _mockMethodRepository.Setup(repo => repo.Find(enviarInvoked2.MethodId)).Returns(enviar);
+        _mockMethodRepository.Setup(repo => repo.Find(enviarInvoked2.MethodId)).Returns(enviarEmail);
 
         var result = _methodService.ExecuteMethod(notificadorDTO, notificadorDTO, notificarDTO);
         var result2 = _methodService.ExecuteMethod(notificacionDTO, smsDTO, enviarDTO);
