@@ -193,12 +193,44 @@ public class AttributeServiceTest
             .Setup(repo => repo.Find(_classId))
             .Returns(classEntity);
 
-        var ex = Assert.ThrowsException<ArgumentException>(() =>
+        var ex = Assert.ThrowsException<AttributeException>(() =>
         {
             _attributeService.CreateAttribute(dto);
         });
 
         Assert.AreEqual("Name cannot be null or empty", ex.Message);
+    }
+
+    [DataTestMethod]
+    [DataRow("base")]
+    [DataRow("this")]
+    [DataRow("Object")]
+    public void CreateAttribute_ShouldThrowAttributeException_WhenNameIsReservedKeyword(string reservedName)
+    {
+        var dto = new AttributeDto
+        {
+            Name = reservedName,
+            Accessibility = Accessibility.Public,
+            Type = new TypeDTO { Name = "TestType" }
+        };
+
+        var classEntity = new Class
+        {
+            Id = _classId,
+            Name = "SomeClass",
+            Attributes = []
+        };
+
+        _mockClassRepository
+            .Setup(repo => repo.Find(_classId))
+            .Returns(classEntity);
+
+        var ex = Assert.ThrowsException<AttributeException>(() =>
+        {
+            _attributeService.CreateAttribute(dto);
+        });
+
+        Assert.AreEqual("The name is a reserved keyword and is not allowed.", ex.Message);
     }
 
     [TestMethod]
@@ -223,7 +255,7 @@ public class AttributeServiceTest
             .Setup(repo => repo.Find(_classId))
             .Returns(classEntity);
 
-        var ex = Assert.ThrowsException<ArgumentException>(() =>
+        var ex = Assert.ThrowsException<AttributeException>(() =>
         {
             _attributeService.CreateAttribute(dto);
         });
