@@ -999,7 +999,7 @@ public class MethodServiceTest
     }
 
     [TestMethod]
-    public void ExecuteMethodExample3_ShouldReturnMethodExecuted()
+    public void ExecuteMethodExample3_ShouldReturnMethodExecuted_WhenValidInputProvided()
     {
         var limpiar = new Method
         {

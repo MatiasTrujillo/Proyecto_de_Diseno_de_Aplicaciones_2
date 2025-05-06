@@ -197,6 +197,92 @@ public class MethodService(IMethodRepository methodRepository, IClassRepository 
         return string.Join("\n", result);
     }
 
+    private List<string> CaseLocal(InvokedMethod invokedMethod, Method method, Method originalMethod)
+    {
+        var result = new List<string>();
+        var invokedMethodMethod = _methodRepository.Find(invokedMethod.MethodId);
+
+        var aLocal = method.LocalVariables!.FirstOrDefault(x => x.Name == invokedMethod.ReferenceName);
+        if(aLocal != null)
+        {
+            var aClass = _classRepository.FindAll().FirstOrDefault(x => x.Name == aLocal.LocalVariableType.Name);
+            if(aClass != null)
+            {
+                aClass = FindClassWithMethod(aClass, invokedMethodMethod);
+                if(CheckClassHasMethod(aClass, invokedMethodMethod))
+                {
+                    result.Add(AddToResult(aLocal.Name, aClass.Name, invokedMethodMethod.Name));
+                    if(CheckOriginal(invokedMethodMethod, originalMethod))
+                    {
+                        return result;
+                    }
+
+                    result = result.Concat(ConcatNext(aClass, aClass, invokedMethodMethod, originalMethod))
+                        .ToList();
+                }
+            }
+        }
+
+        return result;
+    }
+
+    private List<string> WriteOtherLines(Class refe, Class oTC, Method method, Method originalMethod)
+    {
+        var result = new List<string>();
+        for(var i = 0; i < method.Methods.Count; i++)
+        {
+            var invokedMethod = method.Methods[i];
+            var success = false;
+            var lines = result.Count;
+
+            if(invokedMethod.ReferenceName == "this")
+            {
+                result = result.Concat(CaseThis(invokedMethod, originalMethod, oTC, refe)).ToList();
+                if(result.Count > lines)
+                {
+                    success = true;
+                    lines = result.Count;
+                }
+            }
+
+            if(!success && invokedMethod.ReferenceName == "base")
+            {
+                result = result.Concat(CaseBase(invokedMethod, refe, originalMethod)).ToList();
+                if(result.Count > lines)
+                {
+                    success = true;
+                    lines = result.Count;
+                }
+            }
+
+            if(!success && refe.Attributes != null)
+            {
+                result = result.Concat(CaseAttribute(refe, invokedMethod, originalMethod)).ToList();
+                if(result.Count > lines)
+                {
+                    success = true;
+                    lines = result.Count;
+                }
+            }
+
+            if(!success && method.Parameters != null)
+            {
+                result = result.Concat(CaseParameter(invokedMethod, method, originalMethod)).ToList();
+                if(result.Count > lines)
+                {
+                    success = true;
+                }
+            }
+
+            if(!success && method.LocalVariables != null)
+            {
+                result = result.Concat(CaseLocal(invokedMethod, method, originalMethod)).ToList();
+            }
+        }
+
+        return result;
+    }
+
     private List<string> CaseThis(InvokedMethod invokedMethod, Method originalMethod, Class oTC, Class refe)
     {
         var result = new List<string>();
@@ -289,92 +375,6 @@ public class MethodService(IMethodRepository methodRepository, IClassRepository 
                     result = result.Concat(ConcatNext(aClass, aClass, invokedMethodMethod, originalMethod))
                         .ToList();
                 }
-            }
-        }
-
-        return result;
-    }
-
-    private List<string> CaseLocal(InvokedMethod invokedMethod, Method method, Method originalMethod)
-    {
-        var result = new List<string>();
-        var invokedMethodMethod = _methodRepository.Find(invokedMethod.MethodId);
-
-        var aLocal = method.LocalVariables!.FirstOrDefault(x => x.Name == invokedMethod.ReferenceName);
-        if(aLocal != null)
-        {
-            var aClass = _classRepository.FindAll().FirstOrDefault(x => x.Name == aLocal.LocalVariableType.Name);
-            if(aClass != null)
-            {
-                aClass = FindClassWithMethod(aClass, invokedMethodMethod);
-                if(CheckClassHasMethod(aClass, invokedMethodMethod))
-                {
-                    result.Add(AddToResult(aLocal.Name, aClass.Name, invokedMethodMethod.Name));
-                    if(CheckOriginal(invokedMethodMethod, originalMethod))
-                    {
-                        return result;
-                    }
-
-                    result = result.Concat(ConcatNext(aClass, aClass, invokedMethodMethod, originalMethod))
-                        .ToList();
-                }
-            }
-        }
-
-        return result;
-    }
-
-    private List<string> WriteOtherLines(Class refe, Class oTC, Method method, Method originalMethod)
-    {
-        var result = new List<string>();
-        for(var i = 0; i < method.Methods.Count; i++)
-        {
-            var invokedMethod = method.Methods[i];
-            var success = false;
-            var lines = result.Count;
-
-            if(invokedMethod.ReferenceName == "this")
-            {
-                result = result.Concat(CaseThis(invokedMethod, originalMethod, oTC, refe)).ToList();
-                if(result.Count > lines)
-                {
-                    success = true;
-                    lines = result.Count;
-                }
-            }
-
-            if(!success && invokedMethod.ReferenceName == "base")
-            {
-                result = result.Concat(CaseBase(invokedMethod, refe, originalMethod)).ToList();
-                if(result.Count > lines)
-                {
-                    success = true;
-                    lines = result.Count;
-                }
-            }
-
-            if(!success && refe.Attributes != null)
-            {
-                result = result.Concat(CaseAttribute(refe, invokedMethod, originalMethod)).ToList();
-                if(result.Count > lines)
-                {
-                    success = true;
-                    lines = result.Count;
-                }
-            }
-
-            if(!success && method.Parameters != null)
-            {
-                result = result.Concat(CaseParameter(invokedMethod, method, originalMethod)).ToList();
-                if(result.Count > lines)
-                {
-                    success = true;
-                }
-            }
-
-            if(!success && method.LocalVariables != null)
-            {
-                result = result.Concat(CaseLocal(invokedMethod, method, originalMethod)).ToList();
             }
         }
 
