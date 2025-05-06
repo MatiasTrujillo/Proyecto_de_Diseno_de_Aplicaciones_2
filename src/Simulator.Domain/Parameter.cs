@@ -40,7 +40,7 @@ public class Parameter
             throw new ParameterException("Name cannot be null or empty");
         }
 
-        if (ReservedKeywords.Contains(name))
+        if(ReservedKeywords.Contains(name))
         {
             throw new ParameterException($"The name is a reserved keyword and is not allowed.");
         }

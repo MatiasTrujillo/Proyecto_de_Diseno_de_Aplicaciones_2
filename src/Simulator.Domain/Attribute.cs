@@ -48,7 +48,7 @@ public class Attribute
             throw new AttributeException("Name cannot exceed 50 characters");
         }
 
-        if (ReservedKeywords.Contains(name))
+        if(ReservedKeywords.Contains(name))
         {
             throw new AttributeException($"The name is a reserved keyword and is not allowed.");
         }

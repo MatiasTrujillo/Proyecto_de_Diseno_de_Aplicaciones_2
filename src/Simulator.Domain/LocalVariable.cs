@@ -35,7 +35,7 @@ public class LocalVariable
 
     private void ValidateParameter(string name)
     {
-        if (ReservedKeywords.Contains(name))
+        if(ReservedKeywords.Contains(name))
         {
             throw new LocalVariableException($"The name is a reserved keyword and is not allowed.");
         }
