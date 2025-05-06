@@ -999,7 +999,7 @@ public class MethodServiceTest
     }
 
     [TestMethod]
-    public void ExecuteMethodExample3_SholddReturnMethodExecuted()
+    public void ExecuteMethodExample3_ShouldReturnMethodExecuted()
     {
         var limpiar = new Method
         {
@@ -1108,7 +1108,7 @@ public class MethodServiceTest
             Stereotype = null,
             HierarchyClass = entrada,
             Attributes = [],
-            Methods = [esValidoEntradaTexto, limpiar]
+            Methods = [esValidoEntradaTexto]
         };
 
         var entradaTextoEspecial = new Class

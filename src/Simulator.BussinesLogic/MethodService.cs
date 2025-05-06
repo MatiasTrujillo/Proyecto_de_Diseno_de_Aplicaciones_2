@@ -197,6 +197,28 @@ public class MethodService(IMethodRepository methodRepository, IClassRepository 
         return string.Join("\n", result);
     }
 
+    private List<string> CaseThis(InvokedMethod invokedMethod, Method originalMethod, Class oTC, Class refe)
+    {
+        var result = new List<string>();
+        var invokedMethodMethod = _methodRepository.Find(invokedMethod.MethodId);
+
+        var aClass = refe;
+        aClass = FindClassWithMethod(aClass, invokedMethodMethod);
+        if(CheckClassHasMethod(aClass, invokedMethodMethod))
+        {
+            result.Add(AddToResult(invokedMethod.ReferenceName, aClass.Name, invokedMethodMethod.Name));
+
+            if(CheckOriginal(invokedMethodMethod, originalMethod))
+            {
+                return result;
+            }
+
+            result = result.Concat(ConcatNext(oTC, oTC, invokedMethodMethod, originalMethod)).ToList();
+        }
+
+        return result;
+    }
+
     private List<string> WriteOtherLines(Class refe, Class oTC, Method method, Method originalMethod)
     {
         var result = new List<string>();
@@ -208,14 +230,19 @@ public class MethodService(IMethodRepository methodRepository, IClassRepository 
 
             if(!success && invokedMethod.ReferenceName == "this")
             {
-                result.Add(AddToResult(invokedMethod.ReferenceName, refe.Name,  invokedMethodMethod.Name));
+                result = result.Concat(CaseThis(invokedMethod, originalMethod, oTC, refe)).ToList();
+                success = true;
+            }
 
+            if(!success && invokedMethod.ReferenceName == "base")
+            {
+                result.Add(AddToResult(invokedMethod.ReferenceName, refe.HierarchyClass.Name,  invokedMethodMethod.Name));
                 if(CheckOriginal(invokedMethodMethod, originalMethod))
                 {
                     return result;
                 }
 
-                result = result.Concat(ConcatNext(oTC, oTC, invokedMethodMethod, originalMethod)).ToList();
+                result = result.Concat(ConcatNext(refe.HierarchyClass, refe.HierarchyClass, invokedMethodMethod, originalMethod)).ToList();
                 success = true;
             }
 
