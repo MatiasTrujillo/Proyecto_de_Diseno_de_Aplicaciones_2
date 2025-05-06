@@ -77,6 +77,19 @@ public sealed class SqlContext : DbContext
                     j.ToTable("ClassMethod");
                 });
 
+        modelBuilder.Entity<Primitive>()
+            .HasMany(p => p.Methods)
+            .WithMany()
+            .UsingEntity<Dictionary<string, object>>(
+                "PrimitiveMethod",
+                j => j.HasOne<Method>().WithMany().HasForeignKey("MethodsId"),
+                j => j.HasOne<Primitive>().WithMany().HasForeignKey("PrimitiveId"),
+                j =>
+                {
+                    j.HasKey("PrimitiveId", "MethodsId");
+                    j.ToTable("PrimitiveMethod");
+                });
+
         ConfigSeedData(modelBuilder);
 
         base.OnModelCreating(modelBuilder);
@@ -84,6 +97,16 @@ public sealed class SqlContext : DbContext
 
     private void ConfigSeedData(ModelBuilder modelBuilder)
     {
+        var parseMethodId = Guid.Parse("44444444-4444-4444-4444-444444444444");
+        var maxValueMethodId = Guid.Parse("55555555-5555-5555-5555-555555555555");
+        var minValueMethodId = Guid.Parse("66666666-6666-6666-6666-666666666666");
+        var compareToMethodId = Guid.Parse("77777777-7777-7777-7777-777777777777");
+        var toLowerCaseMethodId = Guid.Parse("88888888-8888-8888-8888-888888888888");
+        var toUpperCaseMethodId = Guid.Parse("99999999-9999-9999-9999-999999999999");
+        var isNullOrEmptyMethodId = Guid.Parse("aaaaaaaa-1111-1111-1111-aaaaaaaaaaaa");
+        var stringEqualsMethodId = Guid.Parse("bbbbbbbb-2222-2222-2222-bbbbbbbbbbbb");
+        var intToStringMethodId = Guid.Parse("cccccccc-3333-3333-3333-cccccccccccc");
+
         var methodId1 = Guid.Parse("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa");
         var methodId2 = Guid.Parse("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb");
         var methodId3 = Guid.Parse("cccccccc-cccc-cccc-cccc-cccccccccccc");
@@ -250,6 +273,91 @@ public sealed class SqlContext : DbContext
                 ParameterTypeId = classId,
                 MethodId = methodId2,
             });
+
+        modelBuilder.Entity<Method>().HasData(
+            new
+            {
+                Id = parseMethodId,
+                Name = "Parse",
+                Accessibility = Accessibility.Public,
+                Stereotype = (KeyWord?)null,
+                ReturnTypeId = intTypeId
+            },
+            new
+            {
+                Id = maxValueMethodId,
+                Name = "MaxValue",
+                Accessibility = Accessibility.Public,
+                Stereotype = (KeyWord?)null,
+                ReturnTypeId = intTypeId
+            },
+            new
+            {
+                Id = minValueMethodId,
+                Name = "MinValue",
+                Accessibility = Accessibility.Public,
+                Stereotype = (KeyWord?)null,
+                ReturnTypeId = intTypeId
+            },
+            new
+            {
+                Id = compareToMethodId,
+                Name = "CompareTo",
+                Accessibility = Accessibility.Public,
+                Stereotype = (KeyWord?)null,
+                ReturnTypeId = intTypeId
+            },
+            new
+            {
+                Id = intToStringMethodId,
+                Name = "ToString",
+                Accessibility = Accessibility.Public,
+                Stereotype = (KeyWord?)null,
+                ReturnTypeId = stringTypeId
+            },
+            new
+            {
+                Id = toLowerCaseMethodId,
+                Name = "ToLowerCase",
+                Accessibility = Accessibility.Public,
+                Stereotype = (KeyWord?)null,
+                ReturnTypeId = stringTypeId
+            },
+            new
+            {
+                Id = toUpperCaseMethodId,
+                Name = "ToUpperCase",
+                Accessibility = Accessibility.Public,
+                Stereotype = (KeyWord?)null,
+                ReturnTypeId = stringTypeId
+            },
+            new
+            {
+                Id = isNullOrEmptyMethodId,
+                Name = "IsNullOrEmpty",
+                Accessibility = Accessibility.Public,
+                Stereotype = (KeyWord?)null,
+                ReturnTypeId = boolTypeId
+            },
+            new
+            {
+                Id = stringEqualsMethodId,
+                Name = "Equals",
+                Accessibility = Accessibility.Public,
+                Stereotype = (KeyWord?)null,
+                ReturnTypeId = boolTypeId
+            });
+        modelBuilder.Entity("PrimitiveMethod").HasData(
+            new Dictionary<string, object> { ["PrimitiveId"] = intTypeId, ["MethodsId"] = parseMethodId },
+            new Dictionary<string, object> { ["PrimitiveId"] = intTypeId, ["MethodsId"] = maxValueMethodId },
+            new Dictionary<string, object> { ["PrimitiveId"] = intTypeId, ["MethodsId"] = minValueMethodId },
+            new Dictionary<string, object> { ["PrimitiveId"] = intTypeId, ["MethodsId"] = compareToMethodId },
+            new Dictionary<string, object> { ["PrimitiveId"] = intTypeId, ["MethodsId"] = intToStringMethodId },
+            new Dictionary<string, object> { ["PrimitiveId"] = stringTypeId, ["MethodsId"] = toLowerCaseMethodId },
+            new Dictionary<string, object> { ["PrimitiveId"] = stringTypeId, ["MethodsId"] = toUpperCaseMethodId },
+            new Dictionary<string, object> { ["PrimitiveId"] = stringTypeId, ["MethodsId"] = isNullOrEmptyMethodId },
+            new Dictionary<string, object> { ["PrimitiveId"] = stringTypeId, ["MethodsId"] = stringEqualsMethodId }
+        );
     }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)

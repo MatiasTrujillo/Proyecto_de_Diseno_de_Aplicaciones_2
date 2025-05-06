@@ -105,4 +105,42 @@ public class InvokedMethodRepository_Test
     }
 
     #endregion
+
+    #region FindAll
+    [TestMethod]
+    public void FindAll_WhenInvokedMethodsExist_ShouldReturnAllInvokedMethods()
+    {
+        var method = new Method
+        {
+            Id = Guid.NewGuid(),
+            Name = "MethodForAll",
+            ReturnType = new Primitive(PrimitiveType.Int),
+            Parameters = []
+        };
+
+        var invokedMethod1 = new InvokedMethod
+        {
+            Id = Guid.NewGuid(),
+            MethodId = method.Id,
+            ReferenceName = "Ref1"
+        };
+
+        var invokedMethod2 = new InvokedMethod
+        {
+            Id = Guid.NewGuid(),
+            MethodId = method.Id,
+            ReferenceName = "Ref2"
+        };
+
+        _context.Methods.Add(method);
+        _context.InvokedMethods.AddRange(invokedMethod1, invokedMethod2);
+        _context.SaveChanges();
+
+        var result = _repository.FindAll();
+
+        result.Should().NotBeNull();
+        result.Should().HaveCount(2);
+        result.Select(r => r.ReferenceName).Should().Contain(["Ref1", "Ref2"]);
+    }
+    #endregion
 }

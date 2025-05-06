@@ -12,7 +12,12 @@ using Type = Simulator.Domain.Type;
 
 namespace Simulator.BussinesLogic;
 
-public class MethodService(IMethodRepository methodRepository, IClassRepository classRepository, IParameterRepository parameterRepository, ILocalVariableRepository localVariableRepository, IInvokedMethodRepository invokedMethodRepository) : IMethodService
+public class MethodService(
+    IMethodRepository methodRepository,
+    IClassRepository classRepository,
+    IParameterRepository parameterRepository,
+    ILocalVariableRepository localVariableRepository,
+    IInvokedMethodRepository invokedMethodRepository) : IMethodService
 {
     private readonly IMethodRepository _methodRepository = methodRepository;
     private readonly IClassRepository _classRepository = classRepository;
@@ -26,6 +31,8 @@ public class MethodService(IMethodRepository methodRepository, IClassRepository 
         ValidateMethodDTOExist(method);
         var methodT = method.ToEntity();
         Type? returnType = null;
+        ValidateAccesibility(methodT.Accessibility);
+        ValidateKeyWord(methodT.Stereotype);
         if(methodT.ReturnType != null)
         {
             ValidateMethodReturnTypeString(methodT.ReturnType.Name);
@@ -44,6 +51,11 @@ public class MethodService(IMethodRepository methodRepository, IClassRepository 
         ValidateInvokedMethodDTOExist(invokedMethod);
         var method = _methodRepository.Find(invokedMethod.MethodId);
         ValidateMethodExist(method);
+        if(invokedMethod.ReferenceName == string.Empty)
+        {
+            throw new InvokedMethodNotFoundException("Invoked Method Reference Name cannot be empty.");
+        }
+
         ValidateInvokedMethodReferenceNameIsNotNull(invokedMethod.ReferenceName);
         var invokedMethodT = invokedMethod.ToEntity();
         _invokedMethodRepository.Add(invokedMethodT);
@@ -61,60 +73,6 @@ public class MethodService(IMethodRepository methodRepository, IClassRepository 
         _methodRepository.Update(method);
     }
 
-    private void ValidateInvokedMethodReferenceName(string invokedMethodReferenceName, Method method)
-    {
-        var classT = _classRepository.FindAll()
-            .FirstOrDefault(c => c.Methods != null && c.Methods.Any(m => m.Id == method.Id));
-
-        var existsInParameters = method.Parameters?.Any(p => p.Name == invokedMethodReferenceName) ?? false;
-        var existsInLocalVariables = method.LocalVariables?.Any(lv => lv.Name == invokedMethodReferenceName) ?? false;
-
-        var existsInAttributes = false;
-        var existsInMethods = false;
-        var existingInHeredity = false;
-        if(classT != null)
-        {
-            existsInAttributes = classT.Attributes?.Any(a => a.Name == invokedMethodReferenceName) ?? false;
-            existsInMethods = InvokeMethodReferenceThis(invokedMethodReferenceName, method, existsInMethods, classT);
-            existingInHeredity = InvokeMethodReferenceBase(invokedMethodReferenceName, method, classT, existingInHeredity);
-        }
-
-        if(!existsInParameters && !existsInLocalVariables && !existsInAttributes && !existsInMethods && !existingInHeredity)
-        {
-            throw new MethodException($"Reference name '{invokedMethodReferenceName}' does not match any parameter, local variable, or attribute in method '{method.Name}'.");
-        }
-    }
-
-    private static bool InvokeMethodReferenceBase(string invokedMethodReferenceName, Method method, Class classT,
-        bool existingInHeredity)
-    {
-        if(invokedMethodReferenceName == "base" && classT.HierarchyClass != null)
-        {
-            existingInHeredity = classT.HierarchyClass.Methods?.Any(m => m.Name == method.Name) ?? false;
-        }
-
-        return existingInHeredity;
-    }
-
-    private static bool InvokeMethodReferenceThis(string invokedMethodReferenceName, Method method, bool existsInMethods,
-        Class classT)
-    {
-        if(invokedMethodReferenceName == "this")
-        {
-            existsInMethods = classT.Methods?.Any(m => m.Name == method.Name) ?? false;
-        }
-
-        return existsInMethods;
-    }
-
-    private void ValidateInvokedMethodExist(InvokedMethod invokedMethod)
-    {
-        if(invokedMethod == null)
-        {
-            throw new InvokedMethodNotFoundException("Invoked Method not found.");
-        }
-    }
-
     public void AssociateMethodWithClass(Guid methodId, Guid classId)
     {
         var method = _methodRepository.Find(methodId);
@@ -129,6 +87,11 @@ public class MethodService(IMethodRepository methodRepository, IClassRepository 
     public Guid CreateLocalVariable(LocalVariableDTO localVariable)
     {
         ValidateLocalVariableIsNotNull(localVariable);
+        if(localVariable.Name == string.Empty)
+        {
+            throw new LocalVariableNotFoundException("Local Variable Name cannot be empty.");
+        }
+
         var localVariableT = localVariable.ToEntity();
         var type = localVariableT.LocalVariableType.Name;
         var returnType = _classRepository.FindAllTypes().FirstOrDefault(c => c.Name == type);
@@ -136,6 +99,17 @@ public class MethodService(IMethodRepository methodRepository, IClassRepository 
         ValidateMethodReturnType(localVariableT.LocalVariableType);
         _localVariableRepository.Add(localVariableT);
         return localVariableT.Id;
+    }
+
+    public void SetInvokeMethodToLocalVariable(Guid id, Guid idInvokeGuid)
+    {
+        var localVariable = _localVariableRepository.Find(id);
+        var invokedMethod = _invokedMethodRepository.Find(idInvokeGuid);
+        ValidateLocalVariableExist(localVariable);
+        ValidateInvokedMethodExist(invokedMethod);
+        ValidateTypeIsPrimitive(localVariable.LocalVariableType);
+        localVariable.InvokedMethod = invokedMethod;
+        _localVariableRepository.Update(localVariable);
     }
 
     public void AddLocalVariableToMethod(Guid methodId, Guid localVariable)
@@ -153,12 +127,36 @@ public class MethodService(IMethodRepository methodRepository, IClassRepository 
     {
         ValidateParameterIsNotNull(parameter);
         var parameterT = parameter.ToEntity();
+        if(parameter.Name == string.Empty)
+        {
+            throw new LocalVariableNotFoundException("Parameter Name cannot be empty.");
+        }
+
         var type = parameterT.ParameterType.Name;
         var returnType = _classRepository.FindAllTypes().FirstOrDefault(c => c.Name == type);
         parameterT.ParameterType = returnType;
         ValidateMethodReturnType(parameterT.ParameterType);
         _parameterRepository.Add(parameterT);
         return parameterT.Id;
+    }
+
+    public void SetInvokeMethodToParameter(Guid id, Guid idInvokeGuid)
+    {
+        var parameter = _parameterRepository.Find(id);
+        var invokedMethod = _invokedMethodRepository.Find(idInvokeGuid);
+        ValidateParameterExist(parameter);
+        ValidateInvokedMethodExist(invokedMethod);
+        ValidateTypeIsPrimitive(parameter.ParameterType);
+        parameter.InvokedMethod = invokedMethod;
+        _parameterRepository.Update(parameter);
+    }
+
+    private void ValidateTypeIsPrimitive(Type? attributeTType)
+    {
+        if(attributeTType == null || attributeTType is not Primitive)
+        {
+            throw new InvalidAttributeException("In v1 of this program only primitive types are accepted.");
+        }
     }
 
     public void AddParameterToMethod(Guid methodId, Guid parameterId)
@@ -178,7 +176,17 @@ public class MethodService(IMethodRepository methodRepository, IClassRepository 
         ValidateMethodExist(method);
         ValidateMehodIsNotInClass(id);
         ValidateMethodIsNotInUse(id);
+        ValidateMethodIsNotInInvokedMethod(id);
         _methodRepository.Delete(id);
+    }
+
+    private void ValidateMethodIsNotInInvokedMethod(Guid id)
+    {
+        var iVAll = _invokedMethodRepository.FindAll();
+        if(iVAll.Any(iV => iV.MethodId == id))
+        {
+            throw new InvalidMethodException("Method is associated with invokedMethod.");
+        }
     }
 
     public string ExecuteMethod(ClassDTO referenceDTO, ClassDTO objectToCreateDTO, MethodDTO methodDTO)
@@ -456,8 +464,9 @@ public class MethodService(IMethodRepository methodRepository, IClassRepository 
 
     private void ValidateNameParameter(Parameter parameter, Method method)
     {
-        if(method.LocalVariables != null && method.Parameters != null && (method.LocalVariables.Any(v => v.Name.Equals(parameter.Name, StringComparison.OrdinalIgnoreCase)) ||
-                                                                          method.Parameters.Any(p => p.Name.Equals(parameter.Name, StringComparison.OrdinalIgnoreCase))))
+        if(method.LocalVariables != null && method.Parameters != null &&
+           (method.LocalVariables.Any(v => v.Name.Equals(parameter.Name, StringComparison.OrdinalIgnoreCase)) ||
+            method.Parameters.Any(p => p.Name.Equals(parameter.Name, StringComparison.OrdinalIgnoreCase))))
         {
             throw new InvalidMethodException("A variable or parameter with the same name already exists.");
         }
@@ -465,8 +474,9 @@ public class MethodService(IMethodRepository methodRepository, IClassRepository 
 
     private static void ValidateNameLocalVariable(LocalVariable localVariable, Method method)
     {
-        if(method.LocalVariables != null && method.Parameters != null && (method.LocalVariables.Any(v => v.Name.Equals(localVariable.Name, StringComparison.OrdinalIgnoreCase)) ||
-                                                                          method.Parameters.Any(p => p.Name.Equals(localVariable.Name, StringComparison.OrdinalIgnoreCase))))
+        if(method.LocalVariables != null && method.Parameters != null &&
+           (method.LocalVariables.Any(v => v.Name.Equals(localVariable.Name, StringComparison.OrdinalIgnoreCase)) ||
+            method.Parameters.Any(p => p.Name.Equals(localVariable.Name, StringComparison.OrdinalIgnoreCase))))
         {
             throw new InvalidMethodException("A variable or parameter with the same name already exists.");
         }
@@ -584,9 +594,142 @@ public class MethodService(IMethodRepository methodRepository, IClassRepository 
 
     private void ValidateInvokedMethodDTOExist(InvokedMethodDTO invokedMethod)
     {
-        if(invokedMethod == null)
+        if(invokedMethod == null || invokedMethod.MethodId == Guid.Empty)
         {
             throw new InvokedMethodNotFoundException("Invoked Method cannot be null.");
+        }
+    }
+
+    private void ValidateInvokedMethodReferenceName(string invokedMethodReferenceName, Method method)
+    {
+        var classT = _classRepository.FindAll()
+            .FirstOrDefault(c => c.Methods != null && c.Methods.Any(m => m.Id == method.Id));
+
+        var existsInParameters = method.Parameters?.Any(p => p.Name == invokedMethodReferenceName) ?? false;
+        var existsInLocalVariables = method.LocalVariables?.Any(lv => lv.Name == invokedMethodReferenceName) ?? false;
+
+        var existsInAttributes = false;
+        var existsInMethods = false;
+        var existingInHeredity = false;
+
+        if(classT != null)
+        {
+            var attribute = classT.Attributes?.FirstOrDefault(a => a.Name == invokedMethodReferenceName);
+            existsInAttributes = attribute != null;
+            ManageAttribute(method, attribute);
+            existsInMethods = InvokeMethodReferenceThis(invokedMethodReferenceName, method, existsInMethods, classT);
+            existingInHeredity = InvokeMethodReferenceBase(invokedMethodReferenceName, method, classT, existingInHeredity);
+        }
+
+        ManageParams(invokedMethodReferenceName, method);
+        var localVar = method.LocalVariables?.FirstOrDefault(v => v.Name == invokedMethodReferenceName);
+        ManageLocalVariable(method, localVar);
+
+        if(!existsInParameters && !existsInLocalVariables && !existsInAttributes && !existsInMethods &&
+           !existingInHeredity)
+        {
+            throw new MethodException(
+                $"Reference name '{invokedMethodReferenceName}' does not match any parameter, local variable, or attribute in method '{method.Name}'.");
+        }
+    }
+
+    private void ManageAttribute(Method method, Attribute? attribute)
+    {
+        if(attribute?.Type is Class classAttrType)
+        {
+            var attrClass = _classRepository.Find(classAttrType.Id);
+            if(attrClass == null || !HasMethodInHierarchy(attrClass, method.Id))
+            {
+                throw new MethodException(
+                    $"The method with ID '{method.Id}' does not exist in the class of attribute '{attribute.Name}' or its ancestors.");
+            }
+        }
+    }
+
+    private void ManageLocalVariable(Method method, LocalVariable? localVar)
+    {
+        if(localVar?.LocalVariableType is Class classLocalVarType)
+        {
+            var localVarClass = _classRepository.Find(classLocalVarType.Id);
+            if(localVarClass == null || !HasMethodInHierarchy(localVarClass, method.Id))
+            {
+                throw new MethodException(
+                    $"The method with ID '{method.Id}' does not exist in the class of local variable '{localVar.Name}' or its ancestors.");
+            }
+        }
+    }
+
+    private void ManageParams(string invokedMethodReferenceName, Method method)
+    {
+        var param = method.Parameters?.FirstOrDefault(p => p.Name == invokedMethodReferenceName);
+        if(param?.ParameterType is Class classParamType)
+        {
+            var paramClass = _classRepository.Find(classParamType.Id);
+            if(paramClass == null || !HasMethodInHierarchy(paramClass, method.Id))
+            {
+                throw new MethodException(
+                    $"The method with ID '{method.Id}' does not exist in the class of parameter '{param.Name}' or its ancestors.");
+            }
+        }
+    }
+
+    private bool HasMethodInHierarchy(Class targetClass, Guid methodId)
+    {
+        while(targetClass != null)
+        {
+            if(targetClass.Methods?.Any(m => m.Id == methodId) == true)
+            {
+                return true;
+            }
+
+            targetClass = targetClass.HierarchyClass;
+        }
+
+        return false;
+    }
+
+    private static bool InvokeMethodReferenceBase(string invokedMethodReferenceName, Method method, Class classT,
+        bool existingInHeredity)
+    {
+        if(invokedMethodReferenceName == "base" && classT.HierarchyClass != null)
+        {
+            existingInHeredity = classT.HierarchyClass.Methods?.Any(m => m.Name == method.Name) ?? false;
+        }
+
+        return existingInHeredity;
+    }
+
+    private static bool InvokeMethodReferenceThis(string invokedMethodReferenceName, Method method, bool existsInMethods, Class classT)
+    {
+        if(invokedMethodReferenceName == "this")
+        {
+            existsInMethods = classT.Methods?.Any(m => m.Name == method.Name) ?? false;
+        }
+
+        return existsInMethods;
+    }
+
+    private void ValidateInvokedMethodExist(InvokedMethod invokedMethod)
+    {
+        if(invokedMethod == null)
+        {
+            throw new InvokedMethodNotFoundException("Invoked Method not found.");
+        }
+    }
+
+    private void ValidateKeyWord(KeyWord? stereotype)
+    {
+        if(stereotype != null && !Enum.IsDefined(typeof(KeyWord), stereotype))
+        {
+            throw new InvalidMethodException("Invalid stereotype value.");
+        }
+    }
+
+    private void ValidateAccesibility(Accessibility methodTAccessibility)
+    {
+        if(!Enum.IsDefined(typeof(Accessibility), methodTAccessibility))
+        {
+            throw new InvalidMethodException("Invalid accessibility value.");
         }
     }
 }

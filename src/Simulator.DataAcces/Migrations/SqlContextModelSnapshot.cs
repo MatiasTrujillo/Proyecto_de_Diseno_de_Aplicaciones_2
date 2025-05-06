@@ -57,6 +57,68 @@ namespace Simulator.DataAcces.Migrations
                         });
                 });
 
+            modelBuilder.Entity("PrimitiveMethod", b =>
+                {
+                    b.Property<Guid>("PrimitiveId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("MethodsId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("PrimitiveId", "MethodsId");
+
+                    b.HasIndex("MethodsId");
+
+                    b.ToTable("PrimitiveMethod", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            PrimitiveId = new Guid("33333333-3333-3333-3333-333333333333"),
+                            MethodsId = new Guid("44444444-4444-4444-4444-444444444444")
+                        },
+                        new
+                        {
+                            PrimitiveId = new Guid("33333333-3333-3333-3333-333333333333"),
+                            MethodsId = new Guid("55555555-5555-5555-5555-555555555555")
+                        },
+                        new
+                        {
+                            PrimitiveId = new Guid("33333333-3333-3333-3333-333333333333"),
+                            MethodsId = new Guid("66666666-6666-6666-6666-666666666666")
+                        },
+                        new
+                        {
+                            PrimitiveId = new Guid("33333333-3333-3333-3333-333333333333"),
+                            MethodsId = new Guid("77777777-7777-7777-7777-777777777777")
+                        },
+                        new
+                        {
+                            PrimitiveId = new Guid("33333333-3333-3333-3333-333333333333"),
+                            MethodsId = new Guid("cccccccc-3333-3333-3333-cccccccccccc")
+                        },
+                        new
+                        {
+                            PrimitiveId = new Guid("22222222-2222-2222-2222-222222222222"),
+                            MethodsId = new Guid("88888888-8888-8888-8888-888888888888")
+                        },
+                        new
+                        {
+                            PrimitiveId = new Guid("22222222-2222-2222-2222-222222222222"),
+                            MethodsId = new Guid("99999999-9999-9999-9999-999999999999")
+                        },
+                        new
+                        {
+                            PrimitiveId = new Guid("22222222-2222-2222-2222-222222222222"),
+                            MethodsId = new Guid("aaaaaaaa-1111-1111-1111-aaaaaaaaaaaa")
+                        },
+                        new
+                        {
+                            PrimitiveId = new Guid("22222222-2222-2222-2222-222222222222"),
+                            MethodsId = new Guid("bbbbbbbb-2222-2222-2222-bbbbbbbbbbbb")
+                        });
+                });
+
             modelBuilder.Entity("Simulator.Domain.Attribute", b =>
                 {
                     b.Property<Guid>("Id")
@@ -69,6 +131,9 @@ namespace Simulator.DataAcces.Migrations
                     b.Property<Guid?>("ClassId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<Guid?>("InvokedMethodId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -79,6 +144,8 @@ namespace Simulator.DataAcces.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("ClassId");
+
+                    b.HasIndex("InvokedMethodId");
 
                     b.HasIndex("TypeId");
 
@@ -111,6 +178,9 @@ namespace Simulator.DataAcces.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<Guid?>("InvokedMethodId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<Guid?>("LocalVariableTypeId")
                         .HasColumnType("uniqueidentifier");
 
@@ -122,6 +192,8 @@ namespace Simulator.DataAcces.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("InvokedMethodId");
 
                     b.HasIndex("LocalVariableTypeId");
 
@@ -176,6 +248,69 @@ namespace Simulator.DataAcces.Migrations
                             Accessibility = 0,
                             Name = "GetHashCode",
                             ReturnTypeId = new Guid("33333333-3333-3333-3333-333333333333")
+                        },
+                        new
+                        {
+                            Id = new Guid("44444444-4444-4444-4444-444444444444"),
+                            Accessibility = 0,
+                            Name = "Parse",
+                            ReturnTypeId = new Guid("33333333-3333-3333-3333-333333333333")
+                        },
+                        new
+                        {
+                            Id = new Guid("55555555-5555-5555-5555-555555555555"),
+                            Accessibility = 0,
+                            Name = "MaxValue",
+                            ReturnTypeId = new Guid("33333333-3333-3333-3333-333333333333")
+                        },
+                        new
+                        {
+                            Id = new Guid("66666666-6666-6666-6666-666666666666"),
+                            Accessibility = 0,
+                            Name = "MinValue",
+                            ReturnTypeId = new Guid("33333333-3333-3333-3333-333333333333")
+                        },
+                        new
+                        {
+                            Id = new Guid("77777777-7777-7777-7777-777777777777"),
+                            Accessibility = 0,
+                            Name = "CompareTo",
+                            ReturnTypeId = new Guid("33333333-3333-3333-3333-333333333333")
+                        },
+                        new
+                        {
+                            Id = new Guid("cccccccc-3333-3333-3333-cccccccccccc"),
+                            Accessibility = 0,
+                            Name = "ToString",
+                            ReturnTypeId = new Guid("22222222-2222-2222-2222-222222222222")
+                        },
+                        new
+                        {
+                            Id = new Guid("88888888-8888-8888-8888-888888888888"),
+                            Accessibility = 0,
+                            Name = "ToLowerCase",
+                            ReturnTypeId = new Guid("22222222-2222-2222-2222-222222222222")
+                        },
+                        new
+                        {
+                            Id = new Guid("99999999-9999-9999-9999-999999999999"),
+                            Accessibility = 0,
+                            Name = "ToUpperCase",
+                            ReturnTypeId = new Guid("22222222-2222-2222-2222-222222222222")
+                        },
+                        new
+                        {
+                            Id = new Guid("aaaaaaaa-1111-1111-1111-aaaaaaaaaaaa"),
+                            Accessibility = 0,
+                            Name = "IsNullOrEmpty",
+                            ReturnTypeId = new Guid("11111111-1111-1111-1111-111111111111")
+                        },
+                        new
+                        {
+                            Id = new Guid("bbbbbbbb-2222-2222-2222-bbbbbbbbbbbb"),
+                            Accessibility = 0,
+                            Name = "Equals",
+                            ReturnTypeId = new Guid("11111111-1111-1111-1111-111111111111")
                         });
                 });
 
@@ -183,6 +318,9 @@ namespace Simulator.DataAcces.Migrations
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("InvokedMethodId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid?>("MethodId")
@@ -197,6 +335,8 @@ namespace Simulator.DataAcces.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("InvokedMethodId");
+
                     b.HasIndex("MethodId");
 
                     b.HasIndex("ParameterTypeId");
@@ -206,7 +346,7 @@ namespace Simulator.DataAcces.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("a7ca113e-f6d9-480f-b008-5f4ae1913c07"),
+                            Id = new Guid("012c129a-ed43-46c9-876a-8acb6bfa5949"),
                             MethodId = new Guid("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb"),
                             Name = "Obj",
                             ParameterTypeId = new Guid("dddddddd-dddd-dddd-dddd-dddddddddddd")
@@ -289,79 +429,79 @@ namespace Simulator.DataAcces.Migrations
                         },
                         new
                         {
-                            Id = new Guid("3ac3234b-ee84-4ad5-873f-33c1ed165c59"),
+                            Id = new Guid("7a6dc2f8-f117-4733-a349-7f5aaf35a148"),
                             Name = "byte",
                             PrimitiveType = 1
                         },
                         new
                         {
-                            Id = new Guid("59075d40-d193-46cb-94a4-4e1cbc2dff54"),
+                            Id = new Guid("2fa9febb-1a2c-4257-a043-572c64f253af"),
                             Name = "sByte",
                             PrimitiveType = 2
                         },
                         new
                         {
-                            Id = new Guid("d13a84fd-b311-4557-a9d0-c7ce386b0706"),
+                            Id = new Guid("24332cb3-421d-4fcf-b075-0fa93f9d3d71"),
                             Name = "char",
                             PrimitiveType = 3
                         },
                         new
                         {
-                            Id = new Guid("3266c213-9bfa-499e-9112-7914a1b18fa0"),
+                            Id = new Guid("ca76d4e4-3645-4384-a683-03c1d25cc9cd"),
                             Name = "decimal",
                             PrimitiveType = 4
                         },
                         new
                         {
-                            Id = new Guid("a76f684d-ceba-4fb4-8f0c-35f6fafbfb30"),
+                            Id = new Guid("9832e0ee-9ebb-492e-82d2-60f4dd657549"),
                             Name = "double",
                             PrimitiveType = 5
                         },
                         new
                         {
-                            Id = new Guid("04137227-fecc-4e94-9977-34a424bb86f6"),
+                            Id = new Guid("ab55ee74-396b-4e4c-a198-3009ebd12323"),
                             Name = "float",
                             PrimitiveType = 6
                         },
                         new
                         {
-                            Id = new Guid("a570de13-013e-48a1-a20c-b048a08aaf79"),
+                            Id = new Guid("7864c9ef-85d7-4f8d-b3f8-09487170df05"),
                             Name = "uint",
                             PrimitiveType = 8
                         },
                         new
                         {
-                            Id = new Guid("e71c4e14-8924-47b1-8f2f-4172146d52ca"),
+                            Id = new Guid("4d865a06-0b53-4264-9bcf-7a911906151a"),
                             Name = "nint",
                             PrimitiveType = 9
                         },
                         new
                         {
-                            Id = new Guid("01820ae6-18b0-45bb-b357-afe004cd4dc4"),
+                            Id = new Guid("11b73714-df0c-4457-b42a-6a94108f6dc9"),
                             Name = "nuint",
                             PrimitiveType = 10
                         },
                         new
                         {
-                            Id = new Guid("3a594898-b4e3-45ea-bf52-ad81e047bdec"),
+                            Id = new Guid("30aea049-9555-4717-b5ef-d2329ad58ede"),
                             Name = "long",
                             PrimitiveType = 11
                         },
                         new
                         {
-                            Id = new Guid("ceac46b7-1983-4d9f-ba11-ac5267c859a3"),
+                            Id = new Guid("7095a344-8520-4b27-b2f4-09a57abcfd61"),
                             Name = "ulong",
                             PrimitiveType = 12
                         },
                         new
                         {
-                            Id = new Guid("433bd90b-f076-4736-8366-08949cc4c3d6"),
+                            Id = new Guid("b2c0bf64-010a-4d67-81a4-887a561221fd"),
                             Name = "short",
                             PrimitiveType = 13
                         },
                         new
                         {
-                            Id = new Guid("f362917b-0eab-4781-b058-41fb7eaec2aa"),
+                            Id = new Guid("3806e85e-c2c9-4fb6-9633-e2c1858f4986"),
                             Name = "ushort",
                             PrimitiveType = 14
                         });
@@ -382,15 +522,36 @@ namespace Simulator.DataAcces.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("PrimitiveMethod", b =>
+                {
+                    b.HasOne("Simulator.Domain.Method", null)
+                        .WithMany()
+                        .HasForeignKey("MethodsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Simulator.Domain.Primitive", null)
+                        .WithMany()
+                        .HasForeignKey("PrimitiveId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("Simulator.Domain.Attribute", b =>
                 {
                     b.HasOne("Simulator.Domain.Class", null)
                         .WithMany("Attributes")
                         .HasForeignKey("ClassId");
 
+                    b.HasOne("Simulator.Domain.InvokedMethod", "InvokedMethod")
+                        .WithMany()
+                        .HasForeignKey("InvokedMethodId");
+
                     b.HasOne("Simulator.Domain.Type", "Type")
                         .WithMany()
                         .HasForeignKey("TypeId");
+
+                    b.Navigation("InvokedMethod");
 
                     b.Navigation("Type");
                 });
@@ -406,6 +567,10 @@ namespace Simulator.DataAcces.Migrations
 
             modelBuilder.Entity("Simulator.Domain.LocalVariable", b =>
                 {
+                    b.HasOne("Simulator.Domain.InvokedMethod", "InvokedMethod")
+                        .WithMany()
+                        .HasForeignKey("InvokedMethodId");
+
                     b.HasOne("Simulator.Domain.Type", "LocalVariableType")
                         .WithMany()
                         .HasForeignKey("LocalVariableTypeId");
@@ -414,6 +579,8 @@ namespace Simulator.DataAcces.Migrations
                         .WithMany("LocalVariables")
                         .HasForeignKey("MethodId")
                         .OnDelete(DeleteBehavior.Cascade);
+
+                    b.Navigation("InvokedMethod");
 
                     b.Navigation("LocalVariableType");
                 });
@@ -430,6 +597,10 @@ namespace Simulator.DataAcces.Migrations
 
             modelBuilder.Entity("Simulator.Domain.Parameter", b =>
                 {
+                    b.HasOne("Simulator.Domain.InvokedMethod", "InvokedMethod")
+                        .WithMany()
+                        .HasForeignKey("InvokedMethodId");
+
                     b.HasOne("Simulator.Domain.Method", null)
                         .WithMany("Parameters")
                         .HasForeignKey("MethodId")
@@ -438,6 +609,8 @@ namespace Simulator.DataAcces.Migrations
                     b.HasOne("Simulator.Domain.Type", "ParameterType")
                         .WithMany()
                         .HasForeignKey("ParameterTypeId");
+
+                    b.Navigation("InvokedMethod");
 
                     b.Navigation("ParameterType");
                 });

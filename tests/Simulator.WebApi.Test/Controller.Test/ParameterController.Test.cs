@@ -38,4 +38,26 @@ public class ParameterController_Test
 
         _methodServiceMock.Verify(service => service.CreateParameter(parameterDto), Times.Once);
     }
+
+    [TestMethod]
+    public void SetInvokeMethodToParameter_ShouldReturnCreated_WhenAssociationIsSuccessful()
+    {
+        var parameterId = Guid.NewGuid();
+        var invokedMethodId = Guid.NewGuid();
+
+        _methodServiceMock
+            .Setup(service => service.SetInvokeMethodToParameter(parameterId, invokedMethodId))
+            .Verifiable();
+
+        var result = _controller.SetInvokeMethodToParameter(parameterId, invokedMethodId) as CreatedResult;
+
+        Assert.IsNotNull(result, "The result should not be null.");
+        Assert.AreEqual(201, result.StatusCode, "The status code should be 201 Created.");
+        Assert.IsNotNull(result.Value, "The response value should not be null.");
+
+        var message = result.Value?.GetType().GetProperty("message")?.GetValue(result.Value, null)?.ToString();
+        Assert.AreEqual("Parameter associated with invoked method successfully", message, "The message should match the expected one.");
+
+        _methodServiceMock.Verify(service => service.SetInvokeMethodToParameter(parameterId, invokedMethodId), Times.Once);
+    }
 }

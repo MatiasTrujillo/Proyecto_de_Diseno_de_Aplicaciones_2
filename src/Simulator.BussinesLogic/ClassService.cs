@@ -22,6 +22,7 @@ public class ClassService(
         var aClass = classDto.ToEntity();
         var classes = _classRepository.FindAll();
         var objectClass = classes.FirstOrDefault(c => c.Name == "Object");
+        ValidateAccesibility(aClass.Stereotype);
         ValidateClassNameIsUnique(aClass.Name);
         aClass.HierarchyClass = objectClass;
         _classRepository.Add(aClass);
@@ -48,21 +49,12 @@ public class ClassService(
     public void UpdateClass(Guid id, UpdateClassDTO uClass)
     {
         ValidateClassIdExists(id);
-
         var classT = _classRepository.Find(id);
         ValidateDontUpdateObjectClass(classT);
         ManageName(uClass, classT);
         ManageStereotype(uClass, classT);
         ManageHierarchyClass(id, uClass, classT);
         _classRepository.Update(classT);
-    }
-
-    private static void ValidateDontUpdateObjectClass(Class classT)
-    {
-        if(classT.Name == "Object")
-        {
-            throw new InvalidClassException("The 'Object' class cannot be updated.");
-        }
     }
 
     private void ManageStereotype(UpdateClassDTO uClass, Class classT)
@@ -79,6 +71,23 @@ public class ClassService(
         {
             ValidateClassIdExists(uClass.IdClass.Value);
             ValidateClassIsNotInUse(id);
+            var heritageClassT = _classRepository.Find(uClass.IdClass.Value);
+
+            if(classT.Stereotype == KeyWord.Sealed)
+            {
+                throw new InvalidClassException("A sealed class cannot inherit from any class.");
+            }
+
+            if(heritageClassT.Stereotype == KeyWord.Sealed)
+            {
+                throw new InvalidClassException("A class cannot inherit from a sealed class.");
+            }
+
+            if(heritageClassT.Stereotype == KeyWord.Abstract)
+            {
+                throw new InvalidClassException("An abstract class cannot inherit from a concrete class.");
+            }
+
             var heritageClass = _classRepository.Find(uClass.IdClass.Value);
             classT.HierarchyClass = heritageClass;
         }
@@ -162,6 +171,22 @@ public class ClassService(
         if(name.Contains(' '))
         {
             throw new InvalidClassException("The class name must not contain spaces.");
+        }
+    }
+
+    private void ValidateAccesibility(KeyWord? stereotype)
+    {
+        if(stereotype != null && !Enum.IsDefined(typeof(KeyWord), stereotype))
+        {
+            throw new InvalidClassException("Invalid stereotype value.");
+        }
+    }
+
+    private static void ValidateDontUpdateObjectClass(Class classT)
+    {
+        if(classT.Name == "Object")
+        {
+            throw new InvalidClassException("The 'Object' class cannot be updated.");
         }
     }
 }

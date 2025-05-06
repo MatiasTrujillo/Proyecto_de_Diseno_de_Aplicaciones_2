@@ -11,17 +11,19 @@ using Type = Simulator.Domain.Type;
 
 namespace Simulator.BussinesLogic;
 
-public class AttributeService(IAttributeRepository attributeRepository, IClassRepository classRepository)
+public class AttributeService(IAttributeRepository attributeRepository, IClassRepository classRepository, IInvokedMethodRepository invokeMethodRepository)
     : IAttributeService
 {
     private readonly IAttributeRepository _attributeRepository = attributeRepository;
     private readonly IClassRepository _classRepository = classRepository;
+    private readonly IInvokedMethodRepository _invokeMethodRepository = invokeMethodRepository;
 
     public Guid CreateAttribute(AttributeDto aDTO)
     {
         var attribute = aDTO.ToEntity();
         var type = aDTO.Type.Name;
         var typeT = _classRepository.FindAll().FirstOrDefault(c => c.Name == type);
+        ValidateAccesibility(attribute.Accessibility);
         ValidateAttributeType(attribute.Type);
         attribute.Type = typeT;
         _attributeRepository.Add(attribute);
@@ -55,6 +57,33 @@ public class AttributeService(IAttributeRepository attributeRepository, IClassRe
         ValidateAttributeExist(attributeT);
         ValidateAttributeIsNotInClass(attributeT);
         _attributeRepository.Delete(id);
+    }
+
+    public void SetInvokeMethodToAttribute(Guid id, Guid idInvokeGuid)
+    {
+        var attributeT = _attributeRepository.Find(id);
+        var invokeT = _invokeMethodRepository.Find(idInvokeGuid);
+        ValidateAttributeExist(attributeT);
+        ValidateInvokedMethodExist(invokeT);
+        ValidateTypeIsPrimitive(attributeT.Type);
+        attributeT.InvokedMethod = invokeT;
+        _attributeRepository.Update(attributeT);
+    }
+
+    private void ValidateTypeIsPrimitive(Type? attributeTType)
+    {
+        if(attributeTType == null || attributeTType is not Primitive)
+        {
+            throw new InvalidAttributeException("In v1 of this program only primitive types are accepted.");
+        }
+    }
+
+    private void ValidateInvokedMethodExist(InvokedMethod invokedMethod)
+    {
+        if(invokedMethod == null)
+        {
+            throw new InvokedMethodNotFoundException("Invoked Method not found.");
+        }
     }
 
     private void ValidateAttributeType(Type? methodTReturnType)
@@ -158,6 +187,14 @@ public class AttributeService(IAttributeRepository attributeRepository, IClassRe
         if(methodTReturnType != null && classes.All(c => c.Id != methodTReturnType))
         {
             throw new MethodException("Return type not found.");
+        }
+    }
+
+    private void ValidateAccesibility(Accessibility aDtoAccessibility)
+    {
+        if(!Enum.IsDefined(typeof(Accessibility), aDtoAccessibility))
+        {
+            throw new InvalidAttributeException("Invalid accessibility value.");
         }
     }
 }
