@@ -103,6 +103,31 @@ public class ClassRepositoryTest
 
     #region FindAllTypes
     [TestMethod]
+    public void FindAll_WhenUpdateDataBase_ShouldPrimitivesHaveMethods()
+    {
+        var allTypes = _repository.FindAllTypes();
+        var intMethodsCount = 0;
+        var stringMethodsCount = 0;
+        foreach (var type in allTypes)
+        {
+            if (type is Primitive primitive)
+            {
+                if (primitive.PrimitiveType == PrimitiveType.String)
+                {
+                    stringMethodsCount = primitive.Methods.Count;
+                }
+                else if (primitive.PrimitiveType == PrimitiveType.Int)
+                {
+                    intMethodsCount = primitive.Methods.Count;
+                }
+            }
+        }
+
+        stringMethodsCount.Should().Be(4);
+        intMethodsCount.Should().Be(5);
+    }
+
+    [TestMethod]
     public void FindAllTypes_WhenTypesExist_ShouldReturnAllTypes()
     {
         var aClassType = new Simulator.Domain.Class { Name = "MyTypeClass" };

@@ -211,10 +211,10 @@ public class MethodRepositoryTest
         var methods = _repositoryTest.FindAll();
 
         methods.Should().NotBeNull();
-        methods.Count.Should().Be(3);
-        methods.Should().ContainSingle(m => m.Name == "ToString");
-        methods.Should().ContainSingle(m => m.Name == "GetHashCode");
-        methods.Should().ContainSingle(m => m.Name == "Equals");
+        methods.Count.Should().Be(12);
+        methods.Should().Contain(m => m.Name == "ToString");
+        methods.Should().Contain(m => m.Name == "GetHashCode");
+        methods.Should().Contain(m => m.Name == "Equals");
     }
 
     [TestMethod]
@@ -250,7 +250,7 @@ public class MethodRepositoryTest
         var methods = _repositoryTest.FindAll();
 
         methods.Should().NotBeNull();
-        methods.Should().HaveCount(5);
+        methods.Should().HaveCount(14);
         methods.Should().Contain(m => m.Id == methodId1);
         methods.Should().Contain(m => m.Id == methodId2);
     }
