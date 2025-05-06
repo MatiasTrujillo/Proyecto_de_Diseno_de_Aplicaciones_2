@@ -997,4 +997,186 @@ public class MethodServiceTest
 
         Assert.AreEqual(res, result);
     }
+
+    [TestMethod]
+    public void ExecuteMethodExample3_SholddReturnMethodExecuted()
+    {
+        var limpiar = new Method
+        {
+            Id = Guid.NewGuid(),
+            Name = "Limpiar",
+            Accessibility = Accessibility.Protected,
+            Methods = [],
+            Parameters = [],
+            LocalVariables = [],
+            ReturnType = null,
+            Stereotype = null
+        };
+        var limpiarInvoked = new InvokedMethod
+        {
+            Id = Guid.NewGuid(),
+            MethodId = limpiar.Id,
+            ReferenceName = "this"
+        };
+
+        var inicializar = new Method
+        {
+            Id = Guid.NewGuid(),
+            Name = "Inicializar",
+            Accessibility = Accessibility.Protected,
+            Methods = [],
+            Parameters = [],
+            LocalVariables = [],
+            ReturnType = null,
+            Stereotype = null
+        };
+        var inicializarInvoked = new InvokedMethod
+        {
+            Id = Guid.NewGuid(),
+            MethodId = inicializar.Id,
+            ReferenceName = "this"
+        };
+
+        var esValidoEntrada = new Method
+        {
+            Id = Guid.NewGuid(),
+            Name = "EsValido",
+            Accessibility = Accessibility.Public,
+            Methods = [inicializarInvoked],
+            Parameters = [],
+            LocalVariables = [],
+            ReturnType = new Primitive(PrimitiveType.Bool),
+            Stereotype = null
+        };
+        var esValidoEntradaInvoked = new InvokedMethod
+        {
+            Id = Guid.NewGuid(),
+            MethodId = esValidoEntrada.Id,
+            ReferenceName = "base"
+        };
+
+        var esValidoEntradaTexto = new Method
+        {
+            Id = Guid.NewGuid(),
+            Name = "EsValido",
+            Accessibility = Accessibility.Public,
+            Methods = [esValidoEntradaInvoked, limpiarInvoked],
+            Parameters = [],
+            LocalVariables = [],
+            ReturnType = new Primitive(PrimitiveType.Bool),
+            Stereotype = null
+        };
+        var esValidoEntradaTextoInvoked = new InvokedMethod
+        {
+            Id = Guid.NewGuid(),
+            MethodId = esValidoEntradaTexto.Id,
+            ReferenceName = "base"
+        };
+
+        var esValidoEntradaTextoEspecial = new Method
+        {
+            Id = Guid.NewGuid(),
+            Name = "EsValido",
+            Accessibility = Accessibility.Public,
+            Methods = [esValidoEntradaTextoInvoked],
+            Parameters = [],
+            LocalVariables = [],
+            ReturnType = new Primitive(PrimitiveType.Bool),
+            Stereotype = KeyWord.Sealed
+        };
+        var esValidoEntradaTextoEspecialInvoked = new InvokedMethod
+        {
+            Id = Guid.NewGuid(),
+            MethodId = esValidoEntradaTextoEspecial.Id,
+            ReferenceName = "input"
+        };
+
+        var entrada = new Class
+        {
+            Id = Guid.NewGuid(),
+            Name = "Entrada",
+            Stereotype = null,
+            HierarchyClass = null,
+            Attributes = [],
+            Methods = [esValidoEntrada, inicializar, limpiar]
+        };
+
+        var entradaTexto = new Class
+        {
+            Id = Guid.NewGuid(),
+            Name = "EntradaTexto",
+            Stereotype = null,
+            HierarchyClass = entrada,
+            Attributes = [],
+            Methods = [esValidoEntradaTexto, limpiar]
+        };
+
+        var entradaTextoEspecial = new Class
+        {
+            Id = Guid.NewGuid(),
+            Name = "EntradaTextoEspecial",
+            Stereotype = KeyWord.Sealed,
+            HierarchyClass = entradaTexto,
+            Attributes = [],
+            Methods = [esValidoEntradaTextoEspecial]
+        };
+
+        var input = new LocalVariable
+        {
+            Id = Guid.NewGuid(),
+            Name = "input",
+            LocalVariableType = entradaTextoEspecial
+        };
+
+        var validar = new Method
+        {
+            Id = Guid.NewGuid(),
+            Name = "Validar",
+            Accessibility = Accessibility.Public,
+            Methods = [esValidoEntradaTextoEspecialInvoked],
+            Parameters = [],
+            LocalVariables = [input],
+            ReturnType = new Primitive(PrimitiveType.Bool),
+            Stereotype = null
+        };
+
+        var validador = new Class
+        {
+            Id = Guid.NewGuid(),
+            Name = "Validador",
+            Stereotype = null,
+            HierarchyClass = null,
+            Attributes = [],
+            Methods = [validar]
+        };
+
+        var validadorDTO = new ClassDTO
+        {
+            Name = validador.Name,
+        };
+
+        var validarDTO = new MethodDTO
+        {
+            Name = validar.Name
+        };
+
+        _mockClassRepository.Setup(repo => repo.FindAll()).Returns([validador, entrada, entradaTexto, entradaTextoEspecial]);
+        _mockMethodRepository.Setup(repo => repo.Find(esValidoEntradaTextoEspecialInvoked.MethodId)).Returns(esValidoEntradaTextoEspecial);
+        _mockMethodRepository.Setup(repo => repo.Find(esValidoEntradaTextoInvoked.MethodId)).Returns(esValidoEntradaTexto);
+        _mockMethodRepository.Setup(repo => repo.Find(esValidoEntradaInvoked.MethodId)).Returns(esValidoEntrada);
+        _mockMethodRepository.Setup(repo => repo.Find(inicializarInvoked.MethodId)).Returns(inicializar);
+        _mockMethodRepository.Setup(repo => repo.Find(limpiarInvoked.MethodId)).Returns(limpiar);
+
+        var result = _methodService.ExecuteMethod(validadorDTO, validadorDTO, validarDTO);
+
+        var res =
+            "Validador.Validar() -> Validador.Validar()\n" +
+            "\tinput.EsValido() -> EntradaTextoEspecial.EsValido()\n" +
+            "\t\tbase.EsValido() -> EntradaTexto.EsValido()\n" +
+            "\t\t\tbase.EsValido() -> Entrada.EsValido()\n" +
+            "\t\t\t\tthis.Inicializar() -> Entrada.Inicializar()\n" +
+            "\t\t\tthis.Limpiar() -> Entrada.Limpiar()";
+        Console.WriteLine(result);
+        Assert.AreEqual(res, result);
+    }
 }
