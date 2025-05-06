@@ -8,14 +8,22 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Simulator.DataAcces.Migrations
 {
     /// <inheritdoc />
-    public partial class FourthMigration : Migration
+    public partial class FifthMigration : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropForeignKey(
+                name: "FK_InvokedMethods_Methods_MethodId",
+                table: "InvokedMethods");
+
+            migrationBuilder.DropForeignKey(
                 name: "FK_Parameters_Methods_MethodId",
                 table: "Parameters");
+
+            migrationBuilder.DropIndex(
+                name: "IX_InvokedMethods_MethodId",
+                table: "InvokedMethods");
 
             migrationBuilder.DeleteData(
                 table: "Parameters",
@@ -87,30 +95,59 @@ namespace Simulator.DataAcces.Migrations
                 keyColumn: "Id",
                 keyValue: new Guid("ca76d4e4-3645-4384-a683-03c1d25cc9cd"));
 
+            migrationBuilder.CreateTable(
+                name: "MethodInvokedMethods",
+                columns: table => new
+                {
+                    MethodId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    InvokedMethodId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_MethodInvokedMethods", x => new { x.MethodId, x.InvokedMethodId });
+                    table.ForeignKey(
+                        name: "FK_MethodInvokedMethods_InvokedMethods_InvokedMethodId",
+                        column: x => x.InvokedMethodId,
+                        principalTable: "InvokedMethods",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_MethodInvokedMethods_Methods_MethodId",
+                        column: x => x.MethodId,
+                        principalTable: "Methods",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
             migrationBuilder.InsertData(
                 table: "Parameters",
                 columns: new[] { "Id", "InvokedMethodId", "MethodId", "Name", "ParameterTypeId" },
-                values: new object[] { new Guid("81f6a054-2f9d-4e9d-9ad4-89c39281ab4d"), null, new Guid("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb"), "Obj", new Guid("dddddddd-dddd-dddd-dddd-dddddddddddd") });
+                values: new object[] { new Guid("d51ec3a4-eb93-4312-8dc5-9c0b1a3fe1b2"), null, new Guid("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb"), "Obj", new Guid("dddddddd-dddd-dddd-dddd-dddddddddddd") });
 
             migrationBuilder.InsertData(
                 table: "Type",
                 columns: new[] { "Id", "Discriminator", "Name", "PrimitiveType" },
                 values: new object[,]
                 {
-                    { new Guid("1015ca9a-46d5-440f-9c5c-78c3671e4dc1"), "Primitive", "byte", 1 },
-                    { new Guid("3ef43e9a-cb79-4b4a-af41-15cd6bc4c008"), "Primitive", "float", 6 },
-                    { new Guid("47fc0a91-8d59-43ad-997b-25c9dda9291c"), "Primitive", "sByte", 2 },
-                    { new Guid("4dc09f4b-2c79-4322-aec7-b8e5685908fe"), "Primitive", "uint", 8 },
-                    { new Guid("5c4e72b8-f5c4-4ec2-9d64-946ade48dd3d"), "Primitive", "char", 3 },
-                    { new Guid("6d5e646f-2719-4fa5-9af0-d029f23760b6"), "Primitive", "nint", 9 },
-                    { new Guid("7dba885d-0202-47e6-bb0f-8cc3bfd9a34d"), "Primitive", "double", 5 },
-                    { new Guid("84d923df-5e42-4476-aacf-96eb2cfec694"), "Primitive", "short", 13 },
-                    { new Guid("a5aa6983-8395-4125-b11f-642d2dbb0087"), "Primitive", "decimal", 4 },
-                    { new Guid("b13b4584-31b8-4a09-89cd-24f5d030fe25"), "Primitive", "nuint", 10 },
-                    { new Guid("b20ec442-257a-4b71-92f5-3fd122b33085"), "Primitive", "ulong", 12 },
-                    { new Guid("d78eeca6-90ea-4bc4-94b0-c0e2109beac7"), "Primitive", "ushort", 14 },
-                    { new Guid("da843033-4c82-4a55-a96e-73ce8bc9bdc4"), "Primitive", "long", 11 }
+                    { new Guid("03edf7c2-c022-4310-957d-b67dcdd53311"), "Primitive", "ulong", 12 },
+                    { new Guid("1f9ecbf0-01c8-4206-9a11-60a3d31811aa"), "Primitive", "long", 11 },
+                    { new Guid("1fdf1e6e-4287-4ac2-a773-895b0318b44d"), "Primitive", "double", 5 },
+                    { new Guid("31011703-063b-4caf-834f-4c0b745bcc55"), "Primitive", "ushort", 14 },
+                    { new Guid("40b743f5-3dd4-43cf-afa8-298b116572bd"), "Primitive", "float", 6 },
+                    { new Guid("4dc777c5-431f-489d-9eb3-b55f54a6019a"), "Primitive", "short", 13 },
+                    { new Guid("55e4c39a-fd6f-4840-acbc-9327c800d57c"), "Primitive", "sByte", 2 },
+                    { new Guid("971715ca-7181-4163-a4a8-4115aa746e5d"), "Primitive", "byte", 1 },
+                    { new Guid("9d8be925-e45e-42a7-a841-9608038b638b"), "Primitive", "nint", 9 },
+                    { new Guid("a8ed71d3-608a-442c-9429-50801ba0f0fc"), "Primitive", "uint", 8 },
+                    { new Guid("b4dbb59d-79cc-4e0d-a6b1-c6bbbc63d26c"), "Primitive", "nuint", 10 },
+                    { new Guid("d56ac69d-08bb-4dc0-b55c-4ade6578828f"), "Primitive", "decimal", 4 },
+                    { new Guid("e65db76b-5414-497b-8a61-495068fb1aa1"), "Primitive", "char", 3 }
                 });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_MethodInvokedMethods_InvokedMethodId",
+                table: "MethodInvokedMethods",
+                column: "InvokedMethodId");
 
             migrationBuilder.AddForeignKey(
                 name: "FK_Parameters_Methods_MethodId",
@@ -127,75 +164,78 @@ namespace Simulator.DataAcces.Migrations
                 name: "FK_Parameters_Methods_MethodId",
                 table: "Parameters");
 
+            migrationBuilder.DropTable(
+                name: "MethodInvokedMethods");
+
             migrationBuilder.DeleteData(
                 table: "Parameters",
                 keyColumn: "Id",
-                keyValue: new Guid("81f6a054-2f9d-4e9d-9ad4-89c39281ab4d"));
+                keyValue: new Guid("d51ec3a4-eb93-4312-8dc5-9c0b1a3fe1b2"));
 
             migrationBuilder.DeleteData(
                 table: "Type",
                 keyColumn: "Id",
-                keyValue: new Guid("1015ca9a-46d5-440f-9c5c-78c3671e4dc1"));
+                keyValue: new Guid("03edf7c2-c022-4310-957d-b67dcdd53311"));
 
             migrationBuilder.DeleteData(
                 table: "Type",
                 keyColumn: "Id",
-                keyValue: new Guid("3ef43e9a-cb79-4b4a-af41-15cd6bc4c008"));
+                keyValue: new Guid("1f9ecbf0-01c8-4206-9a11-60a3d31811aa"));
 
             migrationBuilder.DeleteData(
                 table: "Type",
                 keyColumn: "Id",
-                keyValue: new Guid("47fc0a91-8d59-43ad-997b-25c9dda9291c"));
+                keyValue: new Guid("1fdf1e6e-4287-4ac2-a773-895b0318b44d"));
 
             migrationBuilder.DeleteData(
                 table: "Type",
                 keyColumn: "Id",
-                keyValue: new Guid("4dc09f4b-2c79-4322-aec7-b8e5685908fe"));
+                keyValue: new Guid("31011703-063b-4caf-834f-4c0b745bcc55"));
 
             migrationBuilder.DeleteData(
                 table: "Type",
                 keyColumn: "Id",
-                keyValue: new Guid("5c4e72b8-f5c4-4ec2-9d64-946ade48dd3d"));
+                keyValue: new Guid("40b743f5-3dd4-43cf-afa8-298b116572bd"));
 
             migrationBuilder.DeleteData(
                 table: "Type",
                 keyColumn: "Id",
-                keyValue: new Guid("6d5e646f-2719-4fa5-9af0-d029f23760b6"));
+                keyValue: new Guid("4dc777c5-431f-489d-9eb3-b55f54a6019a"));
 
             migrationBuilder.DeleteData(
                 table: "Type",
                 keyColumn: "Id",
-                keyValue: new Guid("7dba885d-0202-47e6-bb0f-8cc3bfd9a34d"));
+                keyValue: new Guid("55e4c39a-fd6f-4840-acbc-9327c800d57c"));
 
             migrationBuilder.DeleteData(
                 table: "Type",
                 keyColumn: "Id",
-                keyValue: new Guid("84d923df-5e42-4476-aacf-96eb2cfec694"));
+                keyValue: new Guid("971715ca-7181-4163-a4a8-4115aa746e5d"));
 
             migrationBuilder.DeleteData(
                 table: "Type",
                 keyColumn: "Id",
-                keyValue: new Guid("a5aa6983-8395-4125-b11f-642d2dbb0087"));
+                keyValue: new Guid("9d8be925-e45e-42a7-a841-9608038b638b"));
 
             migrationBuilder.DeleteData(
                 table: "Type",
                 keyColumn: "Id",
-                keyValue: new Guid("b13b4584-31b8-4a09-89cd-24f5d030fe25"));
+                keyValue: new Guid("a8ed71d3-608a-442c-9429-50801ba0f0fc"));
 
             migrationBuilder.DeleteData(
                 table: "Type",
                 keyColumn: "Id",
-                keyValue: new Guid("b20ec442-257a-4b71-92f5-3fd122b33085"));
+                keyValue: new Guid("b4dbb59d-79cc-4e0d-a6b1-c6bbbc63d26c"));
 
             migrationBuilder.DeleteData(
                 table: "Type",
                 keyColumn: "Id",
-                keyValue: new Guid("d78eeca6-90ea-4bc4-94b0-c0e2109beac7"));
+                keyValue: new Guid("d56ac69d-08bb-4dc0-b55c-4ade6578828f"));
 
             migrationBuilder.DeleteData(
                 table: "Type",
                 keyColumn: "Id",
-                keyValue: new Guid("da843033-4c82-4a55-a96e-73ce8bc9bdc4"));
+                keyValue: new Guid("e65db76b-5414-497b-8a61-495068fb1aa1"));
 
             migrationBuilder.InsertData(
                 table: "Parameters",
@@ -221,6 +261,19 @@ namespace Simulator.DataAcces.Migrations
                     { new Guid("b2c0bf64-010a-4d67-81a4-887a561221fd"), "Primitive", "short", 13 },
                     { new Guid("ca76d4e4-3645-4384-a683-03c1d25cc9cd"), "Primitive", "decimal", 4 }
                 });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_InvokedMethods_MethodId",
+                table: "InvokedMethods",
+                column: "MethodId");
+
+            migrationBuilder.AddForeignKey(
+                name: "FK_InvokedMethods_Methods_MethodId",
+                table: "InvokedMethods",
+                column: "MethodId",
+                principalTable: "Methods",
+                principalColumn: "Id",
+                onDelete: ReferentialAction.Cascade);
 
             migrationBuilder.AddForeignKey(
                 name: "FK_Parameters_Methods_MethodId",

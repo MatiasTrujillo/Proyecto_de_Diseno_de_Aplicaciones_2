@@ -36,12 +36,6 @@ public sealed class SqlContext : DbContext
         modelBuilder.Entity<Attribute>()
             .HasKey(a => a.Id);
 
-        modelBuilder.Entity<Method>()
-            .HasMany(m => m.Methods)
-            .WithOne()
-            .HasForeignKey(im => im.MethodId)
-            .OnDelete(DeleteBehavior.Cascade);
-
         modelBuilder.Entity<InvokedMethod>(entity =>
         {
             entity.ToTable("InvokedMethods");
