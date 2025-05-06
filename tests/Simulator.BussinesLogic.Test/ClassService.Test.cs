@@ -5,6 +5,7 @@ using Simulator.Domain.Exception;
 using Simulator.DTO;
 using Simulator.IDataAcces;
 using Attribute = Simulator.Domain.Attribute;
+using Type = Simulator.Domain.Type;
 
 namespace Simulator.BussinesLogic.Test;
 
@@ -39,9 +40,9 @@ public class ClassServiceTest
         };
 
         var objectClass = new Class { Name = "Object" };
-        var existingClasses = new List<Class> { objectClass };
+        var existingClasses = new List<Type> { objectClass };
 
-        _mockClassRepository.Setup(r => r.FindAll())
+        _mockClassRepository.Setup(r => r.FindAllTypes())
             .Returns(existingClasses);
 
         _classService.CreateClass(dto);
@@ -68,9 +69,9 @@ public class ClassServiceTest
             Stereotype = null,
         };
 
-        var classes = new List<Class> { dto1.ToEntity() };
+        var classes = new List<Type> { dto1.ToEntity() };
 
-        _mockClassRepository.Setup(r => r.FindAll())
+        _mockClassRepository.Setup(r => r.FindAllTypes())
             .Returns(classes);
 
         var exception = Assert.ThrowsException<InvalidClassException>(() =>
@@ -78,7 +79,7 @@ public class ClassServiceTest
             _classService.CreateClass(dto2);
         });
 
-        Assert.AreEqual("There is already a class with this name", exception.Message);
+        Assert.AreEqual("There is already a type with this name", exception.Message);
     }
 
     [TestMethod]
@@ -91,7 +92,7 @@ public class ClassServiceTest
             Stereotype = invalidStereoType,
         };
 
-        _mockClassRepository.Setup(r => r.FindAll())
+        _mockClassRepository.Setup(r => r.FindAllTypes())
             .Returns([]);
 
         var exception = Assert.ThrowsException<InvalidClassException>(() =>
@@ -111,7 +112,7 @@ public class ClassServiceTest
             Stereotype = KeyWord.Sealed,
         };
 
-        _mockClassRepository.Setup(r => r.FindAll())
+        _mockClassRepository.Setup(r => r.FindAllTypes())
             .Returns([]);
 
         var exception = Assert.ThrowsException<ClassException>(() =>
@@ -131,7 +132,7 @@ public class ClassServiceTest
             Stereotype = KeyWord.Sealed,
         };
 
-        _mockClassRepository.Setup(r => r.FindAll())
+        _mockClassRepository.Setup(r => r.FindAllTypes())
             .Returns([]);
 
         var exception = Assert.ThrowsException<ClassException>(() =>
@@ -151,7 +152,7 @@ public class ClassServiceTest
             Stereotype = KeyWord.Sealed,
         };
 
-        _mockClassRepository.Setup(r => r.FindAll())
+        _mockClassRepository.Setup(r => r.FindAllTypes())
             .Returns([]);
 
         var exception = Assert.ThrowsException<ClassException>(() =>
@@ -225,9 +226,10 @@ public class ClassServiceTest
         var heritageId = Guid.NewGuid();
 
         var existingClass = new Class { Id = classId, Name = "OldName" };
-        var newHeritageClass = new Class { Id = heritageId };
+        var newHeritageClass = new Class { Id = heritageId, Name = "ParentClass" };
 
         _mockClassRepository.Setup(r => r.FindAll()).Returns([existingClass, newHeritageClass]);
+        _mockClassRepository.Setup(r => r.FindAllTypes()).Returns([existingClass, newHeritageClass]);
         _mockClassRepository.Setup(r => r.Find(classId)).Returns(existingClass);
         _mockClassRepository.Setup(r => r.Find(heritageId)).Returns(newHeritageClass);
         _mockClassRepository.Setup(r => r.Update(It.IsAny<Class>()));
@@ -254,14 +256,12 @@ public class ClassServiceTest
         var heritageId = Guid.NewGuid();
 
         var existingClass = new Class { Id = classId, Name = "OldName", Stereotype = KeyWord.Abstract };
-
-        var concreteParentClass = new Class { Id = heritageId, Name = "ConcreteClass", Stereotype = KeyWord.Abstract };
+        var concreteParentClass = new Class { Id = heritageId, Name = "ConcreteClass", Stereotype = null };
 
         _mockClassRepository.Setup(r => r.FindAll()).Returns([existingClass, concreteParentClass]);
+        _mockClassRepository.Setup(r => r.FindAllTypes()).Returns(new List<Type> { existingClass, concreteParentClass });
         _mockClassRepository.Setup(r => r.Find(classId)).Returns(existingClass);
         _mockClassRepository.Setup(r => r.Find(heritageId)).Returns(concreteParentClass);
-
-        _mockClassRepository.Setup(r => r.Update(It.IsAny<Class>())).Verifiable();
 
         _mockAttributeRepository.Setup(r => r.FindAll()).Returns([]);
         _mockMethodRepository.Setup(r => r.FindAll()).Returns([]);
@@ -269,7 +269,6 @@ public class ClassServiceTest
         var dto = new UpdateClassDTO
         {
             Name = "NewName",
-            Stereotype = "abstract",
             IdClass = heritageId
         };
 
@@ -287,15 +286,24 @@ public class ClassServiceTest
         var classId = Guid.NewGuid();
         var heritageId = Guid.NewGuid();
 
-        var sealedClass = new Class { Id = classId, Name = "OldName", Stereotype = KeyWord.Sealed };
+        var sealedClass = new Class
+        {
+            Id = classId,
+            Name = "OldName",
+            Stereotype = KeyWord.Sealed
+        };
 
-        var parentClass = new Class { Id = heritageId, Name = "ParentClass" };
+        var parentClass = new Class
+        {
+            Id = heritageId,
+            Name = "ParentClass",
+            Stereotype = null
+        };
 
         _mockClassRepository.Setup(r => r.FindAll()).Returns([sealedClass, parentClass]);
+        _mockClassRepository.Setup(r => r.FindAllTypes()).Returns(new List<Type> { sealedClass, parentClass });
         _mockClassRepository.Setup(r => r.Find(classId)).Returns(sealedClass);
         _mockClassRepository.Setup(r => r.Find(heritageId)).Returns(parentClass);
-
-        _mockClassRepository.Setup(r => r.Update(It.IsAny<Class>())).Verifiable();
 
         _mockAttributeRepository.Setup(r => r.FindAll()).Returns([]);
         _mockMethodRepository.Setup(r => r.FindAll()).Returns([]);
@@ -388,7 +396,6 @@ public class ClassServiceTest
     }
 
     [TestMethod]
-    [ExpectedException(typeof(InvalidClassException))]
     public void UpdateClass_WithDuplicateName_ThrowsException()
     {
         var id = Guid.NewGuid();
@@ -396,11 +403,20 @@ public class ClassServiceTest
         var duplicate = new Class { Id = Guid.NewGuid(), Name = "NewName" };
 
         _mockClassRepository.Setup(r => r.FindAll()).Returns([classT, duplicate]);
+        _mockClassRepository.Setup(r => r.FindAllTypes()).Returns([classT, duplicate]);
         _mockClassRepository.Setup(r => r.Find(id)).Returns(classT);
+
+        _mockAttributeRepository.Setup(r => r.FindAll()).Returns([]);
+        _mockMethodRepository.Setup(r => r.FindAll()).Returns([]);
 
         var dto = new UpdateClassDTO { Name = "NewName" };
 
-        _classService.UpdateClass(id, dto);
+        var exception = Assert.ThrowsException<InvalidClassException>(() =>
+        {
+            _classService.UpdateClass(id, dto);
+        });
+
+        Assert.AreEqual("There is already a type with this name", exception.Message);
     }
 
     [TestMethod]
