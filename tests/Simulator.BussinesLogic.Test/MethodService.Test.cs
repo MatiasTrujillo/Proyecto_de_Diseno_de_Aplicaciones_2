@@ -1921,7 +1921,10 @@ public class MethodServiceTest
 
         var notificador = new Attribute
         {
-            Id = Guid.NewGuid(), Name = "notificador", Type = comunicacion, Accessibility = Accessibility.Protected,
+            Id = Guid.NewGuid(),
+            Name = "notificador",
+            Type = comunicacion,
+            Accessibility = Accessibility.Protected,
         };
 
         var clienteParam = new Parameter { Id = Guid.NewGuid(), Name = "cliente", ParameterType = cliente };

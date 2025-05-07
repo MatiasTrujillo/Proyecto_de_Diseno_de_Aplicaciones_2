@@ -322,7 +322,7 @@ public class MethodService(
         var result = new List<string>();
         var invokedMethodMethod = _methodRepository.Find(invokedMethod.MethodId);
 
-        result.Add(AddToResult(invokedMethod.ReferenceName, refe.HierarchyClass.Name,  invokedMethodMethod));
+        result.Add(AddToResult(invokedMethod.ReferenceName, refe.HierarchyClass.Name, invokedMethodMethod));
         if(CheckOriginal(invokedMethodMethod, originalMethod))
         {
             return result;
@@ -518,7 +518,7 @@ public class MethodService(
 
     private List<string> ConcatNext(Class refe, Class oTC, Method method, Method originalMethod)
     {
-        List<string> result = new List<string>();
+        List<string> result;
 
         _identation++;
         result = WriteOtherLines(refe, oTC, method, originalMethod);
