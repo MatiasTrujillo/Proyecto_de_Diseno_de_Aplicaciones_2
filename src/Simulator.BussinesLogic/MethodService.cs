@@ -205,35 +205,6 @@ public class MethodService(
         return string.Join("\n", result);
     }
 
-    private List<string> CaseLocal(InvokedMethod invokedMethod, Method method, Method originalMethod)
-    {
-        var result = new List<string>();
-        var invokedMethodMethod = _methodRepository.Find(invokedMethod.MethodId);
-
-        var aLocal = method.LocalVariables!.FirstOrDefault(x => x.Name == invokedMethod.ReferenceName);
-        if(aLocal != null)
-        {
-            var aClass = _classRepository.FindAll().FirstOrDefault(x => x.Name == aLocal.LocalVariableType.Name);
-            if(aClass != null)
-            {
-                aClass = FindClassWithMethod(aClass, invokedMethodMethod);
-                if(CheckClassHasMethod(aClass, invokedMethodMethod))
-                {
-                    result.Add(AddToResult(aLocal.Name, aClass.Name, invokedMethodMethod.Name));
-                    if(CheckOriginal(invokedMethodMethod, originalMethod))
-                    {
-                        return result;
-                    }
-
-                    result = result.Concat(ConcatNext(aClass, aClass, invokedMethodMethod, originalMethod))
-                        .ToList();
-                }
-            }
-        }
-
-        return result;
-    }
-
     private List<string> WriteOtherLines(Class refe, Class oTC, Method method, Method originalMethod)
     {
         var result = new List<string>();
@@ -296,18 +267,41 @@ public class MethodService(
         var result = new List<string>();
         var invokedMethodMethod = _methodRepository.Find(invokedMethod.MethodId);
 
-        var aClass = refe;
+        var aClass = oTC;
         aClass = FindClassWithMethod(aClass, invokedMethodMethod);
         if(CheckClassHasMethod(aClass, invokedMethodMethod))
         {
-            result.Add(AddToResult(invokedMethod.ReferenceName, aClass.Name, invokedMethodMethod.Name));
+            result.Add(AddToResult(invokedMethod.ReferenceName, aClass.Name, invokedMethodMethod));
 
             if(CheckOriginal(invokedMethodMethod, originalMethod))
             {
                 return result;
             }
 
-            result = result.Concat(ConcatNext(oTC, oTC, invokedMethodMethod, originalMethod)).ToList();
+            invokedMethodMethod = aClass.Methods.Find(x => x.Name == invokedMethodMethod.Name);
+            result = result.Concat(ConcatNext(oTC, oTC, invokedMethodMethod!, originalMethod)).ToList();
+        }
+        else
+        {
+            if(oTC.Attributes != null)
+            {
+                var anAttribute = oTC.Attributes.FirstOrDefault(x =>
+                    x.InvokedMethod != null && x.InvokedMethod.MethodId == invokedMethod.MethodId);
+                var allPrimitives = _classRepository.FindAllTypes().OfType<Primitive>().ToList();
+                var aPrimitive = allPrimitives.Find(x => anAttribute.Type is Primitive p && x.PrimitiveType.ToString().ToLower() == p.PrimitiveType.ToString().ToLower());
+
+                if(anAttribute != null && aPrimitive != null)
+                {
+                    result.Add(AddToResult($"this.{anAttribute.Name}", aPrimitive.PrimitiveType.ToString(), invokedMethodMethod));
+
+                    if(CheckOriginal(invokedMethodMethod, originalMethod))
+                    {
+                        return result;
+                    }
+
+                    result = result.Concat(ConcatNext(oTC, oTC, invokedMethodMethod, originalMethod)).ToList();
+                }
+            }
         }
 
         return result;
@@ -318,7 +312,7 @@ public class MethodService(
         var result = new List<string>();
         var invokedMethodMethod = _methodRepository.Find(invokedMethod.MethodId);
 
-        result.Add(AddToResult(invokedMethod.ReferenceName, refe.HierarchyClass.Name,  invokedMethodMethod.Name));
+        result.Add(AddToResult(invokedMethod.ReferenceName, refe.HierarchyClass.Name,  invokedMethodMethod));
         if(CheckOriginal(invokedMethodMethod, originalMethod))
         {
             return result;
@@ -343,7 +337,7 @@ public class MethodService(
                 aClass = FindClassWithMethod(aClass, invokedMethodMethod);
                 if(CheckClassHasMethod(aClass, invokedMethodMethod))
                 {
-                    result.Add(AddToResult(anAttribute.Name, aClass.Name, invokedMethodMethod.Name));
+                    result.Add(AddToResult(anAttribute.Name, aClass.Name, invokedMethodMethod));
 
                     if(CheckOriginal(invokedMethodMethod, originalMethod))
                     {
@@ -373,8 +367,37 @@ public class MethodService(
                 aClass = FindClassWithMethod(aClass, invokedMethodMethod);
                 if(CheckClassHasMethod(aClass, invokedMethodMethod))
                 {
-                    result.Add(AddToResult(aParameter.Name, aClass.Name, invokedMethodMethod.Name));
+                    result.Add(AddToResult(aParameter.Name, aClass.Name, invokedMethodMethod));
 
+                    if(CheckOriginal(invokedMethodMethod, originalMethod))
+                    {
+                        return result;
+                    }
+
+                    result = result.Concat(ConcatNext(aClass, aClass, invokedMethodMethod, originalMethod))
+                        .ToList();
+                }
+            }
+        }
+
+        return result;
+    }
+
+    private List<string> CaseLocal(InvokedMethod invokedMethod, Method method, Method originalMethod)
+    {
+        var result = new List<string>();
+        var invokedMethodMethod = _methodRepository.Find(invokedMethod.MethodId);
+
+        var aLocal = method.LocalVariables!.FirstOrDefault(x => x.Name == invokedMethod.ReferenceName);
+        if(aLocal != null)
+        {
+            var aClass = _classRepository.FindAll().FirstOrDefault(x => x.Name == aLocal.LocalVariableType.Name);
+            if(aClass != null)
+            {
+                aClass = FindClassWithMethod(aClass, invokedMethodMethod);
+                if(CheckClassHasMethod(aClass, invokedMethodMethod))
+                {
+                    result.Add(AddToResult(aLocal.Name, aClass.Name, invokedMethodMethod));
                     if(CheckOriginal(invokedMethodMethod, originalMethod))
                     {
                         return result;
@@ -410,16 +433,68 @@ public class MethodService(
     {
         var result = new List<string>();
 
-        result.Add($"{refe.Name}.{method.Name}() -> {oTC.Name}.{method.Name}()");
+        var parenthesis = ParametersInParenthesis(method);
+        if(CheckClassHasMethod(oTC, method))
+        {
+            result.Add($"{refe.Name}.{method.Name}({parenthesis}) -> {oTC.Name}.{method.Name}({parenthesis})");
+        }
+        else
+        {
+            result.Add($"{refe.Name}.{method.Name}({parenthesis}) -> {refe.Name}.{method.Name}({parenthesis})");
+        }
+
         _identation++;
 
         return result;
     }
 
-    private string AddToResult(string objName, string className, string methodName)
+    private string AddToResult(string objName, string className, Method method)
     {
         var indentation = new string('\t', _identation);
-        return $"{indentation}{objName}.{methodName}() -> {className}.{methodName}()";
+        var parenthesis = ParametersInParenthesis(method);
+
+        return $"{indentation}{objName}.{method.Name}({parenthesis}) -> {className}.{method.Name}({parenthesis})";
+    }
+
+    private string ParametersInParenthesis(Method method)
+    {
+        var r = string.Empty;
+        var allTypes = _classRepository.FindAllTypes();
+        var allClasses = allTypes.OfType<Class>().ToList();
+        var allPrimitives = allTypes.OfType<Primitive>().ToList();
+        var success = false;
+
+        for(var i = 0; i < method.Parameters.Count; i++)
+        {
+            Class aClass = allClasses.FirstOrDefault(x => x.Name == method.Parameters[i].ParameterType.Name);
+            if(aClass != null && aClass.Stereotype != KeyWord.Abstract)
+            {
+                if(i == method.Parameters.Count - 1)
+                {
+                    r += $"{method.Parameters[i].ParameterType.Name}";
+                }
+                else
+                {
+                    r += $"{method.Parameters[i].ParameterType.Name}, ";
+                }
+
+                success = true;
+            }
+
+            if(!success && method.Parameters[i].ParameterType is Primitive p)
+            {
+                if(i == method.Parameters.Count - 1)
+                {
+                    r += $"{p.PrimitiveType.ToString().ToLower()}";
+                }
+                else
+                {
+                    r += $"{p.PrimitiveType.ToString().ToLower()}, ";
+                }
+            }
+        }
+
+        return r;
     }
 
     private bool CheckOriginal(Method actualMethod, Method originalMethod)
@@ -450,7 +525,7 @@ public class MethodService(
 
     private bool CheckClassHasMethod(Class aClass, Method method)
     {
-        return aClass.Methods != null && aClass.Methods.Any(x => x.Id == method.Id);
+        return aClass.Methods != null && aClass.Methods.Any(x => x.Name == method.Name);
     }
 
     private void ValidateMethodIsNotInUse(Guid id)

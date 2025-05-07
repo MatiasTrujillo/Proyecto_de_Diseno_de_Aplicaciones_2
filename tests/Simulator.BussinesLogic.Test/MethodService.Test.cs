@@ -1215,6 +1215,7 @@ public class MethodServiceTest
         };
 
         _mockClassRepository.Setup(repo => repo.FindAll()).Returns([motor, auto]);
+        _mockClassRepository.Setup(repo => repo.FindAllTypes()).Returns([motor, auto]);
         _mockMethodRepository.Setup(repo => repo.Find(encenderInvoked.MethodId)).Returns(encender);
         _mockMethodRepository.Setup(repo => repo.Find(iniciarViajeInvoked.MethodId)).Returns(iniciarViaje);
 
@@ -1398,6 +1399,7 @@ public class MethodServiceTest
         };
 
         _mockClassRepository.Setup(repo => repo.FindAll()).Returns([notificador, sms, email, notificacion]);
+        _mockClassRepository.Setup(repo => repo.FindAllTypes()).Returns([notificador, sms, email, notificacion]);
         _mockMethodRepository.Setup(repo => repo.Find(confirmarInvoked1.MethodId)).Returns(confirmar);
         _mockMethodRepository.Setup(repo => repo.Find(confirmarInvoked2.MethodId)).Returns(confirmar);
         _mockMethodRepository.Setup(repo => repo.Find(enviarInvoked1.MethodId)).Returns(enviar);
@@ -1582,6 +1584,7 @@ public class MethodServiceTest
         };
 
         _mockClassRepository.Setup(repo => repo.FindAll()).Returns([validador, entrada, entradaTexto, entradaTextoEspecial]);
+        _mockClassRepository.Setup(repo => repo.FindAllTypes()).Returns([validador, entrada, entradaTexto, entradaTextoEspecial]);
         _mockMethodRepository.Setup(repo => repo.Find(esValidoEntradaTextoEspecialInvoked.MethodId)).Returns(esValidoEntradaTextoEspecial);
         _mockMethodRepository.Setup(repo => repo.Find(esValidoEntradaTextoInvoked.MethodId)).Returns(esValidoEntradaTexto);
         _mockMethodRepository.Setup(repo => repo.Find(esValidoEntradaInvoked.MethodId)).Returns(esValidoEntrada);
@@ -1633,7 +1636,7 @@ public class MethodServiceTest
         {
             Id = Guid.NewGuid(),
             Name = "Mensaje",
-            ParameterType = new Primitive(PrimitiveType.Bool),
+            ParameterType = new Primitive(PrimitiveType.String),
         };
 
         var registrar = new Method
@@ -1820,7 +1823,10 @@ public class MethodServiceTest
             Name = autenticar.Name,
         };
 
+        var stringPrimitive = new Primitive(PrimitiveType.String);
+
         _mockClassRepository.Setup(repo => repo.FindAll()).Returns([usuario, logger, autenticador, autenticadorPassword]);
+        _mockClassRepository.Setup(repo => repo.FindAllTypes()).Returns([usuario, logger, autenticador, autenticadorPassword, stringPrimitive]);
         _mockMethodRepository.Setup(repo => repo.Find(prepararInvoked.MethodId)).Returns(preparar);
         _mockMethodRepository.Setup(repo => repo.Find(validarInvoked.MethodId)).Returns(validar);
         _mockMethodRepository.Setup(repo => repo.Find(registrarInvoked.MethodId)).Returns(registrar);
@@ -1835,7 +1841,7 @@ public class MethodServiceTest
             "\tthis.Preparar() -> Autenticador.Preparar()\n" +
             "\tthis.ValidarCredenciales(Usuario) -> AutenticadorPassword.ValidarCredenciales(Usuario)\n" +
             "\t\tusuario.Validar() -> Usuario.Validar()\n" +
-            "\t\tclavePrivada.ToString() -> String.ToString()\n" + // la S deberia ser mayuscula o minuscula ??
+            "\t\tthis.clavePrivada.ToString() -> String.ToString()\n" + // la S deberia ser mayuscula o minuscula ??
             "\tthis.LogAcceso(Usuario) -> Autenticador.LogAcceso(Usuario)\n" +
             "\tloggerLocal.Registrar(string) -> Logger.Registrar(string)"; // la S deberia ser mayuscula o minuscula ??
         Console.WriteLine(result);
