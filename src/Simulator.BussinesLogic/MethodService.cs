@@ -153,7 +153,7 @@ public class MethodService(
 
     private void ValidateTypeIsPrimitive(Type? attributeTType)
     {
-        if(attributeTType == null || attributeTType is not Primitive)
+        if(attributeTType?.GetType() != typeof(Primitive))
         {
             throw new InvalidAttributeException("In v1 of this program only primitive types are accepted.");
         }
@@ -637,16 +637,15 @@ public class MethodService(
         var classes = _classRepository.FindAllTypes();
         if(classes.All(c => c.Name != methodTReturnType))
         {
-            throw new MethodException("Method return type not found.");
+            throw new TypeNotFoundException("Method return type not found.");
         }
     }
 
     private void ValidateMethodReturnType(Type? methodTReturnType)
     {
-        var classes = _classRepository.FindAllTypes();
-        if(classes.All(c => c.Name != methodTReturnType.Name))
+        if(methodTReturnType == null)
         {
-            throw new MethodException("Method return type not found.");
+            throw new TypeNotFoundException("Method return type not found.");
         }
     }
 

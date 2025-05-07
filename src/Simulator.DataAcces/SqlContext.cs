@@ -36,14 +36,11 @@ public sealed class SqlContext : DbContext
         modelBuilder.Entity<Attribute>()
             .HasKey(a => a.Id);
 
-        modelBuilder.Entity<Method>()
-            .HasMany(m => m.Methods);
-
-        modelBuilder.Entity<Method>()
-            .HasMany(m => m.Parameters)
-            .WithOne()
-            .HasForeignKey("MethodId")
-            .OnDelete(DeleteBehavior.Cascade);
+        modelBuilder.Entity<InvokedMethod>(entity =>
+        {
+            entity.ToTable("InvokedMethods");
+            entity.HasKey(i => i.Id);
+        });
 
         modelBuilder.Entity<Method>()
             .HasMany(m => m.LocalVariables)
@@ -54,9 +51,6 @@ public sealed class SqlContext : DbContext
             .HasOne(m => m.ReturnType)
             .WithMany()
             .OnDelete(DeleteBehavior.Restrict);
-
-        modelBuilder.Entity<InvokedMethod>()
-            .HasKey(i => i.Id);
 
         modelBuilder.Entity<Parameter>()
             .HasKey(p => p.Id);
@@ -365,6 +359,7 @@ public sealed class SqlContext : DbContext
             new Dictionary<string, object> { ["PrimitiveId"] = stringTypeId, ["MethodsId"] = toLowerCaseMethodId },
             new Dictionary<string, object> { ["PrimitiveId"] = stringTypeId, ["MethodsId"] = toUpperCaseMethodId },
             new Dictionary<string, object> { ["PrimitiveId"] = stringTypeId, ["MethodsId"] = isNullOrEmptyMethodId },
+            new Dictionary<string, object> { ["PrimitiveId"] = stringTypeId, ["MethodsId"] = stringEqualsMethodId });
             new Dictionary<string, object> { ["PrimitiveId"] = stringTypeId, ["MethodsId"] = stringEqualsMethodId },
             new Dictionary<string, object> { ["PrimitiveId"] = stringTypeId, ["MethodsId"] = methodId4 });
     }

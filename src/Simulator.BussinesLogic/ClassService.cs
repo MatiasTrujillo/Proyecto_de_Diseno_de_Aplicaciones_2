@@ -20,8 +20,8 @@ public class ClassService(
     public Guid CreateClass(ClassDTO classDto)
     {
         var aClass = classDto.ToEntity();
-        var classes = _classRepository.FindAll();
-        var objectClass = classes.FirstOrDefault(c => c.Name == "Object");
+        var classes = _classRepository.FindAllTypes();
+        var objectClass = classes.FirstOrDefault(c => c.Name == "Object") as Class;
         ValidateAccesibility(aClass.Stereotype);
         ValidateClassNameIsUnique(aClass.Name);
         aClass.HierarchyClass = objectClass;
@@ -78,18 +78,17 @@ public class ClassService(
                 throw new InvalidClassException("A sealed class cannot inherit from any class.");
             }
 
+            if(classT.Stereotype == KeyWord.Abstract)
+            {
+                throw new InvalidClassException("An abstract class cannot inherit from a concrete class.");
+            }
+
             if(heritageClassT.Stereotype == KeyWord.Sealed)
             {
                 throw new InvalidClassException("A class cannot inherit from a sealed class.");
             }
 
-            if(heritageClassT.Stereotype == KeyWord.Abstract)
-            {
-                throw new InvalidClassException("An abstract class cannot inherit from a concrete class.");
-            }
-
-            var heritageClass = _classRepository.Find(uClass.IdClass.Value);
-            classT.HierarchyClass = heritageClass;
+            classT.HierarchyClass = heritageClassT;
         }
     }
 
@@ -138,11 +137,11 @@ public class ClassService(
 
     private void ValidateClassNameIsUnique(string name)
     {
-        var classes = _classRepository.FindAll();
+        var classes = _classRepository.FindAllTypes();
 
         if(classes.Any(classT => classT.Name == name))
         {
-            throw new InvalidClassException("There is already a class with this name");
+            throw new InvalidClassException("There is already a type with this name");
         }
     }
 
