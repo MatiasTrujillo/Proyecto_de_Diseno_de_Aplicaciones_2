@@ -189,15 +189,15 @@ public class MethodService(
         }
     }
 
-    public string ExecuteMethod(ClassDTO referenceDTO, ClassDTO objectToCreateDTO, MethodDTO methodDTO)
+    public string ExecuteMethod(Guid referenceId, Guid objectToCreateId, Guid methodId)
     {
-        var reference = _classRepository.FindAll().FirstOrDefault(x => x.Name == referenceDTO.Name);
-        var objectToCreate = _classRepository.FindAll().FirstOrDefault(x => x.Name == objectToCreateDTO.Name);
+        var reference = _classRepository.FindAll().FirstOrDefault(x => x.Id == referenceId);
+        var objectToCreate = _classRepository.FindAll().FirstOrDefault(x => x.Id == objectToCreateId);
         Method method = null;
         var result = new List<string>();
         _identation = 0;
 
-        method = FindMethod(reference.Methods!, methodDTO.Name);
+        method = FindMethod(reference.Methods!, methodId);
 
         result = result.Concat(FirstLine(reference, objectToCreate!, method)).ToList();
         result = result.Concat(WriteOtherLines(reference, objectToCreate!, method, method)).ToList();
@@ -427,14 +427,14 @@ public class MethodService(
         return result;
     }
 
-    private Method FindMethod(List<Method> referenceMethods, string methodName)
+    private Method FindMethod(List<Method> referenceMethods, Guid methodId)
     {
         var success = false;
         Method method = null;
 
         for(var i = 0; i < referenceMethods.Count && !success; i++)
         {
-            method = referenceMethods.FirstOrDefault(x => x.Name == methodName);
+            method = referenceMethods.FirstOrDefault(x => x.Id == methodId);
             if(method != null)
             {
                 success = true;

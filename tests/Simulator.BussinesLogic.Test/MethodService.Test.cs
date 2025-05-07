@@ -1204,22 +1204,12 @@ public class MethodServiceTest
             Methods = [iniciarViaje, detenerViaje]
         };
 
-        var autoDTO = new ClassDTO
-        {
-            Name = auto.Name,
-        };
-
-        var iniciarViajeDTO = new MethodDTO
-        {
-            Name = iniciarViaje.Name,
-        };
-
         _mockClassRepository.Setup(repo => repo.FindAll()).Returns([motor, auto]);
         _mockClassRepository.Setup(repo => repo.FindAllTypes()).Returns([motor, auto]);
         _mockMethodRepository.Setup(repo => repo.Find(encenderInvoked.MethodId)).Returns(encender);
         _mockMethodRepository.Setup(repo => repo.Find(iniciarViajeInvoked.MethodId)).Returns(iniciarViaje);
 
-        var result = _methodService.ExecuteMethod(autoDTO, autoDTO, iniciarViajeDTO);
+        var result = _methodService.ExecuteMethod(auto.Id, auto.Id, iniciarViaje.Id);
         Console.WriteLine(result);
         var result2 =
             "Auto.IniciarViaje() -> Auto.IniciarViaje()\n" +
@@ -1373,31 +1363,6 @@ public class MethodServiceTest
             Methods = [notificar]
         };
 
-        var notificadorDTO = new ClassDTO
-        {
-            Name = notificador.Name,
-        };
-
-        var notificacionDTO = new ClassDTO
-        {
-            Name = notificacion.Name,
-        };
-
-        var smsDTO = new ClassDTO
-        {
-            Name = sms.Name,
-        };
-
-        var notificarDTO = new MethodDTO
-        {
-            Name = notificar.Name,
-        };
-
-        var enviarDTO = new MethodDTO
-        {
-            Name = enviar.Name,
-        };
-
         _mockClassRepository.Setup(repo => repo.FindAll()).Returns([notificador, sms, email, notificacion]);
         _mockClassRepository.Setup(repo => repo.FindAllTypes()).Returns([notificador, sms, email, notificacion]);
         _mockMethodRepository.Setup(repo => repo.Find(confirmarInvoked1.MethodId)).Returns(confirmar);
@@ -1405,8 +1370,8 @@ public class MethodServiceTest
         _mockMethodRepository.Setup(repo => repo.Find(enviarInvoked1.MethodId)).Returns(enviar);
         _mockMethodRepository.Setup(repo => repo.Find(enviarInvoked2.MethodId)).Returns(enviarEmail);
 
-        var result = _methodService.ExecuteMethod(notificadorDTO, notificadorDTO, notificarDTO);
-        var result2 = _methodService.ExecuteMethod(notificacionDTO, smsDTO, enviarDTO);
+        var result = _methodService.ExecuteMethod(notificador.Id, notificador.Id, notificar.Id);
+        var result2 = _methodService.ExecuteMethod(notificacion.Id, sms.Id, enviar.Id);
         Console.WriteLine(result2);
         Console.WriteLine("----------------------------------------------");
         Console.WriteLine(result);
@@ -1573,16 +1538,6 @@ public class MethodServiceTest
             Methods = [validar]
         };
 
-        var validadorDTO = new ClassDTO
-        {
-            Name = validador.Name,
-        };
-
-        var validarDTO = new MethodDTO
-        {
-            Name = validar.Name
-        };
-
         _mockClassRepository.Setup(repo => repo.FindAll()).Returns([validador, entrada, entradaTexto, entradaTextoEspecial]);
         _mockClassRepository.Setup(repo => repo.FindAllTypes()).Returns([validador, entrada, entradaTexto, entradaTextoEspecial]);
         _mockMethodRepository.Setup(repo => repo.Find(esValidoEntradaTextoEspecialInvoked.MethodId)).Returns(esValidoEntradaTextoEspecial);
@@ -1591,7 +1546,7 @@ public class MethodServiceTest
         _mockMethodRepository.Setup(repo => repo.Find(inicializarInvoked.MethodId)).Returns(inicializar);
         _mockMethodRepository.Setup(repo => repo.Find(limpiarInvoked.MethodId)).Returns(limpiar);
 
-        var result = _methodService.ExecuteMethod(validadorDTO, validadorDTO, validarDTO);
+        var result = _methodService.ExecuteMethod(validador.Id, validador.Id, validar.Id);
 
         var res =
             "Validador.Validar() -> Validador.Validar()\n" +
@@ -1808,21 +1763,6 @@ public class MethodServiceTest
             HierarchyClass = autenticador
         };
 
-        var autenticadorDTO = new ClassDTO
-        {
-            Name = autenticador.Name,
-        };
-
-        var autenticadorPasswordDTO = new ClassDTO
-        {
-            Name = autenticadorPassword.Name
-        };
-
-        var autenticarDTO = new MethodDTO
-        {
-            Name = autenticar.Name,
-        };
-
         var stringPrimitive = new Primitive(PrimitiveType.String);
 
         _mockClassRepository.Setup(repo => repo.FindAll()).Returns([usuario, logger, autenticador, autenticadorPassword]);
@@ -1834,7 +1774,7 @@ public class MethodServiceTest
         _mockMethodRepository.Setup(repo => repo.Find(logAccesoInvoked.MethodId)).Returns(logAcceso);
         _mockMethodRepository.Setup(repo => repo.Find(toStringInvoked.MethodId)).Returns(toString);
 
-        var result = _methodService.ExecuteMethod(autenticadorDTO, autenticadorPasswordDTO, autenticarDTO);
+        var result = _methodService.ExecuteMethod(autenticador.Id, autenticadorPassword.Id, autenticar.Id);
 
         var res =
             "Autenticador.Autenticar(Usuario) -> Autenticador.Autenticar(Usuario)\n" +
@@ -2035,21 +1975,6 @@ public class MethodServiceTest
             HierarchyClass = proceso,
         };
 
-        var procesoDTO = new ClassDTO
-        {
-            Name = proceso.Name,
-        };
-
-        var procesoCompraDTO = new ClassDTO
-        {
-            Name = procesoCompra.Name,
-        };
-
-        var ejecutarDTO = new MethodDTO
-        {
-            Name = ejecutar.Name,
-        };
-
         var stringPrimitive = new Primitive(PrimitiveType.String);
 
         _mockClassRepository.Setup(repo => repo.FindAll()).Returns([cliente, comunicacion, proceso, procesoCompra]);
@@ -2060,7 +1985,7 @@ public class MethodServiceTest
         _mockMethodRepository.Setup(repo => repo.Find(validarIdentidadInvoked.MethodId)).Returns(validarIdentidad);
         _mockMethodRepository.Setup(repo => repo.Find(realizarProcesoProcesoInvoked.MethodId)).Returns(realizarProcesoProceso);
 
-        var result = _methodService.ExecuteMethod(procesoDTO, procesoCompraDTO, ejecutarDTO);
+        var result = _methodService.ExecuteMethod(proceso.Id, procesoCompra.Id, ejecutar.Id);
 
         var res =
             "Proceso.Ejecutar(Cliente) -> Proceso.Ejecutar(Cliente)\n" +

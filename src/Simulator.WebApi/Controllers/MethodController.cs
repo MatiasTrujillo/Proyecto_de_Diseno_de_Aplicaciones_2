@@ -45,6 +45,13 @@ public class MethodController(IMethodService methodService) : ControllerBase
         return Created(string.Empty, new { message = "Parameter added successfully" });
     }
 
+    [HttpGet("{referenceId}/{methodId}/{objectToCreateId}")]
+    public IActionResult ExecuteMethod([FromRoute] Guid referenceId, [FromRoute] Guid objectToCreateId, [FromRoute] Guid methodId)
+    {
+        var result = _amethodService.ExecuteMethod(referenceId, objectToCreateId, methodId);
+        return Ok(result);
+    }
+
     [HttpDelete("{id}")]
     public IActionResult DeleteMethod([FromRoute] Guid id)
     {
