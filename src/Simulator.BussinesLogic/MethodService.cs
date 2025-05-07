@@ -285,23 +285,33 @@ public class MethodService(
         {
             if(oTC.Attributes != null)
             {
-                var anAttribute = oTC.Attributes.FirstOrDefault(x =>
-                    x.InvokedMethod != null && x.InvokedMethod.MethodId == invokedMethod.MethodId);
-                var allPrimitives = _classRepository.FindAllTypes().OfType<Primitive>().ToList();
-                var aPrimitive = allPrimitives.Find(x => anAttribute.Type is Primitive p && x.PrimitiveType.ToString().ToLower() == p.PrimitiveType.ToString().ToLower());
-
-                if(anAttribute != null && aPrimitive != null)
-                {
-                    result.Add(AddToResult($"this.{anAttribute.Name}", aPrimitive.PrimitiveType.ToString(), invokedMethodMethod));
-
-                    if(CheckOriginal(invokedMethodMethod, originalMethod))
-                    {
-                        return result;
-                    }
-
-                    result = result.Concat(ConcatNext(oTC, oTC, invokedMethodMethod, originalMethod)).ToList();
-                }
+                result = result.Concat(CaseThisAttribute(oTC, invokedMethod, originalMethod)).ToList();
             }
+        }
+
+        return result;
+    }
+
+    private List<string> CaseThisAttribute(Class oTC, InvokedMethod invokedMethod, Method originalMethod)
+    {
+        var result = new List<string>();
+        var invokedMethodMethod = _methodRepository.Find(invokedMethod.MethodId);
+
+        var anAttribute = oTC.Attributes!.FirstOrDefault(x =>
+            x.InvokedMethod != null && x.InvokedMethod.MethodId == invokedMethod.MethodId);
+        var allPrimitives = _classRepository.FindAllTypes().OfType<Primitive>().ToList();
+        var aPrimitive = allPrimitives.Find(x => anAttribute.Type is Primitive p && x.PrimitiveType.ToString().ToLower() == p.PrimitiveType.ToString().ToLower());
+
+        if(anAttribute != null && aPrimitive != null)
+        {
+            result.Add(AddToResult($"this.{anAttribute.Name}", aPrimitive.PrimitiveType.ToString(), invokedMethodMethod));
+
+            if(CheckOriginal(invokedMethodMethod, originalMethod))
+            {
+                return result;
+            }
+
+            result = result.Concat(ConcatNext(oTC, oTC, invokedMethodMethod, originalMethod)).ToList();
         }
 
         return result;
