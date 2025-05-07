@@ -3,7 +3,7 @@ namespace Simulator.Domain;
 public class Primitive : Type
 {
     public PrimitiveType PrimitiveType { get; set; }
-    public virtual List<Method> Methods { get; } = new();
+    public virtual List<Method> Methods { get; } = [];
 
     public Primitive()
         : base(string.Empty)

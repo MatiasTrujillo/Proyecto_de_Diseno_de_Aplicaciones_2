@@ -17,10 +17,10 @@ public class ParameterController(IMethodService methodService) : ControllerBase
         return Created(string.Empty, new { id = parameterId });
     }
 
-    [HttpPost("{parameterId}/invokedMethods/{invokedMethodId}")]
-    public IActionResult SetInvokeMethodToParameter([FromRoute] Guid parameterId, [FromRoute] Guid invokedMethodId)
+    [HttpPost("{id}/invokedMethods/{invokedMethodId}")]
+    public IActionResult SetInvokeMethodToParameter([FromRoute] Guid id, [FromRoute] Guid invokedMethodId)
     {
-        _amethodService.SetInvokeMethodToParameter(parameterId, invokedMethodId);
+        _amethodService.SetInvokeMethodToParameter(id, invokedMethodId);
         return Created(string.Empty, new { message = "Parameter associated with invoked method successfully" });
     }
 }

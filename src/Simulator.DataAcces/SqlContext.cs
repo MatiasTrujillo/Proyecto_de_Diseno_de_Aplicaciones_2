@@ -350,8 +350,7 @@ public sealed class SqlContext : DbContext
             new Dictionary<string, object> { ["PrimitiveId"] = stringTypeId, ["MethodsId"] = toLowerCaseMethodId },
             new Dictionary<string, object> { ["PrimitiveId"] = stringTypeId, ["MethodsId"] = toUpperCaseMethodId },
             new Dictionary<string, object> { ["PrimitiveId"] = stringTypeId, ["MethodsId"] = isNullOrEmptyMethodId },
-            new Dictionary<string, object> { ["PrimitiveId"] = stringTypeId, ["MethodsId"] = stringEqualsMethodId }
-        );
+            new Dictionary<string, object> { ["PrimitiveId"] = stringTypeId, ["MethodsId"] = stringEqualsMethodId });
     }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)

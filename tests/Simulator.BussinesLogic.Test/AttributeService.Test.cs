@@ -166,7 +166,7 @@ public class AttributeServiceTest
             .Setup(repo => repo.Find(It.IsAny<Guid>()))
             .Returns(attribute);
 
-        var exception = Assert.ThrowsException<MethodException>(() =>
+        var exception = Assert.ThrowsException<TypeNotFoundException>(() =>
             _attributeService.CreateAttribute(dto));
 
         Assert.AreEqual("Return type not found.", exception.Message);
@@ -317,7 +317,7 @@ public class AttributeServiceTest
         var id = Guid.NewGuid();
         _mockAttributeRepository.Setup(r => r.Find(id)).Returns((Attribute)null);
 
-        var ex = Assert.ThrowsException<InvalidAttributeException>(() =>
+        var ex = Assert.ThrowsException<AttributeNotFoundException>(() =>
         {
             _attributeService.DeleteAttribute(id);
         });
@@ -335,7 +335,7 @@ public class AttributeServiceTest
         _mockAttributeRepository.Setup(r => r.Find(id)).Returns(attribute);
         _mockClassRepository.Setup(r => r.FindAll()).Returns([classWithAttribute]);
 
-        var ex = Assert.ThrowsException<InvalidAttributeException>(() =>
+        var ex = Assert.ThrowsException<AttributeInUseExpetion>(() =>
         {
             _attributeService.DeleteAttribute(id);
         });
@@ -372,7 +372,7 @@ public class AttributeServiceTest
         _mockAttributeRepository.Setup(r => r.Find(id)).Returns(attribute);
         _mockClassRepository.Setup(r => r.FindAll()).Returns([]);
 
-        var ex = Assert.ThrowsException<ArgumentException>(() =>
+        var ex = Assert.ThrowsException<AttributeException>(() =>
             _attributeService.UpdateAttribute(id, dto));
 
         Assert.AreEqual("Name cannot be empty", ex.Message);
@@ -388,7 +388,7 @@ public class AttributeServiceTest
         _mockAttributeRepository.Setup(r => r.Find(id)).Returns(attribute);
         _mockClassRepository.Setup(r => r.FindAll()).Returns([]);
 
-        var ex = Assert.ThrowsException<ArgumentException>(() =>
+        var ex = Assert.ThrowsException<AttributeException>(() =>
             _attributeService.UpdateAttribute(id, dto));
 
         Assert.AreEqual("Name cannot exceed 50 characters", ex.Message);
@@ -405,7 +405,7 @@ public class AttributeServiceTest
         _mockAttributeRepository.Setup(r => r.Find(id)).Returns(attribute);
         _mockClassRepository.Setup(r => r.FindAll()).Returns([classWithAttr]);
 
-        var ex = Assert.ThrowsException<InvalidAttributeException>(() =>
+        var ex = Assert.ThrowsException<AttributeInUseExpetion>(() =>
             _attributeService.UpdateAttribute(id, dto));
 
         Assert.AreEqual("Attribute is associated with a class", ex.Message);
@@ -419,7 +419,7 @@ public class AttributeServiceTest
 
         _mockAttributeRepository.Setup(r => r.Find(id)).Returns((Attribute)null!);
 
-        var ex = Assert.ThrowsException<InvalidAttributeException>(() =>
+        var ex = Assert.ThrowsException<AttributeNotFoundException>(() =>
             _attributeService.UpdateAttribute(id, dto));
 
         Assert.AreEqual("Attribute not found", ex.Message);
@@ -499,7 +499,7 @@ public class AttributeServiceTest
         _mockAttributeRepository.Setup(r => r.Find(id)).Returns(attribute);
         _mockClassRepository.Setup(r => r.FindAll()).Returns([new Class { Id = Guid.NewGuid() }]);
 
-        var ex = Assert.ThrowsException<MethodException>(() =>
+        var ex = Assert.ThrowsException<TypeNotFoundException>(() =>
             _attributeService.UpdateAttribute(id, dto));
 
         Assert.AreEqual("Return type not found.", ex.Message);

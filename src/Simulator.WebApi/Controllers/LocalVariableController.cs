@@ -17,10 +17,10 @@ public class LocalVariableController(IMethodService methodService) : ControllerB
         return Created(string.Empty, new { id = localVariableId });
     }
 
-    [HttpPost("{localVariableId}/invokedMethods/{invokedMethodId}")]
-    public IActionResult SetInvokeMethodToLocalVariable([FromRoute] Guid localVariableId, [FromRoute] Guid invokedMethodId)
+    [HttpPost("{id}/invokedMethods/{invokedMethodId}")]
+    public IActionResult SetInvokeMethodToLocalVariable([FromRoute] Guid id, [FromRoute] Guid invokedMethodId)
     {
-        _amethodService.SetInvokeMethodToLocalVariable(localVariableId, invokedMethodId);
+        _amethodService.SetInvokeMethodToLocalVariable(id, invokedMethodId);
         return Created(string.Empty, new { message = "Local variable associated with invoked method successfully" });
     }
 }

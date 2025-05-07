@@ -6,7 +6,7 @@ namespace Simulator.DTO;
 public class LocalVariableDTO
 {
     public string Name { get; set; } = string.Empty;
-    public TypeDTO? LocalVariableType { get; set; } = new TypeDTO();
+    public TypeDTO? LocalVariableType { get; set; } = null;
     public LocalVariable ToEntity()
     {
         if(LocalVariableType == null)

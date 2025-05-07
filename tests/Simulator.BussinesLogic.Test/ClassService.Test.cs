@@ -259,7 +259,7 @@ public class ClassServiceTest
         var concreteParentClass = new Class { Id = heritageId, Name = "ConcreteClass", Stereotype = null };
 
         _mockClassRepository.Setup(r => r.FindAll()).Returns([existingClass, concreteParentClass]);
-        _mockClassRepository.Setup(r => r.FindAllTypes()).Returns(new List<Type> { existingClass, concreteParentClass });
+        _mockClassRepository.Setup(r => r.FindAllTypes()).Returns([existingClass, concreteParentClass]);
         _mockClassRepository.Setup(r => r.Find(classId)).Returns(existingClass);
         _mockClassRepository.Setup(r => r.Find(heritageId)).Returns(concreteParentClass);
 
@@ -301,7 +301,7 @@ public class ClassServiceTest
         };
 
         _mockClassRepository.Setup(r => r.FindAll()).Returns([sealedClass, parentClass]);
-        _mockClassRepository.Setup(r => r.FindAllTypes()).Returns(new List<Type> { sealedClass, parentClass });
+        _mockClassRepository.Setup(r => r.FindAllTypes()).Returns([sealedClass, parentClass]);
         _mockClassRepository.Setup(r => r.Find(classId)).Returns(sealedClass);
         _mockClassRepository.Setup(r => r.Find(heritageId)).Returns(parentClass);
 
