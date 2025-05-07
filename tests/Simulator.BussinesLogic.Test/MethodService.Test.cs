@@ -1847,4 +1847,227 @@ public class MethodServiceTest
         Console.WriteLine(result);
         Assert.AreEqual(res, result);
     }
+
+    [TestMethod]
+    public void ExecuteMethodExample5_ShouldReturnMethodExecuted_WhenValidInputProvided()
+    {
+        var id = new Attribute
+        {
+            Id = Guid.NewGuid(),
+            Name = "Id",
+            Accessibility = Accessibility.Public,
+            Type = new Primitive(PrimitiveType.Int)
+        };
+
+        var validarIdentidad = new Method
+        {
+            Id = Guid.NewGuid(),
+            Name = "ValidarIdentidad",
+            Accessibility = Accessibility.Public,
+            LocalVariables = [],
+            Methods = [],
+            ReturnType = new Primitive(PrimitiveType.Bool)
+        };
+        var validarIdentidadInvoked = new InvokedMethod
+        {
+            Id = Guid.NewGuid(),
+            MethodId = validarIdentidad.Id,
+            ReferenceName = "cliente"
+        };
+
+        var cliente = new Class
+        {
+            Id = Guid.NewGuid(),
+            Name = "Cliente",
+            Stereotype = null,
+            Attributes = [id],
+            Methods = [validarIdentidad],
+            HierarchyClass = null,
+        };
+
+        var mensaje = new Parameter
+        {
+            Id = Guid.NewGuid(),
+            Name = "mensaje",
+            ParameterType = new Primitive(PrimitiveType.String)
+        };
+
+        var enviarNotificacion = new Method
+        {
+            Id = Guid.NewGuid(),
+            Name = "EnviarNotificacion",
+            Accessibility = Accessibility.Public,
+            Methods = [],
+            LocalVariables = [],
+            Parameters = [mensaje],
+            ReturnType = null,
+        };
+        var enviarNotificacionInvoked = new InvokedMethod
+        {
+            Id = Guid.NewGuid(),
+            MethodId = enviarNotificacion.Id,
+            ReferenceName = "notificador"
+        };
+
+        var comunicacion = new Class
+        {
+            Id = Guid.NewGuid(),
+            Name = "Comunicacion",
+            Stereotype = null,
+            Attributes = [],
+            HierarchyClass = null,
+            Methods = [enviarNotificacion],
+        };
+
+        var notificador = new Attribute
+        {
+            Id = Guid.NewGuid(), Name = "notificador", Type = comunicacion, Accessibility = Accessibility.Protected,
+        };
+
+        var clienteParam = new Parameter { Id = Guid.NewGuid(), Name = "cliente", ParameterType = cliente };
+
+        var realizarProcesoProceso = new Method
+        {
+            Id = Guid.NewGuid(),
+            Name = "RealizarProceso",
+            Accessibility = Accessibility.Protected,
+            Methods = [],
+            LocalVariables = [],
+            Parameters = [clienteParam],
+            ReturnType = null,
+            Stereotype = KeyWord.Abstract
+        };
+        var realizarProcesoProcesoInvoked = new InvokedMethod
+        {
+            Id = Guid.NewGuid(),
+            MethodId = realizarProcesoProceso.Id,
+            ReferenceName = "this"
+        };
+
+        var ejecutar = new Method
+        {
+            Id = Guid.NewGuid(),
+            Name = "Ejecutar",
+            Stereotype = null,
+            Accessibility = Accessibility.Public,
+            Methods = [realizarProcesoProcesoInvoked, enviarNotificacionInvoked],
+            LocalVariables = [],
+            Parameters = [clienteParam],
+            ReturnType = null,
+        };
+
+        var validar = new Method
+        {
+            Id = Guid.NewGuid(),
+            Name = "Validar",
+            Stereotype = null,
+            Accessibility = Accessibility.Protected,
+            Methods = [validarIdentidadInvoked],
+            LocalVariables = [],
+            Parameters = [clienteParam],
+            ReturnType = new Primitive(PrimitiveType.Bool),
+        };
+        var validarInvoked = new InvokedMethod
+        {
+            Id = Guid.NewGuid(),
+            MethodId = validar.Id,
+            ReferenceName = "this"
+        };
+
+        var proceso = new Class
+        {
+            Id = Guid.NewGuid(),
+            Name = "Proceso",
+            Stereotype = KeyWord.Abstract,
+            Methods = [ejecutar, validar, realizarProcesoProceso],
+            Attributes = [notificador],
+            HierarchyClass = null,
+        };
+
+        var inventarioDisponible = new Attribute
+        {
+            Id = Guid.NewGuid(),
+            Name = "inventarioDisponible",
+            Type = new Primitive(PrimitiveType.Bool),
+            Accessibility = Accessibility.Private
+        };
+
+        var comprobarInventario = new Method
+        {
+            Id = Guid.NewGuid(),
+            Name = "ComprobarInventario",
+            Stereotype = null,
+            Accessibility = Accessibility.Private,
+            Methods = [],
+            LocalVariables = [],
+            Parameters = [],
+            ReturnType = new Primitive(PrimitiveType.Bool),
+        };
+        var comprobarInventarioInvoked = new InvokedMethod
+        {
+            Id = Guid.NewGuid(),
+            MethodId = comprobarInventario.Id,
+            ReferenceName = "this"
+        };
+
+        var realizarProcesoPC = new Method
+        {
+            Id = Guid.NewGuid(),
+            Name = "RealizarProceso",
+            Accessibility = Accessibility.Protected,
+            Methods = [validarInvoked, comprobarInventarioInvoked, enviarNotificacionInvoked],
+            LocalVariables = [],
+            Parameters = [clienteParam],
+            ReturnType = null,
+            Stereotype = KeyWord.Sealed
+        };
+
+        var procesoCompra = new Class
+        {
+            Id = Guid.NewGuid(),
+            Name = "ProcesoCompra",
+            Stereotype = KeyWord.Sealed,
+            Methods = [realizarProcesoPC, comprobarInventario],
+            Attributes = [inventarioDisponible],
+            HierarchyClass = proceso,
+        };
+
+        var procesoDTO = new ClassDTO
+        {
+            Name = proceso.Name,
+        };
+
+        var procesoCompraDTO = new ClassDTO
+        {
+            Name = procesoCompra.Name,
+        };
+
+        var ejecutarDTO = new MethodDTO
+        {
+            Name = ejecutar.Name,
+        };
+
+        var stringPrimitive = new Primitive(PrimitiveType.String);
+
+        _mockClassRepository.Setup(repo => repo.FindAll()).Returns([cliente, comunicacion, proceso, procesoCompra]);
+        _mockClassRepository.Setup(repo => repo.FindAllTypes()).Returns([cliente, comunicacion, proceso, procesoCompra, stringPrimitive]);
+        _mockMethodRepository.Setup(repo => repo.Find(validarInvoked.MethodId)).Returns(validar);
+        _mockMethodRepository.Setup(repo => repo.Find(comprobarInventarioInvoked.MethodId)).Returns(comprobarInventario);
+        _mockMethodRepository.Setup(repo => repo.Find(enviarNotificacionInvoked.MethodId)).Returns(enviarNotificacion);
+        _mockMethodRepository.Setup(repo => repo.Find(validarIdentidadInvoked.MethodId)).Returns(validarIdentidad);
+        _mockMethodRepository.Setup(repo => repo.Find(realizarProcesoProcesoInvoked.MethodId)).Returns(realizarProcesoProceso);
+
+        var result = _methodService.ExecuteMethod(procesoDTO, procesoCompraDTO, ejecutarDTO);
+
+        var res =
+            "Proceso.Ejecutar(Cliente) -> Proceso.Ejecutar(Cliente)\n" +
+            "\tthis.RealizarProceso(Cliente) -> ProcesoCompra.RealizarProceso(Cliente)\n" +
+            "\t\tthis.Validar(Cliente) -> Proceso.Validar(Cliente)\n" +
+            "\t\t\tcliente.ValidarIdentidad() -> Cliente.ValidarIdentidad()\n" +
+            "\t\tthis.ComprobarInventario() -> ProcesoCompra.ComprobarInventario()\n" +
+            "\t\tnotificador.EnviarNotificacion(string) -> Comunicacion.EnviarNotificacion(string)\n" +
+            "\tnotificador.EnviarNotificacion(string) -> Comunicacion.EnviarNotificacion(string)";
+        Console.WriteLine(result);
+        Assert.AreEqual(res, result);
+    }
 }
