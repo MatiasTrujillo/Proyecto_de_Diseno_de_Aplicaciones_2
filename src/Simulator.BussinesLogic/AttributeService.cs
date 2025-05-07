@@ -91,7 +91,7 @@ public class AttributeService(IAttributeRepository attributeRepository, IClassRe
         var classes = _classRepository.FindAll();
         if(methodTReturnType != null && classes.All(c => c.Name != methodTReturnType.Name))
         {
-            throw new MethodException("Return type not found.");
+            throw new TypeNotFoundException("Return type not found.");
         }
     }
 
@@ -119,7 +119,7 @@ public class AttributeService(IAttributeRepository attributeRepository, IClassRe
     {
         if(attributeT == null)
         {
-            throw new InvalidAttributeException("Attribute not found");
+            throw new AttributeNotFoundException("Attribute not found");
         }
     }
 
@@ -129,7 +129,7 @@ public class AttributeService(IAttributeRepository attributeRepository, IClassRe
 
         if(classes.Any(classT => classT.Attributes.Contains(attributeT)))
         {
-            throw new InvalidAttributeException("Attribute is associated with a class");
+            throw new AttributeInUseExpetion("Attribute is associated with a class");
         }
     }
 
@@ -149,7 +149,7 @@ public class AttributeService(IAttributeRepository attributeRepository, IClassRe
     {
         if(name != null && name.Length > 50)
         {
-            throw new ArgumentException("Name cannot exceed 50 characters");
+            throw new AttributeException("Name cannot exceed 50 characters");
         }
     }
 
@@ -157,7 +157,7 @@ public class AttributeService(IAttributeRepository attributeRepository, IClassRe
     {
         if(name == string.Empty)
         {
-            throw new ArgumentException("Name cannot be empty");
+            throw new AttributeException("Name cannot be empty");
         }
     }
 
@@ -186,7 +186,7 @@ public class AttributeService(IAttributeRepository attributeRepository, IClassRe
         var classes = _classRepository.FindAll();
         if(methodTReturnType != null && classes.All(c => c.Id != methodTReturnType))
         {
-            throw new MethodException("Return type not found.");
+            throw new TypeNotFoundException("Return type not found.");
         }
     }
 

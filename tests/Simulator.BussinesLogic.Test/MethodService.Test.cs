@@ -95,7 +95,7 @@ public class MethodServiceTest
         var classes = new List<Type>();
         _mockClassRepository.Setup(repo => repo.FindAllTypes()).Returns(classes);
 
-        var exception = Assert.ThrowsException<MethodException>(() => _methodService.CreateMethod(method));
+        var exception = Assert.ThrowsException<TypeNotFoundException>(() => _methodService.CreateMethod(method));
         Assert.AreEqual("Method return type not found.", exception.Message);
     }
 

@@ -281,4 +281,38 @@ public class ExceptionFilterTest
         var message = result?.Value?.GetType().GetProperty("Message")?.GetValue(result.Value)?.ToString();
         Assert.AreEqual("Type null exception", message);
     }
+
+    [TestMethod]
+    public void OnException_ShouldSetResultTo404_AndHandleATypeNotFoundException_WhenTypeNotFoundExceptionIsThrown()
+    {
+        var exception = new TypeNotFoundException("Type not found exception");
+        _context.Exception = exception;
+
+        _filter.OnException(_context);
+
+        Assert.IsInstanceOfType(_context.Result, typeof(ObjectResult));
+        var result = _context.Result as ObjectResult;
+        Assert.AreEqual(404, result?.StatusCode);
+        Assert.IsTrue(_context.ExceptionHandled);
+
+        var message = result?.Value?.GetType().GetProperty("Message")?.GetValue(result.Value)?.ToString();
+        Assert.AreEqual("Type not found exception", message);
+    }
+
+    [TestMethod]
+    public void OnException_ShouldSetResultTo409_AndHandleAAttributeInUseException_WhenAttributeInUseExceptionIsThrown()
+    {
+        var exception = new AttributeInUseExpetion("Attribute in use exception");
+        _context.Exception = exception;
+
+        _filter.OnException(_context);
+
+        Assert.IsInstanceOfType(_context.Result, typeof(ObjectResult));
+        var result = _context.Result as ObjectResult;
+        Assert.AreEqual(409, result?.StatusCode);
+        Assert.IsTrue(_context.ExceptionHandled);
+
+        var message = result?.Value?.GetType().GetProperty("Message")?.GetValue(result.Value)?.ToString();
+        Assert.AreEqual("Attribute in use exception", message);
+    }
 }

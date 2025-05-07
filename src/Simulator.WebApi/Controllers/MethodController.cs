@@ -17,10 +17,10 @@ public class MethodController(IMethodService methodService) : ControllerBase
         return Created(string.Empty, new { id = methodId });
     }
 
-    [HttpPost("{methodId}/classes/{classId}")]
-    public IActionResult AssociateMethodWithClass([FromRoute] Guid methodId, [FromRoute] Guid classId)
+    [HttpPost("{id}/classes/{classId}")]
+    public IActionResult AssociateMethodWithClass([FromRoute] Guid id, [FromRoute] Guid classId)
     {
-        _amethodService.AssociateMethodWithClass(methodId, classId);
+        _amethodService.AssociateMethodWithClass(id, classId);
         return Created(string.Empty, new { message = "Method associated with class successfully" });
     }
 
@@ -31,17 +31,17 @@ public class MethodController(IMethodService methodService) : ControllerBase
         return Created(string.Empty, new { message = "Method added successfully" });
     }
 
-    [HttpPost("{methodId}/localVariables/{localVariableId}")]
-    public IActionResult AddLocalVariableToMethod([FromRoute] Guid methodId, [FromRoute] Guid localVariableId)
+    [HttpPost("{id}/localVariables/{localVariableId}")]
+    public IActionResult AddLocalVariableToMethod([FromRoute] Guid id, [FromRoute] Guid localVariableId)
     {
-        _amethodService.AddLocalVariableToMethod(methodId, localVariableId);
+        _amethodService.AddLocalVariableToMethod(id, localVariableId);
         return Created(string.Empty, new { message = "Local variable added successfully" });
     }
 
-    [HttpPost("{methodId}/parameters/{parameterId}")]
-    public IActionResult AddParameterToMethod([FromRoute] Guid methodId, [FromRoute] Guid parameterId)
+    [HttpPost("{id}/parameters/{parameterId}")]
+    public IActionResult AddParameterToMethod([FromRoute] Guid id, [FromRoute] Guid parameterId)
     {
-        _amethodService.AddParameterToMethod(methodId, parameterId);
+        _amethodService.AddParameterToMethod(id, parameterId);
         return Created(string.Empty, new { message = "Parameter added successfully" });
     }
 
