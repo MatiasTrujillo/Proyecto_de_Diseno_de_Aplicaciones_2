@@ -476,7 +476,6 @@ public class MethodService(
         var r = string.Empty;
         var allTypes = _classRepository.FindAllTypes();
         var allClasses = allTypes.OfType<Class>().ToList();
-        var allPrimitives = allTypes.OfType<Primitive>().ToList();
         var success = false;
 
         for(var i = 0; i < method.Parameters.Count; i++)
