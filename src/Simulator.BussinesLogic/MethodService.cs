@@ -216,7 +216,7 @@ public class MethodService(
 
             if(invokedMethod.ReferenceName == "this")
             {
-                result = result.Concat(CaseThis(invokedMethod, originalMethod, oTC, refe)).ToList();
+                result = result.Concat(CaseThis(invokedMethod, originalMethod, oTC)).ToList();
                 if(result.Count > lines)
                 {
                     success = true;
@@ -262,7 +262,7 @@ public class MethodService(
         return result;
     }
 
-    private List<string> CaseThis(InvokedMethod invokedMethod, Method originalMethod, Class oTC, Class refe)
+    private List<string> CaseThis(InvokedMethod invokedMethod, Method originalMethod, Class oTC)
     {
         var result = new List<string>();
         var invokedMethodMethod = _methodRepository.Find(invokedMethod.MethodId);
@@ -339,6 +339,11 @@ public class MethodService(
         var invokedMethodMethod = _methodRepository.Find(invokedMethod.MethodId);
 
         var anAttribute = refe.Attributes!.FirstOrDefault(x => x.Name == invokedMethod.ReferenceName);
+        if(anAttribute == null)
+        {
+            anAttribute = FindClassWithAttribute(refe, invokedMethod.ReferenceName);
+        }
+
         if(anAttribute != null)
         {
             var aClass = _classRepository.FindAll().FirstOrDefault(x => x.Name == anAttribute.Type.Name);
@@ -531,6 +536,23 @@ public class MethodService(
         }
 
         return aClass;
+    }
+
+    private Attribute FindClassWithAttribute(Class aClass, string attributeName)
+    {
+        var anAttribute = aClass.Attributes!.FirstOrDefault(x => x.Name == attributeName);
+
+        if(aClass.HierarchyClass != null && !CheckClassHasAttribute(aClass, attributeName))
+        {
+            return FindClassWithAttribute(aClass.HierarchyClass, attributeName);
+        }
+
+        return anAttribute;
+    }
+
+    private bool CheckClassHasAttribute(Class aClass, string attributeName)
+    {
+        return aClass.Attributes != null && aClass.Attributes.Any(x => x.Name == attributeName);
     }
 
     private bool CheckClassHasMethod(Class aClass, Method method)
