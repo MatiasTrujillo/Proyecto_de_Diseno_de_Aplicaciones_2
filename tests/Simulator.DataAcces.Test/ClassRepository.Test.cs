@@ -108,15 +108,15 @@ public class ClassRepositoryTest
         var allTypes = _repository.FindAllTypes();
         var intMethodsCount = 0;
         var stringMethodsCount = 0;
-        foreach (var type in allTypes)
+        foreach(var type in allTypes)
         {
-            if (type is Primitive primitive)
+            if(type is Primitive primitive)
             {
-                if (primitive.PrimitiveType == PrimitiveType.String)
+                if(primitive.PrimitiveType == PrimitiveType.String)
                 {
                     stringMethodsCount = primitive.Methods.Count;
                 }
-                else if (primitive.PrimitiveType == PrimitiveType.Int)
+                else if(primitive.PrimitiveType == PrimitiveType.Int)
                 {
                     intMethodsCount = primitive.Methods.Count;
                 }

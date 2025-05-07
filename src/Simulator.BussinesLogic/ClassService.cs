@@ -67,23 +67,23 @@ public class ClassService(
 
     private void ManageHierarchyClass(Guid id, UpdateClassDTO uClass, Class classT)
     {
-        if (uClass.IdClass != null)
+        if(uClass.IdClass != null)
         {
             ValidateClassIdExists(uClass.IdClass.Value);
             ValidateClassIsNotInUse(id);
             var heritageClassT = _classRepository.Find(uClass.IdClass.Value);
 
-            if (classT.Stereotype == KeyWord.Sealed)
+            if(classT.Stereotype == KeyWord.Sealed)
             {
                 throw new InvalidClassException("A sealed class cannot inherit from any class.");
             }
 
-            if (classT.Stereotype == KeyWord.Abstract)
+            if(classT.Stereotype == KeyWord.Abstract)
             {
                 throw new InvalidClassException("An abstract class cannot inherit from a concrete class.");
             }
 
-            if (heritageClassT.Stereotype == KeyWord.Sealed)
+            if(heritageClassT.Stereotype == KeyWord.Sealed)
             {
                 throw new InvalidClassException("A class cannot inherit from a sealed class.");
             }
