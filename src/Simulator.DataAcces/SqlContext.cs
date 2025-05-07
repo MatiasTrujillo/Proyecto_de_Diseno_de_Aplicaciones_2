@@ -104,6 +104,7 @@ public sealed class SqlContext : DbContext
         var methodId1 = Guid.Parse("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa");
         var methodId2 = Guid.Parse("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb");
         var methodId3 = Guid.Parse("cccccccc-cccc-cccc-cccc-cccccccccccc");
+        var methodId4 = Guid.Parse("eeeeeeee-eeee-eeee-eeee-eeeeeeeeeeee");
         var classId = Guid.Parse("dddddddd-dddd-dddd-dddd-dddddddddddd");
         var boolTypeId = Guid.Parse("11111111-1111-1111-1111-111111111111");
         var stringTypeId = Guid.Parse("22222222-2222-2222-2222-222222222222");
@@ -220,6 +221,14 @@ public sealed class SqlContext : DbContext
             new
             {
                 Id = methodId1,
+                Name = "ToString",
+                Accessibility = Accessibility.Public,
+                Stereotype = (KeyWord?)null,
+                ReturnTypeId = stringTypeId,
+            },
+            new
+            {
+                Id = methodId4,
                 Name = "ToString",
                 Accessibility = Accessibility.Public,
                 Stereotype = (KeyWord?)null,
@@ -350,7 +359,8 @@ public sealed class SqlContext : DbContext
             new Dictionary<string, object> { ["PrimitiveId"] = stringTypeId, ["MethodsId"] = toLowerCaseMethodId },
             new Dictionary<string, object> { ["PrimitiveId"] = stringTypeId, ["MethodsId"] = toUpperCaseMethodId },
             new Dictionary<string, object> { ["PrimitiveId"] = stringTypeId, ["MethodsId"] = isNullOrEmptyMethodId },
-            new Dictionary<string, object> { ["PrimitiveId"] = stringTypeId, ["MethodsId"] = stringEqualsMethodId });
+            new Dictionary<string, object> { ["PrimitiveId"] = stringTypeId, ["MethodsId"] = stringEqualsMethodId },
+            new Dictionary<string, object> { ["PrimitiveId"] = stringTypeId, ["MethodsId"] = methodId4 });
     }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)

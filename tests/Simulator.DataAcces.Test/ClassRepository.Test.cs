@@ -123,7 +123,7 @@ public class ClassRepositoryTest
             }
         }
 
-        stringMethodsCount.Should().Be(4);
+        stringMethodsCount.Should().Be(5);
         intMethodsCount.Should().Be(5);
     }
 

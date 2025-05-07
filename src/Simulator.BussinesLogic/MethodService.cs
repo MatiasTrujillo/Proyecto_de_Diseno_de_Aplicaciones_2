@@ -24,6 +24,7 @@ public class MethodService(
     private readonly IParameterRepository _parameterRepository = parameterRepository;
     private readonly ILocalVariableRepository _localVariableRepository = localVariableRepository;
     private readonly IInvokedMethodRepository _invokedMethodRepository = invokedMethodRepository;
+    private int _identation = 0;
 
     public Guid CreateMethod(MethodDTO method)
     {
@@ -186,6 +187,376 @@ public class MethodService(
         {
             throw new InvalidMethodException("Method is associated with invokedMethod.");
         }
+    }
+
+    public string ExecuteMethod(ClassDTO referenceDTO, ClassDTO objectToCreateDTO, MethodDTO methodDTO)
+    {
+        var reference = _classRepository.FindAll().FirstOrDefault(x => x.Name == referenceDTO.Name);
+        var objectToCreate = _classRepository.FindAll().FirstOrDefault(x => x.Name == objectToCreateDTO.Name);
+        Method method = null;
+        var result = new List<string>();
+        _identation = 0;
+
+        method = FindMethod(reference.Methods!, methodDTO.Name);
+
+        result = result.Concat(FirstLine(reference, objectToCreate!, method)).ToList();
+        result = result.Concat(WriteOtherLines(reference, objectToCreate!, method, method)).ToList();
+
+        return string.Join("\n", result);
+    }
+
+    private List<string> WriteOtherLines(Class refe, Class oTC, Method method, Method originalMethod)
+    {
+        var result = new List<string>();
+        for(var i = 0; i < method.Methods.Count; i++)
+        {
+            var invokedMethod = method.Methods[i];
+            var success = false;
+            var lines = result.Count;
+
+            if(invokedMethod.ReferenceName == "this")
+            {
+                result = result.Concat(CaseThis(invokedMethod, originalMethod, oTC)).ToList();
+                if(result.Count > lines)
+                {
+                    success = true;
+                    lines = result.Count;
+                }
+            }
+
+            if(!success && invokedMethod.ReferenceName == "base")
+            {
+                result = result.Concat(CaseBase(invokedMethod, refe, originalMethod)).ToList();
+                if(result.Count > lines)
+                {
+                    success = true;
+                    lines = result.Count;
+                }
+            }
+
+            if(!success && refe.Attributes != null)
+            {
+                result = result.Concat(CaseAttribute(refe, invokedMethod, originalMethod)).ToList();
+                if(result.Count > lines)
+                {
+                    success = true;
+                    lines = result.Count;
+                }
+            }
+
+            if(!success && method.Parameters != null)
+            {
+                result = result.Concat(CaseParameter(invokedMethod, method, originalMethod)).ToList();
+                if(result.Count > lines)
+                {
+                    success = true;
+                }
+            }
+
+            if(!success && method.LocalVariables != null)
+            {
+                result = result.Concat(CaseLocal(invokedMethod, method, originalMethod)).ToList();
+            }
+        }
+
+        return result;
+    }
+
+    private List<string> CaseThis(InvokedMethod invokedMethod, Method originalMethod, Class oTC)
+    {
+        var result = new List<string>();
+        var invokedMethodMethod = _methodRepository.Find(invokedMethod.MethodId);
+
+        var aClass = oTC;
+        aClass = FindClassWithMethod(aClass, invokedMethodMethod);
+        if(CheckClassHasMethod(aClass, invokedMethodMethod))
+        {
+            result.Add(AddToResult(invokedMethod.ReferenceName, aClass.Name, invokedMethodMethod));
+
+            if(CheckOriginal(invokedMethodMethod, originalMethod))
+            {
+                return result;
+            }
+
+            invokedMethodMethod = aClass.Methods.Find(x => x.Name == invokedMethodMethod.Name);
+            result = result.Concat(ConcatNext(oTC, oTC, invokedMethodMethod!, originalMethod)).ToList();
+        }
+        else
+        {
+            if(oTC.Attributes != null)
+            {
+                result = result.Concat(CaseThisAttribute(oTC, invokedMethod, originalMethod)).ToList();
+            }
+        }
+
+        return result;
+    }
+
+    private List<string> CaseThisAttribute(Class oTC, InvokedMethod invokedMethod, Method originalMethod)
+    {
+        var result = new List<string>();
+        var invokedMethodMethod = _methodRepository.Find(invokedMethod.MethodId);
+
+        var anAttribute = oTC.Attributes!.FirstOrDefault(x =>
+            x.InvokedMethod != null && x.InvokedMethod.MethodId == invokedMethod.MethodId);
+        var allPrimitives = _classRepository.FindAllTypes().OfType<Primitive>().ToList();
+        var aPrimitive = allPrimitives.Find(x => anAttribute.Type is Primitive p && x.PrimitiveType.ToString().ToLower() == p.PrimitiveType.ToString().ToLower());
+
+        if(anAttribute != null && aPrimitive != null)
+        {
+            result.Add(AddToResult($"this.{anAttribute.Name}", aPrimitive.PrimitiveType.ToString(), invokedMethodMethod));
+
+            if(CheckOriginal(invokedMethodMethod, originalMethod))
+            {
+                return result;
+            }
+
+            result = result.Concat(ConcatNext(oTC, oTC, invokedMethodMethod, originalMethod)).ToList();
+        }
+
+        return result;
+    }
+
+    private List<string> CaseBase(InvokedMethod invokedMethod, Class refe, Method originalMethod)
+    {
+        var result = new List<string>();
+        var invokedMethodMethod = _methodRepository.Find(invokedMethod.MethodId);
+
+        result.Add(AddToResult(invokedMethod.ReferenceName, refe.HierarchyClass.Name, invokedMethodMethod));
+        if(CheckOriginal(invokedMethodMethod, originalMethod))
+        {
+            return result;
+        }
+
+        result = result.Concat(ConcatNext(refe.HierarchyClass, refe.HierarchyClass, invokedMethodMethod, originalMethod)).ToList();
+
+        return result;
+    }
+
+    private List<string> CaseAttribute(Class refe, InvokedMethod invokedMethod, Method originalMethod)
+    {
+        var result = new List<string>();
+        var invokedMethodMethod = _methodRepository.Find(invokedMethod.MethodId);
+
+        var anAttribute = refe.Attributes!.FirstOrDefault(x => x.Name == invokedMethod.ReferenceName);
+        if(anAttribute == null)
+        {
+            anAttribute = FindClassWithAttribute(refe, invokedMethod.ReferenceName);
+        }
+
+        if(anAttribute != null)
+        {
+            var aClass = _classRepository.FindAll().FirstOrDefault(x => x.Name == anAttribute.Type.Name);
+            if(aClass != null)
+            {
+                aClass = FindClassWithMethod(aClass, invokedMethodMethod);
+                if(CheckClassHasMethod(aClass, invokedMethodMethod))
+                {
+                    result.Add(AddToResult(anAttribute.Name, aClass.Name, invokedMethodMethod));
+
+                    if(CheckOriginal(invokedMethodMethod, originalMethod))
+                    {
+                        return result;
+                    }
+
+                    result = result.Concat(ConcatNext(aClass, aClass, invokedMethodMethod, originalMethod))
+                        .ToList();
+                }
+            }
+        }
+
+        return result;
+    }
+
+    private List<string> CaseParameter(InvokedMethod invokedMethod, Method method, Method originalMethod)
+    {
+        var result = new List<string>();
+        var invokedMethodMethod = _methodRepository.Find(invokedMethod.MethodId);
+
+        var aParameter = method.Parameters!.FirstOrDefault(x => x.Name == invokedMethod.ReferenceName);
+        if(aParameter != null)
+        {
+            var aClass = _classRepository.FindAll().FirstOrDefault(x => x.Name == aParameter.ParameterType.Name);
+            if(aClass != null)
+            {
+                aClass = FindClassWithMethod(aClass, invokedMethodMethod);
+                if(CheckClassHasMethod(aClass, invokedMethodMethod))
+                {
+                    result.Add(AddToResult(aParameter.Name, aClass.Name, invokedMethodMethod));
+
+                    if(CheckOriginal(invokedMethodMethod, originalMethod))
+                    {
+                        return result;
+                    }
+
+                    result = result.Concat(ConcatNext(aClass, aClass, invokedMethodMethod, originalMethod))
+                        .ToList();
+                }
+            }
+        }
+
+        return result;
+    }
+
+    private List<string> CaseLocal(InvokedMethod invokedMethod, Method method, Method originalMethod)
+    {
+        var result = new List<string>();
+        var invokedMethodMethod = _methodRepository.Find(invokedMethod.MethodId);
+
+        var aLocal = method.LocalVariables!.FirstOrDefault(x => x.Name == invokedMethod.ReferenceName);
+        if(aLocal != null)
+        {
+            var aClass = _classRepository.FindAll().FirstOrDefault(x => x.Name == aLocal.LocalVariableType.Name);
+            if(aClass != null)
+            {
+                aClass = FindClassWithMethod(aClass, invokedMethodMethod);
+                if(CheckClassHasMethod(aClass, invokedMethodMethod))
+                {
+                    result.Add(AddToResult(aLocal.Name, aClass.Name, invokedMethodMethod));
+                    if(CheckOriginal(invokedMethodMethod, originalMethod))
+                    {
+                        return result;
+                    }
+
+                    result = result.Concat(ConcatNext(aClass, aClass, invokedMethodMethod, originalMethod))
+                        .ToList();
+                }
+            }
+        }
+
+        return result;
+    }
+
+    private Method FindMethod(List<Method> referenceMethods, string methodName)
+    {
+        var success = false;
+        Method method = null;
+
+        for(var i = 0; i < referenceMethods.Count && !success; i++)
+        {
+            method = referenceMethods.FirstOrDefault(x => x.Name == methodName);
+            if(method != null)
+            {
+                success = true;
+            }
+        }
+
+        return method;
+    }
+
+    private List<string> FirstLine(Class refe, Class oTC, Method method)
+    {
+        var result = new List<string>();
+
+        var parenthesis = ParametersInParenthesis(method);
+        if(CheckClassHasMethod(oTC, method))
+        {
+            result.Add($"{refe.Name}.{method.Name}({parenthesis}) -> {oTC.Name}.{method.Name}({parenthesis})");
+        }
+        else
+        {
+            result.Add($"{refe.Name}.{method.Name}({parenthesis}) -> {refe.Name}.{method.Name}({parenthesis})");
+        }
+
+        _identation++;
+
+        return result;
+    }
+
+    private string AddToResult(string objName, string className, Method method)
+    {
+        var indentation = new string('\t', _identation);
+        var parenthesis = ParametersInParenthesis(method);
+
+        return $"{indentation}{objName}.{method.Name}({parenthesis}) -> {className}.{method.Name}({parenthesis})";
+    }
+
+    private string ParametersInParenthesis(Method method)
+    {
+        var r = string.Empty;
+        var allTypes = _classRepository.FindAllTypes();
+        var allClasses = allTypes.OfType<Class>().ToList();
+        var success = false;
+
+        for(var i = 0; i < method.Parameters.Count; i++)
+        {
+            Class aClass = allClasses.FirstOrDefault(x => x.Name == method.Parameters[i].ParameterType.Name);
+            if(aClass != null && aClass.Stereotype != KeyWord.Abstract)
+            {
+                if(i == method.Parameters.Count - 1)
+                {
+                    r += $"{method.Parameters[i].ParameterType.Name}";
+                }
+                else
+                {
+                    r += $"{method.Parameters[i].ParameterType.Name}, ";
+                }
+
+                success = true;
+            }
+
+            if(!success && method.Parameters[i].ParameterType is Primitive p)
+            {
+                if(i == method.Parameters.Count - 1)
+                {
+                    r += $"{p.PrimitiveType.ToString().ToLower()}";
+                }
+                else
+                {
+                    r += $"{p.PrimitiveType.ToString().ToLower()}, ";
+                }
+            }
+        }
+
+        return r;
+    }
+
+    private bool CheckOriginal(Method actualMethod, Method originalMethod)
+    {
+        return actualMethod.Equals(originalMethod);
+    }
+
+    private List<string> ConcatNext(Class refe, Class oTC, Method method, Method originalMethod)
+    {
+        List<string> result;
+
+        _identation++;
+        result = WriteOtherLines(refe, oTC, method, originalMethod);
+        _identation--;
+
+        return result;
+    }
+
+    private Class FindClassWithMethod(Class aClass, Method method)
+    {
+        if(aClass.HierarchyClass != null && !CheckClassHasMethod(aClass, method))
+        {
+            return FindClassWithMethod(aClass.HierarchyClass, method);
+        }
+
+        return aClass;
+    }
+
+    private Attribute FindClassWithAttribute(Class aClass, string attributeName)
+    {
+        var anAttribute = aClass.Attributes!.FirstOrDefault(x => x.Name == attributeName);
+
+        if(aClass.HierarchyClass != null && !CheckClassHasAttribute(aClass, attributeName))
+        {
+            return FindClassWithAttribute(aClass.HierarchyClass, attributeName);
+        }
+
+        return anAttribute;
+    }
+
+    private bool CheckClassHasAttribute(Class aClass, string attributeName)
+    {
+        return aClass.Attributes != null && aClass.Attributes.Any(x => x.Name == attributeName);
+    }
+
+    private bool CheckClassHasMethod(Class aClass, Method method)
+    {
+        return aClass.Methods != null && aClass.Methods.Any(x => x.Name == method.Name);
     }
 
     private void ValidateMethodIsNotInUse(Guid id)
