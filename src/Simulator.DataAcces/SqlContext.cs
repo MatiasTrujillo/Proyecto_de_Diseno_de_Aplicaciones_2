@@ -84,6 +84,19 @@ public sealed class SqlContext : DbContext
                     j.ToTable("PrimitiveMethod");
                 });
 
+        modelBuilder.Entity<Method>()
+            .HasMany(m => m.Methods)
+            .WithMany()
+            .UsingEntity<Dictionary<string, object>>(
+                "MethodInvokedMethod",
+                j => j.HasOne<InvokedMethod>().WithMany().HasForeignKey("InvokedMethodId"),
+                j => j.HasOne<Method>().WithMany().HasForeignKey("MethodsId"),
+                j =>
+                {
+                    j.HasKey("MethodsId", "InvokedMethodId");
+                    j.ToTable("MethodInvokedMethod");
+                });
+
         ConfigSeedData(modelBuilder);
 
         base.OnModelCreating(modelBuilder);
