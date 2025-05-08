@@ -107,4 +107,19 @@ public class MethodControllerTest
 
         _methodServiceMock.Verify(service => service.AddAMethod(methodId, invokedMethodId), Times.Once);
     }
+
+    [TestMethod]
+    public void ExecuteMethod_ShouldReturnOk_WhenMethodIsExecutedSuccessfully()
+    {
+        var referenceId = Guid.NewGuid();
+        var oTCId = Guid.NewGuid();
+        var methodId = Guid.NewGuid();
+        _methodServiceMock.Setup(service => service.ExecuteMethod(referenceId, oTCId, methodId))
+            .Verifiable();
+
+        var result = _controller.ExecuteMethod(referenceId, oTCId, methodId);
+
+        Assert.IsNotNull(result);
+        _methodServiceMock.Verify(service => service.ExecuteMethod(referenceId, oTCId, methodId), Times.Once);
+    }
 }
