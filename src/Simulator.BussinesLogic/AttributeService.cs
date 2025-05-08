@@ -72,7 +72,7 @@ public class AttributeService(IAttributeRepository attributeRepository, IClassRe
 
     private void ValidateTypeIsPrimitive(Type? attributeTType)
     {
-        if(attributeTType == null || attributeTType is not Primitive)
+        if(attributeTType?.GetType() != typeof(Primitive))
         {
             throw new InvalidAttributeException("In v1 of this program only primitive types are accepted.");
         }
@@ -88,7 +88,7 @@ public class AttributeService(IAttributeRepository attributeRepository, IClassRe
 
     private void ValidateAttributeType(Type? methodTReturnType)
     {
-        var classes = _classRepository.FindAll();
+        var classes = _classRepository.FindAllTypes();
         if(methodTReturnType != null && classes.All(c => c.Name != methodTReturnType.Name))
         {
             throw new TypeNotFoundException("Return type not found.");
