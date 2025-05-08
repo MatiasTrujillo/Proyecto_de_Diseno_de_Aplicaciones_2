@@ -1351,7 +1351,6 @@ public class MethodServiceTest
     [TestMethod]
     public void ExecuteMethodExample2_ShouldReturnMethodExecuted_WhenValidInputProvided()
     {
-        var id = Guid.NewGuid();
         var confirmar = new Method
         {
             Id = Guid.NewGuid(),
@@ -1429,7 +1428,7 @@ public class MethodServiceTest
 
         var notificacion = new Class
         {
-            Id = id,
+            Id = Guid.NewGuid(),
             Name = "Notificacion",
             Stereotype = KeyWord.Abstract,
             HierarchyClass = null,
@@ -1439,7 +1438,7 @@ public class MethodServiceTest
 
         var email = new Class
         {
-            Id = id,
+            Id = Guid.NewGuid(),
             Name = "Email",
             Stereotype = null,
             HierarchyClass = notificacion,
@@ -1449,7 +1448,7 @@ public class MethodServiceTest
 
         var sms = new Class
         {
-            Id = id,
+            Id = Guid.NewGuid(),
             Name = "SMS",
             Stereotype = null,
             HierarchyClass = notificacion,
