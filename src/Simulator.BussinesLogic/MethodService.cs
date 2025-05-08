@@ -194,14 +194,15 @@ public class MethodService(
     {
         var reference = _classRepository.FindAll().FirstOrDefault(x => x.Id == referenceId);
         var objectToCreate = _classRepository.FindAll().FirstOrDefault(x => x.Id == objectToCreateId);
-        Method method = null;
+        var method = _methodRepository.FindAll().FirstOrDefault(x => x.Id == methodId);
         var result = new List<string>();
         _identation = 0;
 
         ValidateClassExist(reference!);
         ValidateClassExist(objectToCreate!);
+        ValidateMethodExist(method!);
+        ValidateMethodIsInClass(reference.Methods!, methodId);
         method = FindMethod(reference.Methods!, methodId);
-        ValidateMethodExist(method);
 
         result = result.Concat(FirstLine(reference, objectToCreate!, method)).ToList();
         result = result.Concat(WriteOtherLines(reference, objectToCreate!, method, method)).ToList();
@@ -839,6 +840,26 @@ public class MethodService(
         if(!Enum.IsDefined(typeof(Accessibility), methodTAccessibility))
         {
             throw new InvalidMethodException("Invalid accessibility value.");
+        }
+    }
+
+    private void ValidateMethodIsInClass(List<Method> classMethods, Guid methodId)
+    {
+        var success = false;
+        Method method = null;
+
+        for(var i = 0; i < classMethods.Count && !success; i++)
+        {
+            method = classMethods.FirstOrDefault(x => x.Id == methodId);
+            if(method != null)
+            {
+                success = true;
+            }
+        }
+
+        if(method == null)
+        {
+            throw new MethodNotFoundException("Method is not in this class.");
         }
     }
 }

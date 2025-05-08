@@ -1336,6 +1336,7 @@ public class MethodServiceTest
 
         _mockClassRepository.Setup(repo => repo.FindAll()).Returns([motor, auto]);
         _mockClassRepository.Setup(repo => repo.FindAllTypes()).Returns([motor, auto]);
+        _mockMethodRepository.Setup(repo => repo.FindAll()).Returns([iniciarViaje]);
         _mockMethodRepository.Setup(repo => repo.Find(encenderInvoked.MethodId)).Returns(encender);
         _mockMethodRepository.Setup(repo => repo.Find(iniciarViajeInvoked.MethodId)).Returns(iniciarViaje);
 
@@ -1494,6 +1495,7 @@ public class MethodServiceTest
 
         _mockClassRepository.Setup(repo => repo.FindAll()).Returns([notificador, sms, email, notificacion]);
         _mockClassRepository.Setup(repo => repo.FindAllTypes()).Returns([notificador, sms, email, notificacion]);
+        _mockMethodRepository.Setup(repo => repo.FindAll()).Returns([notificar, enviar]);
         _mockMethodRepository.Setup(repo => repo.Find(confirmarInvoked1.MethodId)).Returns(confirmar);
         _mockMethodRepository.Setup(repo => repo.Find(confirmarInvoked2.MethodId)).Returns(confirmar);
         _mockMethodRepository.Setup(repo => repo.Find(enviarInvoked1.MethodId)).Returns(enviar);
@@ -1669,6 +1671,7 @@ public class MethodServiceTest
 
         _mockClassRepository.Setup(repo => repo.FindAll()).Returns([validador, entrada, entradaTexto, entradaTextoEspecial]);
         _mockClassRepository.Setup(repo => repo.FindAllTypes()).Returns([validador, entrada, entradaTexto, entradaTextoEspecial]);
+        _mockMethodRepository.Setup(repo => repo.FindAll()).Returns([validar]);
         _mockMethodRepository.Setup(repo => repo.Find(esValidoEntradaTextoEspecialInvoked.MethodId)).Returns(esValidoEntradaTextoEspecial);
         _mockMethodRepository.Setup(repo => repo.Find(esValidoEntradaTextoInvoked.MethodId)).Returns(esValidoEntradaTexto);
         _mockMethodRepository.Setup(repo => repo.Find(esValidoEntradaInvoked.MethodId)).Returns(esValidoEntrada);
@@ -1896,6 +1899,7 @@ public class MethodServiceTest
 
         _mockClassRepository.Setup(repo => repo.FindAll()).Returns([usuario, logger, autenticador, autenticadorPassword]);
         _mockClassRepository.Setup(repo => repo.FindAllTypes()).Returns([usuario, logger, autenticador, autenticadorPassword, stringPrimitive]);
+        _mockMethodRepository.Setup(repo => repo.FindAll()).Returns([autenticar]);
         _mockMethodRepository.Setup(repo => repo.Find(prepararInvoked.MethodId)).Returns(preparar);
         _mockMethodRepository.Setup(repo => repo.Find(validarInvoked.MethodId)).Returns(validar);
         _mockMethodRepository.Setup(repo => repo.Find(registrarInvoked.MethodId)).Returns(registrar);
@@ -2108,6 +2112,7 @@ public class MethodServiceTest
 
         _mockClassRepository.Setup(repo => repo.FindAll()).Returns([cliente, comunicacion, proceso, procesoCompra]);
         _mockClassRepository.Setup(repo => repo.FindAllTypes()).Returns([cliente, comunicacion, proceso, procesoCompra, stringPrimitive]);
+        _mockMethodRepository.Setup(repo => repo.FindAll()).Returns([ejecutar]);
         _mockMethodRepository.Setup(repo => repo.Find(validarInvoked.MethodId)).Returns(validar);
         _mockMethodRepository.Setup(repo => repo.Find(comprobarInventarioInvoked.MethodId)).Returns(comprobarInventario);
         _mockMethodRepository.Setup(repo => repo.Find(enviarNotificacionInvoked.MethodId)).Returns(enviarNotificacion);
