@@ -40,7 +40,6 @@ public class MethodService(
             returnType = _classRepository.FindAllTypes().FirstOrDefault(c => c.Name == type);
         }
 
-        ValidateUniqueMethod(methodT);
         methodT.ReturnType = returnType;
         _methodRepository.Add(methodT);
         return methodT.Id;
@@ -626,15 +625,6 @@ public class MethodService(
         if(method == null)
         {
             throw new MethodNotFoundException("Method null.");
-        }
-    }
-
-    private void ValidateUniqueMethod(Method methodT)
-    {
-        List<Method> methods = _methodRepository.FindAll();
-        if(methods.Any(method => method.Name.Equals(methodT.Name)))
-        {
-            throw new InvalidMethodException("Method with the same name  already exists.");
         }
     }
 

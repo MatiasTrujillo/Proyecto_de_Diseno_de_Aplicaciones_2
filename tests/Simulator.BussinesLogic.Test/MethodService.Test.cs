@@ -148,30 +148,6 @@ public class MethodServiceTest
     }
 
     [TestMethod]
-    public void CreateMethod_ShouldThrowException_WhenMethodNameAlreadyExists()
-    {
-        var existingMethod = new Method
-        {
-            Id = Guid.NewGuid(),
-            Name = _methodDto.Name,
-            Accessibility = Accessibility.Private,
-            Stereotype = null,
-            ReturnType = new Simulator.Domain.Type { Name = _methodDto.ReturnType.Name }
-        };
-
-        _mockMethodRepository
-            .Setup(repo => repo.FindAll())
-            .Returns([existingMethod]);
-
-        _mockClassRepository
-            .Setup(repo => repo.FindAllTypes())
-            .Returns([new Class { Name = _methodDto.ReturnType.Name }]);
-
-        var exception = Assert.ThrowsException<InvalidMethodException>(() => _methodService.CreateMethod(_methodDto));
-        Assert.AreEqual("Method with the same name  already exists.", exception.Message);
-    }
-
-    [TestMethod]
     public void AssociateMethodWithClass_ShouldThrowException_WhenMethodNotFound()
     {
         _mockMethodRepository.Setup(repo => repo.Find(It.IsAny<Guid>())).Returns((Method)null!);
