@@ -1,0 +1,32 @@
+﻿version: '3.8'
+
+services:
+  webapi:
+    build: .  # Build the image using the Dockerfile in the root directory
+    container_name: webapi  # Name the container for easier identification
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development  # Set the ASP.NET Core environment to Development
+    depends_on:
+      db:
+        condition: service_healthy  # Wait for the database to be healthy
+    ports:
+      - "8000:80"  # Map port 80 in the container to port 8000 on the host
+
+  db:
+    image: "mcr.microsoft.com/mssql/server:2019-latest"  # Use the official SQL Server image
+    container_name: db  # Name the container for easier identification
+    environment:
+      SA_PASSWORD: "Passw1rd"  # Set the admin password
+      ACCEPT_EULA: "Y"  # Accept the SQL Server license terms
+    ports:
+      - "1433:1433"  # Expose port 1433 for SQL Server
+    healthcheck:  # Add a health check to ensure the database is ready
+      test: ["CMD-SHELL", "sqlcmd -S localhost -U sa -P Passw1rd -Q 'SELECT 1'"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+    volumes:
+      - db_data:/var/opt/mssql  # Persist database data
+
+volumes:
+  db_data:  # Define a volume for the database
