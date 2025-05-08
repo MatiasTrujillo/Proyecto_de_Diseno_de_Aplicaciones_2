@@ -66,11 +66,12 @@ public class MethodService(
     {
         var method = _methodRepository.Find(id);
         var invokedMethod = _invokedMethodRepository.Find(invokedMethodId);
-        var inv = _methodRepository.Find(invokedMethodId);
-        ValidateMethodExist(method);
         ValidateInvokedMethodExist(invokedMethod);
+        var inv = _methodRepository.Find(invokedMethod.MethodId);
+        ValidateMethodExist(method);
         ValidateInvokedMethodReferenceName(invokedMethod.ReferenceName, inv);
-        method.Methods.Add(invokedMethod);
+        method.Methods?.Add(invokedMethod);
+
         _methodRepository.Update(method);
     }
 

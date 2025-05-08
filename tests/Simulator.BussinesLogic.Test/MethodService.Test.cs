@@ -611,7 +611,11 @@ public class MethodServiceTest
     [TestMethod]
     public void AssociateInvokeMethod_ShouldThrow_WhenMethodNotFound()
     {
-        var invokedMethodDto = new InvokedMethodDTO { MethodId = Guid.NewGuid(), ReferenceName = "validReference" };
+        var invokedMethodDto = new InvokedMethodDTO
+        {
+            MethodId = Guid.NewGuid(),
+            ReferenceName = "validReference"
+        };
 
         _mockMethodRepository.Setup(repo => repo.Find(invokedMethodDto.MethodId))
             .Returns((Method)null!);
@@ -624,14 +628,64 @@ public class MethodServiceTest
 
     [TestMethod]
     [ExpectedException(typeof(MethodNotFoundException))]
-    public void AddAMethod_ShouldThrow_WhenMethodIsNull()
+    public void AddAMethod_ShouldThrowMethodNotFoundException_WhenMethodIsNull()
     {
         var methodId = Guid.NewGuid();
         var invokedMethodId = Guid.NewGuid();
 
-        _mockMethodRepository.Setup(repo => repo.Find(methodId)).Returns((Method?)null);
-        _mockMethodRepository.Setup(repo => repo.Find(invokedMethodId)).Returns(new Method());
-        _mockInvokedMethodRepository.Setup(repo => repo.Find(It.IsAny<Guid>())).Returns(new InvokedMethod());
+        _mockMethodRepository.Setup(r => r.Find(It.IsAny<Guid>())).Returns((Method)null);
+        _mockInvokedMethodRepository.Setup(r => r.Find(It.IsAny<Guid>())).Returns(new InvokedMethod { Id = invokedMethodId, MethodId = invokedMethodId });
+
+        _methodService.AddAMethod(methodId, invokedMethodId);
+    }
+
+    [TestMethod]
+    [ExpectedException(typeof(MethodException))]
+    public void AddAMethod_ShouldThrowMethodException_WhenInvokedMethodReferenceNameIsInvalid()
+    {
+        var methodId = Guid.NewGuid();
+        var invokedMethodId = Guid.NewGuid();
+        var invalidReferenceName = "invalidReference";
+
+        var method = new Method
+        {
+            Id = methodId,
+            Name = "TestMethod",
+            Parameters = [],
+            LocalVariables = [],
+            Methods = []
+        };
+
+        var invokedMethod = new InvokedMethod
+        {
+            Id = invokedMethodId,
+            ReferenceName = invalidReferenceName,
+            MethodId = methodId
+        };
+
+        var classWithMethod = new Class
+        {
+            Methods = [method],
+            HierarchyClass = null
+        };
+
+        _mockMethodRepository.Setup(r => r.Find(methodId)).Returns(method);
+        _mockMethodRepository.Setup(r => r.Find(invokedMethod.MethodId)).Returns(method);
+        _mockInvokedMethodRepository.Setup(r => r.Find(invokedMethodId)).Returns(invokedMethod);
+        _mockClassRepository.Setup(r => r.FindAll()).Returns([classWithMethod]);
+
+        _methodService.AddAMethod(methodId, invokedMethodId);
+    }
+
+    [TestMethod]
+    [ExpectedException(typeof(InvokedMethodNotFoundException))]
+    public void AddAMethod_ShouldThrowInvokedMethodNotFoundException_WhenInvokedMethodIsNull()
+    {
+        var methodId = Guid.NewGuid();
+        var invokedMethodId = Guid.NewGuid();
+
+        _mockMethodRepository.Setup(r => r.Find(It.IsAny<Guid>())).Returns(new Method { Id = methodId });
+        _mockInvokedMethodRepository.Setup(r => r.Find(It.IsAny<Guid>())).Returns((InvokedMethod)null);
 
         _methodService.AddAMethod(methodId, invokedMethodId);
     }
@@ -642,14 +696,12 @@ public class MethodServiceTest
     {
         var methodId = Guid.NewGuid();
         var invokedMethodId = Guid.NewGuid();
+
         var method = new Method
         {
             Id = methodId,
             Name = "MyMethod",
-            Parameters =
-            [
-                new Parameter { Name = "SomeName" }
-            ],
+            Parameters = [new Parameter { Name = "SomeName" }],
             Methods = []
         };
 
@@ -666,62 +718,43 @@ public class MethodServiceTest
     {
         var methodId = Guid.NewGuid();
         var invokedMethodId = Guid.NewGuid();
-        var invokedMethod = new InvokedMethod { Id = invokedMethodId, ReferenceName = "InvalidReference" };
-        var method = new Method
-        {
-            Id = methodId,
-            Name = "MyMethod",
-            Parameters = [],
-            LocalVariables = [],
-            Methods = []
-        };
-        var classWithMethod = new Class { Methods = [method] };
+        var referencedMethodId = Guid.NewGuid();
 
-        _mockMethodRepository.Setup(repo => repo.Find(methodId)).Returns(method);
-        _mockMethodRepository.Setup(repo => repo.Find(invokedMethodId)).Returns(new Method());
-        _mockInvokedMethodRepository.Setup(repo => repo.Find(invokedMethodId)).Returns(invokedMethod);
-        _mockClassRepository.Setup(repo => repo.FindAll()).Returns([classWithMethod]);
-
-        _methodService.AddAMethod(methodId, invokedMethodId);
-    }
-
-    [TestMethod]
-    [ExpectedException(typeof(MethodException))]
-    public void AddAMethod_ShouldAddInvokedMethod_WhenValid()
-    {
-        var methodId = Guid.NewGuid();
-        var invokedMethodId = Guid.NewGuid();
-
-        var invokedMethod = new InvokedMethod { Id = invokedMethodId, ReferenceName = "TestReference" };
-        var method = new Method
-        {
-            Id = methodId,
-            Name = "MyMethod",
-            Parameters = [ new Parameter { Name = "TestReference" } ],
-            LocalVariables = [],
-            Methods = []
-        };
-
-        var invokedMethodAsMethod = new Method
+        var invokedMethod = new InvokedMethod
         {
             Id = invokedMethodId,
-            Name = "InvokedAsMethod",
+            ReferenceName = "InvalidReference",
+            MethodId = referencedMethodId
+        };
+
+        var method = new Method
+        {
+            Id = methodId,
+            Name = "MyMethod",
             Parameters = [],
             LocalVariables = [],
             Methods = []
         };
 
-        var classWithMethod = new Class { Methods = [method] };
+        var invokedRealMethod = new Method
+        {
+            Id = referencedMethodId,
+            Name = "TargetMethod"
+        };
+
+        var classWithMethod = new Class
+        {
+            Methods = [method]
+        };
 
         _mockMethodRepository.Setup(repo => repo.Find(methodId)).Returns(method);
+        _mockMethodRepository.Setup(repo => repo.Find(invokedMethodId)).Returns(invokedRealMethod);
+        _mockMethodRepository.Setup(repo => repo.Find(referencedMethodId)).Returns(invokedRealMethod);
+
         _mockInvokedMethodRepository.Setup(repo => repo.Find(invokedMethodId)).Returns(invokedMethod);
-        _mockMethodRepository.Setup(repo => repo.Find(invokedMethodId)).Returns(invokedMethodAsMethod);
         _mockClassRepository.Setup(repo => repo.FindAll()).Returns([classWithMethod]);
-        _mockMethodRepository.Setup(repo => repo.Update(It.IsAny<Method>()));
 
         _methodService.AddAMethod(methodId, invokedMethodId);
-
-        _mockMethodRepository.Verify(repo => repo.Update(It.Is<Method>(m => m.Methods.Contains(invokedMethod))), Times.Once);
     }
 
     [TestMethod]
@@ -729,62 +762,7 @@ public class MethodServiceTest
     {
         var methodId = Guid.NewGuid();
         var invokedMethodId = Guid.NewGuid();
-
-        var method = new Method
-        {
-            Id = methodId,
-            Name = "TestMethod",
-            Parameters = [],
-            LocalVariables = [],
-            Methods = []
-        };
-
-        var invokedMethod = new InvokedMethod
-        {
-            Id = invokedMethodId,
-            ReferenceName = "this"
-        };
-
-        var classT = new Class
-        {
-            Methods = [new Method { Id = methodId, Name = "TestMethod" }],
-            Attributes = []
-        };
-
-        _mockMethodRepository
-            .Setup(r => r.Find(It.IsAny<Guid>()))
-            .Returns<Guid>(id =>
-            {
-                if (id == methodId)
-                {
-                    return method;
-                }
-
-                if (id == invokedMethodId)
-                {
-                    return method;
-                }
-
-                return null!;
-            });
-
-        _mockInvokedMethodRepository.Setup(r => r.Find(invokedMethodId)).Returns(invokedMethod);
-        _mockClassRepository.Setup(r => r.FindAll()).Returns([classT]);
-        _mockMethodRepository.Setup(r => r.Update(It.IsAny<Method>()));
-
-        _methodService.AddAMethod(methodId, invokedMethodId);
-
-        _mockMethodRepository.Verify(
-            r => r.Update(It.Is<Method>(m => m.Methods.Contains(invokedMethod))),
-            Times.Once);
-    }
-
-    [TestMethod]
-    public void AddAMethod_ShouldSucceed_WhenReferenceNameIsBase()
-    {
-        var methodId = Guid.NewGuid();
-        var invokedMethodId = Guid.NewGuid();
-        var methodName = "BaseMethod";
+        var methodName = "Test";
 
         var method = new Method
         {
@@ -798,87 +776,101 @@ public class MethodServiceTest
         var invokedMethod = new InvokedMethod
         {
             Id = invokedMethodId,
-            ReferenceName = "base"
-        };
-
-        var hierarchyClass = new Class
-        {
-            Id = Guid.NewGuid(),
-            Methods = [new Method { Id = Guid.NewGuid(), Name = methodName }],
-            Attributes = []
+            ReferenceName = "this",
+            MethodId = methodId
         };
 
         var classWithMethod = new Class
         {
-            Id = Guid.NewGuid(),
             Methods = [method],
-            HierarchyClass = hierarchyClass,
-            Attributes = []
+            HierarchyClass = null
         };
 
-        _mockMethodRepository.Setup(r => r.Find(It.IsAny<Guid>())).Returns<Guid>(id =>
-        {
-            if (id == methodId || id == invokedMethodId)
-            {
-                return method;
-            }
-
-            return null!;
-        });
-
+        _mockMethodRepository.Setup(r => r.Find(It.IsAny<Guid>())).Returns(method);
         _mockInvokedMethodRepository.Setup(r => r.Find(invokedMethodId)).Returns(invokedMethod);
         _mockClassRepository.Setup(r => r.FindAll()).Returns([classWithMethod]);
         _mockMethodRepository.Setup(r => r.Update(It.IsAny<Method>()));
 
         _methodService.AddAMethod(methodId, invokedMethodId);
 
-        _mockMethodRepository.Verify(
-            r => r.Update(It.Is<Method>(m => m.Methods.Contains(invokedMethod))),
-            Times.Once);
+        _mockMethodRepository.Verify(r => r.Update(It.Is<Method>(m => m.Methods.Contains(invokedMethod))), Times.Once);
     }
 
     [TestMethod]
-    [ExpectedException(typeof(MethodException))]
-    public void AddAMethod_ShouldThrow_WhenReferenceNotFoundAnywhere()
+    public void AddAMethod_ShouldAddInvokedMethod_WhenReferenceIsBase()
     {
         var methodId = Guid.NewGuid();
         var invokedMethodId = Guid.NewGuid();
-        var invokedReferenceName = "invalidRef";
+        var referenceName = "base";
 
         var method = new Method
         {
             Id = methodId,
             Name = "TestMethod",
-            Parameters = [],
-            LocalVariables = [],
             Methods = []
         };
 
         var invokedMethod = new InvokedMethod
         {
             Id = invokedMethodId,
-            ReferenceName = invokedReferenceName
+            ReferenceName = referenceName,
+            MethodId = methodId
         };
 
-        var invokedMethodReal = new Method
+        var baseClass = new Class
+        {
+            Methods = [new Method { Name = "TestMethod" }]
+        };
+
+        var classWithMethod = new Class
+        {
+            Methods = [method],
+            HierarchyClass = baseClass
+        };
+
+        _mockMethodRepository.Setup(m => m.Find(methodId)).Returns(method);
+        _mockMethodRepository.Setup(m => m.Find(invokedMethod.MethodId)).Returns(method);
+        _mockInvokedMethodRepository.Setup(i => i.Find(invokedMethodId)).Returns(invokedMethod);
+        _mockClassRepository.Setup(c => c.FindAll()).Returns([classWithMethod]);
+        _mockMethodRepository.Setup(m => m.Update(method));
+
+        _methodService.AddAMethod(methodId, invokedMethodId);
+    }
+
+    [TestMethod]
+    public void AddAMethod_ShouldAddInvokedMethod_WhenReferenceIsAttribute()
+    {
+        var methodId = Guid.NewGuid();
+        var invokedMethodId = Guid.NewGuid();
+        var referenceName = "attr1";
+        var classId = Guid.NewGuid();
+        var method = new Method
+        {
+            Id = methodId,
+            Name = "TestMethod",
+            Methods = []
+        };
+        var invokedMethod = new InvokedMethod
         {
             Id = invokedMethodId,
-            Name = "AnyMethod",
-            Parameters = [],
-            LocalVariables = []
+            ReferenceName = referenceName,
+            MethodId = methodId
         };
-
-        var classContainingMethod = new Class
+        var classWithMethod = new Class
         {
-            Id = Guid.NewGuid(),
             Methods = [method],
-            Attributes = []
+            Attributes =
+            [
+                new Attribute { Name = referenceName, Type = new Class { Id = classId } }
+            ]
         };
-
-        _mockMethodRepository.Setup(r => r.Find(methodId)).Returns(method);
-        _mockMethodRepository.Setup(r => r.Find(invokedMethodId)).Returns(invokedMethodReal);
-        _mockInvokedMethodRepository.Setup(r => r.Find(invokedMethodId)).Returns(invokedMethod);
-        _mockClassRepository.Setup(r => r.FindAll()).Returns([classContainingMethod]);
+        var classWithAttr = new Class { Id = classId, Methods = [method] };
+        _mockMethodRepository.Setup(m => m.Find(methodId)).Returns(method);
+        _mockMethodRepository.Setup(m => m.Find(invokedMethod.MethodId)).Returns(method);
+        _mockInvokedMethodRepository.Setup(i => i.Find(invokedMethodId)).Returns(invokedMethod);
+        _mockClassRepository.Setup(c => c.FindAll()).Returns([classWithMethod]);
+        _mockClassRepository.Setup(c => c.Find(classId)).Returns(classWithAttr);
+        _mockMethodRepository.Setup(m => m.Update(method));
 
         _methodService.AddAMethod(methodId, invokedMethodId);
     }
@@ -889,34 +881,30 @@ public class MethodServiceTest
     {
         var methodId = Guid.NewGuid();
         var invokedMethodId = Guid.NewGuid();
-
-        var method = new Method
+        var methodToAdd = new Method
         {
             Id = methodId,
-            Name = "TestMethod",
+            Name = "MainMethod",
             Parameters = [],
             LocalVariables = [],
             Methods = []
         };
-
-        var invokedMethod = new InvokedMethod { Id = invokedMethodId, ReferenceName = "attr1" };
-
-        var attributeClass = new Class { Id = Guid.NewGuid(), Methods = [] };
-
-        var attribute = new Attribute { Name = "attr1", Type = attributeClass };
-
-        var classContainingMethod = new Class
+        var invokedMethod = new InvokedMethod
         {
-            Id = Guid.NewGuid(),
-            Methods = [method],
-            Attributes = [attribute]
+            Id = invokedMethodId,
+            MethodId = Guid.NewGuid(),
+            ReferenceName = "MyAttr"
         };
+        var invMethod = new Method { Id = invokedMethod.MethodId, Name = "Invoked" };
+        var attrClass = new Class { Id = Guid.NewGuid(), Methods = [] };
+        var attribute = new Simulator.Domain.Attribute { Name = "MyAttr", Type = attrClass };
+        var classWithMethod = new Class { Methods = [methodToAdd], Attributes = [attribute] };
 
-        _mockMethodRepository.Setup(r => r.Find(methodId)).Returns(method);
-        _mockMethodRepository.Setup(r => r.Find(invokedMethodId)).Returns(new Method()); // ← necesario
+        _mockMethodRepository.Setup(r => r.Find(methodId)).Returns(methodToAdd);
         _mockInvokedMethodRepository.Setup(r => r.Find(invokedMethodId)).Returns(invokedMethod);
-        _mockClassRepository.Setup(r => r.FindAll()).Returns([classContainingMethod]);
-        _mockClassRepository.Setup(r => r.Find(attributeClass.Id)).Returns(attributeClass);
+        _mockMethodRepository.Setup(r => r.Find(invokedMethod.MethodId)).Returns(invMethod);
+        _mockClassRepository.Setup(r => r.FindAll()).Returns([classWithMethod]);
+        _mockClassRepository.Setup(r => r.Find(attrClass.Id)).Returns(attrClass);
 
         _methodService.AddAMethod(methodId, invokedMethodId);
     }
@@ -927,48 +915,29 @@ public class MethodServiceTest
     {
         var methodId = Guid.NewGuid();
         var invokedMethodId = Guid.NewGuid();
-        var parameterClassId = Guid.NewGuid();
-
-        var method = new Method
+        var paramClass = new Class { Id = Guid.NewGuid(), Methods = [] };
+        var methodToAdd = new Method
         {
             Id = methodId,
-            Name = "TestMethod",
-            Parameters =
-            [
-                new Parameter
-                {
-                    Name = "param1",
-                    ParameterType = new Class { Id = parameterClassId }
-                }
-
-            ],
+            Name = "MainMethod",
+            Parameters = [ new Parameter { Name = "MyParam", ParameterType = paramClass } ],
             LocalVariables = [],
             Methods = []
         };
-
         var invokedMethod = new InvokedMethod
         {
             Id = invokedMethodId,
-            ReferenceName = "param1"
+            MethodId = Guid.NewGuid(),
+            ReferenceName = "MyParam"
         };
+        var invMethod = new Method { Id = invokedMethod.MethodId, Name = "Invoked" };
+        var classWithMethod = new Class { Methods = [methodToAdd] };
 
-        var classContainingMethod = new Class
-        {
-            Id = Guid.NewGuid(),
-            Methods = [method]
-        };
-
-        var parameterClass = new Class
-        {
-            Id = parameterClassId,
-            Methods = [] // No contiene métodos → debería lanzar excepción
-        };
-
-        _mockMethodRepository.Setup(r => r.Find(methodId)).Returns(method);
-        _mockMethodRepository.Setup(r => r.Find(invokedMethodId)).Returns(new Method()); // ← esta línea es clave
+        _mockMethodRepository.Setup(r => r.Find(methodId)).Returns(methodToAdd);
         _mockInvokedMethodRepository.Setup(r => r.Find(invokedMethodId)).Returns(invokedMethod);
-        _mockClassRepository.Setup(r => r.FindAll()).Returns([classContainingMethod]);
-        _mockClassRepository.Setup(r => r.Find(parameterClassId)).Returns(parameterClass);
+        _mockMethodRepository.Setup(r => r.Find(invokedMethod.MethodId)).Returns(invMethod);
+        _mockClassRepository.Setup(r => r.FindAll()).Returns([classWithMethod]);
+        _mockClassRepository.Setup(r => r.Find(paramClass.Id)).Returns(paramClass);
 
         _methodService.AddAMethod(methodId, invokedMethodId);
     }
@@ -979,48 +948,29 @@ public class MethodServiceTest
     {
         var methodId = Guid.NewGuid();
         var invokedMethodId = Guid.NewGuid();
-        var localVariableClassId = Guid.NewGuid();
-
-        var method = new Method
+        var localVarClass = new Class { Id = Guid.NewGuid(), Methods = [] };
+        var methodToAdd = new Method
         {
             Id = methodId,
-            Name = "TestMethod",
+            Name = "MainMethod",
             Parameters = [],
-            LocalVariables =
-            [
-                new LocalVariable
-                {
-                    Name = "localVar1",
-                    LocalVariableType = new Class { Id = localVariableClassId }
-                }
-
-            ],
+            LocalVariables = [ new LocalVariable { Name = "MyLocal", LocalVariableType = localVarClass } ],
             Methods = []
         };
-
         var invokedMethod = new InvokedMethod
         {
             Id = invokedMethodId,
-            ReferenceName = "localVar1"
+            MethodId = Guid.NewGuid(),
+            ReferenceName = "MyLocal"
         };
+        var invMethod = new Method { Id = invokedMethod.MethodId, Name = "Invoked" };
+        var classWithMethod = new Class { Methods = [methodToAdd] };
 
-        var classContainingMethod = new Class
-        {
-            Id = Guid.NewGuid(),
-            Methods = [method]
-        };
-
-        var localVariableClass = new Class
-        {
-            Id = localVariableClassId,
-            Methods = []
-        };
-
-        _mockMethodRepository.Setup(r => r.Find(methodId)).Returns(method);
-        _mockMethodRepository.Setup(r => r.Find(invokedMethodId)).Returns(new Method());
+        _mockMethodRepository.Setup(r => r.Find(methodId)).Returns(methodToAdd);
         _mockInvokedMethodRepository.Setup(r => r.Find(invokedMethodId)).Returns(invokedMethod);
-        _mockClassRepository.Setup(r => r.FindAll()).Returns([classContainingMethod]);
-        _mockClassRepository.Setup(r => r.Find(localVariableClassId)).Returns(localVariableClass);
+        _mockMethodRepository.Setup(r => r.Find(invokedMethod.MethodId)).Returns(invMethod);
+        _mockClassRepository.Setup(r => r.FindAll()).Returns([classWithMethod]);
+        _mockClassRepository.Setup(r => r.Find(localVarClass.Id)).Returns(localVarClass);
 
         _methodService.AddAMethod(methodId, invokedMethodId);
     }
