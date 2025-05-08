@@ -198,7 +198,10 @@ public class MethodService(
         var result = new List<string>();
         _identation = 0;
 
+        ValidateClassExist(reference!);
+        ValidateClassExist(objectToCreate!);
         method = FindMethod(reference.Methods!, methodId);
+        ValidateMethodExist(method);
 
         result = result.Concat(FirstLine(reference, objectToCreate!, method)).ToList();
         result = result.Concat(WriteOtherLines(reference, objectToCreate!, method, method)).ToList();
