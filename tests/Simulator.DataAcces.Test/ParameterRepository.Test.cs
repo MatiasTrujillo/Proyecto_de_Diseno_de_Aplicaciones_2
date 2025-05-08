@@ -106,7 +106,7 @@ public class ParameterRepositoryTest
 
         var result = _repository.FindAll();
 
-        result.Should().HaveCount(3);
+        result.Should().HaveCount(7);
         result.Should().Contain(p => p.Name == _parameter.Name);
         result.Should().Contain(p => p.Name == anotherParameter.Name);
     }
@@ -116,7 +116,7 @@ public class ParameterRepositoryTest
     {
         var result = _repository.FindAll();
 
-        result.Count.Should().Be(1);
+        result.Count.Should().Be(5);
         result.Should().Contain(p => p.Name == "Obj");
     }
     #endregion

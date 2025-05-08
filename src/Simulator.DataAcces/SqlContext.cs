@@ -274,7 +274,35 @@ public sealed class SqlContext : DbContext
                 Id = Guid.NewGuid(),
                 Name = "Obj",
                 ParameterTypeId = classId,
-                MethodId = methodId2,
+                MethodId = methodId2
+            },
+            new
+            {
+                Id = Guid.NewGuid(),
+                Name = "Obj",
+                ParameterTypeId = classId,
+                MethodId = stringEqualsMethodId
+            },
+            new
+            {
+                Id = Guid.NewGuid(),
+                Name = "StrToParse",
+                ParameterTypeId = stringTypeId,
+                MethodId = parseMethodId
+            },
+            new
+            {
+                Id = Guid.NewGuid(),
+                Name = "StrIsNullOrEmpty",
+                ParameterTypeId = stringTypeId,
+                MethodId = isNullOrEmptyMethodId
+            },
+            new
+            {
+                Id = Guid.NewGuid(),
+                Name = "StrToCompare",
+                ParameterTypeId = stringTypeId,
+                MethodId = compareToMethodId,
             });
 
         modelBuilder.Entity<Method>().HasData(
