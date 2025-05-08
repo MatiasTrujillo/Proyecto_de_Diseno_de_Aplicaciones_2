@@ -896,7 +896,7 @@ public class MethodServiceTest
         {
             Id = methodId,
             Name = "MainMethod",
-            Parameters = [ new Parameter { Name = "MyParam", ParameterType = paramClass } ],
+            Parameters = [new Parameter { Name = "MyParam", ParameterType = paramClass }],
             LocalVariables = [],
             Methods = []
         };
@@ -930,7 +930,7 @@ public class MethodServiceTest
             Id = methodId,
             Name = "MainMethod",
             Parameters = [],
-            LocalVariables = [ new LocalVariable { Name = "MyLocal", LocalVariableType = localVarClass } ],
+            LocalVariables = [new LocalVariable { Name = "MyLocal", LocalVariableType = localVarClass }],
             Methods = []
         };
         var invokedMethod = new InvokedMethod

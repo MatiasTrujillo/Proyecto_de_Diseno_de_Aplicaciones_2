@@ -58,11 +58,11 @@ public class AttributeServiceTest
 
         _mockClassRepository
             .Setup(repo => repo.FindAll())
-            .Returns(new List<Class> { new Class { Name = dto.Type.Name } });
+            .Returns([new Class { Name = dto.Type.Name }]);
 
         _mockClassRepository
             .Setup(repo => repo.FindAllTypes())
-            .Returns(new List<Type> { new Class { Name = dto.Type.Name } });
+            .Returns([new Class { Name = dto.Type.Name }]);
 
         _mockAttributeRepository
             .Setup(repo => repo.Find(It.IsAny<Guid>()))
@@ -164,11 +164,11 @@ public class AttributeServiceTest
 
         _mockClassRepository
             .Setup(repo => repo.FindAll())
-            .Returns(new List<Class> { new Class { Name = dto.Type.Name } });
+            .Returns([new Class { Name = dto.Type.Name }]);
 
         _mockClassRepository
             .Setup(repo => repo.FindAllTypes())
-            .Returns(new List<Type>()); // Simula que no hay tipos válidos
+            .Returns([]);
 
         _mockAttributeRepository
             .Setup(repo => repo.Find(It.IsAny<Guid>()))
