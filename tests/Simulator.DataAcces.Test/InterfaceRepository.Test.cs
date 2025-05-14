@@ -39,4 +39,16 @@ public class InterfaceRepository_Test
         saved[0].Id.Should().Be(anInterface.Id);
         saved[0].Name.Should().Be(anInterface.Name);
     }
+
+    [TestMethod]
+    public void Find_WhenClassExists_ShouldReturnIt()
+    {
+        _context.Interfaces.Add(anInterface);
+
+        var result = _repository.Find(anInterface.Id);
+
+        result.Should().NotBeNull();
+        result.Id.Should().Be(anInterface.Id);
+        result.Name.Should().Be(anInterface.Name);
+    }
 }
