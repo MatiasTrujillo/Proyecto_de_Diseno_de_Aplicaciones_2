@@ -1,3 +1,4 @@
+using FluentAssertions;
 using Simulator.Domain;
 
 namespace Simulator.DataAcces.Test;
@@ -5,7 +6,20 @@ namespace Simulator.DataAcces.Test;
 [TestClass]
 public class InterfaceRepository_Test
 {
-    private readonly InterfaceRepository _repository = new InterfaceRepository();
+    private static readonly SqlContext _context = ProgramTest.BuildTestDbContext();
+    private readonly InterfaceRepository _repository = new InterfaceRepository(_context);
+
+    [TestInitialize]
+    public void Setup()
+    {
+        _context.Database.EnsureCreated();
+    }
+
+    [TestCleanup]
+    public void Cleanup()
+    {
+        _context.Database.EnsureDeleted();
+    }
 
     [TestMethod]
     public void Add_WhenValidInterfaceProvided_ShouldBeSavedInDatabase()

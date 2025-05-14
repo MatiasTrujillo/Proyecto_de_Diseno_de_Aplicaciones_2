@@ -3,11 +3,12 @@ using Simulator.IDataAcces;
 
 namespace Simulator.DataAcces;
 
-public class InterfaceRepository : IInterfaceRepository
+public class InterfaceRepository(SqlContext context) : IInterfaceRepository
 {
     public void Add(Interface anInterface)
     {
-        throw new NotImplementedException();
+        context.Interfaces.Add(anInterface);
+        context.SaveChanges();
     }
 
     public void Update(Interface anInterface)
