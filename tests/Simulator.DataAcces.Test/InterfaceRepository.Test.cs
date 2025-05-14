@@ -44,7 +44,7 @@ public class InterfaceRepository_Test
 
     #region Find
     [TestMethod]
-    public void Find_WhenClassExists_ShouldReturnIt()
+    public void Find_WhenInterfaceExists_ShouldReturnIt()
     {
         _context.Interfaces.Add(anInterface);
 
@@ -55,4 +55,19 @@ public class InterfaceRepository_Test
         result.Name.Should().Be(anInterface.Name);
     }
     #endregion
+
+    [TestMethod]
+    public void FindAll_WhenMultipleInterfacesExist_ShouldReturnAll()
+    {
+        Interface anotherInterface = new Interface("AnotherInterface");
+
+        _context.Interfaces.AddRange(anInterface, anotherInterface);
+
+        var result = _repository.FindAll();
+
+        result.Count.Should().Be(2);
+
+        result.Should().Contain(i => i.Name == "Interface");
+        result.Should().Contain(i => i.Name == "AnotherInterface");
+    }
 }
