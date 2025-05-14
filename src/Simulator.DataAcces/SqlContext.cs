@@ -21,6 +21,7 @@ public sealed class SqlContext : DbContext
     public DbSet<Parameter> Parameters { get; set; }
     public DbSet<LocalVariable> LocalVariables { get; set; }
     public DbSet<InvokedMethod> InvokedMethods { get; set; }
+    public DbSet<Interface> Interfaces { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -31,6 +32,9 @@ public sealed class SqlContext : DbContext
             .HasBaseType<Type>();
 
         modelBuilder.Entity<Primitive>()
+            .HasBaseType<Type>();
+
+        modelBuilder.Entity<Interface>()
             .HasBaseType<Type>();
 
         modelBuilder.Entity<Attribute>()
