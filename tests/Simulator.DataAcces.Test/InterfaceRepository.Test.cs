@@ -27,6 +27,7 @@ public class InterfaceRepository_Test
         _context.Database.EnsureDeleted();
     }
 
+    #region Add
     [TestMethod]
     public void Add_WhenValidInterfaceProvided_ShouldBeSavedInDatabase()
     {
@@ -39,7 +40,9 @@ public class InterfaceRepository_Test
         saved[0].Id.Should().Be(anInterface.Id);
         saved[0].Name.Should().Be(anInterface.Name);
     }
+    #endregion
 
+    #region Find
     [TestMethod]
     public void Find_WhenClassExists_ShouldReturnIt()
     {
@@ -51,4 +54,5 @@ public class InterfaceRepository_Test
         result.Id.Should().Be(anInterface.Id);
         result.Name.Should().Be(anInterface.Name);
     }
+    #endregion
 }
