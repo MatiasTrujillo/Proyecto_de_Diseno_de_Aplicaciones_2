@@ -186,7 +186,7 @@ public class ClassService(
     {
         if(stereotype.Equals(KeyWord.Static))
         {
-            throw new InvalidClassException("Invalid stereotype value.");
+            throw new InvalidClassException("Classes cannot be static.");
         }
     }
 

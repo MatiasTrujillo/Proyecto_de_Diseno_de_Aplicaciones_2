@@ -495,6 +495,28 @@ public class ClassServiceTest
             _classService.CreateClass(dto);
         });
 
-        Assert.AreEqual("Invalid stereotype value.", exception.Message);
+        Assert.AreEqual("Classes cannot be static.", exception.Message);
+    }
+
+    [TestMethod]
+    public void UpdateClass_ShouldThrowException_WhenKeyWordStatic()
+    {
+        var id = Guid.NewGuid();
+        var classT = new Class { Id = id, Name = "OldName" };
+
+        _mockClassRepository.Setup(r => r.FindAll()).Returns([classT]);
+        _mockClassRepository.Setup(r => r.Find(id)).Returns(classT);
+
+        var dto = new UpdateClassDTO
+        {
+            Stereotype = KeyWord.Static + string.Empty,
+        };
+
+        var exception = Assert.ThrowsException<InvalidClassException>(() =>
+        {
+            _classService.UpdateClass(id, dto);
+        });
+
+        Assert.AreEqual("The stereotype is not valid", exception.Message);
     }
 }
