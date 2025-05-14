@@ -476,4 +476,25 @@ public class ClassServiceTest
 
         _classService.UpdateClass(id, dto);
     }
+
+    [TestMethod]
+    public void CreateClass_ShouldThrowException_WhenKeyWordStatic()
+    {
+        var invalidStereoType = KeyWord.Static;
+        var dto = new ClassDTO
+        {
+            Name = "Class",
+            Stereotype = invalidStereoType,
+        };
+
+        _mockClassRepository.Setup(r => r.FindAllTypes())
+            .Returns([]);
+
+        var exception = Assert.ThrowsException<InvalidClassException>(() =>
+        {
+            _classService.CreateClass(dto);
+        });
+
+        Assert.AreEqual("Invalid stereotype value.", exception.Message);
+    }
 }

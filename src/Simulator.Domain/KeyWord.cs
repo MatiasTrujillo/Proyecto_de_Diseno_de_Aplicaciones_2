@@ -10,5 +10,10 @@ public enum KeyWord
     /// <summary>
     /// Indicates that the class is sealed
     /// </summary>
-    Sealed
+    Sealed,
+
+    /// <summary>
+    /// Indicates that the class is static
+    /// </summary>
+    Static
 }
