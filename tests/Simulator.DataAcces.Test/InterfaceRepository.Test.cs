@@ -61,7 +61,8 @@ public class InterfaceRepository_Test
     {
         Interface anotherInterface = new Interface("AnotherInterface");
 
-        _context.Interfaces.AddRange(anInterface, anotherInterface);
+        _repository.Add(anInterface);
+        _repository.Add(anotherInterface);
 
         var result = _repository.FindAll();
 

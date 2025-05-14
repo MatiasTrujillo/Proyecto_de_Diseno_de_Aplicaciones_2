@@ -23,7 +23,7 @@ public class InterfaceRepository(SqlContext context) : IInterfaceRepository
 
     public List<Interface> FindAll()
     {
-        throw new NotImplementedException();
+        return context.Set<Interface>().ToList();
     }
 
     public bool Exist(Guid id)
