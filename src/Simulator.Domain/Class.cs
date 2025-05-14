@@ -7,7 +7,6 @@ public class Class : Type
     public KeyWord? Stereotype { get; set; }
     public virtual Class? HierarchyClass { get; set; }
     public virtual List<Attribute>? Attributes { get; set; }
-    public virtual List<Method>? Methods { get; set; }
 
     public Class()
         : base(string.Empty)

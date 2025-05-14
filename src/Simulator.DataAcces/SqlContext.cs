@@ -58,30 +58,17 @@ public sealed class SqlContext : DbContext
         modelBuilder.Entity<LocalVariable>()
             .HasKey(l => l.Id);
 
-        modelBuilder.Entity<Class>()
-            .HasMany(c => c.Methods)
+        modelBuilder.Entity<Type>()
+            .HasMany(t => t.Methods)
             .WithMany()
             .UsingEntity<Dictionary<string, object>>(
-                "ClassMethod",
+                "TypeMethod",
                 j => j.HasOne<Method>().WithMany().HasForeignKey("MethodsId"),
-                j => j.HasOne<Class>().WithMany().HasForeignKey("ClassId"),
+                j => j.HasOne<Type>().WithMany().HasForeignKey("TypeId"),
                 j =>
                 {
-                    j.HasKey("ClassId", "MethodsId");
-                    j.ToTable("ClassMethod");
-                });
-
-        modelBuilder.Entity<Primitive>()
-            .HasMany(p => p.Methods)
-            .WithMany()
-            .UsingEntity<Dictionary<string, object>>(
-                "PrimitiveMethod",
-                j => j.HasOne<Method>().WithMany().HasForeignKey("MethodsId"),
-                j => j.HasOne<Primitive>().WithMany().HasForeignKey("PrimitiveId"),
-                j =>
-                {
-                    j.HasKey("PrimitiveId", "MethodsId");
-                    j.ToTable("PrimitiveMethod");
+                    j.HasKey("TypeId", "MethodsId");
+                    j.ToTable("TypeMethod");
                 });
 
         modelBuilder.Entity<Method>()
@@ -264,20 +251,20 @@ public sealed class SqlContext : DbContext
                 ReturnTypeId = intTypeId,
             });
 
-        modelBuilder.Entity("ClassMethod").HasData(
+        modelBuilder.Entity("TypeMethod").HasData(
             new Dictionary<string, object>
             {
-                ["ClassId"] = Guid.Parse("dddddddd-dddd-dddd-dddd-dddddddddddd"),
+                ["TypeId"] = Guid.Parse("dddddddd-dddd-dddd-dddd-dddddddddddd"),
                 ["MethodsId"] = Guid.Parse("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa")
             },
             new Dictionary<string, object>
             {
-                ["ClassId"] = Guid.Parse("dddddddd-dddd-dddd-dddd-dddddddddddd"),
+                ["TypeId"] = Guid.Parse("dddddddd-dddd-dddd-dddd-dddddddddddd"),
                 ["MethodsId"] = Guid.Parse("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb")
             },
             new Dictionary<string, object>
             {
-                ["ClassId"] = Guid.Parse("dddddddd-dddd-dddd-dddd-dddddddddddd"),
+                ["TypeId"] = Guid.Parse("dddddddd-dddd-dddd-dddd-dddddddddddd"),
                 ["MethodsId"] = Guid.Parse("cccccccc-cccc-cccc-cccc-cccccccccccc")
             });
 
@@ -391,17 +378,17 @@ public sealed class SqlContext : DbContext
                 Stereotype = (KeyWord?)null,
                 ReturnTypeId = boolTypeId
             });
-        modelBuilder.Entity("PrimitiveMethod").HasData(
-            new Dictionary<string, object> { ["PrimitiveId"] = intTypeId, ["MethodsId"] = parseMethodId },
-            new Dictionary<string, object> { ["PrimitiveId"] = intTypeId, ["MethodsId"] = maxValueMethodId },
-            new Dictionary<string, object> { ["PrimitiveId"] = intTypeId, ["MethodsId"] = minValueMethodId },
-            new Dictionary<string, object> { ["PrimitiveId"] = intTypeId, ["MethodsId"] = compareToMethodId },
-            new Dictionary<string, object> { ["PrimitiveId"] = intTypeId, ["MethodsId"] = intToStringMethodId },
-            new Dictionary<string, object> { ["PrimitiveId"] = stringTypeId, ["MethodsId"] = toLowerCaseMethodId },
-            new Dictionary<string, object> { ["PrimitiveId"] = stringTypeId, ["MethodsId"] = toUpperCaseMethodId },
-            new Dictionary<string, object> { ["PrimitiveId"] = stringTypeId, ["MethodsId"] = isNullOrEmptyMethodId },
-            new Dictionary<string, object> { ["PrimitiveId"] = stringTypeId, ["MethodsId"] = stringEqualsMethodId },
-            new Dictionary<string, object> { ["PrimitiveId"] = stringTypeId, ["MethodsId"] = methodId4 });
+        modelBuilder.Entity("TypeMethod").HasData(
+            new Dictionary<string, object> { ["TypeId"] = intTypeId, ["MethodsId"] = parseMethodId },
+            new Dictionary<string, object> { ["TypeId"] = intTypeId, ["MethodsId"] = maxValueMethodId },
+            new Dictionary<string, object> { ["TypeId"] = intTypeId, ["MethodsId"] = minValueMethodId },
+            new Dictionary<string, object> { ["TypeId"] = intTypeId, ["MethodsId"] = compareToMethodId },
+            new Dictionary<string, object> { ["TypeId"] = intTypeId, ["MethodsId"] = intToStringMethodId },
+            new Dictionary<string, object> { ["TypeId"] = stringTypeId, ["MethodsId"] = toLowerCaseMethodId },
+            new Dictionary<string, object> { ["TypeId"] = stringTypeId, ["MethodsId"] = toUpperCaseMethodId },
+            new Dictionary<string, object> { ["TypeId"] = stringTypeId, ["MethodsId"] = isNullOrEmptyMethodId },
+            new Dictionary<string, object> { ["TypeId"] = stringTypeId, ["MethodsId"] = stringEqualsMethodId },
+            new Dictionary<string, object> { ["TypeId"] = stringTypeId, ["MethodsId"] = methodId4 });
     }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
