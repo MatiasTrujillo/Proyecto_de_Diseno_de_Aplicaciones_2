@@ -18,7 +18,7 @@ public class InterfaceRepository(SqlContext context) : IInterfaceRepository
 
     public Interface Find(Guid id)
     {
-        throw new NotImplementedException();
+        return context.Set<Interface>().Find(id);
     }
 
     public List<Interface> FindAll()
