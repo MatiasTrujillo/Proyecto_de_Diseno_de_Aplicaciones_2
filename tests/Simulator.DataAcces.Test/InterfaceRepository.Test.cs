@@ -8,6 +8,12 @@ public class InterfaceRepository_Test
 {
     private static readonly SqlContext _context = ProgramTest.BuildTestDbContext();
     private readonly InterfaceRepository _repository = new InterfaceRepository(_context);
+    private Interface anInterface;
+
+    public InterfaceRepository_Test()
+    {
+        anInterface = new Interface("Interface");
+    }
 
     [TestInitialize]
     public void Setup()
@@ -24,7 +30,6 @@ public class InterfaceRepository_Test
     [TestMethod]
     public void Add_WhenValidInterfaceProvided_ShouldBeSavedInDatabase()
     {
-        Interface anInterface = new Interface("Interface");
         _repository.Add(anInterface);
 
         using var otherContext = ProgramTest.BuildTestDbContext();
