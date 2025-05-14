@@ -9,10 +9,12 @@ public class InterfaceRepository_Test
     private static readonly SqlContext _context = ProgramTest.BuildTestDbContext();
     private readonly InterfaceRepository _repository = new InterfaceRepository(_context);
     private Interface anInterface;
+    private Interface anotherInterface;
 
     public InterfaceRepository_Test()
     {
         anInterface = new Interface("Interface");
+        anotherInterface = new Interface("AnotherInterface");
     }
 
     [TestInitialize]
@@ -59,8 +61,6 @@ public class InterfaceRepository_Test
     [TestMethod]
     public void FindAll_WhenMultipleInterfacesExist_ShouldReturnAll()
     {
-        Interface anotherInterface = new Interface("AnotherInterface");
-
         _repository.Add(anInterface);
         _repository.Add(anotherInterface);
 
@@ -68,7 +68,7 @@ public class InterfaceRepository_Test
 
         result.Count.Should().Be(2);
 
-        result.Should().Contain(i => i.Name == "Interface");
-        result.Should().Contain(i => i.Name == "AnotherInterface");
+        result.Should().Contain(i => i.Name == anInterface.Name);
+        result.Should().Contain(i => i.Name == anotherInterface.Name);
     }
 }
