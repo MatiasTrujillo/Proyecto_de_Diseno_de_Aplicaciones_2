@@ -5,4 +5,5 @@ public class UpdateAttributeDTO
     public string? Name { get; set; } = null;
     public string? Accessibility { get; set; } = null;
     public Guid? IdType { get; set; } = null;
+    public string? Stereotype { get; set; } = null;
 }

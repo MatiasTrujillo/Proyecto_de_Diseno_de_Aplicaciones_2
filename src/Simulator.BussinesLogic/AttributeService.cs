@@ -48,6 +48,7 @@ public class AttributeService(IAttributeRepository attributeRepository, IClassRe
         ValidateAttributeIsNotInClass(attribute);
         ValidateName(uAttribute.Name, attribute);
         ValidateAccessibility(uAttribute.Accessibility, attribute);
+        ManageStereotype(uAttribute.Stereotype, attribute);
         ValidateAttributeTypeUp(uAttribute.IdType);
         _attributeRepository.Update(attribute);
     }
@@ -179,6 +180,22 @@ public class AttributeService(IAttributeRepository attributeRepository, IClassRe
         else if(newAccessibility != null)
         {
             throw new InvalidAttributeException("Invalid accessibility type");
+        }
+    }
+
+    private void ManageStereotype(string? newStereotype, Attribute attribute)
+    {
+        if(newStereotype == null)
+        {
+            attribute.Stereotype = null;
+        }
+        else if(newStereotype.ToLower() == "static")
+        {
+            attribute.Stereotype = KeyWord.Static;
+        }
+        else
+        {
+            throw new InvalidAttributeException("Invalid stereotype");
         }
     }
 

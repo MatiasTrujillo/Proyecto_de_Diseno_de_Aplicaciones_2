@@ -9,7 +9,7 @@ public class Attribute
     public Accessibility Accessibility { get; set; }
     public virtual Type? Type { get; set; }
     public virtual InvokedMethod? InvokedMethod { get; set; }
-    public KeyWord Stereotype { get; set; }
+    public KeyWord? Stereotype { get; set; }
 
     public Attribute()
     {
