@@ -203,7 +203,7 @@ public class AttributeService(IAttributeRepository attributeRepository, IClassRe
     {
         if(stereotype != null && stereotype != KeyWord.Static)
         {
-            throw new InvalidAttributeException("Invalid stereotype value.");
+            throw new InvalidAttributeException("Invalid stereotype value. Attribute stereotype can only be null or static.");
         }
     }
 }

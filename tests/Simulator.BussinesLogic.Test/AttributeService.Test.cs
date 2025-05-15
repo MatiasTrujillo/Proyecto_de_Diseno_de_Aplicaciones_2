@@ -619,6 +619,6 @@ public class AttributeServiceTest
 
         var ex = Assert.ThrowsException<InvalidAttributeException>(() => _attributeService.CreateAttribute(dto));
 
-        Assert.AreEqual("Invalid stereotype value.", ex.Message);
+        Assert.AreEqual("Invalid stereotype value. Attribute stereotype can only be null or static.", ex.Message);
     }
 }
