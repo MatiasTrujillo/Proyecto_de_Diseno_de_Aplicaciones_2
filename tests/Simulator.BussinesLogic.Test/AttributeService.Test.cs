@@ -641,4 +641,21 @@ public class AttributeServiceTest
         Assert.AreEqual(Accessibility.Public, attribute.Accessibility);
         Assert.AreEqual(KeyWord.Static, attribute.Stereotype);
     }
+
+    [TestMethod]
+    public void UpdateAttribute_ShouldThrowException_WhenStereotypeIsWrong()
+    {
+        var attributeId = Guid.NewGuid();
+        var typeId = Guid.NewGuid();
+        var attribute = new Attribute { Id = attributeId, Name = "OldName", Accessibility = Accessibility.Private };
+        var dto = new UpdateAttributeDTO { Name = "NewName", Accessibility = "public", IdType = typeId, Stereotype = "abstract" };
+
+        _mockAttributeRepository.Setup(r => r.Find(attributeId)).Returns(attribute);
+        _mockClassRepository.Setup(r => r.FindAll()).Returns([new Class { Id = typeId }]);
+        _mockAttributeRepository.Setup(r => r.Update(attribute));
+
+        var ex = Assert.ThrowsException<InvalidAttributeException>(() => _attributeService.UpdateAttribute(attributeId, dto));
+
+        Assert.AreEqual("Invalid stereotype value. Attribute stereotype can only be null or static.", ex.Message);
+    }
 }

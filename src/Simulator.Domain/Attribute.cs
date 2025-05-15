@@ -30,6 +30,17 @@ public class Attribute
         InvokedMethod = null;
     }
 
+    public Attribute(string name, Accessibility accessibility, Type type, KeyWord? stereotype)
+    {
+        ValidateAttributes(name);
+        Id = Guid.NewGuid();
+        Name = name;
+        Accessibility = accessibility;
+        Type = type;
+        InvokedMethod = null;
+        Stereotype = stereotype;
+    }
+
     private static readonly HashSet<string> ReservedKeywords =
     [
         "base",

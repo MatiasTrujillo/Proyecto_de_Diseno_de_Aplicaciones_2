@@ -195,7 +195,7 @@ public class AttributeService(IAttributeRepository attributeRepository, IClassRe
         }
         else
         {
-            throw new InvalidAttributeException("Invalid stereotype");
+            throw new InvalidAttributeException("Invalid stereotype value. Attribute stereotype can only be null or static.");
         }
     }
 
