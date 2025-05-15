@@ -530,4 +530,52 @@ public class AttributeServiceTest
         Assert.AreEqual(invoked, attribute.InvokedMethod);
         _mockAttributeRepository.Verify(r => r.Update(attribute), Times.Once);
     }
+
+    [TestMethod]
+    public void CreateAttribute_ShouldCreateAttributeWithStereotype_WithCorrectInput()
+    {
+        var dto = new AttributeDto
+        {
+            Name = "Agility",
+            Accessibility = Accessibility.Public,
+            Type = new TypeDTO
+            {
+                Name = "TestType"
+            },
+            Stereotype = KeyWord.Static
+        };
+
+        var attribute = new Attribute
+        {
+            Id = Guid.NewGuid(),
+            Name = "Strength",
+            Accessibility = Accessibility.Private,
+            Type = new Type { Name = dto.Type.Name },
+            Stereotype = KeyWord.Static
+        };
+
+        _mockClassRepository
+            .Setup(repo => repo.FindAll())
+            .Returns([new Class { Name = dto.Type.Name }]);
+
+        _mockClassRepository
+            .Setup(repo => repo.FindAllTypes())
+            .Returns([new Class { Name = dto.Type.Name }]);
+
+        _mockAttributeRepository
+            .Setup(repo => repo.Find(It.IsAny<Guid>()))
+            .Returns(attribute);
+
+        _mockAttributeRepository
+            .Setup(repo => repo.Add(It.IsAny<Attribute>()));
+
+        _attributeService.CreateAttribute(dto);
+
+        _mockAttributeRepository.Verify(repo => repo.Add(
+            It.Is<Attribute>(a =>
+                a.Name == dto.Name &&
+                a.Accessibility == dto.Accessibility &&
+                a.Type != null &&
+                a.Type.Name == dto.Type.Name)), Times.Once);
+    }
 }
