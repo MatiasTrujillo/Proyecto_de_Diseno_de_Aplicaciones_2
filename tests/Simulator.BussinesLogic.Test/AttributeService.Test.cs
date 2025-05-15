@@ -578,4 +578,47 @@ public class AttributeServiceTest
                 a.Type != null &&
                 a.Type.Name == dto.Type.Name)), Times.Once);
     }
+
+    [TestMethod]
+    public void CreateAttribute_ShouldThrowException_WithInvalidStereotype()
+    {
+        var dto = new AttributeDto
+        {
+            Name = "Agility",
+            Accessibility = Accessibility.Public,
+            Type = new TypeDTO
+            {
+                Name = "TestType"
+            },
+            Stereotype = KeyWord.Abstract
+        };
+
+        var attribute = new Attribute
+        {
+            Id = Guid.NewGuid(),
+            Name = "Strength",
+            Accessibility = Accessibility.Private,
+            Type = new Type { Name = dto.Type.Name },
+            Stereotype = KeyWord.Static
+        };
+
+        _mockClassRepository
+            .Setup(repo => repo.FindAll())
+            .Returns([new Class { Name = dto.Type.Name }]);
+
+        _mockClassRepository
+            .Setup(repo => repo.FindAllTypes())
+            .Returns([new Class { Name = dto.Type.Name }]);
+
+        _mockAttributeRepository
+            .Setup(repo => repo.Find(It.IsAny<Guid>()))
+            .Returns(attribute);
+
+        _mockAttributeRepository
+            .Setup(repo => repo.Add(It.IsAny<Attribute>()));
+
+        var ex = Assert.ThrowsException<InvalidAttributeException>(() => _attributeService.CreateAttribute(dto));
+
+        Assert.AreEqual("Invalid stereotype value.", ex.Message);
+    }
 }

@@ -24,6 +24,7 @@ public class AttributeService(IAttributeRepository attributeRepository, IClassRe
         var type = aDTO.Type.Name;
         var typeT = _classRepository.FindAll().FirstOrDefault(c => c.Name == type);
         ValidateAccesibility(attribute.Accessibility);
+        ValidateStereotype(attribute.Stereotype);
         ValidateAttributeType(attribute.Type);
         attribute.Type = typeT;
         _attributeRepository.Add(attribute);
@@ -195,6 +196,14 @@ public class AttributeService(IAttributeRepository attributeRepository, IClassRe
         if(!Enum.IsDefined(typeof(Accessibility), aDtoAccessibility))
         {
             throw new InvalidAttributeException("Invalid accessibility value.");
+        }
+    }
+
+    private void ValidateStereotype(KeyWord? stereotype)
+    {
+        if(stereotype != null && stereotype != KeyWord.Static)
+        {
+            throw new InvalidAttributeException("Invalid stereotype value.");
         }
     }
 }
