@@ -9,6 +9,7 @@ public class AttributeDto
     public string Name { get; set; } = string.Empty;
     public Accessibility Accessibility { get; set; } = Accessibility.Public;
     public TypeDTO? Type { get; set; } = null;
+    public KeyWord Stereotype { get; set; }
 
     public Attribute ToEntity()
     {
