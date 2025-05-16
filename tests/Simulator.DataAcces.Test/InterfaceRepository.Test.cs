@@ -74,6 +74,7 @@ public class InterfaceRepository_Test
     }
     #endregion
 
+    #region Exist
     [TestMethod]
     public void Exist_WhenInterfaceExists_ShouldReturnTrue()
     {
@@ -83,4 +84,5 @@ public class InterfaceRepository_Test
 
         exists.Should().BeTrue();
     }
+    #endregion
 }
