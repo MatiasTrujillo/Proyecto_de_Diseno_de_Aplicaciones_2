@@ -94,6 +94,7 @@ public class InterfaceRepository_Test
     }
     #endregion
 
+    #region Update
     [TestMethod]
     public void Update_WhenInterfaceExists_ShouldModifyIt()
     {
@@ -110,4 +111,5 @@ public class InterfaceRepository_Test
         saved.Should().NotBeNull();
         saved.Name.Should().Be("OtherName");
     }
+    #endregion
 }
