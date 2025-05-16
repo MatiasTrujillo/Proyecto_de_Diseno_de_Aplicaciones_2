@@ -38,9 +38,6 @@ public sealed class SqlContext : DbContext
         modelBuilder.Entity<Interface>()
             .HasBaseType<Type>();
 
-        modelBuilder.Entity<Interface>()
-            .HasMany<MethodSignature>();
-
         modelBuilder.Entity<MethodSignature>(entity =>
         {
             entity.HasKey(m => m.Id);
