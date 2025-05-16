@@ -23,6 +23,7 @@ public class ClassService(
         var classes = _classRepository.FindAllTypes();
         var objectClass = classes.FirstOrDefault(c => c.Name == "Object") as Class;
         ValidateAccesibility(aClass.Stereotype);
+        ValidateStatic(aClass.Stereotype);
         ValidateClassNameIsUnique(aClass.Name);
         aClass.HierarchyClass = objectClass;
         _classRepository.Add(aClass);
@@ -173,6 +174,14 @@ public class ClassService(
         if(stereotype != null && !Enum.IsDefined(typeof(KeyWord), stereotype))
         {
             throw new InvalidClassException("Invalid stereotype value.");
+        }
+    }
+
+    private void ValidateStatic(KeyWord? stereotype)
+    {
+        if(stereotype.Equals(KeyWord.Static))
+        {
+            throw new InvalidClassException("Classes cannot be static.");
         }
     }
 

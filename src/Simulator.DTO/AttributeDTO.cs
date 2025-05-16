@@ -9,6 +9,7 @@ public class AttributeDto
     public string Name { get; set; } = string.Empty;
     public Accessibility Accessibility { get; set; } = Accessibility.Public;
     public TypeDTO? Type { get; set; } = null;
+    public KeyWord? Stereotype { get; set; } = null;
 
     public Attribute ToEntity()
     {
@@ -17,6 +18,6 @@ public class AttributeDto
             throw new ArgumentNullException(nameof(Type), "The Type property cannot be null.");
         }
 
-        return new Attribute(Name, Accessibility, Type.ToEntity());
+        return new Attribute(Name, Accessibility, Type.ToEntity(), Stereotype);
     }
 }

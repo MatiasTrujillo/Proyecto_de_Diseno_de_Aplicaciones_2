@@ -11,10 +11,10 @@ public class Class : Type
     public Class()
         : base(string.Empty)
     {
+        Methods = [];
         Stereotype = null;
         HierarchyClass = null;
         Attributes = [];
-        Methods = [];
     }
 
     public Class(KeyWord? stereotype, Class? hierarchyClass, List<Attribute> attributes, List<Method> methods, string name)
