@@ -13,7 +13,10 @@ public class InterfaceRepository(SqlContext context) : IInterfaceRepository
 
     public void Update(Interface anInterface)
     {
-        throw new NotImplementedException();
+        Interface existingInterface = Find(anInterface.Id);
+
+        context.Entry(existingInterface).CurrentValues.SetValues(anInterface);
+        context.SaveChanges();
     }
 
     public Interface Find(Guid id)
