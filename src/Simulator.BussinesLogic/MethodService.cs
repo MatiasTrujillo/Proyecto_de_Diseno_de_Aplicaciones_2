@@ -81,6 +81,7 @@ public class MethodService(
         var classT = _classRepository.Find(classId);
         ValidateClassExist(classT);
         ValidateClassUniqueNameMethod(method, classT);
+        ValidateVirtualAndOverride(method, classT);
         classT.Methods.Add(method);
         _classRepository.Update(classT);
     }
@@ -851,6 +852,28 @@ public class MethodService(
         if(method == null)
         {
             throw new MethodNotFoundException("Method is not in this class.");
+        }
+    }
+
+    private void ValidateVirtualAndOverride(Method methodChild, Class classChild)
+    {
+        if(methodChild.IsOverride)
+        {
+            var classParent = classChild.HierarchyClass;
+            if(classParent == null)
+            {
+                throw new MethodException("There is no parent class with this method.");
+            }
+
+            var methodParent = classParent.Methods?.FirstOrDefault(x => x.Name == methodChild.Name);
+            if(methodParent == null)
+            {
+                ValidateVirtualAndOverride(methodChild, classParent);
+            }
+            else if(methodParent.Stereotype != KeyWord.Virtual)
+            {
+                throw new MethodException("Parent class must have this method as virtual.");
+            }
         }
     }
 }

@@ -151,8 +151,8 @@ public class MethodServiceTest
         _mockClassRepository.Setup(repo => repo.Find(classChild.Id)).Returns(classChild);
         _mockClassRepository.Setup(repo => repo.Update(It.IsAny<Class>()));
 
-        var exception = Assert.ThrowsException<InvalidMethodException>(() => _methodService.AssociateMethodWithClass(methodChild.Id, classChild.Id));
-        Assert.AreEqual("Parent class must have this method as virtual", exception.Message);
+        var exception = Assert.ThrowsException<MethodException>(() => _methodService.AssociateMethodWithClass(methodChild.Id, classChild.Id));
+        Assert.AreEqual("Parent class must have this method as virtual.", exception.Message);
     }
 
     [TestMethod]
