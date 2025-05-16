@@ -23,17 +23,14 @@ public class InterfaceService_Test
     [TestMethod]
     public void CreateInterface_ShouldCallRepositoryAdd_WithValidInterface()
     {
-        _interfaceService = new InterfaceService(_mockInterfaceRepository.Object, _mockClassRepository.Object);
+        _interfaceService = new InterfaceService(_mockInterfaceRepository.Object);
         var dto = new InterfaceDTO
         {
             Name = "Interfaz"
         };
 
-        List<Type> existingClasses = [];
-
-        _mockClassRepository.Setup(r => r.FindAllTypes())
-            .Returns(existingClasses);
-
+        _mockInterfaceRepository
+            .Setup(repo => repo.Add(It.IsAny<Interface>()));
         _interfaceService.CreateInterface(dto);
 
         _mockInterfaceRepository.Verify(repo => repo.Add(
