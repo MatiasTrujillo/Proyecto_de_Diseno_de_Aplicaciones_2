@@ -84,5 +84,13 @@ public class InterfaceRepository_Test
 
         exists.Should().BeTrue();
     }
+
+    [TestMethod]
+    public void Exist_WhenInterfaceDoesNotExist_ShouldReturnFalse()
+    {
+        var exists = _repository.Exist(Guid.NewGuid());
+
+        exists.Should().BeFalse();
+    }
     #endregion
 }
