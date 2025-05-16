@@ -131,7 +131,6 @@ public class InterfaceRepository_Test
         saved.Should().NotBeNull();
         saved.Name.Should().Be("OtherName");
     }
-    #endregion
 
     [TestMethod]
     public void Update_WhenInterfaceExistsAndMethodSignature_ShouldAddItToTheInterface()
@@ -161,5 +160,19 @@ public class InterfaceRepository_Test
         saved.Name.Should().Be("OtherName");
         saved.MethodSignatures.Count.Should().Be(1);
         saved.MethodSignatures[0].Id.Should().Be(aMethodSignature.Id);
+    }
+    #endregion
+
+    [TestMethod]
+    public void Delete_WhenInterfaceExists_ShouldRemoveItFromDatabase()
+    {
+        _context.Interfaces.Add(anInterface);
+        _context.SaveChanges();
+
+        _repository.Delete(anInterface.Id);
+
+        using var refreshedContext = ProgramTest.BuildTestDbContext();
+        var deleted = refreshedContext.Interfaces.Find(anInterface.Id);
+        deleted.Should().BeNull();
     }
 }
