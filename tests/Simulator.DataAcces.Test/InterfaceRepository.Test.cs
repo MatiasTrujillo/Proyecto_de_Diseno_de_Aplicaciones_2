@@ -1,4 +1,5 @@
 using FluentAssertions;
+using Microsoft.EntityFrameworkCore;
 using Simulator.Domain;
 
 namespace Simulator.DataAcces.Test;
@@ -6,15 +7,34 @@ namespace Simulator.DataAcces.Test;
 [TestClass]
 public class InterfaceRepository_Test
 {
-    private static readonly SqlContext _context = ProgramTest.BuildTestDbContext();
-    private readonly InterfaceRepository _repository = new InterfaceRepository(_context);
+    private readonly SqlContext _context = ProgramTest.BuildTestDbContext();
+    private readonly InterfaceRepository _repository;
     private Interface anInterface;
     private Interface anotherInterface;
+    private Primitive aPrimitive;
+    private Parameter aParameter;
+    private MethodSignature aMethodSignature;
 
     public InterfaceRepository_Test()
     {
+        _repository = new InterfaceRepository(_context);
         anInterface = new Interface("Interface");
         anotherInterface = new Interface("AnotherInterface");
+        aPrimitive = new Primitive
+        {
+            Id = Guid.NewGuid(),
+            Name = "int"
+        };
+        aParameter = new Parameter
+        {
+            Id = Guid.NewGuid(),
+            Name = "myParam",
+            ParameterType = aPrimitive
+        };
+        aMethodSignature = new MethodSignature("AMethodSignature", aPrimitive, new List<Parameter> { aParameter })
+        {
+            Id = Guid.NewGuid()
+        };
     }
 
     [TestInitialize]
@@ -118,34 +138,11 @@ public class InterfaceRepository_Test
     {
         _repository.Add(anInterface);
 
-        Guid primitiveId = Guid.NewGuid();
-        Guid parameterId = Guid.NewGuid();
-        Guid methodSignatureId = Guid.NewGuid();
-
         using var refreshedContext = ProgramTest.BuildTestDbContext();
-
-        var aPrimitive = new Primitive
-        {
-            Id = primitiveId,
-            Name = "int"
-        };
         refreshedContext.Primitives.Add(aPrimitive);
         refreshedContext.SaveChanges();
-
-        var aParameter = new Parameter
-        {
-            Id = parameterId,
-            Name = "myParam",
-            ParameterType = aPrimitive
-        };
         refreshedContext.Parameters.Add(aParameter);
-
-        var aMethodSignature = new MethodSignature("AMethodSignature", aPrimitive, new List<Parameter> { aParameter })
-        {
-            Id = methodSignatureId
-        };
         refreshedContext.MethodSignatures.Add(aMethodSignature);
-
         refreshedContext.SaveChanges();
 
         var updatedInterface = new Interface("OtherName", new List<MethodSignature> { aMethodSignature })
