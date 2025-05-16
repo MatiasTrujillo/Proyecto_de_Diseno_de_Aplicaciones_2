@@ -163,6 +163,7 @@ public class InterfaceRepository_Test
     }
     #endregion
 
+    #region Delete
     [TestMethod]
     public void Delete_WhenInterfaceExists_ShouldRemoveItFromDatabase()
     {
@@ -175,4 +176,5 @@ public class InterfaceRepository_Test
         var deleted = refreshedContext.Interfaces.Find(anInterface.Id);
         deleted.Should().BeNull();
     }
+    #endregion
 }
