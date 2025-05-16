@@ -7,6 +7,7 @@ public class Class : Type
     public KeyWord? Stereotype { get; set; }
     public virtual Class? HierarchyClass { get; set; }
     public virtual List<Attribute>? Attributes { get; set; }
+    public virtual NameSpace NameSpace { get; set; }
 
     public Class()
         : base(string.Empty)
@@ -15,9 +16,10 @@ public class Class : Type
         Stereotype = null;
         HierarchyClass = null;
         Attributes = [];
+        NameSpace = new NameSpace();
     }
 
-    public Class(KeyWord? stereotype, Class? hierarchyClass, List<Attribute> attributes, List<Method> methods, string name)
+    public Class(KeyWord? stereotype, Class? hierarchyClass, List<Attribute> attributes, List<Method> methods, string name, NameSpace nameSpace)
         : base(name)
     {
         ValidateName(name);
@@ -26,6 +28,7 @@ public class Class : Type
         HierarchyClass = hierarchyClass;
         Attributes = attributes;
         Methods = methods;
+        NameSpace = nameSpace;
     }
 
     private void ValidateName(string name)
