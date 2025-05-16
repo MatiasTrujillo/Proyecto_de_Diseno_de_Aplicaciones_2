@@ -83,11 +83,6 @@ public class ClassService(
                 throw new InvalidClassException("An abstract class cannot inherit from a concrete class.");
             }
 
-            if(heritageClassT.Stereotype == KeyWord.Sealed)
-            {
-                throw new InvalidClassException("A class cannot inherit from a sealed class.");
-            }
-
             classT.HierarchyClass = heritageClassT;
         }
     }

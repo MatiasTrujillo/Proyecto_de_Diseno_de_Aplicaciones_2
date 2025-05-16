@@ -58,6 +58,7 @@ public class InterfaceRepository_Test
     }
     #endregion
 
+    #region FindAll
     [TestMethod]
     public void FindAll_WhenMultipleInterfacesExist_ShouldReturnAll()
     {
@@ -70,5 +71,16 @@ public class InterfaceRepository_Test
 
         result.Should().Contain(i => i.Name == anInterface.Name);
         result.Should().Contain(i => i.Name == anotherInterface.Name);
+    }
+    #endregion
+
+    [TestMethod]
+    public void Exist_WhenInterfaceExists_ShouldReturnTrue()
+    {
+        _repository.Add(anInterface);
+
+        var exists = _repository.Exist(anInterface.Id);
+
+        exists.Should().BeTrue();
     }
 }
