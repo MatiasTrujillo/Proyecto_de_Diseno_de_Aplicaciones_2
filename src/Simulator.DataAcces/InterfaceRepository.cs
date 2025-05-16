@@ -28,7 +28,7 @@ public class InterfaceRepository(SqlContext context) : IInterfaceRepository
 
     public bool Exist(Guid id)
     {
-        throw new NotImplementedException();
+        return context.Interfaces.Any(a => a.Id == id);
     }
 
     public void Delete(Guid id)
