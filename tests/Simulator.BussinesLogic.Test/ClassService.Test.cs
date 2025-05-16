@@ -37,6 +37,10 @@ public class ClassServiceTest
         {
             Name = "Pedro",
             Stereotype = KeyWord.Sealed,
+            NameSpace = new NameSpaceDTO
+            {
+                Name = "NameSpace",
+            }
         };
 
         var objectClass = new Class { Name = "Object" };
@@ -61,12 +65,20 @@ public class ClassServiceTest
         {
             Name = "Pedro",
             Stereotype = KeyWord.Sealed,
+            NameSpace = new NameSpaceDTO
+            {
+                Name = "NameSpace",
+            }
         };
 
         var dto2 = new ClassDTO
         {
             Name = "Pedro",
             Stereotype = null,
+            NameSpace = new NameSpaceDTO
+            {
+                Name = "NameSpace",
+            }
         };
 
         var classes = new List<Type> { dto1.ToEntity() };
@@ -90,6 +102,10 @@ public class ClassServiceTest
         {
             Name = "Class",
             Stereotype = invalidStereoType,
+            NameSpace = new NameSpaceDTO
+            {
+                Name = "NameSpace",
+            }
         };
 
         _mockClassRepository.Setup(r => r.FindAllTypes())
@@ -110,6 +126,10 @@ public class ClassServiceTest
         {
             Name = string.Empty,
             Stereotype = KeyWord.Sealed,
+            NameSpace = new NameSpaceDTO
+            {
+                Name = "NameSpace",
+            }
         };
 
         _mockClassRepository.Setup(r => r.FindAllTypes())
@@ -130,6 +150,10 @@ public class ClassServiceTest
         {
             Name = "class",
             Stereotype = KeyWord.Sealed,
+            NameSpace = new NameSpaceDTO
+            {
+                Name = "NameSpace",
+            }
         };
 
         _mockClassRepository.Setup(r => r.FindAllTypes())
@@ -150,6 +174,10 @@ public class ClassServiceTest
         {
             Name = "Class Name",
             Stereotype = KeyWord.Sealed,
+            NameSpace = new NameSpaceDTO
+            {
+                Name = "NameSpace",
+            }
         };
 
         _mockClassRepository.Setup(r => r.FindAllTypes())
@@ -167,7 +195,8 @@ public class ClassServiceTest
     public void DeleteClass_ShouldDeleteClass_WhenValid()
     {
         var id = Guid.NewGuid();
-        var original = new Class(KeyWord.Sealed, null, [], [], "Class2") { Id = id };
+        var nameSpace = new NameSpace("NameSpace", null);
+        var original = new Class(KeyWord.Sealed, null, [], [], "Class2", nameSpace) { Id = id };
 
         _mockClassRepository.Setup(r => r.Find(id)).Returns(original);
         _mockClassRepository.Setup(r => r.FindAll()).Returns([original]);
@@ -485,6 +514,10 @@ public class ClassServiceTest
         {
             Name = "Class",
             Stereotype = invalidStereoType,
+            NameSpace = new NameSpaceDTO
+            {
+                Name = "NameSpace",
+            }
         };
 
         _mockClassRepository.Setup(r => r.FindAllTypes())
