@@ -1,5 +1,4 @@
 using FluentAssertions;
-using Microsoft.EntityFrameworkCore;
 using Simulator.Domain;
 
 namespace Simulator.DataAcces.Test;
@@ -9,11 +8,11 @@ public class InterfaceRepository_Test
 {
     private readonly SqlContext _context = ProgramTest.BuildTestDbContext();
     private readonly InterfaceRepository _repository;
-    private Interface anInterface;
-    private Interface anotherInterface;
-    private Primitive aPrimitive;
-    private Parameter aParameter;
-    private MethodSignature aMethodSignature;
+    private readonly Interface anInterface;
+    private readonly Interface anotherInterface;
+    private readonly Primitive aPrimitive;
+    private readonly Parameter aParameter;
+    private readonly MethodSignature aMethodSignature;
 
     public InterfaceRepository_Test()
     {
@@ -31,10 +30,7 @@ public class InterfaceRepository_Test
             Name = "myParam",
             ParameterType = aPrimitive
         };
-        aMethodSignature = new MethodSignature("AMethodSignature", aPrimitive, new List<Parameter> { aParameter })
-        {
-            Id = Guid.NewGuid()
-        };
+        aMethodSignature = new MethodSignature("AMethodSignature", aPrimitive, [aParameter]);
     }
 
     [TestInitialize]
@@ -120,7 +116,7 @@ public class InterfaceRepository_Test
     {
         _repository.Add(anInterface);
 
-        var updatedInterface = new Interface("OtherName", new List<MethodSignature>());
+        var updatedInterface = new Interface("OtherName", []);
         updatedInterface.Id = anInterface.Id;
 
         _repository.Update(updatedInterface);
@@ -144,7 +140,7 @@ public class InterfaceRepository_Test
         refreshedContext.MethodSignatures.Add(aMethodSignature);
         refreshedContext.SaveChanges();
 
-        var updatedInterface = new Interface("OtherName", new List<MethodSignature> { aMethodSignature })
+        var updatedInterface = new Interface("OtherName", [aMethodSignature])
         {
             Id = anInterface.Id
         };
