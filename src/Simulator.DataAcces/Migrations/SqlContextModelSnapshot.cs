@@ -25,6 +25,21 @@ namespace Simulator.DataAcces.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("InterfaceMethodSignature", b =>
+                {
+                    b.Property<Guid>("InterfaceId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("MethodSignatureId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("InterfaceId", "MethodSignatureId");
+
+                    b.HasIndex("MethodSignatureId");
+
+                    b.ToTable("InterfaceMethodSignature", (string)null);
+                });
+
             modelBuilder.Entity("MethodInvokedMethod", b =>
                 {
                     b.Property<Guid>("MethodsId")
@@ -244,10 +259,12 @@ namespace Simulator.DataAcces.Migrations
                 });
 
             modelBuilder.Entity("Simulator.Domain.NameSpace", b =>
+            modelBuilder.Entity("Simulator.Domain.MethodSignature", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
+
 
                     b.Property<Guid?>("FatherId")
                         .HasColumnType("uniqueidentifier");
@@ -268,6 +285,18 @@ namespace Simulator.DataAcces.Migrations
                             Id = new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaab"),
                             Name = "System"
                         });
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid?>("ReturnTypeId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ReturnTypeId");
+
+                    b.ToTable("MethodSignatures");
                 });
 
             modelBuilder.Entity("Simulator.Domain.Parameter", b =>
@@ -282,6 +311,9 @@ namespace Simulator.DataAcces.Migrations
                     b.Property<Guid?>("MethodId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<Guid?>("MethodSignatureId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -294,6 +326,8 @@ namespace Simulator.DataAcces.Migrations
                     b.HasIndex("InvokedMethodId");
 
                     b.HasIndex("MethodId");
+
+                    b.HasIndex("MethodSignatureId");
 
                     b.HasIndex("ParameterTypeId");
 
@@ -471,6 +505,13 @@ namespace Simulator.DataAcces.Migrations
                         });
                 });
 
+            modelBuilder.Entity("Simulator.Domain.Interface", b =>
+                {
+                    b.HasBaseType("Simulator.Domain.Type");
+
+                    b.HasDiscriminator().HasValue("Interface");
+                });
+
             modelBuilder.Entity("Simulator.Domain.Primitive", b =>
                 {
                     b.HasBaseType("Simulator.Domain.Type");
@@ -579,6 +620,21 @@ namespace Simulator.DataAcces.Migrations
                         });
                 });
 
+            modelBuilder.Entity("InterfaceMethodSignature", b =>
+                {
+                    b.HasOne("Simulator.Domain.Interface", null)
+                        .WithMany()
+                        .HasForeignKey("InterfaceId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Simulator.Domain.MethodSignature", null)
+                        .WithMany()
+                        .HasForeignKey("MethodSignatureId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("MethodInvokedMethod", b =>
                 {
                     b.HasOne("Simulator.Domain.InvokedMethod", null)
@@ -643,6 +699,7 @@ namespace Simulator.DataAcces.Migrations
                     b.Navigation("ReturnType");
                 });
 
+
             modelBuilder.Entity("Simulator.Domain.NameSpace", b =>
                 {
                     b.HasOne("Simulator.Domain.NameSpace", "Father")
@@ -650,6 +707,15 @@ namespace Simulator.DataAcces.Migrations
                         .HasForeignKey("FatherId");
 
                     b.Navigation("Father");
+
+            modelBuilder.Entity("Simulator.Domain.MethodSignature", b =>
+                {
+                    b.HasOne("Simulator.Domain.Type", "ReturnType")
+                        .WithMany()
+                        .HasForeignKey("ReturnTypeId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("ReturnType");
                 });
 
             modelBuilder.Entity("Simulator.Domain.Parameter", b =>
@@ -661,6 +727,11 @@ namespace Simulator.DataAcces.Migrations
                     b.HasOne("Simulator.Domain.Method", null)
                         .WithMany("Parameters")
                         .HasForeignKey("MethodId");
+
+                    b.HasOne("Simulator.Domain.MethodSignature", null)
+                        .WithMany("Parameters")
+                        .HasForeignKey("MethodSignatureId")
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("Simulator.Domain.Type", "ParameterType")
                         .WithMany()
@@ -707,6 +778,11 @@ namespace Simulator.DataAcces.Migrations
                 {
                     b.Navigation("LocalVariables");
 
+                    b.Navigation("Parameters");
+                });
+
+            modelBuilder.Entity("Simulator.Domain.MethodSignature", b =>
+                {
                     b.Navigation("Parameters");
                 });
 
