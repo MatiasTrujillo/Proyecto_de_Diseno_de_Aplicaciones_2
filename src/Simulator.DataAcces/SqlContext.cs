@@ -88,6 +88,19 @@ public sealed class SqlContext : DbContext
                     j.ToTable("MethodInvokedMethod");
                 });
 
+        modelBuilder.Entity<Interface>()
+            .HasMany(t => t.MethodSignatures)
+            .WithMany()
+            .UsingEntity<Dictionary<string, object>>(
+                "InterfaceMethodSignature",
+                j => j.HasOne<MethodSignature>().WithMany().HasForeignKey("MethodSignatureId"),
+                j => j.HasOne<Interface>().WithMany().HasForeignKey("InterfaceId"),
+                j =>
+                {
+                    j.HasKey("InterfaceId", "MethodSignatureId");
+                    j.ToTable("InterfaceMethodSignature");
+                });
+
         ConfigSeedData(modelBuilder);
 
         base.OnModelCreating(modelBuilder);

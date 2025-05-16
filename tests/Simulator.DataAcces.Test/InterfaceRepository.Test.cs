@@ -112,4 +112,36 @@ public class InterfaceRepository_Test
         saved.Name.Should().Be("OtherName");
     }
     #endregion
+
+    [TestMethod]
+    public void Update_WhenInterfaceExistsAndMethodSignature_ShouldAddItToTheInterface()
+    {
+        _repository.Add(anInterface);
+        Primitive aPrimitive = new Primitive
+        {
+            Id = Guid.NewGuid(),
+            Name = "int"
+        };
+        Parameter aParameter = new Parameter
+        {
+            Id = Guid.NewGuid(),
+            Name = "myParam",
+            ParameterType = aPrimitive
+        };
+        MethodSignature aMethodSignature = new MethodSignature("AMethodSignature", aPrimitive, [aParameter]);
+
+        var updatedInterface = new Interface("OtherName", [aMethodSignature]);
+        updatedInterface.Id = anInterface.Id;
+
+        _repository.Update(updatedInterface);
+
+        using var refreshedContext = ProgramTest.BuildTestDbContext();
+        var saved = refreshedContext.Set<Interface>().Find(anInterface.Id);
+
+        saved.Should().NotBeNull();
+        saved.Id.Should().Be(anInterface.Id);
+        saved.Name.Should().Be(anInterface.Name);
+        saved.MethodSignatures.Count.Should().Be(1);
+        saved.MethodSignatures[0].Id.Should().Be(aMethodSignature.Id);
+    }
 }
