@@ -259,12 +259,10 @@ namespace Simulator.DataAcces.Migrations
                 });
 
             modelBuilder.Entity("Simulator.Domain.NameSpace", b =>
-            modelBuilder.Entity("Simulator.Domain.MethodSignature", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
-
 
                     b.Property<Guid?>("FatherId")
                         .HasColumnType("uniqueidentifier");
@@ -285,6 +283,13 @@ namespace Simulator.DataAcces.Migrations
                             Id = new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaab"),
                             Name = "System"
                         });
+                });
+
+            modelBuilder.Entity("Simulator.Domain.MethodSignature", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Name")
                         .HasColumnType("nvarchar(max)");
@@ -707,6 +712,7 @@ namespace Simulator.DataAcces.Migrations
                         .HasForeignKey("FatherId");
 
                     b.Navigation("Father");
+                });
 
             modelBuilder.Entity("Simulator.Domain.MethodSignature", b =>
                 {
