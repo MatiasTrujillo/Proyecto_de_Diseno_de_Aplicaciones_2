@@ -19,9 +19,18 @@ public class InterfaceService(
     {
         var anInterface = interfaceDto.ToEntity();
         var types = _classRepository.FindAllTypes();
+        VerifyNameIsNotEmpty(interfaceDto);
         VerifyInterfaceNameAlreadyExists(interfaceDto, types);
         _interfaceRepository.Add(anInterface);
         return anInterface.Id;
+    }
+
+    private static void VerifyNameIsNotEmpty(InterfaceDTO interfaceDto)
+    {
+        if(string.IsNullOrWhiteSpace(interfaceDto.Name))
+        {
+            throw new InterfaceException("The interface name cannot be empty.");
+        }
     }
 
     private static void VerifyInterfaceNameAlreadyExists(InterfaceDTO interfaceDto, List<Type> types)

@@ -14,6 +14,7 @@ public class InterfaceService_Test
     private Mock<IClassRepository> _mockClassRepository = null!;
     private InterfaceService _interfaceService = null!;
     private InterfaceDTO dto = null!;
+    private InterfaceDTO emptyNameDto = null!;
 
     [TestInitialize]
     public void Initialize()
@@ -25,6 +26,10 @@ public class InterfaceService_Test
         dto = new InterfaceDTO
         {
             Name = "Interfaz"
+        };
+        emptyNameDto = new InterfaceDTO
+        {
+            Name = string.Empty,
         };
         _interfaceService = new InterfaceService(_mockInterfaceRepository.Object, _mockClassRepository.Object);
     }
@@ -61,11 +66,6 @@ public class InterfaceService_Test
     [TestMethod]
     public void CreateInterface_ShouldThrowException_WhenNameIsWhitespace()
     {
-        var emptyNameDto = new InterfaceDTO
-        {
-            Name = string.Empty,
-        };
-
         _mockClassRepository.Setup(r => r.FindAllTypes())
             .Returns([]);
 
