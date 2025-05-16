@@ -138,6 +138,24 @@ public class MethodServiceTest
     }
 
     [TestMethod]
+    public void AssociateMethodWithClass_ShouldThrowException_WhenMethodIsOverrideAndFatherIsNotVirtual()
+    {
+        var methodParent = new Method { Id = Guid.NewGuid(), Name = "TestMethod" };
+        var classParent = new Class { Id = Guid.NewGuid(), Name = "TestClass", Methods = [methodParent] };
+        var methodChild = new Method { Id = Guid.NewGuid(), Name = "TestMethod", IsOverride = true };
+        var classChild = new Class { Id = Guid.NewGuid(), Name = "TestClass", Methods = [], HierarchyClass = classParent };
+
+        _mockMethodRepository.Setup(repo => repo.Find(methodParent.Id)).Returns(methodParent);
+        _mockMethodRepository.Setup(repo => repo.Find(methodChild.Id)).Returns(methodChild);
+        _mockClassRepository.Setup(repo => repo.Find(classParent.Id)).Returns(classParent);
+        _mockClassRepository.Setup(repo => repo.Find(classChild.Id)).Returns(classChild);
+        _mockClassRepository.Setup(repo => repo.Update(It.IsAny<Class>()));
+
+        var exception = Assert.ThrowsException<InvalidMethodException>(() => _methodService.AssociateMethodWithClass(methodChild.Id, classChild.Id));
+        Assert.AreEqual("Parent class must have this method as virtual", exception.Message);
+    }
+
+    [TestMethod]
     public void CreateMethod_ShouldThrowException_WhenMethodIsNull()
     {
         MethodDTO nullMethodDto = null!;

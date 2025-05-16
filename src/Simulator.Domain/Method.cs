@@ -12,8 +12,7 @@ public class Method
     public virtual List<LocalVariable>? LocalVariables { get; set; }
     public KeyWord? Stereotype { get; set; }
     public virtual Type? ReturnType { get; set; }
-
-    // public bool IsOverride { get; set; }
+    public bool IsOverride { get; set; }
 
     public Method()
     {
@@ -25,6 +24,7 @@ public class Method
         LocalVariables = [];
         Stereotype = null;
         ReturnType = new Primitive();
+        IsOverride = false;
     }
 
     public Method(string name, Accessibility accessibility, KeyWord? stereotype, List<InvokedMethod> methods,
@@ -40,6 +40,23 @@ public class Method
         LocalVariables = localVariables;
         Stereotype = stereotype;
         ReturnType = returnType;
+        IsOverride = false;
+    }
+
+    public Method(string name, Accessibility accessibility, KeyWord? stereotype, List<InvokedMethod> methods,
+        List<Parameter> parameters,
+        List<LocalVariable> localVariables, Type? returnType, bool isOverride)
+    {
+        ValidateMethodName(name);
+        Id = Guid.NewGuid();
+        Name = name;
+        Accessibility = accessibility;
+        Methods = methods;
+        Parameters = parameters;
+        LocalVariables = localVariables;
+        Stereotype = stereotype;
+        ReturnType = returnType;
+        IsOverride = isOverride;
     }
 
     private void ValidateMethodName(string name)
