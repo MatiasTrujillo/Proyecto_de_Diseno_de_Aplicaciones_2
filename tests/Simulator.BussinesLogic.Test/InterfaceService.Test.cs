@@ -32,9 +32,8 @@ public class InterfaceService_Test
     [TestMethod]
     public void CreateInterface_ShouldCallRepositoryAdd_WithValidInterface()
     {
-        List<Type> types = [];
         _mockClassRepository.Setup(r => r.FindAllTypes())
-            .Returns(types);
+            .Returns([]);
 
         _interfaceService.CreateInterface(dto);
 
@@ -57,5 +56,24 @@ public class InterfaceService_Test
         });
 
         Assert.AreEqual("There is already a type with this name", exception.Message);
+    }
+
+    [TestMethod]
+    public void CreateInterface_ShouldThrowException_WhenNameIsWhitespace()
+    {
+        var emptyNameDto = new InterfaceDTO
+        {
+            Name = string.Empty,
+        };
+
+        _mockClassRepository.Setup(r => r.FindAllTypes())
+            .Returns([]);
+
+        var exception = Assert.ThrowsException<InterfaceException>(() =>
+        {
+            _interfaceService.CreateInterface(emptyNameDto);
+        });
+
+        Assert.AreEqual("The interface name cannot be empty.", exception.Message);
     }
 }
