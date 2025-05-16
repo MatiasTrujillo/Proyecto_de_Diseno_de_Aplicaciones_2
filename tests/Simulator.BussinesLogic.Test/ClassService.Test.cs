@@ -519,4 +519,25 @@ public class ClassServiceTest
 
         Assert.AreEqual("The stereotype is not valid", exception.Message);
     }
+
+    [TestMethod]
+    public void CreateClass_ShouldThrowException_WhenKeyWordVirtual()
+    {
+        var invalidStereoType = KeyWord.Virtual;
+        var dto = new ClassDTO
+        {
+            Name = "Class",
+            Stereotype = invalidStereoType,
+        };
+
+        _mockClassRepository.Setup(r => r.FindAllTypes())
+            .Returns([]);
+
+        var exception = Assert.ThrowsException<InvalidClassException>(() =>
+        {
+            _classService.CreateClass(dto);
+        });
+
+        Assert.AreEqual("Classes cannot be virtual.", exception.Message);
+    }
 }

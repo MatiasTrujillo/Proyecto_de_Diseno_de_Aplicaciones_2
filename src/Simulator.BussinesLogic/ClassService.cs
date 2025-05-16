@@ -24,6 +24,7 @@ public class ClassService(
         var objectClass = classes.FirstOrDefault(c => c.Name == "Object") as Class;
         ValidateAccesibility(aClass.Stereotype);
         ValidateStatic(aClass.Stereotype);
+        ValidateVirtual(aClass.Stereotype);
         ValidateClassNameIsUnique(aClass.Name);
         aClass.HierarchyClass = objectClass;
         _classRepository.Add(aClass);
@@ -187,6 +188,14 @@ public class ClassService(
         if(stereotype.Equals(KeyWord.Static))
         {
             throw new InvalidClassException("Classes cannot be static.");
+        }
+    }
+
+    private void ValidateVirtual(KeyWord? stereotype)
+    {
+        if(stereotype.Equals(KeyWord.Virtual))
+        {
+            throw new InvalidClassException("Classes cannot be virtual.");
         }
     }
 

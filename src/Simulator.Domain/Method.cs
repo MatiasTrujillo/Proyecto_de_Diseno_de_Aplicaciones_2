@@ -13,6 +13,8 @@ public class Method
     public KeyWord? Stereotype { get; set; }
     public virtual Type? ReturnType { get; set; }
 
+    // public bool IsOverride { get; set; }
+
     public Method()
     {
         Id = Guid.NewGuid();
