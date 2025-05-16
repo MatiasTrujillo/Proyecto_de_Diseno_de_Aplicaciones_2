@@ -100,7 +100,7 @@ public class ClassServiceTest
             _classService.CreateClass(dto);
         });
 
-        Assert.AreEqual("Invalid stereotype value.", exception.Message);
+        Assert.AreEqual("Invalid stereotype value. Classes stereotypes can only be null, abstract or sealed.", exception.Message);
     }
 
     [TestMethod]
@@ -495,7 +495,7 @@ public class ClassServiceTest
             _classService.CreateClass(dto);
         });
 
-        Assert.AreEqual("Classes cannot be static.", exception.Message);
+        Assert.AreEqual("Invalid stereotype value. Classes stereotypes can only be null, abstract or sealed.", exception.Message);
     }
 
     [TestMethod]
@@ -538,7 +538,7 @@ public class ClassServiceTest
             _classService.CreateClass(dto);
         });
 
-        Assert.AreEqual("Classes cannot be virtual.", exception.Message);
+        Assert.AreEqual("Invalid stereotype value. Classes stereotypes can only be null, abstract or sealed.", exception.Message);
     }
 
     [TestMethod]
