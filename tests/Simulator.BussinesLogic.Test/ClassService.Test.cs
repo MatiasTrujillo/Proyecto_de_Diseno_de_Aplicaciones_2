@@ -177,7 +177,7 @@ public class ClassServiceTest
             NameSpace = new NameSpaceDTO
             {
                 Name = "NameSpace",
-            }
+             }
         };
 
         _mockClassRepository.Setup(r => r.FindAllTypes())
