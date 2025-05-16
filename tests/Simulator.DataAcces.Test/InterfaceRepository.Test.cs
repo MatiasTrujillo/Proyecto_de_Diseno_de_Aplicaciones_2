@@ -93,4 +93,21 @@ public class InterfaceRepository_Test
         exists.Should().BeFalse();
     }
     #endregion
+
+    [TestMethod]
+    public void Update_WhenInterfaceExists_ShouldModifyIt()
+    {
+        _repository.Add(anInterface);
+
+        var updatedInterface = new Interface("OtherName", new List<MethodSignature>());
+        updatedInterface.Id = anInterface.Id;
+
+        _repository.Update(updatedInterface);
+
+        using var refreshedContext = ProgramTest.BuildTestDbContext();
+        var saved = refreshedContext.Set<Interface>().Find(anInterface.Id);
+
+        saved.Should().NotBeNull();
+        saved.Name.Should().Be("OtherName");
+    }
 }
