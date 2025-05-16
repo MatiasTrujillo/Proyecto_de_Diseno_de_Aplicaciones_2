@@ -1,4 +1,5 @@
 using Moq;
+using Simulator.BussinesLogic.Exception;
 using Simulator.Domain;
 using Simulator.DTO;
 using Simulator.IDataAcces;
@@ -37,5 +38,22 @@ public class InterfaceService_Test
         _mockInterfaceRepository.Verify(repo => repo.Add(
             It.Is<Interface>(a =>
                 a.Name == dto.Name)));
+    }
+
+    [TestMethod]
+    public void CreateInterface_ShouldThrowException_WithRepeatedInterfaceName()
+    {
+        _interfaceService = new InterfaceService(_mockInterfaceRepository.Object);
+        var types = new List<Type> { dto.ToEntity() };
+
+        _mockClassRepository.Setup(r => r.FindAllTypes())
+            .Returns(types);
+
+        var exception = Assert.ThrowsException<InvalidInterfaceException>(() =>
+        {
+            _interfaceService.CreateInterface(dto);
+        });
+
+        Assert.AreEqual("There is already a type with this name", exception.Message);
     }
 }
