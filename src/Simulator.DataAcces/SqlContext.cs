@@ -22,6 +22,7 @@ public sealed class SqlContext : DbContext
     public DbSet<LocalVariable> LocalVariables { get; set; }
     public DbSet<InvokedMethod> InvokedMethods { get; set; }
     public DbSet<Interface> Interfaces { get; set; }
+    public DbSet<MethodSignature> MethodSignatures { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -36,6 +37,22 @@ public sealed class SqlContext : DbContext
 
         modelBuilder.Entity<Interface>()
             .HasBaseType<Type>();
+
+        modelBuilder.Entity<Interface>()
+            .HasMany<MethodSignature>();
+
+        modelBuilder.Entity<MethodSignature>(entity =>
+        {
+            entity.HasKey(m => m.Id);
+
+            entity.HasOne(m => m.ReturnType)
+                .WithMany()
+                .OnDelete(DeleteBehavior.Restrict);
+
+            entity.HasMany(m => m.Parameters)
+                .WithOne()
+                .OnDelete(DeleteBehavior.Cascade);
+        });
 
         modelBuilder.Entity<Attribute>()
             .HasKey(a => a.Id);

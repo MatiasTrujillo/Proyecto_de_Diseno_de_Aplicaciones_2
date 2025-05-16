@@ -13,9 +13,15 @@ public class InterfaceRepository(SqlContext context) : IInterfaceRepository
 
     public void Update(Interface anInterface)
     {
-        Interface existingInterface = Find(anInterface.Id);
+        var existingInterface = Find(anInterface.Id);
 
-        context.Entry(existingInterface).CurrentValues.SetValues(anInterface);
+        existingInterface.Name = anInterface.Name;
+        existingInterface.MethodSignatures.Clear();
+        foreach (var signature in anInterface.MethodSignatures)
+        {
+            existingInterface.MethodSignatures.Add(signature);
+        }
+
         context.SaveChanges();
     }
 

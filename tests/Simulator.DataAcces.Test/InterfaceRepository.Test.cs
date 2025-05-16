@@ -117,30 +117,51 @@ public class InterfaceRepository_Test
     public void Update_WhenInterfaceExistsAndMethodSignature_ShouldAddItToTheInterface()
     {
         _repository.Add(anInterface);
-        Primitive aPrimitive = new Primitive
+
+        Guid primitiveId = Guid.NewGuid();
+        Guid parameterId = Guid.NewGuid();
+        Guid methodSignatureId = Guid.NewGuid();
+
+        using var refreshedContext = ProgramTest.BuildTestDbContext();
+
+        var aPrimitive = new Primitive
         {
-            Id = Guid.NewGuid(),
+            Id = primitiveId,
             Name = "int"
         };
-        Parameter aParameter = new Parameter
+        refreshedContext.Primitives.Add(aPrimitive);
+        refreshedContext.SaveChanges();
+
+        var aParameter = new Parameter
         {
-            Id = Guid.NewGuid(),
+            Id = parameterId,
             Name = "myParam",
             ParameterType = aPrimitive
         };
-        MethodSignature aMethodSignature = new MethodSignature("AMethodSignature", aPrimitive, [aParameter]);
+        refreshedContext.Parameters.Add(aParameter);
 
-        var updatedInterface = new Interface("OtherName", [aMethodSignature]);
-        updatedInterface.Id = anInterface.Id;
+        var aMethodSignature = new MethodSignature("AMethodSignature", aPrimitive, new List<Parameter> { aParameter })
+        {
+            Id = methodSignatureId
+        };
+        refreshedContext.MethodSignatures.Add(aMethodSignature);
 
-        _repository.Update(updatedInterface);
+        refreshedContext.SaveChanges();
 
-        using var refreshedContext = ProgramTest.BuildTestDbContext();
+        var updatedInterface = new Interface("OtherName", new List<MethodSignature> { aMethodSignature })
+        {
+            Id = anInterface.Id
+        };
+
+        var repo = new InterfaceRepository(refreshedContext);
+        repo.Update(updatedInterface);
+        refreshedContext.SaveChanges();
+
         var saved = refreshedContext.Set<Interface>().Find(anInterface.Id);
 
         saved.Should().NotBeNull();
         saved.Id.Should().Be(anInterface.Id);
-        saved.Name.Should().Be(anInterface.Name);
+        saved.Name.Should().Be("OtherName");
         saved.MethodSignatures.Count.Should().Be(1);
         saved.MethodSignatures[0].Id.Should().Be(aMethodSignature.Id);
     }
