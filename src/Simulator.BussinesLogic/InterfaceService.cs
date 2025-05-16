@@ -1,4 +1,5 @@
 using System;
+using Simulator.BussinesLogic.Exception;
 using Simulator.DTO;
 using Simulator.IBussinesLogic;
 using Simulator.IDataAcces;
@@ -6,13 +7,24 @@ using Simulator.IDataAcces;
 namespace Simulator.BussinesLogic;
 
 public class InterfaceService(
-    IInterfaceRepository interfaceRepository) : IInterfaceService
+    IInterfaceRepository interfaceRepository,
+    IClassRepository classRepository) : IInterfaceService
 {
     private readonly IInterfaceRepository _interfaceRepository = interfaceRepository;
+    private readonly IClassRepository _classRepository = classRepository;
 
     public Guid CreateInterface(InterfaceDTO interfaceDto)
     {
         var anInterface = interfaceDto.ToEntity();
+        var types = _classRepository.FindAllTypes();
+        foreach(var type in types)
+        {
+            if(type.Name == interfaceDto.Name)
+            {
+                throw new InvalidInterfaceException("There is already a type with this name");
+            }
+        }
+
         _interfaceRepository.Add(anInterface);
         return anInterface.Id;
     }

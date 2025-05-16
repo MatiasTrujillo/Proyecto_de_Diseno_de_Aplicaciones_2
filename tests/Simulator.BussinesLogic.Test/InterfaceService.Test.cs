@@ -26,12 +26,15 @@ public class InterfaceService_Test
         {
             Name = "Interfaz"
         };
+        _interfaceService = new InterfaceService(_mockInterfaceRepository.Object, _mockClassRepository.Object);
     }
 
     [TestMethod]
     public void CreateInterface_ShouldCallRepositoryAdd_WithValidInterface()
     {
-        _interfaceService = new InterfaceService(_mockInterfaceRepository.Object);
+        List<Type> types = [];
+        _mockClassRepository.Setup(r => r.FindAllTypes())
+            .Returns(types);
 
         _interfaceService.CreateInterface(dto);
 
@@ -43,7 +46,6 @@ public class InterfaceService_Test
     [TestMethod]
     public void CreateInterface_ShouldThrowException_WithRepeatedInterfaceName()
     {
-        _interfaceService = new InterfaceService(_mockInterfaceRepository.Object);
         var types = new List<Type> { dto.ToEntity() };
 
         _mockClassRepository.Setup(r => r.FindAllTypes())
