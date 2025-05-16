@@ -540,4 +540,26 @@ public class ClassServiceTest
 
         Assert.AreEqual("Classes cannot be virtual.", exception.Message);
     }
+
+    [TestMethod]
+    public void UpdateClass_ShouldThrowException_WhenKeyWordVirtual()
+    {
+        var id = Guid.NewGuid();
+        var classT = new Class { Id = id, Name = "OldName" };
+
+        _mockClassRepository.Setup(r => r.FindAll()).Returns([classT]);
+        _mockClassRepository.Setup(r => r.Find(id)).Returns(classT);
+
+        var dto = new UpdateClassDTO
+        {
+            Stereotype = KeyWord.Virtual + string.Empty,
+        };
+
+        var exception = Assert.ThrowsException<InvalidClassException>(() =>
+        {
+            _classService.UpdateClass(id, dto);
+        });
+
+        Assert.AreEqual("The stereotype is not valid", exception.Message);
+    }
 }
