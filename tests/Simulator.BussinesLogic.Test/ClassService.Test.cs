@@ -561,6 +561,10 @@ public class ClassServiceTest
         {
             Name = "Class",
             Stereotype = invalidStereoType,
+            NameSpace = new NameSpaceDTO
+            {
+                Name = "NameSpace",
+            }
         };
 
         _mockClassRepository.Setup(r => r.FindAllTypes())
