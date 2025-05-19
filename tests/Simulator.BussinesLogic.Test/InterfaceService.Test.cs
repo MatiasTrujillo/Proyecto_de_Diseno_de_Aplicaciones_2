@@ -92,4 +92,18 @@ public class InterfaceService_Test
 
         Assert.AreEqual("The interface name must start with an uppercase letter.", exception.Message);
     }
+
+    [TestMethod]
+    public void CreateInterface_ShouldThrowException_WhenNameHasSpaces()
+    {
+        _mockClassRepository.Setup(r => r.FindAllTypes())
+            .Returns([]);
+
+        var exception = Assert.ThrowsException<InterfaceException>(() =>
+        {
+            _interfaceService.CreateInterface(lowerCaseNameDto);
+        });
+
+        Assert.AreEqual("The interface name must not contain spaces.", exception.Message);
+    }
 }
