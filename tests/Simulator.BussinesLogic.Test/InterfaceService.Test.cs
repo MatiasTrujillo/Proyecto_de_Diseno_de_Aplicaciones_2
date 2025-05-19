@@ -108,4 +108,19 @@ public class InterfaceService_Test
 
         Assert.AreEqual("The interface name must not contain spaces.", exception.Message);
     }
+
+    [TestMethod]
+    public void DeleteInterface_ShouldDeleteInterface_WhenValid()
+    {
+        var id = Guid.NewGuid();
+        var original = new Interface("Una interfaz") { Id = id };
+
+        _mockInterfaceRepository.Setup(r => r.Find(id)).Returns(original);
+        _mockClassRepository.Setup(r => r.FindAllTypes()).Returns([original]);
+        _mockInterfaceRepository.Setup(r => r.Delete(It.IsAny<Guid>()));
+
+        _interfaceService.DeleteInterface(id);
+
+        _mockInterfaceRepository.Verify(r => r.Delete(id), Times.Once);
+    }
 }
