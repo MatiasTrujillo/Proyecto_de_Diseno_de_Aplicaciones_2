@@ -868,7 +868,7 @@ public class MethodService(
     {
         if(methodChild.IsOverride)
         {
-            var classParent = classChild.HierarchyClass;
+            var classParent = classChild.HierarchyClass as Class;
             if(classParent == null)
             {
                 throw new MethodException("There is no parent class with this method.");
