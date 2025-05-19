@@ -70,6 +70,13 @@ public class InterfaceService(
 
     public void DeleteInterface(Guid id)
     {
+        var interfaces = _interfaceRepository.FindAll();
+
+        if(!interfaces.Exists(interfaceT => interfaceT.Id == id))
+        {
+            throw new InterfaceNotFoundException("There is no interface with this id.");
+        }
+
         _interfaceRepository.Delete(id);
     }
 }

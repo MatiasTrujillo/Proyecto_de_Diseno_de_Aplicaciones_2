@@ -124,7 +124,8 @@ public class InterfaceService_Test
     public void DeleteInterface_ShouldThrowException_WhenInterfaceNotExists()
     {
         _mockInterfaceRepository.Setup(r => r.Delete(It.IsAny<Guid>()));
-        var exception = Assert.ThrowsException<InterfaceException>(() =>
+        _mockInterfaceRepository.Setup(r => r.FindAll()).Returns([]);
+        var exception = Assert.ThrowsException<InterfaceNotFoundException>(() =>
         {
             _interfaceService.DeleteInterface(dtoId);
         });
