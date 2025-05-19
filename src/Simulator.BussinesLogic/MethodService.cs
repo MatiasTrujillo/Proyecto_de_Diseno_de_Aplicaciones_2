@@ -210,10 +210,8 @@ public class MethodService(
         return string.Join("\n", result);
     }
 
-    private List<string> WriteOtherLines(Type? refe, Type? oTC, Method method, Method originalMethod)
+    private List<string> WriteOtherLines(Class? refe, Class? oTC, Method method, Method originalMethod)
     {
-        var refe1 = refe as Class;
-        var oTc = oTC as Class;
         var result = new List<string>();
         for(var i = 0; i < method.Methods.Count; i++)
         {
@@ -223,7 +221,7 @@ public class MethodService(
 
             if(invokedMethod.ReferenceName == "this")
             {
-                result = result.Concat(CaseThis(invokedMethod, originalMethod, oTc)).ToList();
+                result = result.Concat(CaseThis(invokedMethod, originalMethod, oTC)).ToList();
                 if(result.Count > lines)
                 {
                     success = true;
@@ -233,7 +231,7 @@ public class MethodService(
 
             if(!success && invokedMethod.ReferenceName == "base")
             {
-                result = result.Concat(CaseBase(invokedMethod, refe1, originalMethod)).ToList();
+                result = result.Concat(CaseBase(invokedMethod, refe, originalMethod)).ToList();
                 if(result.Count > lines)
                 {
                     success = true;
@@ -241,9 +239,9 @@ public class MethodService(
                 }
             }
 
-            if(!success && refe1.Attributes != null)
+            if(!success && refe.Attributes != null)
             {
-                result = result.Concat(CaseAttribute(refe1, invokedMethod, originalMethod)).ToList();
+                result = result.Concat(CaseAttribute(refe, invokedMethod, originalMethod)).ToList();
                 if(result.Count > lines)
                 {
                     success = true;
@@ -269,31 +267,29 @@ public class MethodService(
         return result;
     }
 
-    private List<string> CaseThis(InvokedMethod invokedMethod, Method originalMethod, Type? oTC)
+    private List<string> CaseThis(InvokedMethod invokedMethod, Method originalMethod, Class? oTC)
     {
-        var oTc = oTC as Class;
         var result = new List<string>();
         var invokedMethodMethod = _methodRepository.Find(invokedMethod.MethodId);
 
-        var aClass = oTC;
-        aClass = FindClassWithMethod(aClass, invokedMethodMethod);
-        if(CheckClassHasMethod(aClass, invokedMethodMethod))
+        oTC = FindClassWithMethod(oTC, invokedMethodMethod);
+        if(CheckClassHasMethod(oTC, invokedMethodMethod))
         {
-            result.Add(AddToResult(invokedMethod.ReferenceName, aClass.Name, invokedMethodMethod));
+            result.Add(AddToResult(invokedMethod.ReferenceName, oTC.Name, invokedMethodMethod));
 
             if(CheckOriginal(invokedMethodMethod, originalMethod))
             {
                 return result;
             }
 
-            invokedMethodMethod = aClass.Methods.Find(x => x.Name == invokedMethodMethod.Name);
-            result = result.Concat(ConcatNext(oTc, oTc, invokedMethodMethod!, originalMethod)).ToList();
+            invokedMethodMethod = oTC.Methods.Find(x => x.Name == invokedMethodMethod.Name);
+            result = result.Concat(ConcatNext(oTC, oTC, invokedMethodMethod!, originalMethod)).ToList();
         }
         else
         {
-            if(oTc.Attributes != null)
+            if(oTC.Attributes != null)
             {
-                result = result.Concat(CaseThisAttribute(oTc, invokedMethod, originalMethod)).ToList();
+                result = result.Concat(CaseThisAttribute(oTC, invokedMethod, originalMethod)).ToList();
             }
         }
 
@@ -325,19 +321,18 @@ public class MethodService(
         return result;
     }
 
-    private List<string> CaseBase(InvokedMethod invokedMethod, Type? refe, Method originalMethod)
+    private List<string> CaseBase(InvokedMethod invokedMethod, Class? refe, Method originalMethod)
     {
-        var refe1 = refe as Class;
         var result = new List<string>();
         var invokedMethodMethod = _methodRepository.Find(invokedMethod.MethodId);
 
-        result.Add(AddToResult(invokedMethod.ReferenceName, refe1.HierarchyClass.Name, invokedMethodMethod));
+        result.Add(AddToResult(invokedMethod.ReferenceName, refe.HierarchyClass.Name, invokedMethodMethod));
         if(CheckOriginal(invokedMethodMethod, originalMethod))
         {
             return result;
         }
 
-        result = result.Concat(ConcatNext(refe1.HierarchyClass, refe1.HierarchyClass, invokedMethodMethod, originalMethod)).ToList();
+        result = result.Concat(ConcatNext(refe.HierarchyClass as Class, refe.HierarchyClass as Class, invokedMethodMethod, originalMethod)).ToList();
 
         return result;
     }
@@ -525,50 +520,45 @@ public class MethodService(
         return actualMethod.Equals(originalMethod);
     }
 
-    private List<string> ConcatNext(Type? refe, Type? oTC, Method method, Method originalMethod)
+    private List<string> ConcatNext(Class? refe, Class? oTC, Method method, Method originalMethod)
     {
-        var refe1 = refe as Class;
-        var oTc = oTC as Class;
         List<string> result;
 
         _identation++;
-        result = WriteOtherLines(refe1, oTc, method, originalMethod);
+        result = WriteOtherLines(refe, oTC, method, originalMethod);
         _identation--;
 
         return result;
     }
 
-    private Class FindClassWithMethod(Type? aClass, Method method)
+    private Class FindClassWithMethod(Class? aClass, Method method)
     {
-        var oneClass = aClass as Class;
-        if(oneClass.HierarchyClass != null && !CheckClassHasMethod(oneClass, method))
+        if(aClass.HierarchyClass != null && !CheckClassHasMethod(aClass, method))
         {
-            return FindClassWithMethod(oneClass.HierarchyClass, method);
+            return FindClassWithMethod(aClass.HierarchyClass as Class, method);
         }
 
-        return oneClass;
+        return aClass;
     }
 
-    private Attribute FindClassWithAttribute(Type aClass, string attributeName)
+    private Attribute FindClassWithAttribute(Class? aClass, string attributeName)
     {
-        var oneClass = aClass as Class;
-        var anAttribute = oneClass.Attributes!.FirstOrDefault(x => x.Name == attributeName);
+        var anAttribute = aClass.Attributes!.FirstOrDefault(x => x.Name == attributeName);
 
-        if(oneClass.HierarchyClass != null && !CheckClassHasAttribute(aClass, attributeName))
+        if(aClass.HierarchyClass != null && !CheckClassHasAttribute(aClass, attributeName))
         {
-            return FindClassWithAttribute(oneClass.HierarchyClass, attributeName);
+            return FindClassWithAttribute(aClass.HierarchyClass as Class, attributeName);
         }
 
         return anAttribute;
     }
 
-    private bool CheckClassHasAttribute(Type? aClass, string attributeName)
+    private bool CheckClassHasAttribute(Class? aClass, string attributeName)
     {
-        var oneClass = aClass as Class;
-        return oneClass.Attributes != null && oneClass.Attributes.Any(x => x.Name == attributeName);
+        return aClass.Attributes != null && aClass.Attributes.Any(x => x.Name == attributeName);
     }
 
-    private bool CheckClassHasMethod(Type aClass, Method method)
+    private bool CheckClassHasMethod(Class? aClass, Method method)
     {
         return aClass.Methods != null && aClass.Methods.Any(x => x.Name == method.Name);
     }
