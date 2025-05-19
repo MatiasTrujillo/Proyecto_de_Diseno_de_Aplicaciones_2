@@ -53,7 +53,7 @@ public class AttributeServiceTest
             Id = Guid.NewGuid(),
             Name = "Strength",
             Accessibility = Accessibility.Private,
-            Type = new Type { Name = dto.Type.Name }
+            ReferenceType = new Type { Name = dto.Type.Name }
         };
 
         _mockClassRepository
@@ -77,8 +77,8 @@ public class AttributeServiceTest
             It.Is<Attribute>(a =>
                 a.Name == dto.Name &&
                 a.Accessibility == dto.Accessibility &&
-                a.Type != null &&
-                a.Type.Name == dto.Type.Name)), Times.Once);
+                a.ReferenceType != null &&
+                a.ReferenceType.Name == dto.Type.Name)), Times.Once);
     }
 
     [TestMethod]
@@ -159,7 +159,7 @@ public class AttributeServiceTest
             Id = Guid.NewGuid(),
             Name = "Agility",
             Accessibility = Accessibility.Public,
-            Type = new Type { Name = dto.Type.Name }
+            ReferenceType = new Type { Name = dto.Type.Name }
         };
 
         _mockClassRepository
@@ -178,6 +178,46 @@ public class AttributeServiceTest
             _attributeService.CreateAttribute(dto));
 
         Assert.AreEqual("Return type not found.", exception.Message);
+    }
+
+    [TestMethod]
+    public void CreateAttribute_ShouldThrowException_WhenInstanceTypeNotSubclassOfReferenceType()
+    {
+        var aClass1 = new Class { Id = Guid.NewGuid(), Name = "class1" };
+        var aClass2 = new Class { Id = Guid.NewGuid(), Name = "class2" };
+        var dto = new AttributeDto
+        {
+            Name = "Agility",
+            Accessibility = Accessibility.Public,
+            Type = new TypeDTO { Name = aClass1.Name },
+            InstanceType = new TypeDTO { Name = aClass2.Name },
+        };
+
+        var attribute = new Attribute
+        {
+            Id = Guid.NewGuid(),
+            Name = "Agility",
+            Accessibility = Accessibility.Public,
+            ReferenceType = new Type { Name = dto.Type.Name },
+            InstanceType = new Type { Name = dto.InstanceType.Name }
+        };
+
+        _mockClassRepository
+            .Setup(repo => repo.FindAll())
+            .Returns([aClass1, aClass2]);
+
+        _mockClassRepository
+            .Setup(repo => repo.FindAllTypes())
+            .Returns([aClass1, aClass2]);
+
+        /*_mockAttributeRepository
+            .Setup(repo => repo.Find(It.IsAny<Guid>()))
+            .Returns(null);*/
+
+        var exception = Assert.ThrowsException<TypeNotFoundException>(() =>
+            _attributeService.CreateAttribute(dto));
+
+        Assert.AreEqual("Instance Type is not a subclass of Reference Type", exception.Message);
     }
 
     [TestMethod]
@@ -550,7 +590,7 @@ public class AttributeServiceTest
             Id = Guid.NewGuid(),
             Name = "Strength",
             Accessibility = Accessibility.Private,
-            Type = new Type { Name = dto.Type.Name },
+            ReferenceType = new Type { Name = dto.Type.Name },
             Stereotype = KeyWord.Static
         };
 
@@ -575,8 +615,8 @@ public class AttributeServiceTest
             It.Is<Attribute>(a =>
                 a.Name == dto.Name &&
                 a.Accessibility == dto.Accessibility &&
-                a.Type != null &&
-                a.Type.Name == dto.Type.Name)), Times.Once);
+                a.ReferenceType != null &&
+                a.ReferenceType.Name == dto.Type.Name)), Times.Once);
     }
 
     [TestMethod]
@@ -598,7 +638,7 @@ public class AttributeServiceTest
             Id = Guid.NewGuid(),
             Name = "Strength",
             Accessibility = Accessibility.Private,
-            Type = new Type { Name = dto.Type.Name },
+            ReferenceType = new Type { Name = dto.Type.Name },
             Stereotype = KeyWord.Static
         };
 

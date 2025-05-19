@@ -6,23 +6,25 @@ public class LocalVariable
 {
     public Guid Id { get; set; }
     public string Name { get; set; }
-    public virtual Type? LocalVariableType { get; set; }
+    public virtual Type? LocalVariableReferenceType { get; set; }
+
+    // public virtual Type? LocalVariableInstanceType { get; set; }
     public virtual InvokedMethod? InvokedMethod { get; set; }
 
     public LocalVariable()
     {
         Id = Guid.NewGuid();
         Name = string.Empty;
-        LocalVariableType = new Primitive();
+        LocalVariableReferenceType = new Primitive();
         InvokedMethod = null;
     }
 
-    public LocalVariable(string name, Type localVariableType)
+    public LocalVariable(string name, Type localVariableReferenceType)
     {
         ValidateParameter(name);
         Id = Guid.NewGuid();
         Name = name;
-        LocalVariableType = localVariableType;
+        LocalVariableReferenceType = localVariableReferenceType;
         InvokedMethod = null;
     }
 

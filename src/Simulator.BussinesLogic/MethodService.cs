@@ -95,10 +95,10 @@ public class MethodService(
         }
 
         var localVariableT = localVariable.ToEntity();
-        var type = localVariableT.LocalVariableType.Name;
+        var type = localVariableT.LocalVariableReferenceType.Name;
         var returnType = _classRepository.FindAllTypes().FirstOrDefault(c => c.Name == type);
-        localVariableT.LocalVariableType = returnType;
-        ValidateMethodReturnType(localVariableT.LocalVariableType);
+        localVariableT.LocalVariableReferenceType = returnType;
+        ValidateMethodReturnType(localVariableT.LocalVariableReferenceType);
         _localVariableRepository.Add(localVariableT);
         return localVariableT.Id;
     }
@@ -109,7 +109,7 @@ public class MethodService(
         var invokedMethod = _invokedMethodRepository.Find(idInvokeGuid);
         ValidateLocalVariableExist(localVariable);
         ValidateInvokedMethodExist(invokedMethod);
-        ValidateTypeIsPrimitive(localVariable.LocalVariableType);
+        ValidateTypeIsPrimitive(localVariable.LocalVariableReferenceType);
         localVariable.InvokedMethod = invokedMethod;
         _localVariableRepository.Update(localVariable);
     }
@@ -306,7 +306,7 @@ public class MethodService(
         var anAttribute = oTC.Attributes!.FirstOrDefault(x =>
             x.InvokedMethod != null && x.InvokedMethod.MethodId == invokedMethod.MethodId);
         var allPrimitives = _classRepository.FindAllTypes().OfType<Primitive>().ToList();
-        var aPrimitive = allPrimitives.Find(x => anAttribute.Type is Primitive p && x.PrimitiveType.ToString().ToLower() == p.PrimitiveType.ToString().ToLower());
+        var aPrimitive = allPrimitives.Find(x => anAttribute.ReferenceType is Primitive p && x.PrimitiveType.ToString().ToLower() == p.PrimitiveType.ToString().ToLower());
 
         if(anAttribute != null && aPrimitive != null)
         {
@@ -352,7 +352,7 @@ public class MethodService(
 
         if(anAttribute != null)
         {
-            var aClass = _classRepository.FindAll().FirstOrDefault(x => x.Name == anAttribute.Type.Name);
+            var aClass = _classRepository.FindAll().FirstOrDefault(x => x.Name == anAttribute.ReferenceType.Name);
             if(aClass != null)
             {
                 aClass = FindClassWithMethod(aClass, invokedMethodMethod);
@@ -412,7 +412,7 @@ public class MethodService(
         var aLocal = method.LocalVariables!.FirstOrDefault(x => x.Name == invokedMethod.ReferenceName);
         if(aLocal != null)
         {
-            var aClass = _classRepository.FindAll().FirstOrDefault(x => x.Name == aLocal.LocalVariableType.Name);
+            var aClass = _classRepository.FindAll().FirstOrDefault(x => x.Name == aLocal.LocalVariableReferenceType.Name);
             if(aClass != null)
             {
                 aClass = FindClassWithMethod(aClass, invokedMethodMethod);
@@ -737,7 +737,7 @@ public class MethodService(
 
     private void ManageAttribute(Method method, Attribute? attribute)
     {
-        if(attribute?.Type is Class classAttrType)
+        if(attribute?.ReferenceType is Class classAttrType)
         {
             var attrClass = _classRepository.Find(classAttrType.Id);
             if(attrClass == null || !HasMethodInHierarchy(attrClass, method.Id))
@@ -750,7 +750,7 @@ public class MethodService(
 
     private void ManageLocalVariable(Method method, LocalVariable? localVar)
     {
-        if(localVar?.LocalVariableType is Class classLocalVarType)
+        if(localVar?.LocalVariableReferenceType is Class classLocalVarType)
         {
             var localVarClass = _classRepository.Find(classLocalVarType.Id);
             if(localVarClass == null || !HasMethodInHierarchy(localVarClass, method.Id))

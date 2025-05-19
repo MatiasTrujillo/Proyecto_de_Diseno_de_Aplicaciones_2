@@ -123,7 +123,7 @@ public class ClassService(
         var attributeT = _attributeRepository.FindAll();
         var methods = _methodRepository.FindAll();
         if(classes.Any(c => c.HierarchyClass != null && c.HierarchyClass.Id == id) ||
-           attributeT.Any(a => a.Type == classT) ||
+           attributeT.Any(a => a.ReferenceType == classT) ||
            methods.Any(m => m.ReturnType == classT))
         {
             throw new ClassInUseException("Class is associated with another class, attribute or method");

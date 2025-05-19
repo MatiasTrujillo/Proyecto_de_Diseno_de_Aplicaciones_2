@@ -543,7 +543,7 @@ public class MethodServiceTest
 
         _mockLocalVariableRepository
             .Setup(r => r.Add(It.Is<LocalVariable>(p =>
-                p.Name == localVariableDto.Name && p.LocalVariableType.Name == classT.Name)));
+                p.Name == localVariableDto.Name && p.LocalVariableReferenceType.Name == classT.Name)));
 
         _mockClassRepository
             .Setup(repo => repo.FindAllTypes())
@@ -913,7 +913,7 @@ public class MethodServiceTest
             Methods = [method],
             Attributes =
             [
-                new Attribute { Name = referenceName, Type = new Class { Id = classId } }
+                new Attribute { Name = referenceName, ReferenceType = new Class { Id = classId } }
             ]
         };
         var classWithAttr = new Class { Id = classId, Methods = [method] };
@@ -949,7 +949,7 @@ public class MethodServiceTest
         };
         var invMethod = new Method { Id = invokedMethod.MethodId, Name = "Invoked" };
         var attrClass = new Class { Id = Guid.NewGuid(), Methods = [] };
-        var attribute = new Simulator.Domain.Attribute { Name = "MyAttr", Type = attrClass };
+        var attribute = new Simulator.Domain.Attribute { Name = "MyAttr", ReferenceType = attrClass };
         var classWithMethod = new Class { Methods = [methodToAdd], Attributes = [attribute] };
 
         _mockMethodRepository.Setup(r => r.Find(methodId)).Returns(methodToAdd);
@@ -1006,7 +1006,7 @@ public class MethodServiceTest
             Id = methodId,
             Name = "MainMethod",
             Parameters = [],
-            LocalVariables = [new LocalVariable { Name = "MyLocal", LocalVariableType = localVarClass }],
+            LocalVariables = [new LocalVariable { Name = "MyLocal", LocalVariableReferenceType = localVarClass }],
             Methods = []
         };
         var invokedMethod = new InvokedMethod
@@ -1062,7 +1062,7 @@ public class MethodServiceTest
         {
             Id = localVariableId,
             Name = "myVar",
-            LocalVariableType = new Class()
+            LocalVariableReferenceType = new Class()
         };
 
         var invokedMethod = new InvokedMethod
@@ -1323,7 +1323,7 @@ public class MethodServiceTest
             Id = Guid.NewGuid(),
             Name = "motorAuto",
             Accessibility = Accessibility.Private,
-            Type = motor
+            ReferenceType = motor
         };
 
         var auto = new Class
@@ -1463,7 +1463,7 @@ public class MethodServiceTest
         {
             Id = Guid.NewGuid(),
             Name = "otroAviso",
-            LocalVariableType = email
+            LocalVariableReferenceType = email
         };
 
         var notificar = new Method
@@ -1646,7 +1646,7 @@ public class MethodServiceTest
         {
             Id = Guid.NewGuid(),
             Name = "input",
-            LocalVariableType = entradaTextoEspecial
+            LocalVariableReferenceType = entradaTextoEspecial
         };
 
         var validar = new Method
@@ -1701,7 +1701,7 @@ public class MethodServiceTest
             Id = Guid.NewGuid(),
             Name = "Nombre",
             Accessibility = Accessibility.Public,
-            Type = new Primitive(PrimitiveType.String),
+            ReferenceType = new Primitive(PrimitiveType.String),
         };
 
         var validar = new Method
@@ -1760,7 +1760,7 @@ public class MethodServiceTest
             Id = Guid.NewGuid(),
             Name = "loggerLocal",
             Accessibility = Accessibility.Private,
-            Type = logger
+            ReferenceType = logger
         };
 
         var preparar = new Method
@@ -1863,7 +1863,7 @@ public class MethodServiceTest
             Id = Guid.NewGuid(),
             Name = "clavePrivada",
             Accessibility = Accessibility.Private,
-            Type = new Primitive(PrimitiveType.String),
+            ReferenceType = new Primitive(PrimitiveType.String),
             InvokedMethod = toStringInvoked
         };
 
@@ -1931,7 +1931,7 @@ public class MethodServiceTest
             Id = Guid.NewGuid(),
             Name = "Id",
             Accessibility = Accessibility.Public,
-            Type = new Primitive(PrimitiveType.Int)
+            ReferenceType = new Primitive(PrimitiveType.Int)
         };
 
         var validarIdentidad = new Method
@@ -1998,7 +1998,7 @@ public class MethodServiceTest
         {
             Id = Guid.NewGuid(),
             Name = "notificador",
-            Type = comunicacion,
+            ReferenceType = comunicacion,
             Accessibility = Accessibility.Protected,
         };
 
@@ -2066,7 +2066,7 @@ public class MethodServiceTest
         {
             Id = Guid.NewGuid(),
             Name = "inventarioDisponible",
-            Type = new Primitive(PrimitiveType.Bool),
+            ReferenceType = new Primitive(PrimitiveType.Bool),
             Accessibility = Accessibility.Private
         };
 

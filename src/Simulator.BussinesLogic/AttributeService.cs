@@ -25,8 +25,8 @@ public class AttributeService(IAttributeRepository attributeRepository, IClassRe
         var typeT = _classRepository.FindAll().FirstOrDefault(c => c.Name == type);
         ValidateAccesibility(attribute.Accessibility);
         ValidateStereotype(attribute.Stereotype);
-        ValidateAttributeType(attribute.Type);
-        attribute.Type = typeT;
+        ValidateAttributeType(attribute.ReferenceType);
+        attribute.ReferenceType = typeT;
         _attributeRepository.Add(attribute);
         return attribute.Id;
     }
@@ -67,7 +67,7 @@ public class AttributeService(IAttributeRepository attributeRepository, IClassRe
         var invokeT = _invokeMethodRepository.Find(idInvokeGuid);
         ValidateAttributeExist(attributeT);
         ValidateInvokedMethodExist(invokeT);
-        ValidateTypeIsPrimitive(attributeT.Type);
+        ValidateTypeIsPrimitive(attributeT.ReferenceType);
         attributeT.InvokedMethod = invokeT;
         _attributeRepository.Update(attributeT);
     }
