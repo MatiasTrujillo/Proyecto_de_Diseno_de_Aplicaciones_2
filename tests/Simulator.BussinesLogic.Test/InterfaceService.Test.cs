@@ -25,6 +25,8 @@ public class InterfaceService_Test
         _mockClassRepository = new Mock<IClassRepository>(MockBehavior.Strict);
         _mockInterfaceRepository
             .Setup(repo => repo.Add(It.IsAny<Interface>()));
+        _mockClassRepository.Setup(r => r.FindAllTypes())
+            .Returns([]);
         dto = new InterfaceDTO
         {
             Name = "Interfaz"
@@ -84,9 +86,6 @@ public class InterfaceService_Test
     [TestMethod]
     public void CreateInterface_ShouldThrowException_WhenNameDoesNotStartWithUpperCase()
     {
-        _mockClassRepository.Setup(r => r.FindAllTypes())
-            .Returns([]);
-
         var exception = Assert.ThrowsException<InterfaceException>(() =>
         {
             _interfaceService.CreateInterface(lowerCaseNameDto);
@@ -114,11 +113,9 @@ public class InterfaceService_Test
     {
         var id = Guid.NewGuid();
         var original = new Interface("Una interfaz") { Id = id };
+        _interfaceService.CreateInterface(dto);
 
-        _mockInterfaceRepository.Setup(r => r.Find(id)).Returns(original);
-        _mockClassRepository.Setup(r => r.FindAllTypes()).Returns([original]);
         _mockInterfaceRepository.Setup(r => r.Delete(It.IsAny<Guid>()));
-
         _interfaceService.DeleteInterface(id);
 
         _mockInterfaceRepository.Verify(r => r.Delete(id), Times.Once);

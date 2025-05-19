@@ -70,7 +70,6 @@ public class InterfaceService(
 
     public void DeleteInterface(Guid id)
     {
-        var anInterface = _interfaceRepository.Find(id);
         _interfaceRepository.Delete(id);
     }
 }
