@@ -275,18 +275,17 @@ public class MethodService(
         var result = new List<string>();
         var invokedMethodMethod = _methodRepository.Find(invokedMethod.MethodId);
 
-        var aClass = oTC;
-        aClass = FindClassWithMethod(aClass, invokedMethodMethod);
-        if(CheckClassHasMethod(aClass, invokedMethodMethod))
+        oTc = FindClassWithMethod(oTc, invokedMethodMethod);
+        if(CheckClassHasMethod(oTc, invokedMethodMethod))
         {
-            result.Add(AddToResult(invokedMethod.ReferenceName, aClass.Name, invokedMethodMethod));
+            result.Add(AddToResult(invokedMethod.ReferenceName, oTc.Name, invokedMethodMethod));
 
             if(CheckOriginal(invokedMethodMethod, originalMethod))
             {
                 return result;
             }
 
-            invokedMethodMethod = aClass.Methods.Find(x => x.Name == invokedMethodMethod.Name);
+            invokedMethodMethod = oTc.Methods.Find(x => x.Name == invokedMethodMethod.Name);
             result = result.Concat(ConcatNext(oTc, oTc, invokedMethodMethod!, originalMethod)).ToList();
         }
         else
