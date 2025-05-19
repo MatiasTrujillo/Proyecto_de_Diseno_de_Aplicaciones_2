@@ -74,13 +74,17 @@ public class InterfaceService(
     {
         var interfaces = _interfaceRepository.FindAll();
         VerifyExistsInterface(id, interfaces);
+        VerifyInterfaceInUse(id);
+        _interfaceRepository.Delete(id);
+    }
+
+    private void VerifyInterfaceInUse(Guid id)
+    {
         var classes = _classRepository.FindAll();
         if(classes.Any(c => c.HierarchyClass != null && c.HierarchyClass.Id == id))
         {
             throw new InterfaceInUseException("Interface is associated with a class.");
         }
-
-        _interfaceRepository.Delete(id);
     }
 
     private static void VerifyExistsInterface(Guid id, List<Interface> interfaces)

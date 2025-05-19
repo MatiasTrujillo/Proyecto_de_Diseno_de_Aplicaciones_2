@@ -114,6 +114,7 @@ public class InterfaceService_Test
         var entity = dto.ToEntity();
         var id = entity.Id;
         _mockInterfaceRepository.Setup(r => r.FindAll()).Returns([entity]);
+        _mockClassRepository.Setup(r => r.FindAll()).Returns([]);
 
         _interfaceService.CreateInterface(dto);
 
