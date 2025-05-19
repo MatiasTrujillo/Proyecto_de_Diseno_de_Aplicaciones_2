@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Simulator.BussinesLogic.Exception;
 using Simulator.Domain;
 using Simulator.DTO;
@@ -73,6 +74,11 @@ public class InterfaceService(
     {
         var interfaces = _interfaceRepository.FindAll();
         VerifyExistsInterface(id, interfaces);
+        var classes = _classRepository.FindAll();
+        if(classes.Any(c => c.HierarchyClass != null && c.HierarchyClass.Id == id))
+        {
+            throw new InterfaceInUseException("Interface is associated with a class.");
+        }
 
         _interfaceRepository.Delete(id);
     }

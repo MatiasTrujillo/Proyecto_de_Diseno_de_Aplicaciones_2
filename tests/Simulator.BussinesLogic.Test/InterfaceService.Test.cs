@@ -148,13 +148,13 @@ public class InterfaceService_Test
         aClass.HierarchyClass = entity;
 
         _mockInterfaceRepository.Setup(r => r.Delete(It.IsAny<Guid>()));
-        _mockInterfaceRepository.Setup(r => r.FindAll()).Returns([]);
+        _mockInterfaceRepository.Setup(r => r.FindAll()).Returns([entity]);
         _mockClassRepository.Setup(r => r.FindAll()).Returns([aClass]);
-        var exception = Assert.ThrowsException<InterfaceNotFoundException>(() =>
+        var exception = Assert.ThrowsException<InterfaceInUseException>(() =>
         {
             _interfaceService.DeleteInterface(id);
         });
 
-        Assert.AreEqual("Interface is associated with a class", exception.Message);
+        Assert.AreEqual("Interface is associated with a class.", exception.Message);
     }
 }
