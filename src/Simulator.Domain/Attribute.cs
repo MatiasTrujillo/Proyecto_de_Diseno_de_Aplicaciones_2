@@ -42,6 +42,18 @@ public class Attribute
         Stereotype = stereotype;
     }
 
+    public Attribute(string name, Accessibility accessibility, Type referenceType, Type instanceType, KeyWord? stereotype)
+    {
+        ValidateAttributes(name);
+        Id = Guid.NewGuid();
+        Name = name;
+        Accessibility = accessibility;
+        ReferenceType = referenceType;
+        InstanceType = instanceType;
+        InvokedMethod = null;
+        Stereotype = stereotype;
+    }
+
     private static readonly HashSet<string> ReservedKeywords =
     [
         "base",

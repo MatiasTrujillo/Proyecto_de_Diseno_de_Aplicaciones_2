@@ -42,7 +42,11 @@ public class AttributeServiceTest
         {
             Name = "Agility",
             Accessibility = Accessibility.Public,
-            Type = new TypeDTO
+            ReferenceType = new TypeDTO
+            {
+                Name = "TestType"
+            },
+            InstanceType = new TypeDTO
             {
                 Name = "TestType"
             }
@@ -53,16 +57,17 @@ public class AttributeServiceTest
             Id = Guid.NewGuid(),
             Name = "Strength",
             Accessibility = Accessibility.Private,
-            ReferenceType = new Type { Name = dto.Type.Name }
+            ReferenceType = new Type { Name = dto.ReferenceType.Name },
+            InstanceType = new Type { Name = dto.ReferenceType.Name }
         };
 
         _mockClassRepository
             .Setup(repo => repo.FindAll())
-            .Returns([new Class { Name = dto.Type.Name }]);
+            .Returns([new Class { Name = dto.ReferenceType.Name }]);
 
         _mockClassRepository
             .Setup(repo => repo.FindAllTypes())
-            .Returns([new Class { Name = dto.Type.Name }]);
+            .Returns([new Class { Name = dto.ReferenceType.Name }]);
 
         _mockAttributeRepository
             .Setup(repo => repo.Find(It.IsAny<Guid>()))
@@ -78,7 +83,7 @@ public class AttributeServiceTest
                 a.Name == dto.Name &&
                 a.Accessibility == dto.Accessibility &&
                 a.ReferenceType != null &&
-                a.ReferenceType.Name == dto.Type.Name)), Times.Once);
+                a.ReferenceType.Name == dto.ReferenceType.Name)), Times.Once);
     }
 
     [TestMethod]
@@ -151,7 +156,8 @@ public class AttributeServiceTest
         {
             Name = "Agility",
             Accessibility = Accessibility.Public,
-            Type = new TypeDTO { Name = "TestType" }
+            ReferenceType = new TypeDTO { Name = "TestType" },
+            InstanceType = new TypeDTO { Name = "TestType" }
         };
 
         var attribute = new Attribute
@@ -159,12 +165,13 @@ public class AttributeServiceTest
             Id = Guid.NewGuid(),
             Name = "Agility",
             Accessibility = Accessibility.Public,
-            ReferenceType = new Type { Name = dto.Type.Name }
+            ReferenceType = new Type { Name = dto.ReferenceType.Name },
+            InstanceType = new Type { Name = dto.ReferenceType.Name }
         };
 
         _mockClassRepository
             .Setup(repo => repo.FindAll())
-            .Returns([new Class { Name = dto.Type.Name }]);
+            .Returns([new Class { Name = dto.ReferenceType.Name }]);
 
         _mockClassRepository
             .Setup(repo => repo.FindAllTypes())
@@ -189,7 +196,7 @@ public class AttributeServiceTest
         {
             Name = "Agility",
             Accessibility = Accessibility.Public,
-            Type = new TypeDTO { Name = aClass1.Name },
+            ReferenceType = new TypeDTO { Name = aClass1.Name },
             InstanceType = new TypeDTO { Name = aClass2.Name },
         };
 
@@ -198,7 +205,7 @@ public class AttributeServiceTest
             Id = Guid.NewGuid(),
             Name = "Agility",
             Accessibility = Accessibility.Public,
-            ReferenceType = new Type { Name = dto.Type.Name },
+            ReferenceType = new Type { Name = dto.ReferenceType.Name },
             InstanceType = new Type { Name = dto.InstanceType.Name }
         };
 
@@ -214,7 +221,7 @@ public class AttributeServiceTest
             .Setup(repo => repo.Find(It.IsAny<Guid>()))
             .Returns(null);*/
 
-        var exception = Assert.ThrowsException<TypeNotFoundException>(() =>
+        var exception = Assert.ThrowsException<InvalidAttributeException>(() =>
             _attributeService.CreateAttribute(dto));
 
         Assert.AreEqual("Instance Type is not a subclass of Reference Type", exception.Message);
@@ -227,7 +234,8 @@ public class AttributeServiceTest
         {
             Name = string.Empty,
             Accessibility = Accessibility.Public,
-            Type = new TypeDTO { Name = "TestType" }
+            ReferenceType = new TypeDTO { Name = "TestType" },
+            InstanceType = new TypeDTO { Name = "TestType" }
         };
 
         var classEntity = new Class
@@ -259,7 +267,8 @@ public class AttributeServiceTest
         {
             Name = reservedName,
             Accessibility = Accessibility.Public,
-            Type = new TypeDTO { Name = "TestType" }
+            ReferenceType = new TypeDTO { Name = "TestType" },
+            InstanceType = new TypeDTO { Name = "TestType" }
         };
 
         var classEntity = new Class
@@ -289,7 +298,8 @@ public class AttributeServiceTest
         {
             Name = longName,
             Accessibility = Accessibility.Public,
-            Type = new TypeDTO { Name = "TestType" }
+            ReferenceType = new TypeDTO { Name = "TestType" },
+            InstanceType = new TypeDTO { Name = "TestType" }
         };
 
         var classEntity = new Class
@@ -319,7 +329,8 @@ public class AttributeServiceTest
         {
             Name = "Name",
             Accessibility = invalidAccessibility,
-            Type = new TypeDTO { Name = "SomeClass" }
+            ReferenceType = new TypeDTO { Name = "SomeClass" },
+            InstanceType = new TypeDTO { Name = "SomeClass" }
         };
 
         var classEntity = new Class
@@ -578,7 +589,11 @@ public class AttributeServiceTest
         {
             Name = "Agility",
             Accessibility = Accessibility.Public,
-            Type = new TypeDTO
+            ReferenceType = new TypeDTO
+            {
+                Name = "TestType"
+            },
+            InstanceType = new TypeDTO
             {
                 Name = "TestType"
             },
@@ -590,17 +605,18 @@ public class AttributeServiceTest
             Id = Guid.NewGuid(),
             Name = "Strength",
             Accessibility = Accessibility.Private,
-            ReferenceType = new Type { Name = dto.Type.Name },
+            ReferenceType = new Type { Name = dto.ReferenceType.Name },
+            InstanceType = new Type { Name = dto.ReferenceType.Name },
             Stereotype = KeyWord.Static
         };
 
         _mockClassRepository
             .Setup(repo => repo.FindAll())
-            .Returns([new Class { Name = dto.Type.Name }]);
+            .Returns([new Class { Name = dto.ReferenceType.Name }]);
 
         _mockClassRepository
             .Setup(repo => repo.FindAllTypes())
-            .Returns([new Class { Name = dto.Type.Name }]);
+            .Returns([new Class { Name = dto.ReferenceType.Name }]);
 
         _mockAttributeRepository
             .Setup(repo => repo.Find(It.IsAny<Guid>()))
@@ -616,7 +632,7 @@ public class AttributeServiceTest
                 a.Name == dto.Name &&
                 a.Accessibility == dto.Accessibility &&
                 a.ReferenceType != null &&
-                a.ReferenceType.Name == dto.Type.Name)), Times.Once);
+                a.ReferenceType.Name == dto.ReferenceType.Name)), Times.Once);
     }
 
     [TestMethod]
@@ -626,7 +642,11 @@ public class AttributeServiceTest
         {
             Name = "Agility",
             Accessibility = Accessibility.Public,
-            Type = new TypeDTO
+            ReferenceType = new TypeDTO
+            {
+                Name = "TestType"
+            },
+            InstanceType = new TypeDTO
             {
                 Name = "TestType"
             },
@@ -638,17 +658,18 @@ public class AttributeServiceTest
             Id = Guid.NewGuid(),
             Name = "Strength",
             Accessibility = Accessibility.Private,
-            ReferenceType = new Type { Name = dto.Type.Name },
+            ReferenceType = new Type { Name = dto.ReferenceType.Name },
+            InstanceType = new Type { Name = dto.ReferenceType.Name },
             Stereotype = KeyWord.Static
         };
 
         _mockClassRepository
             .Setup(repo => repo.FindAll())
-            .Returns([new Class { Name = dto.Type.Name }]);
+            .Returns([new Class { Name = dto.ReferenceType.Name }]);
 
         _mockClassRepository
             .Setup(repo => repo.FindAllTypes())
-            .Returns([new Class { Name = dto.Type.Name }]);
+            .Returns([new Class { Name = dto.ReferenceType.Name }]);
 
         _mockAttributeRepository
             .Setup(repo => repo.Find(It.IsAny<Guid>()))

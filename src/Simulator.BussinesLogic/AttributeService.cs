@@ -21,11 +21,14 @@ public class AttributeService(IAttributeRepository attributeRepository, IClassRe
     public Guid CreateAttribute(AttributeDto aDTO)
     {
         var attribute = aDTO.ToEntity();
-        var type = aDTO.Type.Name;
+        var type = aDTO.ReferenceType.Name;
+        var instanceType = aDTO.InstanceType.Name;
         var typeT = _classRepository.FindAll().FirstOrDefault(c => c.Name == type);
+        var instanceTypeT = _classRepository.FindAll().FirstOrDefault(c => c.Name == instanceType);
         ValidateAccesibility(attribute.Accessibility);
         ValidateStereotype(attribute.Stereotype);
         ValidateAttributeType(attribute.ReferenceType);
+        ValidateInstanceClass(typeT, instanceTypeT);
         attribute.ReferenceType = typeT;
         _attributeRepository.Add(attribute);
         return attribute.Id;
@@ -222,5 +225,41 @@ public class AttributeService(IAttributeRepository attributeRepository, IClassRe
         {
             throw new InvalidAttributeException("Invalid stereotype value. Attribute stereotype can only be null or static.");
         }
+    }
+
+    private void ValidateInstanceClass(Type? referenceType, Type? instanceType)
+    {
+        if(BothPrimitiveButDifferent(referenceType, instanceType) || ReferenceNotPrimitive(referenceType, instanceType) || InstanceNotPrimitive(referenceType, instanceType))
+        {
+            throw new InvalidAttributeException("Invalid reference type or instance type. If one is primitive, both should be primitive. If both are, then they must be the same.");
+        }
+
+        if(referenceType is Class reference && instanceType is Class instance)
+        {
+            if(reference != instance && instance.HierarchyClass == null)
+            {
+                throw new InvalidAttributeException("Instance Type is not a subclass of Reference Type");
+            }
+
+            if(reference != instance && instance.HierarchyClass != reference)
+            {
+                ValidateInstanceClass(referenceType, instanceType);
+            }
+        }
+    }
+
+    private bool InstanceNotPrimitive(Type? referenceType, Type? instanceType)
+    {
+        return instanceType is not Primitive && referenceType is Primitive;
+    }
+
+    private bool ReferenceNotPrimitive(Type? referenceType, Type? instanceType)
+    {
+        return instanceType is Primitive && referenceType is not Primitive;
+    }
+
+    private bool BothPrimitiveButDifferent(Type? referenceType, Type? instanceType)
+    {
+        return instanceType is Primitive && referenceType is Primitive && referenceType != instanceType;
     }
 }

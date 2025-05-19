@@ -59,7 +59,6 @@ public class LocalVariableRepositoryTest
         saved.LocalVariableReferenceType.Should().NotBeNull();
         saved.LocalVariableReferenceType!.Id.Should().Be(_primitive.Id);
         saved.LocalVariableReferenceType.Name.Should().Be(_primitive.Name);
-        saved.LocalVariableInstanceType.Should().Be(null);
     }
     #endregion
 

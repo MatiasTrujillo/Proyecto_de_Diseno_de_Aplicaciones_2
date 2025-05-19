@@ -1228,13 +1228,13 @@ public class MethodServiceTest
     }
 
     [TestMethod]
-    public void ToEntity_ShouldThrowArgumentNullException_WhenTypeArgumentIsNull()
+    public void ToEntity_ShouldThrowArgumentNullException_WhenReferenceAndInstanceTypeArgumentAreNull()
     {
-        var dto = new AttributeDto { Name = "attr1", Accessibility = Accessibility.Private, Type = null };
+        var dto = new AttributeDto { Name = "attr1", Accessibility = Accessibility.Private, ReferenceType = null };
 
         var exception = Assert.ThrowsException<ArgumentNullException>(dto.ToEntity);
 
-        Assert.AreEqual("The Type property cannot be null. (Parameter 'Type')", exception.Message);
+        Assert.AreEqual("The Type property cannot be null. (Parameter 'ReferenceType')", exception.Message);
     }
 
     [TestMethod]
