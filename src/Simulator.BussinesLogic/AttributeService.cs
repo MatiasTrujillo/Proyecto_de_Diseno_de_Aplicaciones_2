@@ -52,7 +52,7 @@ public class AttributeService(IAttributeRepository attributeRepository, IClassRe
         ValidateName(uAttribute.Name, attribute);
         ValidateAccessibility(uAttribute.Accessibility, attribute);
         ManageStereotype(uAttribute.Stereotype, attribute);
-        ValidateAttributeTypeUp(uAttribute.IdType);
+        ValidateAttributeTypeUp(uAttribute.IdReferenceType);
         _attributeRepository.Update(attribute);
     }
 
