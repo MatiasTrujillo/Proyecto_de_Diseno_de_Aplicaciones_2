@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Simulator.BussinesLogic.Exception;
+using Simulator.Domain;
 using Simulator.DTO;
 using Simulator.IBussinesLogic;
 using Simulator.IDataAcces;
@@ -71,12 +72,16 @@ public class InterfaceService(
     public void DeleteInterface(Guid id)
     {
         var interfaces = _interfaceRepository.FindAll();
+        VerifyExistsInterface(id, interfaces);
 
+        _interfaceRepository.Delete(id);
+    }
+
+    private static void VerifyExistsInterface(Guid id, List<Interface> interfaces)
+    {
         if(!interfaces.Exists(interfaceT => interfaceT.Id == id))
         {
             throw new InterfaceNotFoundException("There is no interface with this id.");
         }
-
-        _interfaceRepository.Delete(id);
     }
 }
