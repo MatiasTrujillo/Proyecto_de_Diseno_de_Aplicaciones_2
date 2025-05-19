@@ -1,4 +1,3 @@
-using Simulator.Domain;
 using Simulator.DTO;
 
 namespace Simulator.IBussinesLogic;
