@@ -236,15 +236,20 @@ public class AttributeService(IAttributeRepository attributeRepository, IClassRe
 
         if(referenceType is Class reference && instanceType is Class instance)
         {
-            if(reference != instance && instance.HierarchyClass == null)
-            {
-                throw new InvalidAttributeException("Instance Type is not a subclass of Reference Type");
-            }
+            ValidateInstanceClassRecursive(reference, instance);
+        }
+    }
 
-            if(reference != instance && instance.HierarchyClass != reference)
-            {
-                ValidateInstanceClass(referenceType, instanceType);
-            }
+    private void ValidateInstanceClassRecursive(Class reference, Class instance)
+    {
+        if(reference != instance && instance.HierarchyClass == null)
+        {
+            throw new InvalidAttributeException("Instance Type is not a subclass of Reference Type");
+        }
+
+        if(reference != instance && instance.HierarchyClass != reference)
+        {
+            ValidateInstanceClassRecursive(reference, instance);
         }
     }
 
