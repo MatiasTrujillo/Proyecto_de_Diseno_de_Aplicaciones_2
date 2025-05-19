@@ -192,9 +192,4 @@ public class ClassService(
             throw new InvalidClassException("The 'Object' class cannot be updated.");
         }
     }
-
-    public void DeleteInterface(Guid id)
-    {
-        throw new NotImplementedException();
-    }
 }

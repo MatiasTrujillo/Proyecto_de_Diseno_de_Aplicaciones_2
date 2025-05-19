@@ -70,6 +70,7 @@ public class InterfaceService(
 
     public void DeleteInterface(Guid id)
     {
-        throw new NotImplementedException();
+        var anInterface = _interfaceRepository.Find(id);
+        _interfaceRepository.Delete(id);
     }
 }
