@@ -17,6 +17,7 @@ public class InterfaceService_Test
     private InterfaceDTO emptyNameDto = null!;
     private InterfaceDTO lowerCaseNameDto = null!;
     private InterfaceDTO nameWithSpacesDto = null!;
+    private readonly Guid dtoId = Guid.NewGuid();
 
     [TestInitialize]
     public void Initialize()
@@ -111,13 +112,23 @@ public class InterfaceService_Test
     [TestMethod]
     public void DeleteInterface_ShouldDeleteInterface_WhenValid()
     {
-        var id = Guid.NewGuid();
-        var original = new Interface("Una interfaz") { Id = id };
         _interfaceService.CreateInterface(dto);
 
         _mockInterfaceRepository.Setup(r => r.Delete(It.IsAny<Guid>()));
-        _interfaceService.DeleteInterface(id);
+        _interfaceService.DeleteInterface(dtoId);
 
-        _mockInterfaceRepository.Verify(r => r.Delete(id), Times.Once);
+        _mockInterfaceRepository.Verify(r => r.Delete(dtoId), Times.Once);
+    }
+
+    [TestMethod]
+    public void DeleteInterface_ShouldThrowException_WhenInterfaceNotExists()
+    {
+        _mockInterfaceRepository.Setup(r => r.Delete(It.IsAny<Guid>()));
+        var exception = Assert.ThrowsException<InterfaceException>(() =>
+        {
+            _interfaceService.DeleteInterface(dtoId);
+        });
+
+        Assert.AreEqual("There is no interface with this id.", exception.Message);
     }
 }
