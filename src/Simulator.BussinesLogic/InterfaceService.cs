@@ -19,24 +19,30 @@ public class InterfaceService(
     {
         var anInterface = interfaceDto.ToEntity();
         var types = _classRepository.FindAllTypes();
-        VerifyNameIsNotEmpty(interfaceDto);
-        VerifyNameStartsWithUpperCase(interfaceDto);
+        VerifyName(interfaceDto);
         VerifyInterfaceNameAlreadyExists(interfaceDto, types);
         _interfaceRepository.Add(anInterface);
         return anInterface.Id;
     }
 
-    private static void VerifyNameIsNotEmpty(InterfaceDTO interfaceDto)
+    private static void VerifyName(InterfaceDTO interfaceDto)
     {
-        if(string.IsNullOrWhiteSpace(interfaceDto.Name))
+        var name = interfaceDto.Name;
+        VerifyNameIsNotEmpty(name);
+        VerifyNameStartsWithUpperCase(name);
+    }
+
+    private static void VerifyNameIsNotEmpty(string name)
+    {
+        if(string.IsNullOrWhiteSpace(name))
         {
             throw new InterfaceException("The interface name cannot be empty.");
         }
     }
 
-    private static void VerifyNameStartsWithUpperCase(InterfaceDTO interfaceDto)
+    private static void VerifyNameStartsWithUpperCase(string name)
     {
-        if(!char.IsUpper(interfaceDto.Name[0]))
+        if(!char.IsUpper(name[0]))
         {
             throw new InterfaceException("The interface name must start with an uppercase letter.");
         }
