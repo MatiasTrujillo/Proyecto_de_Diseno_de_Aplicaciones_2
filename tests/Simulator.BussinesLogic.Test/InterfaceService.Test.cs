@@ -138,4 +138,23 @@ public class InterfaceService_Test
 
         Assert.AreEqual("There is no interface with this id.", exception.Message);
     }
+
+    [TestMethod]
+    public void DeleteInterface_ShouldThrowException_WhenInterfaceIsBeingUsed()
+    {
+        var entity = dto.ToEntity();
+        var id = entity.Id;
+        var aClass = new Class();
+        aClass.HierarchyClass = entity;
+
+        _mockInterfaceRepository.Setup(r => r.Delete(It.IsAny<Guid>()));
+        _mockInterfaceRepository.Setup(r => r.FindAll()).Returns([]);
+        _mockClassRepository.Setup(r => r.FindAll()).Returns([aClass]);
+        var exception = Assert.ThrowsException<InterfaceNotFoundException>(() =>
+        {
+            _interfaceService.DeleteInterface(id);
+        });
+
+        Assert.AreEqual("Interface is associated with a class", exception.Message);
+    }
 }

@@ -5,7 +5,7 @@ namespace Simulator.Domain;
 public class Class : Type
 {
     public KeyWord? Stereotype { get; set; }
-    public virtual Class? HierarchyClass { get; set; }
+    public virtual Type? HierarchyClass { get; set; }
     public virtual List<Attribute>? Attributes { get; set; }
 
     public Class()
