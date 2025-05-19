@@ -30,6 +30,10 @@ public class InterfaceService(
         var name = interfaceDto.Name;
         VerifyNameIsNotEmpty(name);
         VerifyNameStartsWithUpperCase(name);
+        if(name.Contains(' '))
+        {
+            throw new InterfaceException("The interface name must not contain spaces.");
+        }
     }
 
     private static void VerifyNameIsNotEmpty(string name)

@@ -16,6 +16,7 @@ public class InterfaceService_Test
     private InterfaceDTO dto = null!;
     private InterfaceDTO emptyNameDto = null!;
     private InterfaceDTO lowerCaseNameDto = null!;
+    private InterfaceDTO nameWithSpacesDto = null!;
 
     [TestInitialize]
     public void Initialize()
@@ -33,6 +34,7 @@ public class InterfaceService_Test
             Name = string.Empty,
         };
         lowerCaseNameDto = new InterfaceDTO() { Name = "interfaz" };
+        nameWithSpacesDto = new InterfaceDTO() { Name = "Hola " };
         _interfaceService = new InterfaceService(_mockInterfaceRepository.Object, _mockClassRepository.Object);
     }
 
@@ -101,7 +103,7 @@ public class InterfaceService_Test
 
         var exception = Assert.ThrowsException<InterfaceException>(() =>
         {
-            _interfaceService.CreateInterface(lowerCaseNameDto);
+            _interfaceService.CreateInterface(nameWithSpacesDto);
         });
 
         Assert.AreEqual("The interface name must not contain spaces.", exception.Message);
