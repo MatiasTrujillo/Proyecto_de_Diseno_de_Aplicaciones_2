@@ -78,6 +78,11 @@ public class InterfaceService(
         _interfaceRepository.Delete(id);
     }
 
+    public void UpdateInterface(Guid id, UpdateInterfaceDTO uInterfaceDto)
+    {
+        throw new NotImplementedException();
+    }
+
     private void VerifyInterfaceInUse(Guid id)
     {
         var classes = _classRepository.FindAll();

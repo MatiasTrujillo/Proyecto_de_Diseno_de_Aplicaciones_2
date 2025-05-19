@@ -42,7 +42,11 @@ public class InterfaceRepository(SqlContext context) : IInterfaceRepository
 
     public void Delete(Guid id)
     {
-        Interface existingInterface = Find(id);
+        Interface existingInterface = null!;
+        if(Exist(id))
+        {
+            existingInterface = Find(id);
+        }
 
         context.Interfaces.Remove(existingInterface);
         context.SaveChanges();
