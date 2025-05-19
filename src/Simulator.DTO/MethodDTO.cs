@@ -8,10 +8,11 @@ public class MethodDTO
     public Accessibility Accessibility { get; set; } = Accessibility.Public;
     public KeyWord? Stereotype { get; set; } = null;
     public TypeDTO? ReturnType { get; set; } = null;
+    public bool IsOverride { get; set; }
 
     public Method ToEntity()
     {
         var returnType = ReturnType?.ToEntity() ?? null;
-        return new Method(Name, Accessibility, Stereotype, [], [], [], returnType);
+        return new Method(Name, Accessibility, Stereotype, [], [], [], returnType, IsOverride);
     }
 }

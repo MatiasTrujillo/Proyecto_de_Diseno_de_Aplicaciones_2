@@ -15,5 +15,10 @@ public enum KeyWord
     /// <summary>
     /// Indicates that the class is static
     /// </summary>
-    Static
+    Static,
+
+    /// <summary>
+    /// Indicates that the class is virtual
+    /// </summary>
+    Virtual
 }

@@ -21,6 +21,7 @@ public sealed class SqlContext : DbContext
     public DbSet<Parameter> Parameters { get; set; }
     public DbSet<LocalVariable> LocalVariables { get; set; }
     public DbSet<InvokedMethod> InvokedMethods { get; set; }
+    public DbSet<NameSpace> NameSpaces { get; set; }
     public DbSet<Interface> Interfaces { get; set; }
     public DbSet<MethodSignature> MethodSignatures { get; set; }
 
@@ -31,6 +32,11 @@ public sealed class SqlContext : DbContext
 
         modelBuilder.Entity<Class>()
             .HasBaseType<Type>();
+
+        modelBuilder.Entity<Class>()
+            .HasOne(c => c.NameSpace)
+            .WithMany()
+            .HasForeignKey("NameSpaceId");
 
         modelBuilder.Entity<Primitive>()
             .HasBaseType<Type>();
@@ -122,6 +128,7 @@ public sealed class SqlContext : DbContext
 
     private void ConfigSeedData(ModelBuilder modelBuilder)
     {
+        var systemNameSpaceId = Guid.Parse("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaab");
         var parseMethodId = Guid.Parse("44444444-4444-4444-4444-444444444444");
         var maxValueMethodId = Guid.Parse("55555555-5555-5555-5555-555555555555");
         var minValueMethodId = Guid.Parse("66666666-6666-6666-6666-666666666666");
@@ -141,14 +148,21 @@ public sealed class SqlContext : DbContext
         var stringTypeId = Guid.Parse("22222222-2222-2222-2222-222222222222");
         var intTypeId = Guid.Parse("33333333-3333-3333-3333-333333333333");
 
-        modelBuilder.Entity<Class>().HasData(
-            new
-            {
-                Id = classId,
-                Name = "Object",
-                Stereotype = (KeyWord?)null,
-                HierarchyClass = (Guid?)null
-            });
+        modelBuilder.Entity<NameSpace>().HasData(new
+        {
+            Id = systemNameSpaceId,
+            Name = "System",
+            FatherId = (Guid?)null
+        });
+
+        modelBuilder.Entity<Class>().HasData(new
+        {
+            Id = classId,
+            Name = "Object",
+            Stereotype = (KeyWord?)null,
+            HierarchyClass = (Guid?)null,
+            NameSpaceId = systemNameSpaceId
+        });
 
         modelBuilder.Entity<Primitive>().HasData(
             new
@@ -256,6 +270,7 @@ public sealed class SqlContext : DbContext
                 Accessibility = Accessibility.Public,
                 Stereotype = (KeyWord?)null,
                 ReturnTypeId = stringTypeId,
+                IsOverride = false,
             },
             new
             {
@@ -264,6 +279,7 @@ public sealed class SqlContext : DbContext
                 Accessibility = Accessibility.Public,
                 Stereotype = (KeyWord?)null,
                 ReturnTypeId = stringTypeId,
+                IsOverride = false,
             },
             new
             {
@@ -272,6 +288,7 @@ public sealed class SqlContext : DbContext
                 Accessibility = Accessibility.Public,
                 Stereotype = (KeyWord?)null,
                 ReturnTypeId = boolTypeId,
+                IsOverride = false,
             },
             new
             {
@@ -280,6 +297,7 @@ public sealed class SqlContext : DbContext
                 Accessibility = Accessibility.Public,
                 Stereotype = (KeyWord?)null,
                 ReturnTypeId = intTypeId,
+                IsOverride = false,
             });
 
         modelBuilder.Entity("TypeMethod").HasData(
@@ -343,7 +361,8 @@ public sealed class SqlContext : DbContext
                 Name = "Parse",
                 Accessibility = Accessibility.Public,
                 Stereotype = (KeyWord?)null,
-                ReturnTypeId = intTypeId
+                ReturnTypeId = intTypeId,
+                IsOverride = false
             },
             new
             {
@@ -351,7 +370,8 @@ public sealed class SqlContext : DbContext
                 Name = "MaxValue",
                 Accessibility = Accessibility.Public,
                 Stereotype = (KeyWord?)null,
-                ReturnTypeId = intTypeId
+                ReturnTypeId = intTypeId,
+                IsOverride = false
             },
             new
             {
@@ -359,7 +379,8 @@ public sealed class SqlContext : DbContext
                 Name = "MinValue",
                 Accessibility = Accessibility.Public,
                 Stereotype = (KeyWord?)null,
-                ReturnTypeId = intTypeId
+                ReturnTypeId = intTypeId,
+                IsOverride = false
             },
             new
             {
@@ -367,7 +388,8 @@ public sealed class SqlContext : DbContext
                 Name = "CompareTo",
                 Accessibility = Accessibility.Public,
                 Stereotype = (KeyWord?)null,
-                ReturnTypeId = intTypeId
+                ReturnTypeId = intTypeId,
+                IsOverride = false
             },
             new
             {
@@ -375,7 +397,8 @@ public sealed class SqlContext : DbContext
                 Name = "ToString",
                 Accessibility = Accessibility.Public,
                 Stereotype = (KeyWord?)null,
-                ReturnTypeId = stringTypeId
+                ReturnTypeId = stringTypeId,
+                IsOverride = false
             },
             new
             {
@@ -383,7 +406,8 @@ public sealed class SqlContext : DbContext
                 Name = "ToLowerCase",
                 Accessibility = Accessibility.Public,
                 Stereotype = (KeyWord?)null,
-                ReturnTypeId = stringTypeId
+                ReturnTypeId = stringTypeId,
+                IsOverride = false
             },
             new
             {
@@ -391,7 +415,8 @@ public sealed class SqlContext : DbContext
                 Name = "ToUpperCase",
                 Accessibility = Accessibility.Public,
                 Stereotype = (KeyWord?)null,
-                ReturnTypeId = stringTypeId
+                ReturnTypeId = stringTypeId,
+                IsOverride = false
             },
             new
             {
@@ -399,7 +424,8 @@ public sealed class SqlContext : DbContext
                 Name = "IsNullOrEmpty",
                 Accessibility = Accessibility.Public,
                 Stereotype = (KeyWord?)null,
-                ReturnTypeId = boolTypeId
+                ReturnTypeId = boolTypeId,
+                IsOverride = false
             },
             new
             {
@@ -407,7 +433,8 @@ public sealed class SqlContext : DbContext
                 Name = "Equals",
                 Accessibility = Accessibility.Public,
                 Stereotype = (KeyWord?)null,
-                ReturnTypeId = boolTypeId
+                ReturnTypeId = boolTypeId,
+                IsOverride = false
             });
         modelBuilder.Entity("TypeMethod").HasData(
             new Dictionary<string, object> { ["TypeId"] = intTypeId, ["MethodsId"] = parseMethodId },
