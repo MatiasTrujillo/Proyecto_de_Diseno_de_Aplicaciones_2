@@ -15,6 +15,7 @@ public class InterfaceService_Test
     private InterfaceService _interfaceService = null!;
     private InterfaceDTO dto = null!;
     private InterfaceDTO emptyNameDto = null!;
+    private InterfaceDTO lowerCaseNameDto = null!;
 
     [TestInitialize]
     public void Initialize()
@@ -31,6 +32,7 @@ public class InterfaceService_Test
         {
             Name = string.Empty,
         };
+        lowerCaseNameDto = new InterfaceDTO() { Name = "interfaz" };
         _interfaceService = new InterfaceService(_mockInterfaceRepository.Object, _mockClassRepository.Object);
     }
 
@@ -75,5 +77,19 @@ public class InterfaceService_Test
         });
 
         Assert.AreEqual("The interface name cannot be empty.", exception.Message);
+    }
+
+    [TestMethod]
+    public void CreateInterface_ShouldThrowException_WhenNameDoesNotStartWithUpperCase()
+    {
+        _mockClassRepository.Setup(r => r.FindAllTypes())
+            .Returns([]);
+
+        var exception = Assert.ThrowsException<InterfaceException>(() =>
+        {
+            _interfaceService.CreateInterface(lowerCaseNameDto);
+        });
+
+        Assert.AreEqual("The interface name must start with an uppercase letter.", exception.Message);
     }
 }
