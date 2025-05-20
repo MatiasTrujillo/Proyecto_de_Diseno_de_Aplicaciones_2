@@ -8,10 +8,14 @@ public class MethodSignatureRepository_Test
 {
     private readonly SqlContext _context = ProgramTest.BuildTestDbContext();
     private readonly MethodSignatureRepository _repository;
+    private readonly MethodSignature aSignature;
+    private readonly Primitive type;
 
     public MethodSignatureRepository_Test()
     {
         _repository = new MethodSignatureRepository(_context);
+        type = new Primitive();
+        aSignature = new MethodSignature("ASignature", type, []);
     }
 
     [TestInitialize]
@@ -26,11 +30,10 @@ public class MethodSignatureRepository_Test
         _context.Database.EnsureDeleted();
     }
 
+    #region Add
     [TestMethod]
     public void Add_WhenGivenValidMethodSignatureProvided_ShouldAddItToRepository()
     {
-        var type = new Primitive();
-        var aSignature = new MethodSignature("ASignature", type, []);
         _repository.Add(aSignature);
 
         using var otherContext = ProgramTest.BuildTestDbContext();
@@ -40,4 +43,5 @@ public class MethodSignatureRepository_Test
         saved[0].Id.Should().Be(aSignature.Id);
         saved[0].Name.Should().Be(aSignature.Name);
     }
+    #endregion
 }
