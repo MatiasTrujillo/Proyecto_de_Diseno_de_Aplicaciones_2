@@ -17,6 +17,7 @@ public class InterfaceService_Test
     private InterfaceDTO emptyNameDto = null!;
     private InterfaceDTO lowerCaseNameDto = null!;
     private InterfaceDTO nameWithSpacesDto = null!;
+    private Mock<IMethodSignatureRepository> _mockMethodSignatureRepository = null!;
 
     [TestInitialize]
     public void Initialize()
@@ -37,7 +38,8 @@ public class InterfaceService_Test
         };
         lowerCaseNameDto = new InterfaceDTO() { Name = "interfaz" };
         nameWithSpacesDto = new InterfaceDTO() { Name = "Hola " };
-        _interfaceService = new InterfaceService(_mockInterfaceRepository.Object, _mockClassRepository.Object);
+        _mockMethodSignatureRepository = new Mock<IMethodSignatureRepository>(MockBehavior.Strict);
+        _interfaceService = new InterfaceService(_mockInterfaceRepository.Object, _mockClassRepository.Object, _mockMethodSignatureRepository.Object);
     }
 
     [TestMethod]
@@ -168,13 +170,14 @@ public class InterfaceService_Test
         var parameter = new Parameter();
         var type = new Primitive(PrimitiveType.String);
         var signature = new MethodSignature("ASignature", type, [parameter]);
-        var _mockMethodSignatureRepository = new Mock<IMethodSignatureRepository>(MockBehavior.Strict);
         var updateInterfaceDto = new UpdateInterfaceDTO { IdMethodSignature = signature.Id };
 
         _mockMethodSignatureRepository.Setup(r => r.Find(It.IsAny<Guid>()))
             .Returns(signature);
         _mockClassRepository.Setup(r => r.FindAllTypes())
             .Returns([]);
+        _mockInterfaceRepository.Setup(r => r.Find(id)).Returns(entity);
+        _mockInterfaceRepository.Setup(r => r.Update(It.IsAny<Interface>()));
 
         _interfaceService.CreateInterface(dto);
         _interfaceService.UpdateInterface(id, updateInterfaceDto);

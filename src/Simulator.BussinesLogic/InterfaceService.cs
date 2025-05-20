@@ -12,10 +12,11 @@ namespace Simulator.BussinesLogic;
 
 public class InterfaceService(
     IInterfaceRepository interfaceRepository,
-    IClassRepository classRepository) : IInterfaceService
+    IClassRepository classRepository, IMethodSignatureRepository methodSignatureRepository) : IInterfaceService
 {
     private readonly IInterfaceRepository _interfaceRepository = interfaceRepository;
     private readonly IClassRepository _classRepository = classRepository;
+    private readonly IMethodSignatureRepository _methodSignatureRepository = methodSignatureRepository;
 
     public Guid CreateInterface(InterfaceDTO interfaceDto)
     {
@@ -80,7 +81,10 @@ public class InterfaceService(
 
     public void UpdateInterface(Guid id, UpdateInterfaceDTO uInterfaceDto)
     {
-        throw new NotImplementedException();
+        var interfaceToUpdate = _interfaceRepository.Find(id);
+        var signatureToUpdate = _methodSignatureRepository.Find(uInterfaceDto.IdMethodSignature);
+        interfaceToUpdate.MethodSignatures.Add(signatureToUpdate);
+        _interfaceRepository.Update(interfaceToUpdate);
     }
 
     private void VerifyInterfaceInUse(Guid id)
