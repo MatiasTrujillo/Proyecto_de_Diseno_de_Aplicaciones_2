@@ -10,6 +10,9 @@ public class MethodSignatureRepository_Test
     private readonly MethodSignatureRepository _repository;
     private readonly MethodSignature aSignature;
     private readonly Primitive type;
+    private readonly Primitive secondPrimitive;
+    private readonly Parameter aParameter;
+    private readonly MethodSignature secondSignature;
 
     public MethodSignatureRepository_Test()
     {
@@ -18,6 +21,27 @@ public class MethodSignatureRepository_Test
         aSignature = new MethodSignature("ASignature", type, []);
         _context.Primitives.Add(type);
         _context.SaveChanges();
+        secondPrimitive = new Primitive
+        {
+            Id = Guid.NewGuid(),
+            Name = "string"
+        };
+
+        aParameter = new Parameter
+        {
+            Id = Guid.NewGuid(),
+            Name = "aParameter",
+            ParameterType = secondPrimitive,
+            InvokedMethod = null
+        };
+
+        secondSignature = new MethodSignature
+        {
+            Id = Guid.NewGuid(),
+            Name = "myOtherSignature",
+            ReturnType = secondPrimitive,
+            Parameters = [aParameter]
+        };
     }
 
     [TestInitialize]
@@ -73,28 +97,6 @@ public class MethodSignatureRepository_Test
     [TestMethod]
     public void FindAll_WhenMethodSignaturesExist_ShouldReturnAll()
     {
-        var secondPrimitive = new Primitive
-        {
-            Id = Guid.NewGuid(),
-            Name = "string"
-        };
-
-        var aParameter = new Parameter
-        {
-            Id = Guid.NewGuid(),
-            Name = "aParameter",
-            ParameterType = secondPrimitive,
-            InvokedMethod = null
-        };
-
-        var secondSignature = new MethodSignature
-        {
-            Id = Guid.NewGuid(),
-            Name = "myOtherSignature",
-            ReturnType = secondPrimitive,
-            Parameters = [aParameter]
-        };
-
         _context.Primitives.Add(secondPrimitive);
         _context.Parameters.Add(aParameter);
         _context.MethodSignatures.AddRange(aSignature, secondSignature);
