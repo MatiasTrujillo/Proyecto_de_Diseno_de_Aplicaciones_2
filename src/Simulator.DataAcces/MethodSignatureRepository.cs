@@ -24,7 +24,7 @@ public class MethodSignatureRepository(SqlContext context) : IMethodSignatureRep
 
     public List<MethodSignature> FindAll()
     {
-        throw new NotImplementedException();
+        return context.MethodSignatures.ToList();
     }
 
     public bool Exist(Guid id)
