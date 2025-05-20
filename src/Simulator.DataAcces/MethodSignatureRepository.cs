@@ -1,3 +1,4 @@
+using Microsoft.EntityFrameworkCore;
 using Simulator.Domain;
 using Simulator.IDataAcces;
 
@@ -17,18 +18,26 @@ public class MethodSignatureRepository(SqlContext context) : IMethodSignatureRep
         return signature;
     }
 
-    public void Update(MethodSignature signature)
+    public void Update(MethodSignature updated)
     {
-        throw new NotImplementedException();
+        var existing = context.MethodSignatures
+            .Include(ms => ms.Parameters)
+            .FirstOrDefault(ms => ms.Id == updated.Id);
+        if (existing == null)
+        {
+            return;
+        }
+
+        foreach (var param in updated.Parameters)
+        {
+            existing.Parameters.Add(param);
+        }
+
+        context.SaveChanges();
     }
 
     public List<MethodSignature> FindAll()
     {
         return context.MethodSignatures.ToList();
-    }
-
-    public bool Exist(Guid id)
-    {
-        throw new NotImplementedException();
     }
 }

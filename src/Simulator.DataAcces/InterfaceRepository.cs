@@ -16,7 +16,6 @@ public class InterfaceRepository(SqlContext context) : IInterfaceRepository
         var existingInterface = Find(anInterface.Id);
 
         existingInterface.Name = anInterface.Name;
-        existingInterface.MethodSignatures.Clear();
         foreach(var signature in anInterface.MethodSignatures)
         {
             existingInterface.MethodSignatures.Add(signature);

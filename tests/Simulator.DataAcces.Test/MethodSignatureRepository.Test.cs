@@ -127,6 +127,7 @@ public class MethodSignatureRepository_Test
             Parameters = [aParameter]
         };
 
+        _repository.Add(aSignature);
         _repository.Update(updatedSignature);
 
         using var refreshedContext = ProgramTest.BuildTestDbContext();

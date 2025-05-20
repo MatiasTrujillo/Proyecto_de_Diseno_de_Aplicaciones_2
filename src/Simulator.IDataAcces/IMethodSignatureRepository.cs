@@ -8,5 +8,4 @@ public interface IMethodSignatureRepository
     MethodSignature Find(Guid id);
     void Update(MethodSignature signature);
     List<MethodSignature> FindAll();
-    bool Exist(Guid id);
 }
