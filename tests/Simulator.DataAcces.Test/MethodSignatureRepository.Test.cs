@@ -116,6 +116,7 @@ public class MethodSignatureRepository_Test
     }
     #endregion
 
+    #region Update
     [TestMethod]
     public void Update_WhenMethodSignatureExists_ShouldOnlyAddAParameter()
     {
@@ -138,4 +139,5 @@ public class MethodSignatureRepository_Test
         updatedInDb!.Parameters.Should().HaveCount(1);
         updatedInDb.Parameters[0].Id.Should().Be(aParameter.Id);
     }
+    #endregion
 }
