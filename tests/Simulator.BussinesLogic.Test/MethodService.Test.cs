@@ -1916,9 +1916,9 @@ public class MethodServiceTest
             "\tthis.Preparar() -> Autenticador.Preparar()\n" +
             "\tthis.ValidarCredenciales(Usuario) -> AutenticadorPassword.ValidarCredenciales(Usuario)\n" +
             "\t\tusuario.Validar() -> Usuario.Validar()\n" +
-            "\t\tthis.clavePrivada.ToString() -> String.ToString()\n" + // la S deberia ser mayuscula o minuscula ??
+            "\t\tthis.clavePrivada.ToString() -> String.ToString()\n" +
             "\tthis.LogAcceso(Usuario) -> Autenticador.LogAcceso(Usuario)\n" +
-            "\tloggerLocal.Registrar(string) -> Logger.Registrar(string)"; // la S deberia ser mayuscula o minuscula ??
+            "\tloggerLocal.Registrar(string) -> Logger.Registrar(string)";
         Console.WriteLine(result);
         Assert.AreEqual(res, result);
     }

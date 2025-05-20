@@ -211,10 +211,8 @@ public class MethodService(
         return string.Join("\n", result);
     }
 
-    private List<string> WriteOtherLines(Type? refe, Type? oTC, Method method, Method originalMethod)
+    private List<string> WriteOtherLines(Class? refe, Class? oTC, Method method, Method originalMethod)
     {
-        var aRefe = refe as Class;
-        var oTc = oTC as Class;
         var result = new List<string>();
         for(var i = 0; i < method.Methods.Count; i++)
         {
@@ -224,7 +222,7 @@ public class MethodService(
 
             if(invokedMethod.ReferenceName == "this")
             {
-                result = result.Concat(CaseThis(invokedMethod, originalMethod, oTc)).ToList();
+                result = result.Concat(CaseThis(invokedMethod, originalMethod, oTC)).ToList();
                 if(result.Count > lines)
                 {
                     success = true;
@@ -234,7 +232,7 @@ public class MethodService(
 
             if(!success && invokedMethod.ReferenceName == "base")
             {
-                result = result.Concat(CaseBase(invokedMethod, aRefe, originalMethod)).ToList();
+                result = result.Concat(CaseBase(invokedMethod, refe, originalMethod)).ToList();
                 if(result.Count > lines)
                 {
                     success = true;
@@ -242,9 +240,9 @@ public class MethodService(
                 }
             }
 
-            if(!success && aRefe.Attributes != null)
+            if(!success && refe.Attributes != null)
             {
-                result = result.Concat(CaseAttribute(aRefe, invokedMethod, originalMethod)).ToList();
+                result = result.Concat(CaseAttribute(refe, invokedMethod, originalMethod)).ToList();
                 if(result.Count > lines)
                 {
                     success = true;
@@ -304,22 +302,37 @@ public class MethodService(
     {
         var result = new List<string>();
         var invokedMethodMethod = _methodRepository.Find(invokedMethod.MethodId);
-
+        Console.WriteLine("CaseThisAttribute- " + oTC.Attributes[0].InvokedMethod + " el invokedMethod");
         var anAttribute = oTC.Attributes!.FirstOrDefault(x =>
             x.InvokedMethod != null && x.InvokedMethod.MethodId == invokedMethod.MethodId);
-        var allPrimitives = _classRepository.FindAllTypes().OfType<Primitive>().ToList();
-        var aPrimitive = allPrimitives.Find(x => anAttribute.Type is Primitive p && x.PrimitiveType.ToString().ToLower() == p.PrimitiveType.ToString().ToLower());
 
-        if(anAttribute != null && aPrimitive != null)
+        if(anAttribute == null)
         {
-            result.Add(AddToResult($"this.{anAttribute.Name}", aPrimitive.PrimitiveType.ToString(), invokedMethodMethod));
+            return result;
+        }
 
-            if(CheckOriginal(invokedMethodMethod, originalMethod))
+        if(anAttribute.Type is Primitive attributePrimitive && invokedMethodMethod.Name == "ToString")
+        {
+            var primitiveTypeName = attributePrimitive.PrimitiveType.ToString();
+            result.Add(AddToResult($"this.{anAttribute.Name}", primitiveTypeName, invokedMethodMethod));
+            return result;
+        }
+
+        var allPrimitives = _classRepository.FindAllTypes().OfType<Primitive>().ToList();
+        if(anAttribute.Type is Primitive attributePrimitive2)
+        {
+            var aPrimitive = allPrimitives.Find(x => x.PrimitiveType == attributePrimitive2.PrimitiveType);
+            if(aPrimitive != null)
             {
-                return result;
-            }
+                result.Add(AddToResult($"this.{anAttribute.Name}", aPrimitive.PrimitiveType.ToString(), invokedMethodMethod));
 
-            result = result.Concat(ConcatNext(oTC, oTC, invokedMethodMethod, originalMethod)).ToList();
+                if(CheckOriginal(invokedMethodMethod, originalMethod))
+                {
+                    return result;
+                }
+
+                result = result.Concat(ConcatNext(oTC, oTC, invokedMethodMethod, originalMethod)).ToList();
+            }
         }
 
         return result;
@@ -337,7 +350,7 @@ public class MethodService(
             return result;
         }
 
-        result = result.Concat(ConcatNext(aRefe.HierarchyClass, aRefe.HierarchyClass, invokedMethodMethod, originalMethod)).ToList();
+        result = result.Concat(ConcatNext(aRefe.HierarchyClass as Class, aRefe.HierarchyClass as Class, invokedMethodMethod, originalMethod)).ToList();
 
         return result;
     }
@@ -525,14 +538,12 @@ public class MethodService(
         return actualMethod.Equals(originalMethod);
     }
 
-    private List<string> ConcatNext(Type? refe, Type? oTC, Method method, Method originalMethod)
+    private List<string> ConcatNext(Class? refe, Class? oTC, Method method, Method originalMethod)
     {
-        var aRefe = refe as Class;
-        var oTc = oTC as Class;
         List<string> result;
 
         _identation++;
-        result = WriteOtherLines(aRefe, oTc, method, originalMethod);
+        result = WriteOtherLines(refe, oTC, method, originalMethod);
         _identation--;
 
         return result;
@@ -540,13 +551,20 @@ public class MethodService(
 
     private Class FindClassWithMethod(Type? aClass, Method method)
     {
-        var oneClass = aClass as Class;
-        if(oneClass.HierarchyClass != null && !CheckClassHasMethod(oneClass, method))
+        var currentClass = aClass as Class;
+        Type originalClass = currentClass;
+
+        while(currentClass != null)
         {
-            return FindClassWithMethod(oneClass.HierarchyClass, method);
+            if(CheckClassHasMethod(currentClass, method))
+            {
+                return currentClass;
+            }
+
+            currentClass = currentClass.HierarchyClass as Class;
         }
 
-        return oneClass;
+        return originalClass as Class;
     }
 
     private Attribute FindClassWithAttribute(Type aClass, string attributeName)
@@ -568,7 +586,7 @@ public class MethodService(
         return oneClass.Attributes != null && oneClass.Attributes.Any(x => x.Name == attributeName);
     }
 
-    private bool CheckClassHasMethod(Type aClass, Method method)
+    private bool CheckClassHasMethod(Class aClass, Method method)
     {
         return aClass.Methods != null && aClass.Methods.Any(x => x.Name == method.Name);
     }
