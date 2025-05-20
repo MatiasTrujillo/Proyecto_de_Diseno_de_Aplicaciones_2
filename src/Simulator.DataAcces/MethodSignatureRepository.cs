@@ -12,7 +12,7 @@ public class MethodSignatureRepository(SqlContext context) : IMethodSignatureRep
         context.SaveChanges();
     }
 
-    public MethodSignature Find(Guid id)
+    public MethodSignature? Find(Guid id)
     {
         var signature = context.MethodSignatures.FirstOrDefault(p => p.Id == id);
         return signature;

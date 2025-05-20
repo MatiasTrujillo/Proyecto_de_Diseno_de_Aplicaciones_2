@@ -189,4 +189,28 @@ public class InterfaceService_Test
             )
         ), Times.Once);
     }
+
+    [TestMethod]
+    public void UpdateInterface_ShouldThrowMethodSignatureNotFound_WhenValidNonExistingMethodSignatureIdGiven()
+    {
+        var entity = dto.ToEntity();
+        var id = entity.Id;
+        var updateInterfaceDto = new UpdateInterfaceDTO { IdMethodSignature = Guid.NewGuid() };
+
+        _mockMethodSignatureRepository
+            .Setup(r => r.Find(It.IsAny<Guid>()))
+            .Returns(((MethodSignature?)null)!);
+        _mockClassRepository.Setup(r => r.FindAllTypes())
+            .Returns([]);
+        _mockInterfaceRepository.Setup(r => r.Find(id)).Returns(entity);
+        _mockInterfaceRepository.Setup(r => r.Update(It.IsAny<Interface>()));
+
+        _interfaceService.CreateInterface(dto);
+        var exception = Assert.ThrowsException<MethodSignatureNotFoundException>(() =>
+        {
+            _interfaceService.UpdateInterface(id, updateInterfaceDto);
+        });
+
+        Assert.AreEqual("Method signature id not found.", exception.Message);
+    }
 }
