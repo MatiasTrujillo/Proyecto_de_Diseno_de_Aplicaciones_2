@@ -158,4 +158,32 @@ public class InterfaceService_Test
 
         Assert.AreEqual("Interface is associated with a class.", exception.Message);
     }
+
+    [TestMethod]
+    public void UpdateInterface_ShouldUpdateInterface_WhenValidMethodSignatureIdGiven()
+    {
+        var entity = dto.ToEntity();
+        var id = entity.Id;
+
+        var parameter = new Parameter();
+        var type = new Primitive(PrimitiveType.String);
+        var signature = new MethodSignature("ASignature", type, [parameter]);
+        var _mockMethodSignatureRepository = new Mock<IMethodSignatureRepository>(MockBehavior.Strict);
+        var updateInterfaceDto = new UpdateInterfaceDTO { IdMethodSignature = signature.Id };
+
+        _mockMethodSignatureRepository.Setup(r => r.Find(It.IsAny<Guid>()))
+            .Returns(signature);
+        _mockClassRepository.Setup(r => r.FindAllTypes())
+            .Returns([]);
+
+        _interfaceService.CreateInterface(dto);
+        _interfaceService.UpdateInterface(id, updateInterfaceDto);
+
+        _mockInterfaceRepository.Verify(repo => repo.Update(
+            It.Is<Interface>(i =>
+                i.Id == id &&
+                i.MethodSignatures.Any(ms => ms.Id == signature.Id)
+            )
+        ), Times.Once);
+    }
 }

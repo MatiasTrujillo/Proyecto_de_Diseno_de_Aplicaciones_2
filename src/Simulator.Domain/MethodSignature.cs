@@ -10,6 +10,7 @@ public class MethodSignature
     public MethodSignature()
     {
         Id = Guid.NewGuid();
+        ReturnType = new Primitive();
     }
 
     public MethodSignature(string name, Type returnType)
