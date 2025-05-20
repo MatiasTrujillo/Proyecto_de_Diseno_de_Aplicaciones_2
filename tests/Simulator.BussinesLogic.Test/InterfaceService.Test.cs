@@ -191,7 +191,7 @@ public class InterfaceService_Test
     }
 
     [TestMethod]
-    public void UpdateInterface_ShouldThrowMethodSignatureNotFound_WhenValidNonExistingMethodSignatureIdGiven()
+    public void UpdateInterface_ShouldThrowMethodSignatureNotFound_WhenNonExistingMethodSignatureIdGiven()
     {
         var entity = dto.ToEntity();
         var id = entity.Id;

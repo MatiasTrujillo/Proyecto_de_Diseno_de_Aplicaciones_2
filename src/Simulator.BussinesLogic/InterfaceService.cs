@@ -83,6 +83,11 @@ public class InterfaceService(
     {
         var interfaceToUpdate = _interfaceRepository.Find(id);
         var signatureToUpdate = _methodSignatureRepository.Find(uInterfaceDto.IdMethodSignature);
+        if(signatureToUpdate == null)
+        {
+            throw new MethodSignatureNotFoundException("Method signature id not found.");
+        }
+
         interfaceToUpdate.MethodSignatures.Add(signatureToUpdate);
         _interfaceRepository.Update(interfaceToUpdate);
     }
