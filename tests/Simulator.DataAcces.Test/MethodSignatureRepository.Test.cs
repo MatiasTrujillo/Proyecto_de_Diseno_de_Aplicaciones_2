@@ -69,4 +69,45 @@ public class MethodSignatureRepository_Test
         result.Should().BeNull();
     }
     #endregion
+
+    [TestMethod]
+    public void FindAll_WhenMethodSignaturesExist_ShouldReturnAll()
+    {
+        var secondPrimitive = new Primitive
+        {
+            Id = Guid.NewGuid(),
+            Name = "string"
+        };
+
+        var aParameter = new Parameter
+        {
+            Id = Guid.NewGuid(),
+            Name = "aParameter",
+            ParameterType = secondPrimitive,
+            InvokedMethod = null
+        };
+
+        var secondSignature = new MethodSignature
+        {
+            Id = Guid.NewGuid(),
+            Name = "myOtherSignature",
+            ReturnType = secondPrimitive,
+            Parameters = [aParameter]
+        };
+
+        _context.Primitives.Add(secondPrimitive);
+        _context.Parameters.Add(aParameter);
+        _context.MethodSignatures.AddRange(aSignature, secondSignature);
+        _context.SaveChanges();
+
+        var results = _repository.FindAll();
+
+        results.Should().NotBeNull();
+        results.Should().HaveCount(2);
+
+        results.Should().ContainSingle(s => s.Id == aSignature.Id &&
+                                            s.Name == aSignature.Name);
+        results.Should().ContainSingle(s => s.Id == secondSignature.Id &&
+                                            s.Name == secondSignature.Name);
+    }
 }
