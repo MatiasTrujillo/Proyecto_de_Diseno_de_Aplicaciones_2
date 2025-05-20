@@ -1,4 +1,5 @@
 using FluentAssertions;
+using Microsoft.EntityFrameworkCore;
 using Simulator.Domain;
 
 namespace Simulator.DataAcces.Test;
@@ -19,8 +20,6 @@ public class MethodSignatureRepository_Test
         _repository = new MethodSignatureRepository(_context);
         type = new Primitive();
         aSignature = new MethodSignature("ASignature", type, []);
-        _context.Primitives.Add(type);
-        _context.SaveChanges();
         secondPrimitive = new Primitive
         {
             Id = Guid.NewGuid(),
@@ -42,6 +41,10 @@ public class MethodSignatureRepository_Test
             ReturnType = secondPrimitive,
             Parameters = [aParameter]
         };
+        _context.Primitives.Add(type);
+        _context.Primitives.Add(secondPrimitive);
+        _context.Parameters.Add(aParameter);
+        _context.SaveChanges();
     }
 
     [TestInitialize]
@@ -94,11 +97,10 @@ public class MethodSignatureRepository_Test
     }
     #endregion
 
+    #region FindAll
     [TestMethod]
     public void FindAll_WhenMethodSignaturesExist_ShouldReturnAll()
     {
-        _context.Primitives.Add(secondPrimitive);
-        _context.Parameters.Add(aParameter);
         _context.MethodSignatures.AddRange(aSignature, secondSignature);
         _context.SaveChanges();
 
@@ -111,5 +113,28 @@ public class MethodSignatureRepository_Test
                                             s.Name == aSignature.Name);
         results.Should().ContainSingle(s => s.Id == secondSignature.Id &&
                                             s.Name == secondSignature.Name);
+    }
+    #endregion
+
+    [TestMethod]
+    public void Update_WhenMethodSignatureExists_ShouldOnlyAddAParameter()
+    {
+        var updatedSignature = new MethodSignature
+        {
+            Id = aSignature.Id,
+            Name = "changedName",
+            ReturnType = type,
+            Parameters = [aParameter]
+        };
+
+        _repository.Update(updatedSignature);
+
+        using var refreshedContext = ProgramTest.BuildTestDbContext();
+        var updatedInDb = refreshedContext.MethodSignatures.FirstOrDefault(s => s.Id == aSignature.Id);
+
+        updatedInDb.Should().NotBeNull();
+        updatedInDb!.Name.Should().Be(aSignature.Name);
+        updatedInDb!.Parameters.Should().HaveCount(1);
+        updatedInDb.Parameters[0].Id.Should().Be(aParameter.Id);
     }
 }
