@@ -34,6 +34,8 @@ public class MethodSignatureRepository_Test
     [TestMethod]
     public void Add_WhenGivenValidMethodSignatureProvided_ShouldAddItToRepository()
     {
+        _context.Primitives.Add(type);
+        _context.SaveChanges();
         _repository.Add(aSignature);
 
         using var otherContext = ProgramTest.BuildTestDbContext();
@@ -44,4 +46,20 @@ public class MethodSignatureRepository_Test
         saved[0].Name.Should().Be(aSignature.Name);
     }
     #endregion
+
+    [TestMethod]
+    public void Find_WhenMethodSignatureExists_ShouldReturnIt()
+    {
+        _context.Primitives.Add(type);
+        _context.SaveChanges();
+        _repository.Add(aSignature);
+
+        var result = _repository.Find(aSignature.Id);
+
+        result.Should().NotBeNull();
+        result!.Id.Should().Be(aSignature.Id);
+        result.Name.Should().Be(aSignature.Name);
+        result.ReturnType.Should().NotBeNull();
+        result.ReturnType!.Name.Should().Be(aSignature.Name);
+    }
 }
