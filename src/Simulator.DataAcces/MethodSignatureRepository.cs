@@ -23,12 +23,12 @@ public class MethodSignatureRepository(SqlContext context) : IMethodSignatureRep
         var existing = context.MethodSignatures
             .Include(ms => ms.Parameters)
             .FirstOrDefault(ms => ms.Id == updated.Id);
-        if (existing == null)
+        if(existing == null)
         {
             return;
         }
 
-        foreach (var param in updated.Parameters)
+        foreach(var param in updated.Parameters)
         {
             existing.Parameters.Add(param);
         }

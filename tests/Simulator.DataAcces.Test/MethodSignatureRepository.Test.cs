@@ -1,5 +1,4 @@
 using FluentAssertions;
-using Microsoft.EntityFrameworkCore;
 using Simulator.Domain;
 
 namespace Simulator.DataAcces.Test;
