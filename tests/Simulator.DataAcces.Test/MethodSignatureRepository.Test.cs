@@ -47,6 +47,7 @@ public class MethodSignatureRepository_Test
     }
     #endregion
 
+    #region Find
     [TestMethod]
     public void Find_WhenMethodSignatureExists_ShouldReturnIt()
     {
@@ -59,4 +60,13 @@ public class MethodSignatureRepository_Test
         result.Name.Should().Be(aSignature.Name);
         result.ReturnType.Should().NotBeNull();
     }
+
+    [TestMethod]
+    public void Find_WhenLocalVariableDoesNotExist_ShouldReturnNull()
+    {
+        var result = _repository.Find(Guid.NewGuid());
+
+        result.Should().BeNull();
+    }
+    #endregion
 }
