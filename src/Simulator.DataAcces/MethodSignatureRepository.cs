@@ -3,11 +3,12 @@ using Simulator.IDataAcces;
 
 namespace Simulator.DataAcces;
 
-public class MethodSignatureRepository() : IMethodSignatureRepository
+public class MethodSignatureRepository(SqlContext context) : IMethodSignatureRepository
 {
     public void Add(MethodSignature signature)
     {
-        throw new NotImplementedException();
+        context.MethodSignatures.Add(signature);
+        context.SaveChanges();
     }
 
     public MethodSignature Find(Guid id)

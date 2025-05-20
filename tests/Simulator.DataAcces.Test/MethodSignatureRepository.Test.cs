@@ -11,7 +11,7 @@ public class MethodSignatureRepository_Test
 
     public MethodSignatureRepository_Test()
     {
-        _repository = new MethodSignatureRepository();
+        _repository = new MethodSignatureRepository(_context);
     }
 
     [TestInitialize]
