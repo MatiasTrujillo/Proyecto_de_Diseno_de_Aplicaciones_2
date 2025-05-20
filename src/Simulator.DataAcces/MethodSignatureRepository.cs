@@ -13,7 +13,8 @@ public class MethodSignatureRepository(SqlContext context) : IMethodSignatureRep
 
     public MethodSignature Find(Guid id)
     {
-        throw new NotImplementedException();
+        var signature = context.MethodSignatures.FirstOrDefault(p => p.Id == id);
+        return signature;
     }
 
     public void Update(MethodSignature signature)

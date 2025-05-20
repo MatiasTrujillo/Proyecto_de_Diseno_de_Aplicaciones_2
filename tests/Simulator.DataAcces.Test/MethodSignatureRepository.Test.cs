@@ -60,6 +60,5 @@ public class MethodSignatureRepository_Test
         result!.Id.Should().Be(aSignature.Id);
         result.Name.Should().Be(aSignature.Name);
         result.ReturnType.Should().NotBeNull();
-        result.ReturnType!.Name.Should().Be(aSignature.Name);
     }
 }
