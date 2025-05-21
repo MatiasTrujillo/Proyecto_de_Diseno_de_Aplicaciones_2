@@ -36,13 +36,20 @@ public sealed class SqlContext : DbContext
         modelBuilder.Entity<Class>()
             .HasOne(c => c.NameSpace)
             .WithMany()
-            .HasForeignKey("NameSpaceId");
+            .HasForeignKey("NameSpaceId")
+            .OnDelete(DeleteBehavior.Restrict);
 
         modelBuilder.Entity<Primitive>()
             .HasBaseType<Type>();
 
         modelBuilder.Entity<Interface>()
             .HasBaseType<Type>();
+
+          modelBuilder.Entity<Interface>()
+            .HasOne(i => i.NameSpace)
+            .WithMany()
+            .HasForeignKey("NameSpaceId")
+            .OnDelete(DeleteBehavior.Restrict);
 
         modelBuilder.Entity<MethodSignature>(entity =>
         {
