@@ -16,4 +16,10 @@ public class InterfaceController(IInterfaceService interfaceService) : Controlle
         var interfaceId = _interfaceService.CreateInterface(interfaceDto);
         return Created(string.Empty, new { id = interfaceId });
     }
+
+    [HttpDelete("{id}")]
+    public IActionResult DeleteInterface([FromRoute] Guid id)
+    {
+        throw new NotImplementedException();
+    }
 }

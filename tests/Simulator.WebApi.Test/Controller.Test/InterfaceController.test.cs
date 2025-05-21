@@ -22,7 +22,7 @@ public class InterfaceControllertest
     }
 
     [TestMethod]
-    public void CreateClass_ShouldReturnCreated_WhenClassIsCreated()
+    public void CreateInterface_ShouldReturnCreated_WhenInterfaceIsCreated()
     {
         _interfaceServiceMock.Setup(service => service.CreateInterface(interfaceDto))
             .Verifiable();
@@ -30,5 +30,19 @@ public class InterfaceControllertest
 
         Assert.IsNotNull(result);
         Assert.AreEqual(201, result.StatusCode);
+    }
+
+    [TestMethod]
+    public void DeleteInterface_ShouldReturnNoContent_WhenInterfaceIsDeleted()
+    {
+        var id = Guid.NewGuid();
+        _interfaceServiceMock.Setup(service => service.DeleteInterface(id))
+            .Verifiable();
+
+        var result = _interfaceController.DeleteInterface(id) as NoContentResult;
+
+        Assert.IsNotNull(result);
+        Assert.AreEqual(204, result.StatusCode);
+        _interfaceServiceMock.Verify(service => service.DeleteInterface(id), Times.Once);
     }
 }
