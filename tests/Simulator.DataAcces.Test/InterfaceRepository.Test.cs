@@ -13,11 +13,13 @@ public class InterfaceRepository_Test
     private readonly Primitive aPrimitive;
     private readonly Parameter aParameter;
     private readonly MethodSignature aMethodSignature;
+    private readonly NameSpace aNameSpace;
 
     public InterfaceRepository_Test()
     {
         _repository = new InterfaceRepository(_context);
-        anInterface = new Interface("Interface");
+        aNameSpace = new NameSpace("InterfacesNameSpace", null);
+        anInterface = new Interface("Interface", [], aNameSpace);
         anotherInterface = new Interface("AnotherInterface");
         aPrimitive = new Primitive
         {
