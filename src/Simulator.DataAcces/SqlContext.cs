@@ -45,7 +45,7 @@ public sealed class SqlContext : DbContext
         modelBuilder.Entity<Interface>()
             .HasBaseType<Type>();
 
-          modelBuilder.Entity<Interface>()
+        modelBuilder.Entity<Interface>()
             .HasOne(i => i.NameSpace)
             .WithMany()
             .HasForeignKey("NameSpaceId")
