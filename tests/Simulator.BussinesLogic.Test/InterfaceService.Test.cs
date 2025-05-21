@@ -36,7 +36,7 @@ public class InterfaceService_Test
         {
             Name = string.Empty,
         };
-        lowerCaseNameDto = new InterfaceDTO() { Name = "interfaz" };
+        lowerCaseNameDto = new InterfaceDTO() { Name = "interface" };
         nameWithSpacesDto = new InterfaceDTO() { Name = "Hola " };
         _mockMethodSignatureRepository = new Mock<IMethodSignatureRepository>(MockBehavior.Strict);
         _interfaceService = new InterfaceService(_mockInterfaceRepository.Object, _mockClassRepository.Object, _mockMethodSignatureRepository.Object);
