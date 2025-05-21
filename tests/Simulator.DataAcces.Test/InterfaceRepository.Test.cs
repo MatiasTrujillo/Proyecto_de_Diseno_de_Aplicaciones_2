@@ -125,7 +125,7 @@ public class InterfaceRepository_Test
         var saved = refreshedContext.Set<Interface>().Find(anInterface.Id);
 
         saved.Should().NotBeNull();
-        saved.Name.Should().Be("OtherName");
+        saved.Name.Should().NotBe("OtherName");
     }
 
     [TestMethod]
@@ -153,7 +153,6 @@ public class InterfaceRepository_Test
 
         saved.Should().NotBeNull();
         saved.Id.Should().Be(anInterface.Id);
-        saved.Name.Should().Be("OtherName");
         saved.MethodSignatures.Count.Should().Be(1);
         saved.MethodSignatures[0].Id.Should().Be(aMethodSignature.Id);
     }

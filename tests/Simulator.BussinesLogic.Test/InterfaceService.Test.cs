@@ -185,9 +185,7 @@ public class InterfaceService_Test
         _mockInterfaceRepository.Verify(repo => repo.Update(
             It.Is<Interface>(i =>
                 i.Id == id &&
-                i.MethodSignatures.Any(ms => ms.Id == signature.Id)
-            )
-        ), Times.Once);
+                i.MethodSignatures.Any(ms => ms.Id == signature.Id))), Times.Once);
     }
 
     [TestMethod]
