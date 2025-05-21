@@ -20,6 +20,7 @@ public class InterfaceController(IInterfaceService interfaceService) : Controlle
     [HttpDelete("{id}")]
     public IActionResult DeleteInterface([FromRoute] Guid id)
     {
-        throw new NotImplementedException();
+        _interfaceService.DeleteInterface(id);
+        return NoContent();
     }
 }
