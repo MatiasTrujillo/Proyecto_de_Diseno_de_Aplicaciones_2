@@ -27,6 +27,7 @@ public class InterfaceController(IInterfaceService interfaceService) : Controlle
     [HttpPut("{id}")]
     public IActionResult UpdateInterface([FromRoute] Guid id, [FromBody] UpdateInterfaceDTO uInterface)
     {
-        throw new NotImplementedException();
+        _interfaceService.UpdateInterface(id, uInterface);
+        return Ok(new { message = "Interface updated successfully" });
     }
 }
