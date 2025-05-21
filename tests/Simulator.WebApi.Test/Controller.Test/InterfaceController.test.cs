@@ -45,4 +45,25 @@ public class InterfaceControllertest
         Assert.AreEqual(204, result.StatusCode);
         _interfaceServiceMock.Verify(service => service.DeleteInterface(id), Times.Once);
     }
+
+    [TestMethod]
+    public void UpdateInterface_ShouldReturnOk_WhenInterfaceIsUpdated()
+    {
+        var id = Guid.NewGuid();
+        var signatureId = Guid.NewGuid();
+        var dto = new UpdateInterfaceDTO() { IdMethodSignature = signatureId };
+
+        _interfaceServiceMock.Setup(service => service.UpdateInterface(id, dto)).Verifiable();
+
+        var result = _interfaceController.UpdateInterface(id, dto) as OkObjectResult;
+
+        Assert.IsNotNull(result);
+        Assert.AreEqual(200, result.StatusCode);
+        Assert.IsInstanceOfType(result.Value, typeof(object));
+
+        var response = result.Value?.GetType().GetProperty("message")?.GetValue(result.Value, null) as string;
+        Assert.AreEqual("Interface updated successfully", response);
+
+        _interfaceServiceMock.Verify(service => service.UpdateInterface(id, dto), Times.Once);
+    }
 }

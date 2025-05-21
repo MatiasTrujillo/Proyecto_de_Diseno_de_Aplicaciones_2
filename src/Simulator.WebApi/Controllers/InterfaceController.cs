@@ -23,4 +23,10 @@ public class InterfaceController(IInterfaceService interfaceService) : Controlle
         _interfaceService.DeleteInterface(id);
         return NoContent();
     }
+
+    [HttpPut("{id}")]
+    public IActionResult UpdateInterface([FromRoute] Guid id, [FromBody] UpdateInterfaceDTO uInterface)
+    {
+        throw new NotImplementedException();
+    }
 }
