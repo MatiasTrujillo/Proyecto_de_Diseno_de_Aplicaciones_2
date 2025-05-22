@@ -366,4 +366,21 @@ public class ExceptionFilterTest
         var message = result?.Value?.GetType().GetProperty("Message")?.GetValue(result.Value)?.ToString();
         Assert.AreEqual("Interface is associated with a class.", message);
     }
+
+    [TestMethod]
+    public void OnException_ShouldSetResultTo404_AndHandleAInterfaceException_WhenInvalidInterfaceExceptionIsThrown()
+    {
+        var exception = new InvalidInterfaceException("There is already a type with this name");
+        _context.Exception = exception;
+
+        _filter.OnException(_context);
+
+        Assert.IsInstanceOfType(_context.Result, typeof(ObjectResult));
+        var result = _context.Result as ObjectResult;
+        Assert.AreEqual(400, result?.StatusCode);
+        Assert.IsTrue(_context.ExceptionHandled);
+
+        var message = result?.Value?.GetType().GetProperty("Message")?.GetValue(result.Value)?.ToString();
+        Assert.AreEqual("There is already a type with this name", message);
+    }
 }
