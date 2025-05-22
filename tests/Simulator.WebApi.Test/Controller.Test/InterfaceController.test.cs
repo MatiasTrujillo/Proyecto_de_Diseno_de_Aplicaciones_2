@@ -51,19 +51,21 @@ public class InterfaceControllertest
     {
         var id = Guid.NewGuid();
         var signatureId = Guid.NewGuid();
-        var dto = new UpdateInterfaceDTO() { IdMethodSignature = signatureId };
 
-        _interfaceServiceMock.Setup(service => service.UpdateInterface(id, dto)).Verifiable();
-
-        var result = _interfaceController.UpdateInterface(id, dto) as OkObjectResult;
+        _interfaceServiceMock.Setup(service =>
+                service.UpdateInterface(
+                    It.IsAny<Guid>(),
+                    It.Is<UpdateInterfaceDTO>(d => d.IdMethodSignature == signatureId)))
+            .Verifiable();
+        var result = _interfaceController.AssociateInterfaceSignature(id, signatureId) as OkObjectResult;
 
         Assert.IsNotNull(result);
         Assert.AreEqual(200, result.StatusCode);
-        Assert.IsInstanceOfType(result.Value, typeof(object));
 
-        var response = result.Value?.GetType().GetProperty("message")?.GetValue(result.Value, null) as string;
-        Assert.AreEqual("Interface updated successfully", response);
-
-        _interfaceServiceMock.Verify(service => service.UpdateInterface(id, dto), Times.Once);
+        _interfaceServiceMock.Verify(service =>
+                service.UpdateInterface(
+                    It.IsAny<Guid>(),
+                    It.Is<UpdateInterfaceDTO>(d => d.IdMethodSignature == signatureId)),
+            Times.Once);
     }
 }

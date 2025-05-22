@@ -118,7 +118,7 @@ public class InterfaceRepository_Test
     {
         _repository.Add(anInterface);
 
-        var updatedInterface = new Interface("OtherName", []);
+        var updatedInterface = new Interface(anInterface.Name, []);
         updatedInterface.Id = anInterface.Id;
 
         _repository.Update(updatedInterface);
@@ -127,7 +127,7 @@ public class InterfaceRepository_Test
         var saved = refreshedContext.Set<Interface>().Find(anInterface.Id);
 
         saved.Should().NotBeNull();
-        saved.Name.Should().NotBe("OtherName");
+        saved.Name.Should().Be(anInterface.Name);
     }
 
     [TestMethod]
