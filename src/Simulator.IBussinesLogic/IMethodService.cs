@@ -16,4 +16,5 @@ public interface IMethodService
     void AddLocalVariableToMethod(Guid methodId, Guid localVariableId);
     void AddParameterToMethod(Guid methodId, Guid parameterId);
     string ExecuteMethod(Guid referenceId, Guid objectToCreateId, Guid methodId);
+    Guid CreateMethodSignature(MethodSignatureDTO method);
 }
