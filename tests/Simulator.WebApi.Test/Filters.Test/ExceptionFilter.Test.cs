@@ -400,4 +400,21 @@ public class ExceptionFilterTest
         var message = result?.Value?.GetType().GetProperty("Message")?.GetValue(result.Value)?.ToString();
         Assert.AreEqual("MethodSignature cannot be null.", message);
     }
+
+    [TestMethod]
+    public void OnException_ShouldSetResultTo400_AndHandleAMethodSignatureException_WhenInvalidMethodSignatureExceptionIsThrown()
+    {
+        var exception = new InvalidMethodSignatureException("MethodSignature name cannot be null.");
+        _context.Exception = exception;
+
+        _filter.OnException(_context);
+
+        Assert.IsInstanceOfType(_context.Result, typeof(ObjectResult));
+        var result = _context.Result as ObjectResult;
+        Assert.AreEqual(400, result?.StatusCode);
+        Assert.IsTrue(_context.ExceptionHandled);
+
+        var message = result?.Value?.GetType().GetProperty("Message")?.GetValue(result.Value)?.ToString();
+        Assert.AreEqual("MethodSignature name cannot be null.", message);
+    }
 }
