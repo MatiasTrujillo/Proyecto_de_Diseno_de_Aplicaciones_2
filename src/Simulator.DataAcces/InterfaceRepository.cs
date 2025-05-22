@@ -1,3 +1,4 @@
+using Microsoft.EntityFrameworkCore;
 using Simulator.Domain;
 using Simulator.IDataAcces;
 
@@ -13,12 +14,17 @@ public class InterfaceRepository(SqlContext context) : IInterfaceRepository
 
     public void Update(Interface anInterface)
     {
-        var existingInterface = Find(anInterface.Id);
-        foreach(var signature in anInterface.MethodSignatures)
+        var existing = context.Interfaces
+            .Include(i => i.MethodSignatures)
+            .FirstOrDefault(i => i.Id == anInterface.Id);
+        if(existing == null)
         {
-            existingInterface.MethodSignatures.Add(signature);
+            return;
         }
 
+        context.Entry(existing).CurrentValues.SetValues(anInterface);
+        existing.MethodSignatures = anInterface.MethodSignatures?.ToList()
+                                    ?? new List<MethodSignature>();
         context.SaveChanges();
     }
 

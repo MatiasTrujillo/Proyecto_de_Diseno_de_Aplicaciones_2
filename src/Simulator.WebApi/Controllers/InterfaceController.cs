@@ -17,17 +17,21 @@ public class InterfaceController(IInterfaceService interfaceService) : Controlle
         return Created(string.Empty, new { id = interfaceId });
     }
 
+    [HttpPost("{id}/methodSignatures/{idMethodSignature}")]
+    public IActionResult AssociateInterfaceSignature([FromRoute] Guid id, [FromRoute] Guid idMethodSignature)
+    {
+        UpdateInterfaceDTO uInterface = new UpdateInterfaceDTO()
+        {
+            IdMethodSignature = idMethodSignature
+        };
+        _interfaceService.UpdateInterface(id, uInterface);
+        return Ok(new { message = "Interface updated successfully" });
+    }
+
     [HttpDelete("{id}")]
     public IActionResult DeleteInterface([FromRoute] Guid id)
     {
         _interfaceService.DeleteInterface(id);
         return NoContent();
-    }
-
-    [HttpPut("{id}")]
-    public IActionResult UpdateInterface([FromRoute] Guid id, [FromBody] UpdateInterfaceDTO uInterface)
-    {
-        _interfaceService.UpdateInterface(id, uInterface);
-        return Ok(new { message = "Interface updated successfully" });
     }
 }

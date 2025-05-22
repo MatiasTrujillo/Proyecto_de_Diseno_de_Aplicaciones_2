@@ -81,15 +81,38 @@ public class InterfaceService(
 
     public void UpdateInterface(Guid id, UpdateInterfaceDTO uInterfaceDto)
     {
-        var interfaceToUpdate = _interfaceRepository.Find(id);
-        var signatureToUpdate = _methodSignatureRepository.Find(uInterfaceDto.IdMethodSignature);
-        if(signatureToUpdate == null)
+        if (!_interfaceRepository.Exist(id))
         {
-            throw new MethodSignatureNotFoundException("Method signature id not found.");
+            throw new InterfaceNotFoundException("Interface not found");
         }
 
-        interfaceToUpdate.MethodSignatures.Add(signatureToUpdate);
-        _interfaceRepository.Update(interfaceToUpdate);
+        var signatureToUpdate = _methodSignatureRepository.Find(uInterfaceDto.IdMethodSignature);
+        if (signatureToUpdate == null)
+        {
+            throw new MethodSignatureNotFoundException("Method signature not found");
+        }
+
+        var interfaceToUpdate = _interfaceRepository.Find(id);
+        var currentSignatures = interfaceToUpdate.MethodSignatures?.ToList() ?? new List<MethodSignature>();
+
+        if (!currentSignatures.Any(ms => ms.Id == signatureToUpdate.Id))
+        {
+            var updatedSignatures = new List<MethodSignature>(currentSignatures)
+            {
+                signatureToUpdate
+            };
+
+            interfaceToUpdate.MethodSignatures = updatedSignatures;
+            _interfaceRepository.Update(interfaceToUpdate);
+        }
+    }
+
+    private static void VerifyExistsMethodSignature(MethodSignature signatureToUpdate)
+    {
+        if (signatureToUpdate == null)
+        {
+            throw new MethodSignatureNotFoundException("Method signature not found");
+        }
     }
 
     private void VerifyInterfaceInUse(Guid id)
