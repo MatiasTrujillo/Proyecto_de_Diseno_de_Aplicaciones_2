@@ -61,4 +61,16 @@ public class NameSpaceService_Test
         Assert.AreEqual(nameSpace, classEntity.NameSpace);
         _mockClassRepository.Verify(repo => repo.Update(classEntity), Times.Once);
     }
+
+    [TestMethod]
+    [ExpectedException(typeof(System.Exception), "NameSpace already exists")]
+    public void ValidateUniqueNameSpace_ShouldThrowException_WhenNameSpaceAlreadyExists()
+    {
+        var existingNameSpace = new NameSpace { Name = "ExistingNamespace" };
+        _mockNameSpaceRepository.Setup(repo => repo.FindAll()).Returns(new List<NameSpace> { existingNameSpace });
+
+        var method = typeof(NameSpaceService)
+            .GetMethod("ValidateUniqueNameSpace", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+        method!.Invoke(_nameSpaceService, new object[] { "ExistingNamespace" });
+    }
 }
