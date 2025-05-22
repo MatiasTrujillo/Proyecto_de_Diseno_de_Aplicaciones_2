@@ -65,7 +65,7 @@ public class NameSpaceService_Test
         var classId = Guid.NewGuid();
 
         var nameSpace = new NameSpace { Id = nsId, Name = "MyNamespace" };
-        var classEntity = new Class { Id = classId, Name = "MyClass" };
+        var classEntity = new Class { Id = classId, Name = "MyClass", NameSpace = null };
 
         _mockNameSpaceRepository.Setup(repo => repo.Find(nsId)).Returns(nameSpace);
         _mockClassRepository.Setup(repo => repo.Find(classId)).Returns(classEntity);
@@ -164,5 +164,28 @@ public class NameSpaceService_Test
         _mockNameSpaceRepository.Setup(repo => repo.Find(fatherId)).Returns((NameSpace?)null);
 
         _nameSpaceService.AddFatherToNameSpace(childId, fatherId);
+    }
+
+    [TestMethod]
+    [ExpectedException(typeof(NameSpaceException), "Class already has a NameSpace")]
+    public void AsociateToClass_ShouldThrowException_WhenClassAlreadyHasNamespace()
+    {
+        var nsId = Guid.NewGuid();
+        var classId = Guid.NewGuid();
+
+        var existingNameSpace = new NameSpace { Id = Guid.NewGuid(), Name = "ExistingNS" };
+        var newNameSpace = new NameSpace { Id = nsId, Name = "NewNS" };
+
+        var classEntity = new Class
+        {
+            Id = classId,
+            Name = "MyClass",
+            NameSpace = existingNameSpace
+        };
+
+        _mockNameSpaceRepository.Setup(repo => repo.Find(nsId)).Returns(newNameSpace);
+        _mockClassRepository.Setup(repo => repo.Find(classId)).Returns(classEntity);
+
+        _nameSpaceService.AsociateToClass(nsId, classId);
     }
 }

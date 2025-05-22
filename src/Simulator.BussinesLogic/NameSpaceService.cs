@@ -1,5 +1,6 @@
 using System;
 using Simulator.BussinesLogic.Exception;
+using Simulator.Domain;
 using Simulator.DTO;
 using Simulator.IBussinesLogic;
 using Simulator.IDataAcces;
@@ -30,22 +31,23 @@ public class NameSpaceService(
         nameSpaceRepository.Update(nameSpace);
     }
 
-    private void ValidateDiferentNameSpaces(Guid id, Guid idFather)
-    {
-        if (id == idFather)
-        {
-            throw new NameSpaceException("Cannot add the same NameSpace as a father");
-        }
-    }
-
     public void AsociateToClass(Guid id, Guid idClass)
     {
         ValidateNameSpaceExistence(id);
         ValidateClassExistence(idClass);
         var nameSpace = nameSpaceRepository.Find(id);
         var classEntity = classRepository.Find(idClass);
+        ValidateClassDontHaveNameSpace(classEntity);
         classEntity.NameSpace = nameSpace;
         classRepository.Update(classEntity);
+    }
+
+    private void ValidateClassDontHaveNameSpace(Class idClass)
+    {
+        if (idClass.NameSpace != null)
+        {
+            throw new NameSpaceException("Class already has a NameSpace");
+        }
     }
 
     public void AsociateToInterface(Guid id, Guid idInterface)
@@ -79,6 +81,14 @@ public class NameSpaceService(
         if (nameSpace == null)
         {
             throw new NameSpaceException("NameSpace does not exist");
+        }
+    }
+
+    private void ValidateDiferentNameSpaces(Guid id, Guid idFather)
+    {
+        if (id == idFather)
+        {
+            throw new NameSpaceException("Cannot add the same NameSpace as a father");
         }
     }
 }
