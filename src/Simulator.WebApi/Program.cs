@@ -24,6 +24,8 @@ builder.Services.AddControllers(options => { options.Filters.Add(typeof(Exceptio
 builder.Services.AddScoped<IAttributeRepository, AttributeRepository>();
 builder.Services.AddScoped<IClassRepository, ClassRepository>();
 builder.Services.AddScoped<IMethodRepository, MethodRepository>();
+builder.Services.AddScoped<IInterfaceRepository, InterfaceRepository>();
+builder.Services.AddScoped<IMethodSignatureRepository, MethodSignatureRepository>();
 builder.Services.AddScoped<IParameterRepository, ParameterRepository>();
 builder.Services.AddScoped<ILocalVariableRepository, LocalVariableRepository>();
 builder.Services.AddScoped<IInvokedMethodRepository, InvokedMethodRepository>();

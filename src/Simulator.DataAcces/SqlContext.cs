@@ -33,16 +33,31 @@ public sealed class SqlContext : DbContext
         modelBuilder.Entity<Class>()
             .HasBaseType<Type>();
 
-        modelBuilder.Entity<Class>()
-            .HasOne(c => c.NameSpace)
-            .WithMany()
-            .HasForeignKey("NameSpaceId");
-
         modelBuilder.Entity<Primitive>()
             .HasBaseType<Type>();
 
         modelBuilder.Entity<Interface>()
             .HasBaseType<Type>();
+
+        modelBuilder.Entity<Class>(entity =>
+        {
+            entity.HasBaseType<Type>();
+            entity.HasOne(c => c.NameSpace)
+                .WithMany()
+                .HasForeignKey("NameSpaceId")
+                .OnDelete(DeleteBehavior.Restrict);
+            entity.Property<Guid>("NameSpaceId").HasColumnName("NameSpaceId");
+        });
+
+        modelBuilder.Entity<Interface>(entity =>
+        {
+            entity.HasBaseType<Type>();
+            entity.HasOne(i => i.NameSpace)
+                .WithMany()
+                .HasForeignKey("NameSpaceId")
+                .OnDelete(DeleteBehavior.Restrict);
+            entity.Property<Guid>("NameSpaceId").HasColumnName("NameSpaceId");
+        });
 
         modelBuilder.Entity<MethodSignature>(entity =>
         {
@@ -54,7 +69,7 @@ public sealed class SqlContext : DbContext
 
             entity.HasMany(m => m.Parameters)
                 .WithOne()
-                .OnDelete(DeleteBehavior.Cascade);
+                .OnDelete(DeleteBehavior.Restrict);
         });
 
         modelBuilder.Entity<Attribute>()

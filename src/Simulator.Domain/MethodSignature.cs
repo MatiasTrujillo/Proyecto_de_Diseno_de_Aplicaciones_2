@@ -10,9 +10,10 @@ public class MethodSignature
     public MethodSignature()
     {
         Id = Guid.NewGuid();
+        ReturnType = new Primitive();
     }
 
-    public MethodSignature(string name, Type returnType)
+    public MethodSignature(string? name, Type? returnType)
     {
         Id = Guid.NewGuid();
         Name = name;
@@ -20,7 +21,7 @@ public class MethodSignature
         Parameters = [];
     }
 
-    public MethodSignature(string name, Type returnType, List<Parameter> parameters)
+    public MethodSignature(string? name, Type? returnType, List<Parameter> parameters)
     {
         Id = Guid.NewGuid();
         Name = name;

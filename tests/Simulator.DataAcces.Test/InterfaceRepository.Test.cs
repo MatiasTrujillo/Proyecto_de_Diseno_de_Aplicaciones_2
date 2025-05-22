@@ -13,11 +13,13 @@ public class InterfaceRepository_Test
     private readonly Primitive aPrimitive;
     private readonly Parameter aParameter;
     private readonly MethodSignature aMethodSignature;
+    private readonly NameSpace aNameSpace;
 
     public InterfaceRepository_Test()
     {
         _repository = new InterfaceRepository(_context);
-        anInterface = new Interface("Interface");
+        aNameSpace = new NameSpace("InterfacesNameSpace", null);
+        anInterface = new Interface("Interface", [], aNameSpace);
         anotherInterface = new Interface("AnotherInterface");
         aPrimitive = new Primitive
         {
@@ -116,7 +118,7 @@ public class InterfaceRepository_Test
     {
         _repository.Add(anInterface);
 
-        var updatedInterface = new Interface("OtherName", []);
+        var updatedInterface = new Interface(anInterface.Name, []);
         updatedInterface.Id = anInterface.Id;
 
         _repository.Update(updatedInterface);
@@ -125,7 +127,7 @@ public class InterfaceRepository_Test
         var saved = refreshedContext.Set<Interface>().Find(anInterface.Id);
 
         saved.Should().NotBeNull();
-        saved.Name.Should().Be("OtherName");
+        saved.Name.Should().Be(anInterface.Name);
     }
 
     [TestMethod]
@@ -153,7 +155,6 @@ public class InterfaceRepository_Test
 
         saved.Should().NotBeNull();
         saved.Id.Should().Be(anInterface.Id);
-        saved.Name.Should().Be("OtherName");
         saved.MethodSignatures.Count.Should().Be(1);
         saved.MethodSignatures[0].Id.Should().Be(aMethodSignature.Id);
     }

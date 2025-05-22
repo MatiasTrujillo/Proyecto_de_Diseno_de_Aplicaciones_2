@@ -17,13 +17,14 @@ public class MethodService(
     IClassRepository classRepository,
     IParameterRepository parameterRepository,
     ILocalVariableRepository localVariableRepository,
-    IInvokedMethodRepository invokedMethodRepository) : IMethodService
+    IInvokedMethodRepository invokedMethodRepository, IMethodSignatureRepository methodSignatureRepository) : IMethodService
 {
     private readonly IMethodRepository _methodRepository = methodRepository;
     private readonly IClassRepository _classRepository = classRepository;
     private readonly IParameterRepository _parameterRepository = parameterRepository;
     private readonly ILocalVariableRepository _localVariableRepository = localVariableRepository;
     private readonly IInvokedMethodRepository _invokedMethodRepository = invokedMethodRepository;
+    private readonly IMethodSignatureRepository _methodSignatureRepository = methodSignatureRepository;
     private int _identation = 0;
 
     public Guid CreateMethod(MethodDTO method)
@@ -901,6 +902,35 @@ public class MethodService(
             {
                 throw new MethodException("Parent class must have this method as virtual.");
             }
+        }
+    }
+
+    public Guid CreateMethodSignature(MethodSignatureDTO methodSignatureDto)
+    {
+        ValidateMethodDtoIsNotNull(methodSignatureDto);
+        ValidateMethodSignatureNameIsNotNull(methodSignatureDto);
+        var methodSignatureT = methodSignatureDto.ToEntity();
+        var type = methodSignatureT!.ReturnType?.Name;
+        var returnType = _classRepository.FindAllTypes().FirstOrDefault(t => t.Name == type);
+        methodSignatureT.ReturnType = returnType;
+        ValidateMethodReturnType(methodSignatureT.ReturnType);
+        _methodSignatureRepository.Add(methodSignatureT);
+        return methodSignatureT.Id;
+    }
+
+    private static void ValidateMethodSignatureNameIsNotNull(MethodSignatureDTO methodSignatureDto)
+    {
+        if(string.IsNullOrEmpty(methodSignatureDto.Name))
+        {
+            throw new InvalidMethodSignatureException("MethodSignature name cannot be null.");
+        }
+    }
+
+    private static void ValidateMethodDtoIsNotNull(MethodSignatureDTO methodSignatureDto)
+    {
+        if(methodSignatureDto == null)
+        {
+            throw new MethodSignatureNotFoundException("MethodSignature cannot be null.");
         }
     }
 }

@@ -17,6 +17,7 @@ public class InterfaceService_Test
     private InterfaceDTO emptyNameDto = null!;
     private InterfaceDTO lowerCaseNameDto = null!;
     private InterfaceDTO nameWithSpacesDto = null!;
+    private Mock<IMethodSignatureRepository> _mockMethodSignatureRepository = null!;
 
     [TestInitialize]
     public void Initialize()
@@ -35,9 +36,10 @@ public class InterfaceService_Test
         {
             Name = string.Empty,
         };
-        lowerCaseNameDto = new InterfaceDTO() { Name = "interfaz" };
+        lowerCaseNameDto = new InterfaceDTO() { Name = "interface" };
         nameWithSpacesDto = new InterfaceDTO() { Name = "Hola " };
-        _interfaceService = new InterfaceService(_mockInterfaceRepository.Object, _mockClassRepository.Object);
+        _mockMethodSignatureRepository = new Mock<IMethodSignatureRepository>(MockBehavior.Strict);
+        _interfaceService = new InterfaceService(_mockInterfaceRepository.Object, _mockClassRepository.Object, _mockMethodSignatureRepository.Object);
     }
 
     [TestMethod]
@@ -157,5 +159,87 @@ public class InterfaceService_Test
         });
 
         Assert.AreEqual("Interface is associated with a class.", exception.Message);
+    }
+
+    [TestMethod]
+    public void UpdateInterface_ShouldUpdateInterface_WhenValidMethodSignatureIdGiven()
+    {
+        var entity = dto.ToEntity();
+        var id = entity.Id;
+
+        var parameter = new Parameter();
+        var type = new Primitive(PrimitiveType.String);
+        var signature = new MethodSignature("ASignature", type, [parameter]);
+        var updateInterfaceDto = new UpdateInterfaceDTO { IdMethodSignature = signature.Id };
+
+        _mockMethodSignatureRepository.Setup(r => r.Find(It.IsAny<Guid>()))
+            .Returns(signature);
+        _mockClassRepository.Setup(r => r.FindAllTypes())
+            .Returns([]);
+        _mockInterfaceRepository.Setup(r => r.Find(id)).Returns(entity);
+        _mockInterfaceRepository.Setup(r => r.Exist(id)).Returns(true);
+        _mockInterfaceRepository.Setup(r => r.Update(It.IsAny<Interface>()));
+
+        _interfaceService.CreateInterface(dto);
+        _interfaceService.UpdateInterface(id, updateInterfaceDto);
+
+        _mockInterfaceRepository.Verify(repo => repo.Update(
+            It.Is<Interface>(i =>
+                i.Id == id &&
+                i.MethodSignatures.Any(ms => ms.Id == signature.Id))), Times.Once);
+    }
+
+    [TestMethod]
+    public void UpdateInterface_ShouldThrowInterfaceNotFoundException_WhenNonExistingInterfaceIdGiven()
+    {
+        var entity = dto.ToEntity();
+        var id = entity.Id;
+
+        var parameter = new Parameter();
+        var type = new Primitive(PrimitiveType.String);
+        var signature = new MethodSignature("ASignature", type, [parameter]);
+        var updateInterfaceDto = new UpdateInterfaceDTO { IdMethodSignature = signature.Id };
+
+        _mockMethodSignatureRepository.Setup(r => r.Find(It.IsAny<Guid>()))
+            .Returns(signature);
+        _mockClassRepository.Setup(r => r.FindAllTypes())
+            .Returns([]);
+        _mockInterfaceRepository.Setup(r => r.Find(id)).Returns(entity);
+        _mockInterfaceRepository.Setup(r => r.Exist(id)).Returns(false);
+        _mockInterfaceRepository.Setup(r => r.Update(It.IsAny<Interface>()));
+
+        _interfaceService.CreateInterface(dto);
+
+        var exception = Assert.ThrowsException<InterfaceNotFoundException>(() =>
+        {
+            _interfaceService.UpdateInterface(id, updateInterfaceDto);
+        });
+
+        Assert.AreEqual("Interface not found", exception.Message);
+    }
+
+    [TestMethod]
+    public void UpdateInterface_ShouldThrowMethodSignatureNotFound_WhenNonExistingMethodSignatureIdGiven()
+    {
+        var entity = dto.ToEntity();
+        var id = entity.Id;
+        var updateInterfaceDto = new UpdateInterfaceDTO { IdMethodSignature = Guid.NewGuid() };
+
+        _mockMethodSignatureRepository
+            .Setup(r => r.Find(It.IsAny<Guid>()))
+            .Returns(((MethodSignature?)null)!);
+        _mockClassRepository.Setup(r => r.FindAllTypes())
+            .Returns([]);
+        _mockInterfaceRepository.Setup(r => r.Find(id)).Returns(entity);
+        _mockInterfaceRepository.Setup(r => r.Exist(id)).Returns(true);
+        _mockInterfaceRepository.Setup(r => r.Update(It.IsAny<Interface>()));
+
+        _interfaceService.CreateInterface(dto);
+        var exception = Assert.ThrowsException<MethodSignatureNotFoundException>(() =>
+        {
+            _interfaceService.UpdateInterface(id, updateInterfaceDto);
+        });
+
+        Assert.AreEqual("Method signature id not found.", exception.Message);
     }
 }
