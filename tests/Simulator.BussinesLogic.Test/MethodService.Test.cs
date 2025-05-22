@@ -2157,4 +2157,13 @@ public class MethodServiceTest
         Assert.AreNotEqual(Guid.Empty, result);
         _mockMethodSignatureRepository.Verify(r => r.Add(It.IsAny<MethodSignature>()), Times.Once);
     }
+
+    [TestMethod]
+    public void CreateMethodSignature_ShouldThrowException_WhenMethodSignatureIsNotValid()
+    {
+        var exception =
+            Assert.ThrowsException<MethodSignatureNotFoundException>(() => _methodService.CreateMethodSignature(null));
+
+        Assert.AreEqual("MethodSignature cannot be null.", exception.Message);
+    }
 }
