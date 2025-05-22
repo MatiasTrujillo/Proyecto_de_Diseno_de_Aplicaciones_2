@@ -908,7 +908,7 @@ public class MethodService(
     public Guid CreateMethodSignature(MethodSignatureDTO methodSignatureDto)
     {
         var methodSignatureT = methodSignatureDto.ToEntity();
-        var type = methodSignatureT.ReturnType.Name;
+        var type = methodSignatureT!.ReturnType?.Name;
         var returnType = _classRepository.FindAllTypes().FirstOrDefault(t => t.Name == type);
         methodSignatureT.ReturnType = returnType;
         ValidateMethodReturnType(methodSignatureT.ReturnType);
