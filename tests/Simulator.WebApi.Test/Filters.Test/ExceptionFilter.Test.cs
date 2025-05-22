@@ -351,7 +351,7 @@ public class ExceptionFilterTest
     }
 
     [TestMethod]
-    public void OnException_ShouldSetResultTo404_AndHandleAInterfaceException_WhenInterfaceInUseExceptionIsThrown()
+    public void OnException_ShouldSetResultTo409_AndHandleAInterfaceException_WhenInterfaceInUseExceptionIsThrown()
     {
         var exception = new InterfaceInUseException("Interface is associated with a class.");
         _context.Exception = exception;
@@ -368,7 +368,7 @@ public class ExceptionFilterTest
     }
 
     [TestMethod]
-    public void OnException_ShouldSetResultTo404_AndHandleAInterfaceException_WhenInvalidInterfaceExceptionIsThrown()
+    public void OnException_ShouldSetResultTo400_AndHandleAInterfaceException_WhenInvalidInterfaceExceptionIsThrown()
     {
         var exception = new InvalidInterfaceException("There is already a type with this name");
         _context.Exception = exception;
@@ -382,5 +382,22 @@ public class ExceptionFilterTest
 
         var message = result?.Value?.GetType().GetProperty("Message")?.GetValue(result.Value)?.ToString();
         Assert.AreEqual("There is already a type with this name", message);
+    }
+
+    [TestMethod]
+    public void OnException_ShouldSetResultTo404_AndHandleAMethodSignatureException_WhenMethodSignatureNotFoundExceptionIsThrown()
+    {
+        var exception = new MethodSignatureNotFoundException("MethodSignature cannot be null.");
+        _context.Exception = exception;
+
+        _filter.OnException(_context);
+
+        Assert.IsInstanceOfType(_context.Result, typeof(ObjectResult));
+        var result = _context.Result as ObjectResult;
+        Assert.AreEqual(404, result?.StatusCode);
+        Assert.IsTrue(_context.ExceptionHandled);
+
+        var message = result?.Value?.GetType().GetProperty("Message")?.GetValue(result.Value)?.ToString();
+        Assert.AreEqual("MethodSignature cannot be null.", message);
     }
 }
