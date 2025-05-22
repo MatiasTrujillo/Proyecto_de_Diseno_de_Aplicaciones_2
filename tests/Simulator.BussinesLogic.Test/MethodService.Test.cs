@@ -21,6 +21,7 @@ public class MethodServiceTest
     private MethodDTO _methodDto = new MethodDTO();
     private MethodDTO _otherMethodDto = new MethodDTO();
     private ParameterDTO _parameterDto = new ParameterDTO();
+    private Mock<IMethodSignatureRepository> _mockMethodSignatureRepository = null!;
 
     [TestInitialize]
     public void Initialize()
@@ -57,8 +58,9 @@ public class MethodServiceTest
         _mockMethodRepository
             .Setup(repo => repo.FindAll())
             .Returns([]);
+        _mockMethodSignatureRepository = new Mock<IMethodSignatureRepository>();
         _methodService = new MethodService(_mockMethodRepository.Object, _mockClassRepository.Object,
-            _mockParameterRepository.Object, _mockLocalVariableRepository.Object, _mockInvokedMethodRepository.Object);
+            _mockParameterRepository.Object, _mockLocalVariableRepository.Object, _mockInvokedMethodRepository.Object, _mockMethodSignatureRepository.Object);
     }
 
     [TestMethod]
@@ -2142,7 +2144,6 @@ public class MethodServiceTest
 
         var methodSignatureDto = new MethodSignatureDTO { Name = "Signature", ReturnType = classT };
 
-        var _mockMethodSignatureRepository = new Mock<IMethodSignatureRepository>();
         _mockMethodSignatureRepository
             .Setup(r => r.Add(It.Is<MethodSignature>(s =>
                 s.Name == methodSignatureDto.Name && s.ReturnType.Name == classT.Name)));
