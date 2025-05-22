@@ -26,6 +26,7 @@ public class ExceptionFilter : IExceptionFilter
             InvalidInterfaceException _ => new ObjectResult(new { context.Exception.Message }) { StatusCode = 400 },
             InvalidClassException _ => new ObjectResult(new { context.Exception.Message }) { StatusCode = 400 },
             InvalidMethodException _ => new ObjectResult(new { context.Exception.Message }) { StatusCode = 400 },
+            InvalidMethodSignatureException _ => new ObjectResult(new { context.Exception.Message }) { StatusCode = 400 },
             LocalVariableNotFoundException _ => new ObjectResult(new { context.Exception.Message }) { StatusCode = 404 },
             MethodInUseException _ => new ObjectResult(new { context.Exception.Message }) { StatusCode = 409 },
             MethodNotFoundException _ => new ObjectResult(new { context.Exception.Message }) { StatusCode = 404 },
