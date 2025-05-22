@@ -1,5 +1,4 @@
 using FluentAssertions;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Simulator.Domain;
 
 namespace Simulator.DataAcces.Test;

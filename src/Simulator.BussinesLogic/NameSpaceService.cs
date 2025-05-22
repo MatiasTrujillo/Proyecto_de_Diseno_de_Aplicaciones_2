@@ -44,7 +44,7 @@ public class NameSpaceService(
 
     private void ValidateClassDontHaveNameSpace(Class idClass)
     {
-        if (idClass.NameSpace != null)
+        if(idClass.NameSpace != null)
         {
             throw new NameSpaceException("Class already has a NameSpace");
         }
@@ -57,9 +57,9 @@ public class NameSpaceService(
     private void ValidateUniqueNameSpace(string nameSpace)
     {
         var nameSpaces = nameSpaceRepository.FindAll();
-        foreach (var ns in nameSpaces)
+        foreach(var ns in nameSpaces)
         {
-            if (ns.Name == nameSpace)
+            if(ns.Name == nameSpace)
             {
                 throw new NameSpaceException("NameSpace already exists");
             }
@@ -69,7 +69,7 @@ public class NameSpaceService(
     private void ValidateClassExistence(Guid idClass)
     {
         var classEntity = classRepository.Find(idClass);
-        if (classEntity == null)
+        if(classEntity == null)
         {
             throw new NameSpaceException("Class does not exist");
         }
@@ -78,7 +78,7 @@ public class NameSpaceService(
     private void ValidateNameSpaceExistence(Guid id)
     {
         var nameSpace = nameSpaceRepository.Find(id);
-        if (nameSpace == null)
+        if(nameSpace == null)
         {
             throw new NameSpaceException("NameSpace does not exist");
         }
@@ -86,7 +86,7 @@ public class NameSpaceService(
 
     private void ValidateDiferentNameSpaces(Guid id, Guid idFather)
     {
-        if (id == idFather)
+        if(id == idFather)
         {
             throw new NameSpaceException("Cannot add the same NameSpace as a father");
         }

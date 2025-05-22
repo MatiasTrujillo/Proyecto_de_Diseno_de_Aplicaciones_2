@@ -1,12 +1,8 @@
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
-using Simulator.BussinesLogic;
 using Simulator.BussinesLogic.Exception;
 using Simulator.Domain;
 using Simulator.DTO;
 using Simulator.IDataAcces;
-using System;
-using System.Collections.Generic;
 
 namespace Simulator.BussinesLogic.Test;
 
@@ -36,7 +32,7 @@ public class NameSpaceService_Test
     {
         var entity = _dto.ToEntity();
 
-        _mockNameSpaceRepository.Setup(repo => repo.FindAll()).Returns(new List<NameSpace>());
+        _mockNameSpaceRepository.Setup(repo => repo.FindAll()).Returns([]);
         _mockNameSpaceRepository.Setup(repo => repo.Add(It.IsAny<NameSpace>()))
             .Callback<NameSpace>(ns => entity = ns);
 
@@ -50,10 +46,7 @@ public class NameSpaceService_Test
     [ExpectedException(typeof(NameSpaceException))]
     public void CreateNameSpace_ShouldThrowException_WhenNameAlreadyExists()
     {
-        _mockNameSpaceRepository.Setup(repo => repo.FindAll()).Returns(new List<NameSpace>
-        {
-            new NameSpace { Name = "MyNamespace" }
-        });
+        _mockNameSpaceRepository.Setup(repo => repo.FindAll()).Returns([new NameSpace { Name = "MyNamespace" }]);
 
         _nameSpaceService.CreateNameSpace(_dto);
     }
