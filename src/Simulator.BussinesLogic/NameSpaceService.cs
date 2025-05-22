@@ -21,10 +21,21 @@ public class NameSpaceService(
 
     public void AddFatherToNameSpace(Guid id, Guid idFather)
     {
+        ValidateNameSpaceExistence(id);
+        ValidateNameSpaceExistence(idFather);
+        ValidateDiferentNameSpaces(id, idFather);
         var nameSpace = nameSpaceRepository.Find(id);
         var father = nameSpaceRepository.Find(idFather);
         nameSpace.Father = father;
         nameSpaceRepository.Update(nameSpace);
+    }
+
+    private void ValidateDiferentNameSpaces(Guid id, Guid idFather)
+    {
+        if (id == idFather)
+        {
+            throw new NameSpaceException("Cannot add the same NameSpace as a father");
+        }
     }
 
     public void AsociateToClass(Guid id, Guid idClass)

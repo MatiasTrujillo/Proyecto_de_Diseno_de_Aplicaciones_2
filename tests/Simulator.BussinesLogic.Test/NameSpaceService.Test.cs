@@ -123,14 +123,45 @@ public class NameSpaceService_Test
     }
 
     [TestMethod]
-    [ExpectedException(typeof(NullReferenceException))]
-    public void AddFatherToNameSpace_ShouldThrow_WhenChildNotFound()
+    [ExpectedException(typeof(NameSpaceException), "NameSpace does not exist")]
+    public void AddFatherToNameSpace_ShouldThrowException_WhenChildDoesNotExist()
     {
         var childId = Guid.NewGuid();
         var fatherId = Guid.NewGuid();
 
         _mockNameSpaceRepository.Setup(repo => repo.Find(childId)).Returns((NameSpace?)null);
-        _mockNameSpaceRepository.Setup(repo => repo.Find(fatherId)).Returns(new NameSpace());
+
+        _nameSpaceService.AddFatherToNameSpace(childId, fatherId);
+    }
+
+    [TestMethod]
+    [ExpectedException(typeof(NameSpaceException), "Cannot add the same NameSpace as a father")]
+    public void AddFatherToNameSpace_ShouldThrowException_WhenChildIsFather()
+    {
+        var childId = Guid.NewGuid();
+        var fatherId = childId;
+
+        var child = new NameSpace { Id = childId, Name = "Child" };
+        var father = new NameSpace { Id = fatherId, Name = "Father" };
+
+        _mockNameSpaceRepository.Setup(repo => repo.Find(childId)).Returns(child);
+        _mockNameSpaceRepository.Setup(repo => repo.Find(fatherId)).Returns(father);
+        _mockNameSpaceRepository.Setup(repo => repo.Update(It.IsAny<NameSpace>()));
+
+        _nameSpaceService.AddFatherToNameSpace(childId, fatherId);
+    }
+
+    [TestMethod]
+    [ExpectedException(typeof(NameSpaceException), "NameSpace does not exist")]
+    public void AddFatherToNameSpace_ShouldThrowException_WhenFatherDoesNotExist()
+    {
+        var childId = Guid.NewGuid();
+        var fatherId = Guid.NewGuid();
+
+        var child = new NameSpace { Id = childId, Name = "ChildNamespace" };
+
+        _mockNameSpaceRepository.Setup(repo => repo.Find(childId)).Returns(child);
+        _mockNameSpaceRepository.Setup(repo => repo.Find(fatherId)).Returns((NameSpace?)null);
 
         _nameSpaceService.AddFatherToNameSpace(childId, fatherId);
     }
