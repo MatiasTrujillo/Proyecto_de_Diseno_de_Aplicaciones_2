@@ -2166,4 +2166,13 @@ public class MethodServiceTest
 
         Assert.AreEqual("MethodSignature cannot be null.", exception.Message);
     }
+
+    [TestMethod]
+    public void CreateMethodSignature_ShouldThrowException_WhenMethodSignatureNameIsNotValid()
+    {
+        var exception =
+            Assert.ThrowsException<InvalidMethodSignatureException>(() => _methodService.CreateMethodSignature(new MethodSignatureDTO()));
+
+        Assert.AreEqual("MethodSignature name cannot be null.", exception.Message);
+    }
 }
