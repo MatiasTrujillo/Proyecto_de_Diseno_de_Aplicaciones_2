@@ -1,5 +1,5 @@
 using System;
-using Simulator.Domain;
+using Simulator.BussinesLogic.Exception;
 using Simulator.DTO;
 using Simulator.IBussinesLogic;
 using Simulator.IDataAcces;
@@ -29,6 +29,8 @@ public class NameSpaceService(
 
     public void AsociateToClass(Guid id, Guid idClass)
     {
+        ValidateNameSpaceExistence(id);
+        ValidateClassExistence(idClass);
         var nameSpace = nameSpaceRepository.Find(id);
         var classEntity = classRepository.Find(idClass);
         classEntity.NameSpace = nameSpace;
@@ -46,8 +48,26 @@ public class NameSpaceService(
         {
             if (ns.Name == nameSpace)
             {
-                throw new System.Exception("NameSpace already exists");
+                throw new NameSpaceException("NameSpace already exists");
             }
+        }
+    }
+
+    private void ValidateClassExistence(Guid idClass)
+    {
+        var classEntity = classRepository.Find(idClass);
+        if (classEntity == null)
+        {
+            throw new NameSpaceException("Class does not exist");
+        }
+    }
+
+    private void ValidateNameSpaceExistence(Guid id)
+    {
+        var nameSpace = nameSpaceRepository.Find(id);
+        if (nameSpace == null)
+        {
+            throw new NameSpaceException("NameSpace does not exist");
         }
     }
 }

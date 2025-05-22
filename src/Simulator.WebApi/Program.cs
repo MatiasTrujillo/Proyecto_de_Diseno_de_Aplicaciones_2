@@ -27,10 +27,14 @@ builder.Services.AddScoped<IMethodRepository, MethodRepository>();
 builder.Services.AddScoped<IParameterRepository, ParameterRepository>();
 builder.Services.AddScoped<ILocalVariableRepository, LocalVariableRepository>();
 builder.Services.AddScoped<IInvokedMethodRepository, InvokedMethodRepository>();
+builder.Services.AddScoped<INameSpaceRepository, NameSpaceRepository>();
+builder.Services.AddScoped<IInterfaceRepository, InterfaceRepository>();
 
 builder.Services.AddScoped<IAttributeService, AttributeService>();
 builder.Services.AddScoped<IClassService, ClassService>();
 builder.Services.AddScoped<IMethodService, MethodService>();
+builder.Services.AddScoped<INameSpaceService, NameSpaceService>();
+builder.Services.AddScoped<IInterfaceService, InterfaceService>();
 
 builder.Services.AddControllers();
 
