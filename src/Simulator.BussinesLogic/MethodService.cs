@@ -907,6 +907,11 @@ public class MethodService(
 
     public Guid CreateMethodSignature(MethodSignatureDTO methodSignatureDto)
     {
+        if(methodSignatureDto == null)
+        {
+            throw new MethodSignatureNotFoundException("MethodSignature cannot be null.");
+        }
+
         var methodSignatureT = methodSignatureDto.ToEntity();
         var type = methodSignatureT!.ReturnType?.Name;
         var returnType = _classRepository.FindAllTypes().FirstOrDefault(t => t.Name == type);
