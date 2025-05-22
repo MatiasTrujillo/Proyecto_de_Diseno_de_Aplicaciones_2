@@ -24,7 +24,7 @@ public class InterfaceRepository(SqlContext context) : IInterfaceRepository
 
         context.Entry(existing).CurrentValues.SetValues(anInterface);
         existing.MethodSignatures = anInterface.MethodSignatures?.ToList()
-                                    ?? new List<MethodSignature>();
+                                    ?? [];
         context.SaveChanges();
     }
 

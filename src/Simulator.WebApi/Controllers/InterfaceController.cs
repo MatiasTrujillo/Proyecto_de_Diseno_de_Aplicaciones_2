@@ -20,7 +20,7 @@ public class InterfaceController(IInterfaceService interfaceService) : Controlle
     [HttpPost("{id}/methodSignatures/{idMethodSignature}")]
     public IActionResult AssociateInterfaceSignature([FromRoute] Guid id, [FromRoute] Guid idMethodSignature)
     {
-        UpdateInterfaceDTO uInterface = new UpdateInterfaceDTO()
+        var uInterface = new UpdateInterfaceDTO
         {
             IdMethodSignature = idMethodSignature
         };

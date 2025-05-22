@@ -81,21 +81,21 @@ public class InterfaceService(
 
     public void UpdateInterface(Guid id, UpdateInterfaceDTO uInterfaceDto)
     {
-        if (!_interfaceRepository.Exist(id))
+        if(!_interfaceRepository.Exist(id))
         {
             throw new InterfaceNotFoundException("Interface not found");
         }
 
         var signatureToUpdate = _methodSignatureRepository.Find(uInterfaceDto.IdMethodSignature);
-        if (signatureToUpdate == null)
+        if(signatureToUpdate == null)
         {
             throw new MethodSignatureNotFoundException("Method signature id not found.");
         }
 
         var interfaceToUpdate = _interfaceRepository.Find(id);
-        var currentSignatures = interfaceToUpdate.MethodSignatures?.ToList() ?? new List<MethodSignature>();
+        var currentSignatures = interfaceToUpdate.MethodSignatures?.ToList() ?? [];
 
-        if (!currentSignatures.Any(ms => ms.Id == signatureToUpdate.Id))
+        if(!currentSignatures.Any(ms => ms.Id == signatureToUpdate.Id))
         {
             var updatedSignatures = new List<MethodSignature>(currentSignatures)
             {
