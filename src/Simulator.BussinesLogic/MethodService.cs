@@ -903,4 +903,9 @@ public class MethodService(
             }
         }
     }
+
+    public Guid CreateMethodSignature(MethodSignatureDTO methodSignatureDto)
+    {
+        throw new NotImplementedException();
+    }
 }

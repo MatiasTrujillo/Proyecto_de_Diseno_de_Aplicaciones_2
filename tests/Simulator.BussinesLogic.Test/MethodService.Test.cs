@@ -2134,4 +2134,26 @@ public class MethodServiceTest
         Console.WriteLine(result);
         Assert.AreEqual(res, result);
     }
+
+    [TestMethod]
+    public void CreateMethodSignature_ShouldAddMethodSignature_WhenMethodSignatureIsValid()
+    {
+        var classT = new TypeDTO { Name = "TestClass" };
+
+        var methodSignatureDto = new MethodSignatureDTO { Name = "Signature", ReturnType = classT };
+
+        var _mockMethodSignatureRepository = new Mock<IMethodSignatureRepository>();
+        _mockMethodSignatureRepository
+            .Setup(r => r.Add(It.Is<MethodSignature>(s =>
+                s.Name == methodSignatureDto.Name && s.ReturnType.Name == classT.Name)));
+
+        _mockClassRepository
+            .Setup(repo => repo.FindAllTypes())
+            .Returns([new Class { Name = "TestClass" }]);
+
+        var result = _methodService.CreateMethodSignature(methodSignatureDto);
+
+        Assert.AreNotEqual(Guid.Empty, result);
+        _mockMethodSignatureRepository.Verify(r => r.Add(It.IsAny<MethodSignature>()), Times.Once);
+    }
 }
