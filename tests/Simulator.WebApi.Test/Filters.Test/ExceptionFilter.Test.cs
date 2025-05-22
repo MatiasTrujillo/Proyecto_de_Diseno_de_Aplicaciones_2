@@ -332,4 +332,38 @@ public class ExceptionFilterTest
         var message = result?.Value?.GetType().GetProperty("Message")?.GetValue(result.Value)?.ToString();
         Assert.AreEqual("The interface name must not contain spaces.", message);
     }
+
+    [TestMethod]
+    public void OnException_ShouldSetResultTo404_AndHandleAInterfaceException_WhenInterfaceNotFoundExceptionIsThrown()
+    {
+        var exception = new InterfaceNotFoundException("There is no interface with this id.");
+        _context.Exception = exception;
+
+        _filter.OnException(_context);
+
+        Assert.IsInstanceOfType(_context.Result, typeof(ObjectResult));
+        var result = _context.Result as ObjectResult;
+        Assert.AreEqual(404, result?.StatusCode);
+        Assert.IsTrue(_context.ExceptionHandled);
+
+        var message = result?.Value?.GetType().GetProperty("Message")?.GetValue(result.Value)?.ToString();
+        Assert.AreEqual("There is no interface with this id.", message);
+    }
+
+    [TestMethod]
+    public void OnException_ShouldSetResultTo404_AndHandleAInterfaceException_WhenInterfaceInUseExceptionIsThrown()
+    {
+        var exception = new InterfaceInUseException("Interface is associated with a class.");
+        _context.Exception = exception;
+
+        _filter.OnException(_context);
+
+        Assert.IsInstanceOfType(_context.Result, typeof(ObjectResult));
+        var result = _context.Result as ObjectResult;
+        Assert.AreEqual(409, result?.StatusCode);
+        Assert.IsTrue(_context.ExceptionHandled);
+
+        var message = result?.Value?.GetType().GetProperty("Message")?.GetValue(result.Value)?.ToString();
+        Assert.AreEqual("Interface is associated with a class.", message);
+    }
 }
