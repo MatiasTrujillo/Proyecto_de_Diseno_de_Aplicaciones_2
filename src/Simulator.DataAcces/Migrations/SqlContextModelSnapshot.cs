@@ -357,38 +357,87 @@ namespace Simulator.DataAcces.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("7c6f7473-10ad-4771-8650-eda8530d8884"),
+                            Id = new Guid("52ba5bb0-5295-4ca9-acb6-6f1492e264a9"),
                             MethodId = new Guid("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb"),
                             Name = "Obj",
                             ParameterTypeId = new Guid("dddddddd-dddd-dddd-dddd-dddddddddddd")
                         },
                         new
                         {
-                            Id = new Guid("ee60bb01-e119-4809-9961-1c6ddbb66498"),
+                            Id = new Guid("50978c9b-595b-4b88-ab9a-345c5a78fc31"),
                             MethodId = new Guid("bbbbbbbb-2222-2222-2222-bbbbbbbbbbbb"),
                             Name = "Obj",
                             ParameterTypeId = new Guid("dddddddd-dddd-dddd-dddd-dddddddddddd")
                         },
                         new
                         {
-                            Id = new Guid("3d073d3c-8fc1-4d4b-9147-38bc38619d28"),
+                            Id = new Guid("3bb33e32-6fdc-457f-b69b-5e7f7d742cf6"),
                             MethodId = new Guid("44444444-4444-4444-4444-444444444444"),
                             Name = "StrToParse",
                             ParameterTypeId = new Guid("22222222-2222-2222-2222-222222222222")
                         },
                         new
                         {
-                            Id = new Guid("f969e93c-4560-48b6-9621-c0e25bf2c0c9"),
+                            Id = new Guid("667469ab-2833-4078-8ec2-7a4c7b3edae7"),
                             MethodId = new Guid("aaaaaaaa-1111-1111-1111-aaaaaaaaaaaa"),
                             Name = "StrIsNullOrEmpty",
                             ParameterTypeId = new Guid("22222222-2222-2222-2222-222222222222")
                         },
                         new
                         {
-                            Id = new Guid("685976a3-20e7-41bb-9143-7284bc656978"),
+                            Id = new Guid("b266cb0b-649b-4947-8404-f89aab66c804"),
                             MethodId = new Guid("77777777-7777-7777-7777-777777777777"),
                             Name = "StrToCompare",
                             ParameterTypeId = new Guid("22222222-2222-2222-2222-222222222222")
+                        });
+                });
+
+            modelBuilder.Entity("Simulator.Domain.Session", b =>
+                {
+                    b.Property<Guid>("Token")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Token");
+
+                    b.ToTable("Sessions");
+
+                    b.HasData(
+                        new
+                        {
+                            Token = new Guid("b142d2d6-ac0c-4af1-b272-c03e431555f3")
+                        },
+                        new
+                        {
+                            Token = new Guid("675c1f61-9dfa-4ead-bae4-dc432ee2bd32")
+                        },
+                        new
+                        {
+                            Token = new Guid("756ec724-3e51-4e0d-a857-cceee846a5f6")
+                        },
+                        new
+                        {
+                            Token = new Guid("a4a20350-e7e1-4080-b4da-75e875af6b61")
+                        },
+                        new
+                        {
+                            Token = new Guid("2070a73f-97a1-4365-a231-dca969fb52fb")
+                        },
+                        new
+                        {
+                            Token = new Guid("f6e32298-4362-4ef1-9e6a-e2dfc9e58a47")
+                        },
+                        new
+                        {
+                            Token = new Guid("231ecdac-9680-4772-a95a-29abdfd4ad5f")
+                        },
+                        new
+                        {
+                            Token = new Guid("5c8f91eb-5bd1-4706-96ca-cfcec81473b8")
+                        },
+                        new
+                        {
+                            Token = new Guid("66d9652f-3585-4982-9ab7-8d8159197147")
                         });
                 });
 
@@ -572,79 +621,79 @@ namespace Simulator.DataAcces.Migrations
                         },
                         new
                         {
-                            Id = new Guid("81bcfb9a-9f6c-4e2c-8025-c62689333b0c"),
+                            Id = new Guid("24807890-eb7b-417a-8ff4-719f1edecb88"),
                             Name = "byte",
                             PrimitiveType = 1
                         },
                         new
                         {
-                            Id = new Guid("137f90d9-cf8d-4d36-bb24-8a107c70bbc3"),
+                            Id = new Guid("f6b7a81c-8562-4050-8133-18c799b9287d"),
                             Name = "sByte",
                             PrimitiveType = 2
                         },
                         new
                         {
-                            Id = new Guid("b51a43b9-a0d4-4055-8866-e8e78234f507"),
+                            Id = new Guid("1047534f-c50c-4908-a1ac-18f6d8f741ed"),
                             Name = "char",
                             PrimitiveType = 3
                         },
                         new
                         {
-                            Id = new Guid("0a8e3855-efac-4f58-8a97-324bc2ae16a8"),
+                            Id = new Guid("a62546f8-9cab-4f8b-ace9-243e7a551519"),
                             Name = "decimal",
                             PrimitiveType = 4
                         },
                         new
                         {
-                            Id = new Guid("83940b90-6481-4ea0-a7f1-ab37c9125446"),
+                            Id = new Guid("39e20a2f-a3a4-40ae-ae01-2ba64110ee9a"),
                             Name = "double",
                             PrimitiveType = 5
                         },
                         new
                         {
-                            Id = new Guid("8927458e-feed-443c-89c3-45642074ec24"),
+                            Id = new Guid("497e165c-089b-427f-a0bb-a171674192ae"),
                             Name = "float",
                             PrimitiveType = 6
                         },
                         new
                         {
-                            Id = new Guid("74d92164-3f4c-4aae-901d-b0fa36f9460d"),
+                            Id = new Guid("99b9818b-db40-4192-b34a-58470b49c2a4"),
                             Name = "uint",
                             PrimitiveType = 8
                         },
                         new
                         {
-                            Id = new Guid("bf1cf04b-34c7-441e-8f44-44b3c2189df2"),
+                            Id = new Guid("f4253064-9dfa-41e0-b2fc-54c539bc54e6"),
                             Name = "nint",
                             PrimitiveType = 9
                         },
                         new
                         {
-                            Id = new Guid("d369863a-7fad-4cef-bbfb-30722b91c3bb"),
+                            Id = new Guid("685ac5cd-906d-4986-83f4-0a01a2fa1914"),
                             Name = "nuint",
                             PrimitiveType = 10
                         },
                         new
                         {
-                            Id = new Guid("3b5e8bf2-8dc4-48c9-b3bf-458023df6aaa"),
+                            Id = new Guid("be5e2f3d-6009-431c-b88a-544cf9577708"),
                             Name = "long",
                             PrimitiveType = 11
                         },
                         new
                         {
-                            Id = new Guid("9f4a7b1f-1a3e-45f1-b342-f8d6252f2307"),
+                            Id = new Guid("57fc923b-c168-454f-a24b-55a6c72211c7"),
                             Name = "ulong",
                             PrimitiveType = 12
                         },
                         new
                         {
-                            Id = new Guid("9371293e-f09d-4d57-8527-b2c250f1feec"),
+                            Id = new Guid("b877f862-960c-4c2f-ad68-2465eeaaf945"),
                             Name = "short",
                             PrimitiveType = 13
                         },
                         new
                         {
-                            Id = new Guid("dffab210-8d74-47f4-8917-e908b710a320"),
+                            Id = new Guid("7a29f447-e3c6-4a41-a42b-6224ac941703"),
                             Name = "ushort",
                             PrimitiveType = 14
                         });
