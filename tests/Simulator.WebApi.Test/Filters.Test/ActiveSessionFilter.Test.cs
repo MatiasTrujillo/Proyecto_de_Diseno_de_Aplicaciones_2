@@ -31,7 +31,7 @@ public class ActiveSessionFilterTests
             RouteData = new Microsoft.AspNetCore.Routing.RouteData(),
             ActionDescriptor = new Microsoft.AspNetCore.Mvc.Controllers.ControllerActionDescriptor()
         };
-        _context = new AuthorizationFilterContext(actionContext, new[] { new ActiveSessionFilter() });
+        _context = new AuthorizationFilterContext(actionContext, [new ActiveSessionFilter()]);
     }
 
     [TestMethod]

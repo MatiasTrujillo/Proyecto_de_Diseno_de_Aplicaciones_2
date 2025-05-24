@@ -1,5 +1,3 @@
-using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using Simulator.Domain;
 using Simulator.DTO;

@@ -10,7 +10,7 @@ public class ActiveSessionFilter : Attribute, IAuthorizationFilter
     {
         var sessionService = context.HttpContext.RequestServices.GetService(typeof(ISessionService)) as ISessionService;
 
-        if (sessionService == null)
+        if(sessionService == null)
         {
             context.Result = new StatusCodeResult(500);
             return;
@@ -18,14 +18,14 @@ public class ActiveSessionFilter : Attribute, IAuthorizationFilter
 
         var headers = context.HttpContext.Request.Headers;
 
-        if (!headers.TryGetValue("X-Session-Token", out var tokenHeader) ||
+        if(!headers.TryGetValue("X-Session-Token", out var tokenHeader) ||
             !Guid.TryParse(tokenHeader, out var token))
         {
             context.Result = new UnauthorizedObjectResult("Token de sesión inválido o ausente.");
             return;
         }
 
-        if (!sessionService.IsActive(token))
+        if(!sessionService.IsActive(token))
         {
             context.Result = new UnauthorizedObjectResult("La sesión no está activa.");
         }

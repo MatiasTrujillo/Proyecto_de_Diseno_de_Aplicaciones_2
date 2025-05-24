@@ -11,7 +11,7 @@ public class SessionService(ISessionRepository sessionRepository) : ISessionServ
     public Guid SignIn(SessionDTO sessionDto)
     {
         var existingSession = sessionRepository.Find(sessionDto.Token);
-        if (existingSession != null)
+        if(existingSession != null)
         {
             throw new InvalidOperationException("A session with this token already exists.");
         }
@@ -26,7 +26,7 @@ public class SessionService(ISessionRepository sessionRepository) : ISessionServ
         var session = sessionRepository.Find(token);
         ValidateSession(session);
 
-        if (session!.IsActive)
+        if(session!.IsActive)
         {
             throw new InvalidOperationException("Session is already active.");
         }
@@ -40,7 +40,7 @@ public class SessionService(ISessionRepository sessionRepository) : ISessionServ
         var session = sessionRepository.Find(token);
         ValidateSession(session);
 
-        if (!session!.IsActive)
+        if(!session!.IsActive)
         {
             throw new InvalidOperationException("Session is already inactive.");
         }
@@ -57,7 +57,7 @@ public class SessionService(ISessionRepository sessionRepository) : ISessionServ
 
     private void ValidateSession(Session? session)
     {
-        if (session == null)
+        if(session == null)
         {
             throw new UnauthorizedAccessException("Invalid or expired session.");
         }

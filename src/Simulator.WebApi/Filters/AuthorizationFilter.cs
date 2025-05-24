@@ -22,7 +22,7 @@ public class AuthorizationFilter : Attribute, IAuthorizationFilter
     public void OnAuthorization(AuthorizationFilterContext context)
     {
         var hasHeader = context.HttpContext.Request.Headers.TryGetValue("Authorization", out var tokenString);
-        if (!hasHeader || !Guid.TryParse(tokenString, out var token) || !ValidSessions.Contains(token))
+        if(!hasHeader || !Guid.TryParse(tokenString, out var token) || !ValidSessions.Contains(token))
         {
             context.Result = new UnauthorizedObjectResult("Invalid or missing session token.");
         }

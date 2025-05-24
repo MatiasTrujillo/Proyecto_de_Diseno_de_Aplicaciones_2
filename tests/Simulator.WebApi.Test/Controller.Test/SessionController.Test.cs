@@ -4,7 +4,7 @@ using Simulator.DTO;
 using Simulator.IBussinesLogic;
 using Simulator.WebApi.Controllers;
 
-namespace Simulator.WebApi.Tests;
+namespace Simulator.WebApi.Test.Controller.Test;
 
 [TestClass]
 public class SessionControllerTests

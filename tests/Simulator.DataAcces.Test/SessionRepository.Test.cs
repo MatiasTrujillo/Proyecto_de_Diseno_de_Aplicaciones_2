@@ -1,10 +1,5 @@
 using FluentAssertions;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Simulator.DataAcces;
-using Simulator.DataAcces.Test;
 using Simulator.Domain;
-using System;
-using System.Linq;
 
 namespace Simulator.DataAcces.Test;
 

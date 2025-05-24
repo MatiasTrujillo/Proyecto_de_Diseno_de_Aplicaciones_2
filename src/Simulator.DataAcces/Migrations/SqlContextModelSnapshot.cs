@@ -357,35 +357,35 @@ namespace Simulator.DataAcces.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("52ba5bb0-5295-4ca9-acb6-6f1492e264a9"),
+                            Id = new Guid("daca4005-bc53-48ff-abe0-412d5ae8df9e"),
                             MethodId = new Guid("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb"),
                             Name = "Obj",
                             ParameterTypeId = new Guid("dddddddd-dddd-dddd-dddd-dddddddddddd")
                         },
                         new
                         {
-                            Id = new Guid("50978c9b-595b-4b88-ab9a-345c5a78fc31"),
+                            Id = new Guid("f984e2c8-9ece-4092-b0c2-71747b498b03"),
                             MethodId = new Guid("bbbbbbbb-2222-2222-2222-bbbbbbbbbbbb"),
                             Name = "Obj",
                             ParameterTypeId = new Guid("dddddddd-dddd-dddd-dddd-dddddddddddd")
                         },
                         new
                         {
-                            Id = new Guid("3bb33e32-6fdc-457f-b69b-5e7f7d742cf6"),
+                            Id = new Guid("77c01e11-60ae-4e89-b17e-f99ae11228e1"),
                             MethodId = new Guid("44444444-4444-4444-4444-444444444444"),
                             Name = "StrToParse",
                             ParameterTypeId = new Guid("22222222-2222-2222-2222-222222222222")
                         },
                         new
                         {
-                            Id = new Guid("667469ab-2833-4078-8ec2-7a4c7b3edae7"),
+                            Id = new Guid("e320583f-1ebb-4483-a234-0fd23a5e2f4b"),
                             MethodId = new Guid("aaaaaaaa-1111-1111-1111-aaaaaaaaaaaa"),
                             Name = "StrIsNullOrEmpty",
                             ParameterTypeId = new Guid("22222222-2222-2222-2222-222222222222")
                         },
                         new
                         {
-                            Id = new Guid("b266cb0b-649b-4947-8404-f89aab66c804"),
+                            Id = new Guid("ffafdef6-b88b-4a61-ab2b-f0bce2260084"),
                             MethodId = new Guid("77777777-7777-7777-7777-777777777777"),
                             Name = "StrToCompare",
                             ParameterTypeId = new Guid("22222222-2222-2222-2222-222222222222")
@@ -398,6 +398,9 @@ namespace Simulator.DataAcces.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
                     b.HasKey("Token");
 
                     b.ToTable("Sessions");
@@ -405,39 +408,48 @@ namespace Simulator.DataAcces.Migrations
                     b.HasData(
                         new
                         {
-                            Token = new Guid("b142d2d6-ac0c-4af1-b272-c03e431555f3")
+                            Token = new Guid("b142d2d6-ac0c-4af1-b272-c03e431555f3"),
+                            IsActive = true
                         },
                         new
                         {
-                            Token = new Guid("675c1f61-9dfa-4ead-bae4-dc432ee2bd32")
+                            Token = new Guid("675c1f61-9dfa-4ead-bae4-dc432ee2bd32"),
+                            IsActive = true
                         },
                         new
                         {
-                            Token = new Guid("756ec724-3e51-4e0d-a857-cceee846a5f6")
+                            Token = new Guid("756ec724-3e51-4e0d-a857-cceee846a5f6"),
+                            IsActive = true
                         },
                         new
                         {
-                            Token = new Guid("a4a20350-e7e1-4080-b4da-75e875af6b61")
+                            Token = new Guid("a4a20350-e7e1-4080-b4da-75e875af6b61"),
+                            IsActive = true
                         },
                         new
                         {
-                            Token = new Guid("2070a73f-97a1-4365-a231-dca969fb52fb")
+                            Token = new Guid("2070a73f-97a1-4365-a231-dca969fb52fb"),
+                            IsActive = true
                         },
                         new
                         {
-                            Token = new Guid("f6e32298-4362-4ef1-9e6a-e2dfc9e58a47")
+                            Token = new Guid("f6e32298-4362-4ef1-9e6a-e2dfc9e58a47"),
+                            IsActive = true
                         },
                         new
                         {
-                            Token = new Guid("231ecdac-9680-4772-a95a-29abdfd4ad5f")
+                            Token = new Guid("231ecdac-9680-4772-a95a-29abdfd4ad5f"),
+                            IsActive = true
                         },
                         new
                         {
-                            Token = new Guid("5c8f91eb-5bd1-4706-96ca-cfcec81473b8")
+                            Token = new Guid("5c8f91eb-5bd1-4706-96ca-cfcec81473b8"),
+                            IsActive = true
                         },
                         new
                         {
-                            Token = new Guid("66d9652f-3585-4982-9ab7-8d8159197147")
+                            Token = new Guid("66d9652f-3585-4982-9ab7-8d8159197147"),
+                            IsActive = true
                         });
                 });
 
@@ -621,79 +633,79 @@ namespace Simulator.DataAcces.Migrations
                         },
                         new
                         {
-                            Id = new Guid("24807890-eb7b-417a-8ff4-719f1edecb88"),
+                            Id = new Guid("978ff7e9-5484-4e7f-85f7-ee1e5d8c15a7"),
                             Name = "byte",
                             PrimitiveType = 1
                         },
                         new
                         {
-                            Id = new Guid("f6b7a81c-8562-4050-8133-18c799b9287d"),
+                            Id = new Guid("ee450cc6-2f48-41cf-abd9-95339273cba8"),
                             Name = "sByte",
                             PrimitiveType = 2
                         },
                         new
                         {
-                            Id = new Guid("1047534f-c50c-4908-a1ac-18f6d8f741ed"),
+                            Id = new Guid("eadf98eb-da3c-4199-8189-9afed15849ba"),
                             Name = "char",
                             PrimitiveType = 3
                         },
                         new
                         {
-                            Id = new Guid("a62546f8-9cab-4f8b-ace9-243e7a551519"),
+                            Id = new Guid("6181877b-c627-4949-9600-08b5ccd81260"),
                             Name = "decimal",
                             PrimitiveType = 4
                         },
                         new
                         {
-                            Id = new Guid("39e20a2f-a3a4-40ae-ae01-2ba64110ee9a"),
+                            Id = new Guid("730fc595-1f4d-4ebe-85d9-9022255f3078"),
                             Name = "double",
                             PrimitiveType = 5
                         },
                         new
                         {
-                            Id = new Guid("497e165c-089b-427f-a0bb-a171674192ae"),
+                            Id = new Guid("f3052a3d-e01a-46cd-a8df-ed2780664ca4"),
                             Name = "float",
                             PrimitiveType = 6
                         },
                         new
                         {
-                            Id = new Guid("99b9818b-db40-4192-b34a-58470b49c2a4"),
+                            Id = new Guid("967c5970-2c96-4cd4-b8bb-a159a6e0c656"),
                             Name = "uint",
                             PrimitiveType = 8
                         },
                         new
                         {
-                            Id = new Guid("f4253064-9dfa-41e0-b2fc-54c539bc54e6"),
+                            Id = new Guid("fba590b0-ebdf-4972-b415-954af3c09d7b"),
                             Name = "nint",
                             PrimitiveType = 9
                         },
                         new
                         {
-                            Id = new Guid("685ac5cd-906d-4986-83f4-0a01a2fa1914"),
+                            Id = new Guid("d1b34526-6eba-4644-b41e-311843c32301"),
                             Name = "nuint",
                             PrimitiveType = 10
                         },
                         new
                         {
-                            Id = new Guid("be5e2f3d-6009-431c-b88a-544cf9577708"),
+                            Id = new Guid("50e1ed0f-3a03-4626-8394-81f94658b845"),
                             Name = "long",
                             PrimitiveType = 11
                         },
                         new
                         {
-                            Id = new Guid("57fc923b-c168-454f-a24b-55a6c72211c7"),
+                            Id = new Guid("a7be503e-036b-42d2-92b2-aeba24c38c55"),
                             Name = "ulong",
                             PrimitiveType = 12
                         },
                         new
                         {
-                            Id = new Guid("b877f862-960c-4c2f-ad68-2465eeaaf945"),
+                            Id = new Guid("2c9c838f-68f0-4262-81ec-5bea323989ad"),
                             Name = "short",
                             PrimitiveType = 13
                         },
                         new
                         {
-                            Id = new Guid("7a29f447-e3c6-4a41-a42b-6224ac941703"),
+                            Id = new Guid("279a3662-4256-4ed4-807f-d8551526af58"),
                             Name = "ushort",
                             PrimitiveType = 14
                         });

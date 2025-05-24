@@ -8,7 +8,9 @@ public class Session
     public Guid Token { get; set; } = Guid.NewGuid();
     public bool IsActive { get; set; } = false;
 
-    public Session() { }
+    public Session()
+    {
+    }
 
     public Session(Guid token)
     {

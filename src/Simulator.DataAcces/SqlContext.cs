@@ -171,7 +171,6 @@ public sealed class SqlContext : DbContext
         var session5 = Guid.Parse("2070a73f-97a1-4365-a231-dca969fb52fb");
         var session6 = Guid.Parse("f6e32298-4362-4ef1-9e6a-e2dfc9e58a47");
         var session7 = Guid.Parse("231ecdac-9680-4772-a95a-29abdfd4ad5f");
-        var session8 = Guid.Parse("66dba073-8375-4ba0-a4bf-b1dfd2e6a0e0");
         var session9 = Guid.Parse("5c8f91eb-5bd1-4706-96ca-cfcec81473b8");
         var session10 = Guid.Parse("66d9652f-3585-4982-9ab7-8d8159197147");
 
