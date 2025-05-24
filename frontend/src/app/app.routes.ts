@@ -1,6 +1,6 @@
 import { Routes } from '@angular/router';
-import { CreateClassComponent } from './create-class/create-class.component';
+import { SessionComponent } from './session/session.component';
 
 export const routes: Routes = [
-  { path: 'createClass', component: CreateClassComponent }
+  { path: 'session', component: SessionComponent }
 ];
