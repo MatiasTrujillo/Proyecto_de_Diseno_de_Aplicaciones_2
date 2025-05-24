@@ -17,17 +17,17 @@ public class SessionController(ISessionService sessionService) : ControllerBase
         return Ok(new { Token = token });
     }
 
-    [HttpPatch("logins")]
-    public IActionResult LogIn([FromBody] Guid token)
+    [HttpPatch("logins/{token}")]
+    public IActionResult LogIn([FromRoute] Guid token)
     {
         _amethodService.LogIn(token);
-        return Ok("Logged in successfully.");
+        return Ok(new { message = "Logged in successfully." });
     }
 
-    [HttpPatch("logout")]
-    public IActionResult LogOut([FromBody] Guid token)
+    [HttpPatch("logout/{token}")]
+    public IActionResult LogOut([FromRoute] Guid token)
     {
         _amethodService.LogOut(token);
-        return Ok("Logged out successfully.");
+        return Ok(new { message = "Logged out successfully." });
     }
 }
