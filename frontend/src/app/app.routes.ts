@@ -1,6 +1,8 @@
 import { Routes } from '@angular/router';
-import { CreateClassComponent } from './create-class/create-class.component';
+import { SessionComponent } from './session/session.component';
+import { NavMenuComponent } from './nav-menu/nav-menu.component';
 
 export const routes: Routes = [
-  { path: 'createClass', component: CreateClassComponent }
+  { path: '', component: SessionComponent },
+  { path: 'navMenu', component: NavMenuComponent },
 ];

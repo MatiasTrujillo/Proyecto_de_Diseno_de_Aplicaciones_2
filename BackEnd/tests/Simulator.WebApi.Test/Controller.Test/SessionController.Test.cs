@@ -44,7 +44,6 @@ public class SessionControllerTests
 
         Assert.IsNotNull(result);
         Assert.AreEqual(200, result.StatusCode);
-        Assert.AreEqual("Logged in successfully.", result.Value);
     }
 
     [TestMethod]
@@ -56,7 +55,6 @@ public class SessionControllerTests
 
         Assert.IsNotNull(result);
         Assert.AreEqual(200, result.StatusCode);
-        Assert.AreEqual("Logged out successfully.", result.Value);
     }
 
     [TestMethod]

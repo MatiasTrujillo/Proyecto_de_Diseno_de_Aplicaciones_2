@@ -1,30 +1,44 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Subject, Observable } from 'rxjs';
+import { Observable, throwError } from 'rxjs';
+import { tap, catchError } from 'rxjs/operators';
 import { environment } from '../Environment/environment';
-import { Class } from '../models/class'; // asegurate de que la ruta sea correcta
+import { Session } from '../models/Session';
 
 @Injectable({
   providedIn: 'root'
 })
 export class SimulatorService {
-
   private apiUrl = environment.apiUrl;
-
-  private homeCreatedSource = new Subject<void>();
-  homeCreated$ = this.homeCreatedSource.asObservable();
 
   constructor(private http: HttpClient) {}
 
-  createClass(newClass: Class): Observable<string> {
-    return this.http.post<string>(`${this.apiUrl}/api/v1/classes`, newClass);
+  signIn(session: Session): Observable<{ token: string }> {
+    return this.http.post<{ token: string }>(`${this.apiUrl}/sessions`, session).pipe(
+      tap((res) => {
+        localStorage.setItem('authToken', res.token); // Guardar el token
+      }),
+      catchError((error) => {
+        return throwError(() => error);
+      })
+    );
   }
 
-  updateClass(id: string, updatedClass: Class): Observable<{ message: string }> {
-    return this.http.put<{ message: string }>(`${this.apiUrl}/api/v1/classes/${id}`, updatedClass);
+  logIn(token?: string): Observable<{ message: string }> {
+    const resolvedToken = token ?? localStorage.getItem('authToken');
+    if (!resolvedToken) {
+      return throwError(() => new Error('Token not found in localStorage.'));
+    }
+
+    return this.http.patch<{ message: string }>(`${this.apiUrl}/sessions/logins/${resolvedToken}`, null);
   }
 
-  deleteClass(id: string): Observable<void> {
-    return this.http.delete<void>(`${this.apiUrl}/api/v1/classes/${id}`);
+  logOut(token?: string): Observable<{ message: string }> {
+    const resolvedToken = token ?? localStorage.getItem('authToken');
+    if (!resolvedToken) {
+      return throwError(() => new Error('Token not found in localStorage.'));
+    }
+
+    return this.http.patch<{ message: string }>(`${this.apiUrl}/sessions/logout/${resolvedToken}`, null);
   }
 }
