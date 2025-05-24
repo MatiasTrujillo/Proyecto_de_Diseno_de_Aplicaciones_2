@@ -21,6 +21,7 @@ public class MethodServiceTest
     private MethodDTO _methodDto = new MethodDTO();
     private MethodDTO _otherMethodDto = new MethodDTO();
     private ParameterDTO _parameterDto = new ParameterDTO();
+    private Mock<IMethodSignatureRepository> _mockMethodSignatureRepository = null!;
 
     [TestInitialize]
     public void Initialize()
@@ -57,8 +58,9 @@ public class MethodServiceTest
         _mockMethodRepository
             .Setup(repo => repo.FindAll())
             .Returns([]);
+        _mockMethodSignatureRepository = new Mock<IMethodSignatureRepository>();
         _methodService = new MethodService(_mockMethodRepository.Object, _mockClassRepository.Object,
-            _mockParameterRepository.Object, _mockLocalVariableRepository.Object, _mockInvokedMethodRepository.Object);
+            _mockParameterRepository.Object, _mockLocalVariableRepository.Object, _mockInvokedMethodRepository.Object, _mockMethodSignatureRepository.Object);
     }
 
     [TestMethod]
@@ -135,6 +137,82 @@ public class MethodServiceTest
 
         var exception = Assert.ThrowsException<InvalidMethodException>(() => _methodService.CreateMethod(method));
         Assert.AreEqual("Invalid stereotype value.", exception.Message);
+    }
+
+    [TestMethod]
+    public void AssociateMethodWithClass_ShouldThrowException_WhenMethodIsOverrideAndFatherIsNotVirtual()
+    {
+        var methodParent = new Method { Id = Guid.NewGuid(), Name = "TestMethod" };
+        var classParent = new Class { Id = Guid.NewGuid(), Name = "TestClass", Methods = [methodParent] };
+        var methodChild = new Method { Id = Guid.NewGuid(), Name = "TestMethod", IsOverride = true };
+        var classChild = new Class { Id = Guid.NewGuid(), Name = "TestClass", Methods = [], HierarchyClass = classParent };
+
+        _mockMethodRepository.Setup(repo => repo.Find(methodParent.Id)).Returns(methodParent);
+        _mockMethodRepository.Setup(repo => repo.Find(methodChild.Id)).Returns(methodChild);
+        _mockClassRepository.Setup(repo => repo.Find(classParent.Id)).Returns(classParent);
+        _mockClassRepository.Setup(repo => repo.Find(classChild.Id)).Returns(classChild);
+        _mockClassRepository.Setup(repo => repo.Update(It.IsAny<Class>()));
+
+        var exception = Assert.ThrowsException<MethodException>(() => _methodService.AssociateMethodWithClass(methodChild.Id, classChild.Id));
+        Assert.AreEqual("Parent class must have this method as virtual.", exception.Message);
+    }
+
+    [TestMethod]
+    public void AssociateMethodWithClass_ShouldThrowException_WhenMethodIsOverrideAndParentDoesNotHaveMethod()
+    {
+        var classParent = new Class { Id = Guid.NewGuid(), Name = "TestClass", Methods = [] };
+        var methodChild = new Method { Id = Guid.NewGuid(), Name = "TestMethod", IsOverride = true };
+        var classChild = new Class { Id = Guid.NewGuid(), Name = "TestClass", Methods = [], HierarchyClass = classParent };
+
+        _mockMethodRepository.Setup(repo => repo.Find(methodChild.Id)).Returns(methodChild);
+        _mockClassRepository.Setup(repo => repo.Find(classParent.Id)).Returns(classParent);
+        _mockClassRepository.Setup(repo => repo.Find(classChild.Id)).Returns(classChild);
+        _mockClassRepository.Setup(repo => repo.Update(It.IsAny<Class>()));
+
+        var exception = Assert.ThrowsException<MethodException>(() => _methodService.AssociateMethodWithClass(methodChild.Id, classChild.Id));
+        Assert.AreEqual("There is no parent class with this method.", exception.Message);
+    }
+
+    [TestMethod]
+    public void AssociateMethodWithClass_ShouldAssociate_WhenMethodIsOverrideAndParentIsVirtual()
+    {
+        var methodParent = new Method { Id = Guid.NewGuid(), Name = "TestMethod", Stereotype = KeyWord.Virtual };
+        var classParent = new Class { Id = Guid.NewGuid(), Name = "TestClass", Methods = [methodParent] };
+        var methodChild = new Method { Id = Guid.NewGuid(), Name = "TestMethod", IsOverride = true };
+        var classChild = new Class { Id = Guid.NewGuid(), Name = "TestClass", Methods = [], HierarchyClass = classParent };
+
+        _mockMethodRepository.Setup(repo => repo.Find(methodParent.Id)).Returns(methodParent);
+        _mockMethodRepository.Setup(repo => repo.Find(methodChild.Id)).Returns(methodChild);
+        _mockClassRepository.Setup(repo => repo.Find(classParent.Id)).Returns(classParent);
+        _mockClassRepository.Setup(repo => repo.Find(classChild.Id)).Returns(classChild);
+        _mockClassRepository.Setup(repo => repo.Update(It.IsAny<Class>()));
+
+        _methodService.AssociateMethodWithClass(methodChild.Id, classChild.Id);
+
+        Assert.IsTrue(classChild.Methods.Contains(methodChild));
+        _mockClassRepository.Verify(repo => repo.Update(classChild), Times.Once);
+    }
+
+    [TestMethod]
+    public void AssociateMethodWithClass_ShouldAssociate_WhenMethodIsOverrideAndGrandparentIsVirtual()
+    {
+        var methodGrand = new Method { Id = Guid.NewGuid(), Name = "TestMethod", Stereotype = KeyWord.Virtual };
+        var classGrand = new Class { Id = Guid.NewGuid(), Name = "TestClass", Methods = [methodGrand] };
+        var classParent = new Class { Id = Guid.NewGuid(), Name = "TestClass", Methods = [], HierarchyClass = classGrand };
+        var methodChild = new Method { Id = Guid.NewGuid(), Name = "TestMethod", IsOverride = true };
+        var classChild = new Class { Id = Guid.NewGuid(), Name = "TestClass", Methods = [], HierarchyClass = classParent };
+
+        _mockMethodRepository.Setup(repo => repo.Find(methodGrand.Id)).Returns(methodGrand);
+        _mockMethodRepository.Setup(repo => repo.Find(methodChild.Id)).Returns(methodChild);
+        _mockClassRepository.Setup(repo => repo.Find(classParent.Id)).Returns(classParent);
+        _mockClassRepository.Setup(repo => repo.Find(classGrand.Id)).Returns(classGrand);
+        _mockClassRepository.Setup(repo => repo.Find(classChild.Id)).Returns(classChild);
+        _mockClassRepository.Setup(repo => repo.Update(It.IsAny<Class>()));
+
+        _methodService.AssociateMethodWithClass(methodChild.Id, classChild.Id);
+
+        Assert.IsTrue(classChild.Methods.Contains(methodChild));
+        _mockClassRepository.Verify(repo => repo.Update(classChild), Times.Once);
     }
 
     [TestMethod]
@@ -1840,9 +1918,9 @@ public class MethodServiceTest
             "\tthis.Preparar() -> Autenticador.Preparar()\n" +
             "\tthis.ValidarCredenciales(Usuario) -> AutenticadorPassword.ValidarCredenciales(Usuario)\n" +
             "\t\tusuario.Validar() -> Usuario.Validar()\n" +
-            "\t\tthis.clavePrivada.ToString() -> String.ToString()\n" + // la S deberia ser mayuscula o minuscula ??
+            "\t\tthis.clavePrivada.ToString() -> String.ToString()\n" +
             "\tthis.LogAcceso(Usuario) -> Autenticador.LogAcceso(Usuario)\n" +
-            "\tloggerLocal.Registrar(string) -> Logger.Registrar(string)"; // la S deberia ser mayuscula o minuscula ??
+            "\tloggerLocal.Registrar(string) -> Logger.Registrar(string)";
         Console.WriteLine(result);
         Assert.AreEqual(res, result);
     }
@@ -2057,5 +2135,44 @@ public class MethodServiceTest
             "\tnotificador.EnviarNotificacion(string) -> Comunicacion.EnviarNotificacion(string)";
         Console.WriteLine(result);
         Assert.AreEqual(res, result);
+    }
+
+    [TestMethod]
+    public void CreateMethodSignature_ShouldAddMethodSignature_WhenMethodSignatureIsValid()
+    {
+        var classT = new TypeDTO { Name = "TestClass" };
+
+        var methodSignatureDto = new MethodSignatureDTO { Name = "Signature", ReturnType = classT };
+
+        _mockMethodSignatureRepository
+            .Setup(r => r.Add(It.Is<MethodSignature>(s =>
+                s.Name == methodSignatureDto.Name && s.ReturnType.Name == classT.Name)));
+
+        _mockClassRepository
+            .Setup(repo => repo.FindAllTypes())
+            .Returns([new Class { Name = "TestClass" }]);
+
+        var result = _methodService.CreateMethodSignature(methodSignatureDto);
+
+        Assert.AreNotEqual(Guid.Empty, result);
+        _mockMethodSignatureRepository.Verify(r => r.Add(It.IsAny<MethodSignature>()), Times.Once);
+    }
+
+    [TestMethod]
+    public void CreateMethodSignature_ShouldThrowException_WhenMethodSignatureIsNotValid()
+    {
+        var exception =
+            Assert.ThrowsException<MethodSignatureNotFoundException>(() => _methodService.CreateMethodSignature(null));
+
+        Assert.AreEqual("MethodSignature cannot be null.", exception.Message);
+    }
+
+    [TestMethod]
+    public void CreateMethodSignature_ShouldThrowException_WhenMethodSignatureNameIsNotValid()
+    {
+        var exception =
+            Assert.ThrowsException<InvalidMethodSignatureException>(() => _methodService.CreateMethodSignature(new MethodSignatureDTO()));
+
+        Assert.AreEqual("MethodSignature name cannot be null.", exception.Message);
     }
 }

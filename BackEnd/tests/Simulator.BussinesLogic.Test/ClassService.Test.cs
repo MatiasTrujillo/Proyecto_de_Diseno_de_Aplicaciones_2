@@ -37,6 +37,10 @@ public class ClassServiceTest
         {
             Name = "Pedro",
             Stereotype = KeyWord.Sealed,
+            NameSpace = new NameSpaceDTO
+            {
+                Name = "NameSpace",
+            }
         };
 
         var objectClass = new Class { Name = "Object" };
@@ -55,18 +59,36 @@ public class ClassServiceTest
     }
 
     [TestMethod]
+    public void ToEntity_ShouldThrowArgumentNullException_WhenLocalVariableTypeIsNull()
+    {
+        var dto = new ClassDTO { Name = "myVar", NameSpace = null };
+
+        var exception = Assert.ThrowsException<ArgumentNullException>(dto.ToEntity);
+
+        Assert.AreEqual("The Type property cannot be null. (Parameter 'NameSpace')", exception.Message);
+    }
+
+    [TestMethod]
     public void CreateClass_ShouldNotCallRepositoryAdd_WithRepeatedClassName()
     {
         var dto1 = new ClassDTO
         {
             Name = "Pedro",
             Stereotype = KeyWord.Sealed,
+            NameSpace = new NameSpaceDTO
+            {
+                Name = "NameSpace",
+            }
         };
 
         var dto2 = new ClassDTO
         {
             Name = "Pedro",
             Stereotype = null,
+            NameSpace = new NameSpaceDTO
+            {
+                Name = "NameSpace",
+            }
         };
 
         var classes = new List<Type> { dto1.ToEntity() };
@@ -90,6 +112,10 @@ public class ClassServiceTest
         {
             Name = "Class",
             Stereotype = invalidStereoType,
+            NameSpace = new NameSpaceDTO
+            {
+                Name = "NameSpace",
+            }
         };
 
         _mockClassRepository.Setup(r => r.FindAllTypes())
@@ -100,7 +126,7 @@ public class ClassServiceTest
             _classService.CreateClass(dto);
         });
 
-        Assert.AreEqual("Invalid stereotype value.", exception.Message);
+        Assert.AreEqual("Invalid stereotype value. Classes stereotypes can only be null, abstract or sealed.", exception.Message);
     }
 
     [TestMethod]
@@ -110,6 +136,10 @@ public class ClassServiceTest
         {
             Name = string.Empty,
             Stereotype = KeyWord.Sealed,
+            NameSpace = new NameSpaceDTO
+            {
+                Name = "NameSpace",
+            }
         };
 
         _mockClassRepository.Setup(r => r.FindAllTypes())
@@ -130,6 +160,10 @@ public class ClassServiceTest
         {
             Name = "class",
             Stereotype = KeyWord.Sealed,
+            NameSpace = new NameSpaceDTO
+            {
+                Name = "NameSpace",
+            }
         };
 
         _mockClassRepository.Setup(r => r.FindAllTypes())
@@ -150,6 +184,10 @@ public class ClassServiceTest
         {
             Name = "Class Name",
             Stereotype = KeyWord.Sealed,
+            NameSpace = new NameSpaceDTO
+            {
+                Name = "NameSpace",
+            }
         };
 
         _mockClassRepository.Setup(r => r.FindAllTypes())
@@ -167,7 +205,8 @@ public class ClassServiceTest
     public void DeleteClass_ShouldDeleteClass_WhenValid()
     {
         var id = Guid.NewGuid();
-        var original = new Class(KeyWord.Sealed, null, [], [], "Class2") { Id = id };
+        var nameSpace = new NameSpace("NameSpace", null);
+        var original = new Class(KeyWord.Sealed, null, [], [], "Class2", nameSpace) { Id = id };
 
         _mockClassRepository.Setup(r => r.Find(id)).Returns(original);
         _mockClassRepository.Setup(r => r.FindAll()).Returns([original]);
@@ -475,5 +514,99 @@ public class ClassServiceTest
         };
 
         _classService.UpdateClass(id, dto);
+    }
+
+    [TestMethod]
+    public void CreateClass_ShouldThrowException_WhenKeyWordStatic()
+    {
+        var invalidStereoType = KeyWord.Static;
+        var dto = new ClassDTO
+        {
+            Name = "Class",
+            Stereotype = invalidStereoType,
+            NameSpace = new NameSpaceDTO
+            {
+                Name = "NameSpace",
+            }
+        };
+
+        _mockClassRepository.Setup(r => r.FindAllTypes())
+            .Returns([]);
+
+        var exception = Assert.ThrowsException<InvalidClassException>(() =>
+        {
+            _classService.CreateClass(dto);
+        });
+
+        Assert.AreEqual("Invalid stereotype value. Classes stereotypes can only be null, abstract or sealed.", exception.Message);
+    }
+
+    [TestMethod]
+    public void UpdateClass_ShouldThrowException_WhenKeyWordStatic()
+    {
+        var id = Guid.NewGuid();
+        var classT = new Class { Id = id, Name = "OldName" };
+
+        _mockClassRepository.Setup(r => r.FindAll()).Returns([classT]);
+        _mockClassRepository.Setup(r => r.Find(id)).Returns(classT);
+
+        var dto = new UpdateClassDTO
+        {
+            Stereotype = KeyWord.Static + string.Empty,
+        };
+
+        var exception = Assert.ThrowsException<InvalidClassException>(() =>
+        {
+            _classService.UpdateClass(id, dto);
+        });
+
+        Assert.AreEqual("The stereotype is not valid", exception.Message);
+    }
+
+    [TestMethod]
+    public void CreateClass_ShouldThrowException_WhenKeyWordVirtual()
+    {
+        var invalidStereoType = KeyWord.Virtual;
+        var dto = new ClassDTO
+        {
+            Name = "Class",
+            Stereotype = invalidStereoType,
+            NameSpace = new NameSpaceDTO
+            {
+                Name = "NameSpace",
+            }
+        };
+
+        _mockClassRepository.Setup(r => r.FindAllTypes())
+            .Returns([]);
+
+        var exception = Assert.ThrowsException<InvalidClassException>(() =>
+        {
+            _classService.CreateClass(dto);
+        });
+
+        Assert.AreEqual("Invalid stereotype value. Classes stereotypes can only be null, abstract or sealed.", exception.Message);
+    }
+
+    [TestMethod]
+    public void UpdateClass_ShouldThrowException_WhenKeyWordVirtual()
+    {
+        var id = Guid.NewGuid();
+        var classT = new Class { Id = id, Name = "OldName" };
+
+        _mockClassRepository.Setup(r => r.FindAll()).Returns([classT]);
+        _mockClassRepository.Setup(r => r.Find(id)).Returns(classT);
+
+        var dto = new UpdateClassDTO
+        {
+            Stereotype = KeyWord.Virtual + string.Empty,
+        };
+
+        var exception = Assert.ThrowsException<InvalidClassException>(() =>
+        {
+            _classService.UpdateClass(id, dto);
+        });
+
+        Assert.AreEqual("The stereotype is not valid", exception.Message);
     }
 }

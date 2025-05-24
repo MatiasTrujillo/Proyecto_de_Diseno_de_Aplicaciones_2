@@ -22,7 +22,7 @@ public class ClassService(
         var aClass = classDto.ToEntity();
         var classes = _classRepository.FindAllTypes();
         var objectClass = classes.FirstOrDefault(c => c.Name == "Object") as Class;
-        ValidateAccesibility(aClass.Stereotype);
+        ValidateStereotypeInCreate(aClass.Stereotype);
         ValidateClassNameIsUnique(aClass.Name);
         aClass.HierarchyClass = objectClass;
         _classRepository.Add(aClass);
@@ -61,7 +61,7 @@ public class ClassService(
     {
         if(!string.IsNullOrWhiteSpace(uClass.Stereotype))
         {
-            ValidateStereotype(uClass.Stereotype, classT);
+            ValidateStereotypeInUpdate(uClass.Stereotype, classT);
         }
     }
 
@@ -83,11 +83,6 @@ public class ClassService(
                 throw new InvalidClassException("An abstract class cannot inherit from a concrete class.");
             }
 
-            if(heritageClassT.Stereotype == KeyWord.Sealed)
-            {
-                throw new InvalidClassException("A class cannot inherit from a sealed class.");
-            }
-
             classT.HierarchyClass = heritageClassT;
         }
     }
@@ -105,7 +100,7 @@ public class ClassService(
         }
     }
 
-    private static void ValidateStereotype(string stereotype, Class classT)
+    private static void ValidateStereotypeInUpdate(string stereotype, Class classT)
     {
         if(stereotype.ToLower() == "abstract")
         {
@@ -173,11 +168,11 @@ public class ClassService(
         }
     }
 
-    private void ValidateAccesibility(KeyWord? stereotype)
+    private void ValidateStereotypeInCreate(KeyWord? stereotype)
     {
-        if(stereotype != null && !Enum.IsDefined(typeof(KeyWord), stereotype))
+        if(stereotype != null && stereotype != KeyWord.Abstract && stereotype != KeyWord.Sealed)
         {
-            throw new InvalidClassException("Invalid stereotype value.");
+            throw new InvalidClassException("Invalid stereotype value. Classes stereotypes can only be null, abstract or sealed.");
         }
     }
 

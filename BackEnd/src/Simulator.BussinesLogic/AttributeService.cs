@@ -24,6 +24,7 @@ public class AttributeService(IAttributeRepository attributeRepository, IClassRe
         var type = aDTO.Type.Name;
         var typeT = _classRepository.FindAll().FirstOrDefault(c => c.Name == type);
         ValidateAccesibility(attribute.Accessibility);
+        ValidateStereotype(attribute.Stereotype);
         ValidateAttributeType(attribute.Type);
         attribute.Type = typeT;
         _attributeRepository.Add(attribute);
@@ -47,6 +48,7 @@ public class AttributeService(IAttributeRepository attributeRepository, IClassRe
         ValidateAttributeIsNotInClass(attribute);
         ValidateName(uAttribute.Name, attribute);
         ValidateAccessibility(uAttribute.Accessibility, attribute);
+        ManageStereotype(uAttribute.Stereotype, attribute);
         ValidateAttributeTypeUp(uAttribute.IdType);
         _attributeRepository.Update(attribute);
     }
@@ -181,6 +183,22 @@ public class AttributeService(IAttributeRepository attributeRepository, IClassRe
         }
     }
 
+    private void ManageStereotype(string? newStereotype, Attribute attribute)
+    {
+        if(newStereotype == null)
+        {
+            attribute.Stereotype = null;
+        }
+        else if(newStereotype.ToLower() == "static")
+        {
+            attribute.Stereotype = KeyWord.Static;
+        }
+        else
+        {
+            throw new InvalidAttributeException("Invalid stereotype value. Attribute stereotype can only be null or static.");
+        }
+    }
+
     private void ValidateAttributeTypeUp(Guid? methodTReturnType)
     {
         var classes = _classRepository.FindAll();
@@ -195,6 +213,14 @@ public class AttributeService(IAttributeRepository attributeRepository, IClassRe
         if(!Enum.IsDefined(typeof(Accessibility), aDtoAccessibility))
         {
             throw new InvalidAttributeException("Invalid accessibility value.");
+        }
+    }
+
+    private void ValidateStereotype(KeyWord? stereotype)
+    {
+        if(stereotype != null && stereotype != KeyWord.Static)
+        {
+            throw new InvalidAttributeException("Invalid stereotype value. Attribute stereotype can only be null or static.");
         }
     }
 }
