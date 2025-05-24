@@ -24,6 +24,7 @@ public sealed class SqlContext : DbContext
     public DbSet<NameSpace> NameSpaces { get; set; }
     public DbSet<Interface> Interfaces { get; set; }
     public DbSet<MethodSignature> MethodSignatures { get; set; }
+    public DbSet<Session> Sessions { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -163,12 +164,69 @@ public sealed class SqlContext : DbContext
         var stringTypeId = Guid.Parse("22222222-2222-2222-2222-222222222222");
         var intTypeId = Guid.Parse("33333333-3333-3333-3333-333333333333");
 
+        var session1 = Guid.Parse("b142d2d6-ac0c-4af1-b272-c03e431555f3");
+        var session2 = Guid.Parse("675c1f61-9dfa-4ead-bae4-dc432ee2bd32");
+        var session3 = Guid.Parse("756ec724-3e51-4e0d-a857-cceee846a5f6");
+        var session4 = Guid.Parse("a4a20350-e7e1-4080-b4da-75e875af6b61");
+        var session5 = Guid.Parse("2070a73f-97a1-4365-a231-dca969fb52fb");
+        var session6 = Guid.Parse("f6e32298-4362-4ef1-9e6a-e2dfc9e58a47");
+        var session7 = Guid.Parse("231ecdac-9680-4772-a95a-29abdfd4ad5f");
+        var session9 = Guid.Parse("5c8f91eb-5bd1-4706-96ca-cfcec81473b8");
+        var session10 = Guid.Parse("66d9652f-3585-4982-9ab7-8d8159197147");
+
         modelBuilder.Entity<NameSpace>().HasData(new
         {
             Id = systemNameSpaceId,
             Name = "System",
             FatherId = (Guid?)null
         });
+
+        modelBuilder.Entity<Session>().HasData(
+            new
+            {
+                Token = session1,
+                IsActive = true,
+            },
+            new
+            {
+                Token = session2,
+                IsActive = true
+            },
+            new
+            {
+                Token = session3,
+                IsActive = true
+            },
+            new
+            {
+                Token = session4,
+                IsActive = true
+            },
+            new
+            {
+                Token = session5,
+                IsActive = true
+            },
+            new
+            {
+                Token = session6,
+                IsActive = true
+            },
+            new
+            {
+                Token = session7,
+                IsActive = true
+            },
+            new
+            {
+                Token = session9,
+                IsActive = true
+            },
+            new
+            {
+                Token = session10,
+                IsActive = true
+            });
 
         modelBuilder.Entity<Class>().HasData(new
         {

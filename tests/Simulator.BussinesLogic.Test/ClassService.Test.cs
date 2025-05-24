@@ -59,6 +59,16 @@ public class ClassServiceTest
     }
 
     [TestMethod]
+    public void ToEntity_ShouldThrowArgumentNullException_WhenLocalVariableTypeIsNull()
+    {
+        var dto = new ClassDTO { Name = "myVar", NameSpace = null };
+
+        var exception = Assert.ThrowsException<ArgumentNullException>(dto.ToEntity);
+
+        Assert.AreEqual("The Type property cannot be null. (Parameter 'NameSpace')", exception.Message);
+    }
+
+    [TestMethod]
     public void CreateClass_ShouldNotCallRepositoryAdd_WithRepeatedClassName()
     {
         var dto1 = new ClassDTO
