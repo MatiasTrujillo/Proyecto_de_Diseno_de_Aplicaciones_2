@@ -8,6 +8,7 @@ public class NameSpace : INamespaceComponent
 
     public NameSpace()
     {
+        Id = Guid.NewGuid();
         Name = string.Empty;
         Father = null;
     }

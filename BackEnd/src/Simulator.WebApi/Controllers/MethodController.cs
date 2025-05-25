@@ -6,7 +6,6 @@ using Simulator.WebApi.Filters;
 namespace Simulator.WebApi.Controllers;
 
 [ApiController]
-[ActiveSessionFilter]
 [Route("api/v1/methods")]
 public class MethodController(IMethodService methodService) : ControllerBase
 {

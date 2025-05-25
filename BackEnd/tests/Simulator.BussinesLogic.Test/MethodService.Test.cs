@@ -103,6 +103,24 @@ public class MethodServiceTest
     }
 
     [TestMethod]
+    public void CreateMethod_ShouldThrowException_WhenReturnTypeIsInvalid()
+    {
+        var classT = new TypeDTO { Name = "TestClass", Kind = "wrong" };
+        var method = new MethodDTO
+        {
+            Name = "TestMethod",
+            Accessibility = Accessibility.Public,
+            Stereotype = null,
+            ReturnType = classT
+        };
+        var classes = new List<Type>();
+        _mockClassRepository.Setup(repo => repo.FindAllTypes()).Returns(classes);
+
+        var exception = Assert.ThrowsException<InvalidOperationException>(() => _methodService.CreateMethod(method));
+        Assert.AreEqual($"Unknown type kind: {classT.Kind}", exception.Message);
+    }
+
+    [TestMethod]
     public void CreateMethod_ShouldThrowException_WhenKeyAccessibilityIsNotValid()
     {
         var invalidAccessibility = (Accessibility)100;
@@ -111,7 +129,6 @@ public class MethodServiceTest
         {
             Name = "TestMethod",
             Accessibility = invalidAccessibility,
-            Stereotype = null,
             ReturnType = classT
         };
         var classes = new List<Type>();

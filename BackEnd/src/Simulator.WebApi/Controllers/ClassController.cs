@@ -6,16 +6,15 @@ using Simulator.WebApi.Filters;
 namespace Simulator.WebApi.Controllers;
 
 [ApiController]
-[ActiveSessionFilter]
 [Route("api/v1/classes")]
 public class ClassController(IClassService classService) : ControllerBase
 {
     private readonly IClassService _classService = classService;
 
     [HttpPost]
-    public IActionResult CreateClass([FromBody] ClassDTO classDto)
+    public IActionResult CreateClass([FromBody] ClassDTO classT)
     {
-        var classId = _classService.CreateClass(classDto);
+        var classId = _classService.CreateClass(classT);
         return Created(string.Empty, new { id = classId });
     }
 

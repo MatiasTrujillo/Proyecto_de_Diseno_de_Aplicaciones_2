@@ -6,7 +6,6 @@ using Simulator.WebApi.Filters;
 namespace Simulator.WebApi.Controllers;
 
 [ApiController]
-[ActiveSessionFilter]
 [Route("api/v1/interfaces")]
 public class InterfaceController(IInterfaceService interfaceService) : ControllerBase
 {

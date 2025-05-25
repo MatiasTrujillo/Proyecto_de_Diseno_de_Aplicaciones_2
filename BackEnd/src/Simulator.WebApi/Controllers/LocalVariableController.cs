@@ -6,7 +6,6 @@ using Simulator.WebApi.Filters;
 namespace Simulator.WebApi.Controllers;
 
 [ApiController]
-[ActiveSessionFilter]
 [Route("api/v1/localVariables")]
 public class LocalVariableController(IMethodService methodService) : ControllerBase
 {
