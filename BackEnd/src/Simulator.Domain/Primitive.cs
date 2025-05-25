@@ -15,4 +15,6 @@ public class Primitive : Type
     {
         PrimitiveType = primitiveType;
     }
+
+    public override Guid Id { get; set; }
 }

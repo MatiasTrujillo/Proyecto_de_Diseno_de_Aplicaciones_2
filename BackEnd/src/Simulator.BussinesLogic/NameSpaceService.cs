@@ -37,17 +37,7 @@ public class NameSpaceService(
         ValidateClassExistence(idClass);
         var nameSpace = nameSpaceRepository.Find(id);
         var classEntity = classRepository.Find(idClass);
-        ValidateClassDontHaveNameSpace(classEntity);
-        classEntity.NameSpace = nameSpace;
         classRepository.Update(classEntity);
-    }
-
-    private void ValidateClassDontHaveNameSpace(Class idClass)
-    {
-        if(idClass.NameSpace != null)
-        {
-            throw new NameSpaceException("Class already has a NameSpace");
-        }
     }
 
     public void AsociateToInterface(Guid id, Guid idInterface)

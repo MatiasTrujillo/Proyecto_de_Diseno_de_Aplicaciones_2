@@ -19,8 +19,8 @@ public class ClassRepositoryTest
         _id = Guid.NewGuid();
         _nameSpace = new NameSpace("NameSpace", null);
         _repository = new ClassRepository(_context);
-        aClass = new Class(KeyWord.Abstract, null, [], [], "Class1", _nameSpace) { Id = _id };
-        anotherClass = new Class(null, null, [], [], "Class1", _nameSpace);
+        aClass = new Class(KeyWord.Abstract, null, [], [], "Class1") { Id = _id };
+        anotherClass = new Class(null, null, [], [], "Class1");
         aClass.Name = "Class";
     }
 
@@ -175,7 +175,7 @@ public class ClassRepositoryTest
         _context.Classes.Add(aClass);
         _context.SaveChanges();
 
-        var updated = new Class(null, null, [], [], "Class1", _nameSpace);
+        var updated = new Class(null, null, [], [], "Class1");
         updated.Id = aClass.Id;
 
         _repository.Update(updated);
