@@ -30,19 +30,6 @@ public class NameSpaceService(
         nameSpaceRepository.Update(nameSpace);
     }
 
-    public void AsociateToClass(Guid id, Guid idClass)
-    {
-        ValidateNameSpaceExistence(id);
-        ValidateClassExistence(idClass);
-        var nameSpace = nameSpaceRepository.Find(id);
-        var classEntity = classRepository.Find(idClass);
-        classRepository.Update(classEntity);
-    }
-
-    public void AsociateToInterface(Guid id, Guid idInterface)
-    {
-    }
-
     private void ValidateUniqueNameSpace(string nameSpace)
     {
         var nameSpaces = nameSpaceRepository.FindAll();

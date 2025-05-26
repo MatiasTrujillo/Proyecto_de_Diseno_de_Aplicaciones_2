@@ -52,31 +52,6 @@ public class NameSpaceService_Test
     }
 
     [TestMethod]
-    [ExpectedException(typeof(NameSpaceException))]
-    public void AsociateToClass_ShouldThrow_WhenClassNotFound()
-    {
-        var nsId = Guid.NewGuid();
-        var classId = Guid.NewGuid();
-
-        _mockNameSpaceRepository.Setup(repo => repo.Find(nsId)).Returns(new NameSpace { Id = nsId });
-        _mockClassRepository.Setup(repo => repo.Find(classId)).Returns((Class?)null);
-
-        _nameSpaceService.AsociateToClass(nsId, classId);
-    }
-
-    [TestMethod]
-    [ExpectedException(typeof(NameSpaceException))]
-    public void AsociateToClass_ShouldThrow_WhenNamespaceNotFound()
-    {
-        var nsId = Guid.NewGuid();
-        var classId = Guid.NewGuid();
-
-        _mockNameSpaceRepository.Setup(repo => repo.Find(nsId)).Returns((NameSpace?)null);
-
-        _nameSpaceService.AsociateToClass(nsId, classId);
-    }
-
-    [TestMethod]
     public void AddFatherToNameSpace_ShouldSetFatherAndUpdate()
     {
         var childId = Guid.NewGuid();
