@@ -7,8 +7,7 @@ using Simulator.IDataAcces;
 namespace Simulator.BussinesLogic;
 
 public class NameSpaceService(
-    INameSpaceRepository nameSpaceRepository,
-    IClassRepository classRepository
+    INameSpaceRepository nameSpaceRepository
     ) : INameSpaceService
 {
     public Guid CreateNameSpace(NameSpaceDTO nameSpaceDto)
@@ -39,15 +38,6 @@ public class NameSpaceService(
             {
                 throw new NameSpaceException("NameSpace already exists");
             }
-        }
-    }
-
-    private void ValidateClassExistence(Guid idClass)
-    {
-        var classEntity = classRepository.Find(idClass);
-        if(classEntity == null)
-        {
-            throw new NameSpaceException("Class does not exist");
         }
     }
 

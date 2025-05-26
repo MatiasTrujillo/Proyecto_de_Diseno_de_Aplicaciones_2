@@ -10,7 +10,6 @@ namespace Simulator.BussinesLogic.Test;
 public class NameSpaceService_Test
 {
     private Mock<INameSpaceRepository> _mockNameSpaceRepository = null!;
-    private Mock<IClassRepository> _mockClassRepository = null!;
     private NameSpaceService _nameSpaceService = null!;
     private NameSpaceDTO _dto = null!;
 
@@ -18,8 +17,7 @@ public class NameSpaceService_Test
     public void Initialize()
     {
         _mockNameSpaceRepository = new Mock<INameSpaceRepository>(MockBehavior.Strict);
-        _mockClassRepository = new Mock<IClassRepository>(MockBehavior.Strict);
-        _nameSpaceService = new NameSpaceService(_mockNameSpaceRepository.Object, _mockClassRepository.Object);
+        _nameSpaceService = new NameSpaceService(_mockNameSpaceRepository.Object);
 
         _dto = new NameSpaceDTO
         {
