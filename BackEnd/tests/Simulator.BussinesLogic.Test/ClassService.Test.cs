@@ -609,4 +609,34 @@ public class ClassServiceTest
 
         Assert.AreEqual("The stereotype is not valid", exception.Message);
     }
+
+    [TestMethod]
+    public void UpdateClass_WithValidInterface_UpdatesSuccessfullyWithInterfaceParent()
+    {
+        var classId = Guid.NewGuid();
+        var heritageId = Guid.NewGuid();
+
+        var existingClass = new Class { Id = classId, Name = "OldName" };
+        var newHeritageInterface = new Interface { Id = heritageId, Name = "ParentInterface" };
+        var _mockInterfaceRepository = new Mock<IInterfaceRepository>();
+
+        _mockClassRepository.Setup(r => r.FindAllTypes()).Returns([existingClass, newHeritageInterface]);
+        _mockClassRepository.Setup(r => r.Find(classId)).Returns(existingClass);
+        _mockInterfaceRepository.Setup(r => r.Find(heritageId)).Returns(newHeritageInterface);
+        _mockClassRepository.Setup(r => r.Update(It.IsAny<Class>()));
+
+        _mockAttributeRepository.Setup(r => r.FindAll()).Returns([]);
+        _mockMethodRepository.Setup(r => r.FindAll()).Returns([]);
+
+        var dto = new UpdateClassDTO
+        {
+            Name = "NewName",
+            IdClass = heritageId
+        };
+
+        _classService.UpdateClass(classId, dto);
+
+        Assert.AreEqual("NewName", existingClass.Name);
+        Assert.AreEqual(newHeritageInterface, existingClass.HierarchyClass);
+    }
 }

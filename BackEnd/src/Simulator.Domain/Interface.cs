@@ -28,4 +28,12 @@ public class Interface : Type
         MethodSignatures = methodSignatures;
         NameSpace = nameSpace;
     }
+
+    public Interface()
+    {
+        Id = Guid.NewGuid();
+        Name = String.Empty;
+        MethodSignatures = [];
+        NameSpace = new NameSpace();
+    }
 }
