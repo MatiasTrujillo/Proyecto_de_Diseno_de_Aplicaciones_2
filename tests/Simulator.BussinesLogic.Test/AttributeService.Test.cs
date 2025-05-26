@@ -359,6 +359,7 @@ public class AttributeServiceTest
 
         _mockAttributeRepository.Setup(r => r.Find(id)).Returns(attribute);
         _mockClassRepository.Setup(r => r.FindAll()).Returns([]);
+        _mockClassRepository.Setup(r => r.FindAllTypes()).Returns([]);
         _mockAttributeRepository.Setup(r => r.Delete(id));
 
         _attributeService.DeleteAttribute(id);
@@ -402,12 +403,16 @@ public class AttributeServiceTest
     public void UpdateAttribute_ShouldUpdate_WhenDataIsValid()
     {
         var attributeId = Guid.NewGuid();
-        var typeId = Guid.NewGuid();
+        var referenceTypeId = Guid.NewGuid();
+        var instanceTypeId = Guid.NewGuid();
         var attribute = new Attribute { Id = attributeId, Name = "OldName", Accessibility = Accessibility.Private };
-        var dto = new UpdateAttributeDTO { Name = "NewName", Accessibility = "public", IdReferenceType = typeId };
+        var dto = new UpdateAttributeDTO { Name = "NewName", Accessibility = "public", IdReferenceType = referenceTypeId, IdInstanceType = instanceTypeId };
+        var auxClass1 = new Class { Id = referenceTypeId, Name = "class1" };
+        var auxClass2 = new Class { Id = instanceTypeId, Name = "class2", HierarchyClass = auxClass1 };
 
         _mockAttributeRepository.Setup(r => r.Find(attributeId)).Returns(attribute);
-        _mockClassRepository.Setup(r => r.FindAll()).Returns([new Class { Id = typeId }]);
+        _mockClassRepository.Setup(r => r.FindAll()).Returns([auxClass1, auxClass2]);
+        _mockClassRepository.Setup(r => r.FindAllTypes()).Returns([auxClass1, auxClass2]);
         _mockAttributeRepository.Setup(r => r.Update(attribute));
 
         _attributeService.UpdateAttribute(attributeId, dto);
@@ -425,9 +430,12 @@ public class AttributeServiceTest
         var instanceTypeId = Guid.NewGuid();
         var attribute = new Attribute { Id = attributeId, Name = "OldName", Accessibility = Accessibility.Private };
         var dto = new UpdateAttributeDTO { Name = "NewName", Accessibility = "public", IdReferenceType = referenceTypeId, IdInstanceType = instanceTypeId };
+        var auxClass1 = new Class { Id = referenceTypeId, Name = "class1" };
+        var auxClass2 = new Class { Id = instanceTypeId, Name = "class2" };
 
         _mockAttributeRepository.Setup(r => r.Find(attributeId)).Returns(attribute);
-        _mockClassRepository.Setup(r => r.FindAll()).Returns([new Class { Id = referenceTypeId }, new Class { Id = instanceTypeId }]);
+        _mockClassRepository.Setup(r => r.FindAll()).Returns([auxClass1, auxClass2]);
+        _mockClassRepository.Setup(r => r.FindAllTypes()).Returns([auxClass1, auxClass2]);
         _mockAttributeRepository.Setup(r => r.Update(attribute));
 
         var ex = Assert.ThrowsException<InvalidAttributeException>(() =>
@@ -478,6 +486,7 @@ public class AttributeServiceTest
 
         _mockAttributeRepository.Setup(r => r.Find(id)).Returns(attribute);
         _mockClassRepository.Setup(r => r.FindAll()).Returns([classWithAttr]);
+        _mockClassRepository.Setup(r => r.FindAllTypes()).Returns([classWithAttr]);
 
         var ex = Assert.ThrowsException<AttributeInUseExpetion>(() =>
             _attributeService.UpdateAttribute(id, dto));
@@ -503,12 +512,17 @@ public class AttributeServiceTest
     public void UpdateAttribute_ShouldUpdateAccessibility_WhenDataIsValid()
     {
         var id = Guid.NewGuid();
+        var referenceTypeId = Guid.NewGuid();
+        var instanceTypeId = Guid.NewGuid();
         var existingAttribute = new Attribute { Id = id, Name = "Attr", Accessibility = Accessibility.Private };
 
-        var dto = new UpdateAttributeDTO { Name = "Attr", Accessibility = "protected" };
+        var dto = new UpdateAttributeDTO { Name = "Attr", Accessibility = "protected", IdReferenceType = referenceTypeId, IdInstanceType = instanceTypeId };
+        var auxClass1 = new Class { Id = referenceTypeId, Name = "class1" };
+        var auxClass2 = new Class { Id = instanceTypeId, Name = "class2", HierarchyClass = auxClass1 };
 
         _mockAttributeRepository.Setup(r => r.Find(id)).Returns(existingAttribute);
-        _mockClassRepository.Setup(r => r.FindAll()).Returns([]);
+        _mockClassRepository.Setup(r => r.FindAll()).Returns([auxClass1, auxClass2]);
+        _mockClassRepository.Setup(r => r.FindAllTypes()).Returns([auxClass1, auxClass2]);
 
         _attributeService.UpdateAttribute(id, dto);
 
@@ -519,12 +533,17 @@ public class AttributeServiceTest
     public void UpdateAttribute_ShouldUpdateAccessibility_WhenDataIsValidPrivate()
     {
         var id = Guid.NewGuid();
+        var referenceTypeId = Guid.NewGuid();
+        var instanceTypeId = Guid.NewGuid();
         var existingAttribute = new Attribute { Id = id, Name = "Attr", Accessibility = Accessibility.Private };
 
-        var dto = new UpdateAttributeDTO { Name = "Attr", Accessibility = "private" };
+        var dto = new UpdateAttributeDTO { Name = "Attr", Accessibility = "private", IdReferenceType = referenceTypeId, IdInstanceType = instanceTypeId };
+        var auxClass1 = new Class { Id = referenceTypeId, Name = "class1" };
+        var auxClass2 = new Class { Id = instanceTypeId, Name = "class2", HierarchyClass = auxClass1 };
 
         _mockAttributeRepository.Setup(r => r.Find(id)).Returns(existingAttribute);
-        _mockClassRepository.Setup(r => r.FindAll()).Returns([]);
+        _mockClassRepository.Setup(r => r.FindAll()).Returns([auxClass1, auxClass2]);
+        _mockClassRepository.Setup(r => r.FindAllTypes()).Returns([auxClass1, auxClass2]);
 
         _attributeService.UpdateAttribute(id, dto);
 
@@ -535,12 +554,17 @@ public class AttributeServiceTest
     public void UpdateAttribute_ShouldUpdateAccessibility_WhenDataIsValidPublic()
     {
         var id = Guid.NewGuid();
+        var referenceTypeId = Guid.NewGuid();
+        var instanceTypeId = Guid.NewGuid();
         var existingAttribute = new Attribute { Id = id, Name = "Attr", Accessibility = Accessibility.Private };
 
-        var dto = new UpdateAttributeDTO { Name = "Attr", Accessibility = "public" };
+        var dto = new UpdateAttributeDTO { Name = "Attr", Accessibility = "public", IdReferenceType = referenceTypeId, IdInstanceType = instanceTypeId };
+        var auxClass1 = new Class { Id = referenceTypeId, Name = "class1" };
+        var auxClass2 = new Class { Id = instanceTypeId, Name = "class2", HierarchyClass = auxClass1 };
 
         _mockAttributeRepository.Setup(r => r.Find(id)).Returns(existingAttribute);
-        _mockClassRepository.Setup(r => r.FindAll()).Returns([]);
+        _mockClassRepository.Setup(r => r.FindAll()).Returns([auxClass1, auxClass2]);
+        _mockClassRepository.Setup(r => r.FindAllTypes()).Returns([auxClass1, auxClass2]);
 
         _attributeService.UpdateAttribute(id, dto);
 
@@ -702,12 +726,16 @@ public class AttributeServiceTest
     public void UpdateAttribute_ShouldUpdate_WhenStereotypeIsCorrect()
     {
         var attributeId = Guid.NewGuid();
-        var typeId = Guid.NewGuid();
+        var referenceTypeId = Guid.NewGuid();
+        var instanceTypeId = Guid.NewGuid();
         var attribute = new Attribute { Id = attributeId, Name = "OldName", Accessibility = Accessibility.Private };
-        var dto = new UpdateAttributeDTO { Name = "NewName", Accessibility = "public", IdReferenceType = typeId, Stereotype = "static" };
+        var dto = new UpdateAttributeDTO { Name = "NewName", Accessibility = "public", Stereotype = "static", IdReferenceType = referenceTypeId, IdInstanceType = instanceTypeId };
+        var auxClass1 = new Class { Id = referenceTypeId, Name = "class1" };
+        var auxClass2 = new Class { Id = instanceTypeId, Name = "class2", HierarchyClass = auxClass1 };
 
         _mockAttributeRepository.Setup(r => r.Find(attributeId)).Returns(attribute);
-        _mockClassRepository.Setup(r => r.FindAll()).Returns([new Class { Id = typeId }]);
+        _mockClassRepository.Setup(r => r.FindAll()).Returns([auxClass1, auxClass2]);
+        _mockClassRepository.Setup(r => r.FindAllTypes()).Returns([auxClass1, auxClass2]);
         _mockAttributeRepository.Setup(r => r.Update(attribute));
 
         _attributeService.UpdateAttribute(attributeId, dto);

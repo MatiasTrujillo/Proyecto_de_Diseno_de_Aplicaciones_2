@@ -53,6 +53,13 @@ public class AttributeService(IAttributeRepository attributeRepository, IClassRe
         ValidateAccessibility(uAttribute.Accessibility, attribute);
         ManageStereotype(uAttribute.Stereotype, attribute);
         ValidateAttributeTypeUp(uAttribute.IdReferenceType);
+        var type = _classRepository.FindAllTypes().FirstOrDefault(x => x.Id == uAttribute.IdReferenceType);
+        var instanceType = _classRepository.FindAllTypes().FirstOrDefault(x => x.Id == uAttribute.IdInstanceType);
+        var typeT = _classRepository.FindAll().FirstOrDefault(c => c.Name == type.Name);
+        var instanceTypeT = _classRepository.FindAll().FirstOrDefault(c => c.Name == instanceType.Name);
+        ValidateInstanceClass(typeT, instanceTypeT); // validar y ASIGNAR
+        attribute.ReferenceType = typeT;
+        attribute.InstanceType = instanceTypeT;
         _attributeRepository.Update(attribute);
     }
 
