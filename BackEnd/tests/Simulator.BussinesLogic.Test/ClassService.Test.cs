@@ -15,6 +15,7 @@ public class ClassServiceTest
     private Mock<IClassRepository> _mockClassRepository = null!;
     private Mock<IAttributeRepository> _mockAttributeRepository = null!;
     private Mock<IMethodRepository> _mockMethodRepository = null!;
+    private Mock<IInterfaceRepository> _mockInterfaceRepository = null!;
     private ClassService _classService = null!;
 
     [TestInitialize]
@@ -23,11 +24,12 @@ public class ClassServiceTest
         _mockClassRepository = new Mock<IClassRepository>(MockBehavior.Strict);
         _mockAttributeRepository = new Mock<IAttributeRepository>(MockBehavior.Strict);
         _mockMethodRepository = new Mock<IMethodRepository>(MockBehavior.Strict);
+        _mockInterfaceRepository = new Mock<IInterfaceRepository>(MockBehavior.Strict);
         _mockClassRepository
             .Setup(repo => repo.Add(It.IsAny<Class>()));
         _mockAttributeRepository.Setup(repo => repo.Add(It.IsAny<Attribute>()));
         _mockMethodRepository.Setup(repo => repo.Add(It.IsAny<Method>()));
-        _classService = new ClassService(_mockClassRepository.Object, _mockAttributeRepository.Object, _mockMethodRepository.Object);
+        _classService = new ClassService(_mockClassRepository.Object, _mockAttributeRepository.Object, _mockMethodRepository.Object, _mockInterfaceRepository.Object);
     }
 
     [TestMethod]
@@ -501,6 +503,7 @@ public class ClassServiceTest
         var heritageClass = new Class { Id = heritageId };
 
         _mockClassRepository.Setup(r => r.FindAll()).Returns([classT, classInUse, heritageClass]);
+        _mockClassRepository.Setup(r => r.FindAllTypes()).Returns([classT, classInUse, heritageClass]);
 
         _mockClassRepository.Setup(r => r.Find(id)).Returns(classT);
         _mockClassRepository.Setup(r => r.Find(heritageId)).Returns(heritageClass);
@@ -618,9 +621,10 @@ public class ClassServiceTest
 
         var existingClass = new Class { Id = classId, Name = "OldName" };
         var newHeritageInterface = new Interface { Id = heritageId, Name = "ParentInterface" };
-        var _mockInterfaceRepository = new Mock<IInterfaceRepository>();
 
+        _mockInterfaceRepository.Setup(r => r.Find(heritageId)).Returns(newHeritageInterface);
         _mockClassRepository.Setup(r => r.FindAllTypes()).Returns([existingClass, newHeritageInterface]);
+        _mockClassRepository.Setup(r => r.FindAll()).Returns([existingClass]);
         _mockClassRepository.Setup(r => r.Find(classId)).Returns(existingClass);
         _mockInterfaceRepository.Setup(r => r.Find(heritageId)).Returns(newHeritageInterface);
         _mockClassRepository.Setup(r => r.Update(It.IsAny<Class>()));

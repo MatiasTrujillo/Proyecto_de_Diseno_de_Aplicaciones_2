@@ -5,17 +5,19 @@ using Simulator.Domain;
 using Simulator.DTO;
 using Simulator.IBussinesLogic;
 using Simulator.IDataAcces;
+using Type = Simulator.Domain.Type;
 
 namespace Simulator.BussinesLogic;
 
 public class ClassService(
     IClassRepository classRepository,
     IAttributeRepository attributeRepository,
-    IMethodRepository methodRepository) : IClassService
+    IMethodRepository methodRepository, IInterfaceRepository interfaceRepository) : IClassService
 {
     private readonly IClassRepository _classRepository = classRepository;
     private readonly IAttributeRepository _attributeRepository = attributeRepository;
     private readonly IMethodRepository _methodRepository = methodRepository;
+    private readonly IInterfaceRepository _interfaceRepository = interfaceRepository;
 
     public Guid CreateClass(ClassDTO classDto)
     {
@@ -69,9 +71,17 @@ public class ClassService(
     {
         if(uClass.IdClass != null)
         {
-            ValidateClassIdExists(uClass.IdClass.Value);
+            var isInterface = ValidateParentIdExists(uClass.IdClass.Value);
             ValidateClassIsNotInUse(id);
-            var heritageClassT = _classRepository.Find(uClass.IdClass.Value);
+            var heritageClassT = new Type();
+            if(isInterface)
+            {
+                heritageClassT = _interfaceRepository.Find(uClass.IdClass.Value);
+            }
+            else
+            {
+                heritageClassT = _classRepository.Find(uClass.IdClass.Value);
+            }
 
             if(classT.Stereotype == KeyWord.Sealed)
             {
@@ -148,6 +158,18 @@ public class ClassService(
         {
             throw new ClassNotFoundException("There is no class with this id");
         }
+    }
+
+    private bool ValidateParentIdExists(Guid id)
+    {
+        var classes = _classRepository.FindAllTypes();
+
+        if(!classes.Exists(classT => classT.Id == id && classT is not Primitive))
+        {
+            throw new ClassNotFoundException("There is no class with this id");
+        }
+
+        return classes.Any(classT => classT.Id == id && classT is Interface);
     }
 
     private void ValidateName(string name)
