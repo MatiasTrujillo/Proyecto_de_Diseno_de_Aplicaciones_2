@@ -659,9 +659,10 @@ public class ClassServiceTest
         var secondHeritageParent = new Class { Id = secondHeritageId, Name = "ParentClass" };
 
         _mockInterfaceRepository.Setup(r => r.Find(oneHeritageId)).Returns(oneHeritageParent);
-        _mockClassRepository.Setup(r => r.FindAllTypes()).Returns([existingClass, oneHeritageParent]);
-        _mockClassRepository.Setup(r => r.FindAll()).Returns([existingClass]);
+        _mockClassRepository.Setup(r => r.FindAllTypes()).Returns([existingClass, oneHeritageParent, secondHeritageParent]);
+        _mockClassRepository.Setup(r => r.FindAll()).Returns([existingClass, secondHeritageParent]);
         _mockClassRepository.Setup(r => r.Find(classId)).Returns(existingClass);
+        _mockClassRepository.Setup(r => r.Find(secondHeritageId)).Returns(secondHeritageParent);
         _mockInterfaceRepository.Setup(r => r.Find(oneHeritageId)).Returns(oneHeritageParent);
         _mockClassRepository.Setup(r => r.Update(It.IsAny<Class>()));
 

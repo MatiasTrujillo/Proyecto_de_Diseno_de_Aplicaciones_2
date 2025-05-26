@@ -93,7 +93,7 @@ public class ClassService(
                 throw new InvalidClassException("An abstract class cannot inherit from a concrete class.");
             }
 
-            classT.Parents = [heritageClassT];
+            classT.Parents.Add(heritageClassT);
         }
     }
 
