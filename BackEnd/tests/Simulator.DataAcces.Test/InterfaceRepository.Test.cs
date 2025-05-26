@@ -19,7 +19,7 @@ public class InterfaceRepository_Test
     {
         _repository = new InterfaceRepository(_context);
         aNameSpace = new NameSpace("InterfacesNameSpace", null);
-        anInterface = new Interface("Interface", [], aNameSpace);
+        anInterface = new Interface("Interface");
         anotherInterface = new Interface("AnotherInterface");
         aPrimitive = new Primitive
         {

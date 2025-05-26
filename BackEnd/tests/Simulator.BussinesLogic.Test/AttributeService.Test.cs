@@ -5,7 +5,6 @@ using Simulator.Domain.Exception;
 using Simulator.DTO;
 using Simulator.IDataAcces;
 using Attribute = Simulator.Domain.Attribute;
-using Type = Simulator.Domain.Type;
 
 namespace Simulator.BussinesLogic.Test;
 
@@ -44,7 +43,8 @@ public class AttributeServiceTest
             Accessibility = Accessibility.Public,
             Type = new TypeDTO
             {
-                Name = "TestType"
+                Name = "TestType",
+                Kind = "class"
             }
         };
 
@@ -53,7 +53,7 @@ public class AttributeServiceTest
             Id = Guid.NewGuid(),
             Name = "Strength",
             Accessibility = Accessibility.Private,
-            Type = new Type { Name = dto.Type.Name }
+            Type = new Class { Name = dto.Type.Name }
         };
 
         _mockClassRepository
@@ -151,7 +151,7 @@ public class AttributeServiceTest
         {
             Name = "Agility",
             Accessibility = Accessibility.Public,
-            Type = new TypeDTO { Name = "TestType" }
+            Type = new TypeDTO { Name = "TestType", Kind = "class" }
         };
 
         var attribute = new Attribute
@@ -159,7 +159,7 @@ public class AttributeServiceTest
             Id = Guid.NewGuid(),
             Name = "Agility",
             Accessibility = Accessibility.Public,
-            Type = new Type { Name = dto.Type.Name }
+            Type = new Class { Name = dto.Type.Name }
         };
 
         _mockClassRepository
@@ -187,7 +187,7 @@ public class AttributeServiceTest
         {
             Name = string.Empty,
             Accessibility = Accessibility.Public,
-            Type = new TypeDTO { Name = "TestType" }
+            Type = new TypeDTO { Name = "TestType", Kind = "class" }
         };
 
         var classEntity = new Class
@@ -219,7 +219,7 @@ public class AttributeServiceTest
         {
             Name = reservedName,
             Accessibility = Accessibility.Public,
-            Type = new TypeDTO { Name = "TestType" }
+            Type = new TypeDTO { Name = "TestType", Kind = "class" }
         };
 
         var classEntity = new Class
@@ -249,7 +249,7 @@ public class AttributeServiceTest
         {
             Name = longName,
             Accessibility = Accessibility.Public,
-            Type = new TypeDTO { Name = "TestType" }
+            Type = new TypeDTO { Name = "TestType", Kind = "class" }
         };
 
         var classEntity = new Class
@@ -279,7 +279,7 @@ public class AttributeServiceTest
         {
             Name = "Name",
             Accessibility = invalidAccessibility,
-            Type = new TypeDTO { Name = "SomeClass" }
+            Type = new TypeDTO { Name = "SomeClass", Kind = "class" }
         };
 
         var classEntity = new Class
@@ -540,7 +540,8 @@ public class AttributeServiceTest
             Accessibility = Accessibility.Public,
             Type = new TypeDTO
             {
-                Name = "TestType"
+                Name = "TestType",
+                Kind = "class"
             },
             Stereotype = KeyWord.Static
         };
@@ -550,7 +551,7 @@ public class AttributeServiceTest
             Id = Guid.NewGuid(),
             Name = "Strength",
             Accessibility = Accessibility.Private,
-            Type = new Type { Name = dto.Type.Name },
+            Type = new Class { Name = dto.Type.Name },
             Stereotype = KeyWord.Static
         };
 
@@ -588,7 +589,8 @@ public class AttributeServiceTest
             Accessibility = Accessibility.Public,
             Type = new TypeDTO
             {
-                Name = "TestType"
+                Name = "TestType",
+                Kind = "class"
             },
             Stereotype = KeyWord.Abstract
         };
@@ -598,7 +600,7 @@ public class AttributeServiceTest
             Id = Guid.NewGuid(),
             Name = "Strength",
             Accessibility = Accessibility.Private,
-            Type = new Type { Name = dto.Type.Name },
+            Type = new Class { Name = dto.Type.Name },
             Stereotype = KeyWord.Static
         };
 

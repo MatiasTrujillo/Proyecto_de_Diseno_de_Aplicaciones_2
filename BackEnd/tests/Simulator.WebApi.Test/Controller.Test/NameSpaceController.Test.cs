@@ -31,44 +31,4 @@ public class NameSpaceControllerTest
 
         _mockNameSpaceService.Verify(service => service.CreateNameSpace(nameSpaceDto), Times.Once);
     }
-
-    [TestMethod]
-    public void AssociateNameSpaceWithClass_ShouldReturnCreated_WhenAssociationSucceeds()
-    {
-        var nameSpaceId = Guid.NewGuid();
-        var classId = Guid.NewGuid();
-
-        _mockNameSpaceService
-            .Setup(service => service.AsociateToClass(nameSpaceId, classId))
-            .Verifiable();
-
-        var result = _controller.AssociateNameSpaceWithClass(nameSpaceId, classId) as CreatedResult;
-
-        Assert.IsNotNull(result);
-        Assert.AreEqual(201, result.StatusCode);
-        var message = result?.Value?.GetType().GetProperty("message")?.GetValue(result.Value, null);
-        Assert.AreEqual("Namespace associated with class successfully", message);
-
-        _mockNameSpaceService.Verify(service => service.AsociateToClass(nameSpaceId, classId), Times.Once);
-    }
-
-    [TestMethod]
-    public void AssociateNameSpaceWithInterface_ShouldReturnCreated_WhenAssociationSucceeds()
-    {
-        var nameSpaceId = Guid.NewGuid();
-        var interfaceId = Guid.NewGuid();
-
-        _mockNameSpaceService
-            .Setup(service => service.AsociateToInterface(nameSpaceId, interfaceId))
-            .Verifiable();
-
-        var result = _controller.AssociateNameSpaceWithInterface(nameSpaceId, interfaceId) as CreatedResult;
-
-        Assert.IsNotNull(result);
-        Assert.AreEqual(201, result.StatusCode);
-        var message = result?.Value?.GetType().GetProperty("message")?.GetValue(result.Value, null);
-        Assert.AreEqual("Namespace associated with interface successfully", message);
-
-        _mockNameSpaceService.Verify(service => service.AsociateToInterface(nameSpaceId, interfaceId), Times.Once);
-    }
 }

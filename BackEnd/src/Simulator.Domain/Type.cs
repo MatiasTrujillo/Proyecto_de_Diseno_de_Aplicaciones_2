@@ -1,8 +1,7 @@
 namespace Simulator.Domain;
 
-public class Type
+public abstract class Type : INamespaceComponent
 {
-    public Guid Id { get; set; }
     public string Name { get; set; }
     public virtual List<Method>? Methods { get; set; }
 
