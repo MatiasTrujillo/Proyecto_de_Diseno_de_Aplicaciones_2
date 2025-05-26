@@ -581,18 +581,18 @@ public class MethodService(
     private Attribute FindClassWithAttribute(Type aClass, string attributeName)
     {
         var oneClass = aClass as Class;
-        if (oneClass == null)
+        if(oneClass == null)
         {
             return null!;
         }
 
         var anAttribute = oneClass.Attributes?.FirstOrDefault(x => x.Name == attributeName);
-        if (anAttribute != null)
+        if(anAttribute != null)
         {
             return anAttribute;
         }
 
-        if (oneClass.Parents != null && oneClass.Parents.Count > 0)
+        if(oneClass.Parents != null && oneClass.Parents.Count > 0)
         {
             return FindClassWithAttribute(oneClass.Parents[0], attributeName);
         }
