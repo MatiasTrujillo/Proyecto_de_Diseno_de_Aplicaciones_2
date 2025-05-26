@@ -26,7 +26,7 @@ public class ClassService(
         var objectClass = classes.FirstOrDefault(c => c.Name == "Object") as Class;
         ValidateStereotypeInCreate(aClass.Stereotype);
         ValidateClassNameIsUnique(aClass.Name);
-        aClass.HierarchyClass = objectClass;
+        aClass.Parents = [objectClass];
         _classRepository.Add(aClass);
         return aClass.Id;
     }
@@ -93,7 +93,7 @@ public class ClassService(
                 throw new InvalidClassException("An abstract class cannot inherit from a concrete class.");
             }
 
-            classT.HierarchyClass = heritageClassT;
+            classT.Parents = [heritageClassT];
         }
     }
 
@@ -132,7 +132,7 @@ public class ClassService(
         var classes = _classRepository.FindAll();
         var attributeT = _attributeRepository.FindAll();
         var methods = _methodRepository.FindAll();
-        if(classes.Any(c => c.HierarchyClass != null && c.HierarchyClass.Id == id) ||
+        if(classes.Any(c => c.Parents != null && c.Parents.Find(c => c.Id == id) is not null) ||
            attributeT.Any(a => a.Type == classT) ||
            methods.Any(m => m.ReturnType == classT))
         {

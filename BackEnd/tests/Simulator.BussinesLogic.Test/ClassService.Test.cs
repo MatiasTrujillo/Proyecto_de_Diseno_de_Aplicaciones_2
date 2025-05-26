@@ -57,7 +57,8 @@ public class ClassServiceTest
             It.Is<Class>(a =>
                 a.Name == dto.Name &&
                 a.Stereotype == dto.Stereotype &&
-                a.HierarchyClass == objectClass)), Times.Once);
+                a.Parents.Contains(objectClass) &&
+                a.Parents.Count == 1)), Times.Once);
     }
 
     [TestMethod]
@@ -287,7 +288,7 @@ public class ClassServiceTest
         _classService.UpdateClass(classId, dto);
 
         Assert.AreEqual("NewName", existingClass.Name);
-        Assert.AreEqual(newHeritageClass, existingClass.HierarchyClass);
+        Assert.AreEqual(newHeritageClass, existingClass.Parents[0]);
     }
 
     [TestMethod]
@@ -498,8 +499,8 @@ public class ClassServiceTest
         var id = Guid.NewGuid();
         var heritageId = Guid.NewGuid();
 
-        var classT = new Class { Id = id, Name = "OldName", HierarchyClass = null };
-        var classInUse = new Class { Id = Guid.NewGuid(), HierarchyClass = new Class { Id = id } };
+        var classT = new Class { Id = id, Name = "OldName", Parents = null };
+        var classInUse = new Class { Id = Guid.NewGuid(), Parents = [new Class { Id = id }] };
         var heritageClass = new Class { Id = heritageId };
 
         _mockClassRepository.Setup(r => r.FindAll()).Returns([classT, classInUse, heritageClass]);
@@ -507,6 +508,7 @@ public class ClassServiceTest
 
         _mockClassRepository.Setup(r => r.Find(id)).Returns(classT);
         _mockClassRepository.Setup(r => r.Find(heritageId)).Returns(heritageClass);
+        _mockClassRepository.Setup(r => r.Update(It.IsAny<Class>()));
 
         _mockAttributeRepository.Setup(r => r.FindAll()).Returns([]);
         _mockMethodRepository.Setup(r => r.FindAll()).Returns([]);
@@ -641,6 +643,7 @@ public class ClassServiceTest
         _classService.UpdateClass(classId, dto);
 
         Assert.AreEqual("NewName", existingClass.Name);
-        Assert.AreEqual(newHeritageInterface, existingClass.HierarchyClass);
+        Assert.AreEqual(newHeritageInterface, existingClass.Parents[0]);
+        Assert.AreEqual(1, existingClass.Parents.Count);
     }
 }

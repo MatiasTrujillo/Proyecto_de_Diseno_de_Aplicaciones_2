@@ -110,7 +110,7 @@ public class InterfaceService(
     private void VerifyInterfaceInUse(Guid id)
     {
         var classes = _classRepository.FindAll();
-        if(classes.Any(c => c.HierarchyClass != null && c.HierarchyClass.Id == id))
+        if(classes.Any(c => c.Parents != null && c.Parents.Find(i => i.Id == id) != null))
         {
             throw new InterfaceInUseException("Interface is associated with a class.");
         }

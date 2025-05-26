@@ -5,7 +5,7 @@ namespace Simulator.Domain;
 public class Class : Type
 {
     public KeyWord? Stereotype { get; set; }
-    public virtual Type? HierarchyClass { get; set; }
+    public virtual List<Type>? Parents { get; set; }
     public virtual List<Attribute>? Attributes { get; set; }
     public virtual NameSpace NameSpace { get; set; }
 
@@ -14,18 +14,18 @@ public class Class : Type
     {
         Methods = [];
         Stereotype = null;
-        HierarchyClass = null;
+        Parents = [];
         Attributes = [];
         NameSpace = new NameSpace();
     }
 
-    public Class(KeyWord? stereotype, Class? hierarchyClass, List<Attribute> attributes, List<Method> methods, string name, NameSpace nameSpace)
+    public Class(KeyWord? stereotype, List<Type>? hierarchyClass, List<Attribute> attributes, List<Method> methods, string name, NameSpace nameSpace)
         : base(name)
     {
         ValidateName(name);
         Name = name;
         Stereotype = stereotype;
-        HierarchyClass = hierarchyClass;
+        Parents = hierarchyClass;
         Attributes = attributes;
         Methods = methods;
         NameSpace = nameSpace;

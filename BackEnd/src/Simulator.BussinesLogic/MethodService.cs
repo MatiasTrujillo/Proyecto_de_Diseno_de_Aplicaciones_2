@@ -345,13 +345,13 @@ public class MethodService(
         var result = new List<string>();
         var invokedMethodMethod = _methodRepository.Find(invokedMethod.MethodId);
 
-        result.Add(AddToResult(invokedMethod.ReferenceName, aRefe.HierarchyClass.Name, invokedMethodMethod));
+        result.Add(AddToResult(invokedMethod.ReferenceName, aRefe.Parents[0].Name, invokedMethodMethod));
         if(CheckOriginal(invokedMethodMethod, originalMethod))
         {
             return result;
         }
 
-        result = result.Concat(ConcatNext(aRefe.HierarchyClass as Class, aRefe.HierarchyClass as Class, invokedMethodMethod, originalMethod)).ToList();
+        result = result.Concat(ConcatNext(aRefe.Parents[0] as Class, aRefe.Parents[0] as Class, invokedMethodMethod, originalMethod)).ToList();
 
         return result;
     }
@@ -553,7 +553,12 @@ public class MethodService(
     private Class FindClassWithMethod(Type? aClass, Method method)
     {
         var currentClass = aClass as Class;
-        Type originalClass = currentClass;
+        if(currentClass == null)
+        {
+            return null!;
+        }
+
+        Class originalClass = currentClass;
 
         while(currentClass != null)
         {
@@ -562,29 +567,37 @@ public class MethodService(
                 return currentClass;
             }
 
-            currentClass = currentClass.HierarchyClass as Class;
+            if(currentClass.Parents == null || currentClass.Parents.Count == 0)
+            {
+                break;
+            }
+
+            currentClass = currentClass.Parents[0] as Class;
         }
 
-        return originalClass as Class;
+        return originalClass;
     }
 
     private Attribute FindClassWithAttribute(Type aClass, string attributeName)
     {
         var oneClass = aClass as Class;
-        var anAttribute = oneClass.Attributes!.FirstOrDefault(x => x.Name == attributeName);
-
-        if(oneClass.HierarchyClass != null && !CheckClassHasAttribute(aClass, attributeName))
+        if (oneClass == null)
         {
-            return FindClassWithAttribute(oneClass.HierarchyClass, attributeName);
+            return null!;
         }
 
-        return anAttribute;
-    }
+        var anAttribute = oneClass.Attributes?.FirstOrDefault(x => x.Name == attributeName);
+        if (anAttribute != null)
+        {
+            return anAttribute;
+        }
 
-    private bool CheckClassHasAttribute(Type? aClass, string attributeName)
-    {
-        var oneClass = aClass as Class;
-        return oneClass.Attributes != null && oneClass.Attributes.Any(x => x.Name == attributeName);
+        if (oneClass.Parents != null && oneClass.Parents.Count > 0)
+        {
+            return FindClassWithAttribute(oneClass.Parents[0], attributeName);
+        }
+
+        return null!;
     }
 
     private bool CheckClassHasMethod(Class aClass, Method method)
@@ -812,7 +825,7 @@ public class MethodService(
                 return true;
             }
 
-            targetClass = aTargetClass.HierarchyClass;
+            targetClass = aTargetClass.Parents[0];
         }
 
         return false;
@@ -821,9 +834,9 @@ public class MethodService(
     private static bool InvokeMethodReferenceBase(string invokedMethodReferenceName, Method method, Class classT,
         bool existingInHeredity)
     {
-        if(invokedMethodReferenceName == "base" && classT.HierarchyClass != null)
+        if(invokedMethodReferenceName == "base" && classT.Parents != null)
         {
-            existingInHeredity = classT.HierarchyClass.Methods?.Any(m => m.Name == method.Name) ?? false;
+            existingInHeredity = classT.Parents[0].Methods?.Any(m => m.Name == method.Name) ?? false;
         }
 
         return existingInHeredity;
@@ -887,7 +900,12 @@ public class MethodService(
     {
         if(methodChild.IsOverride)
         {
-            var classParent = classChild.HierarchyClass as Class;
+            if (classChild.Parents == null || classChild.Parents.Count == 0)
+            {
+                throw new MethodException("There is no parent class with this method.");
+            }
+
+            var classParent = classChild.Parents[0] as Class;
             if(classParent == null)
             {
                 throw new MethodException("There is no parent class with this method.");
@@ -896,7 +914,14 @@ public class MethodService(
             var methodParent = classParent.Methods?.FirstOrDefault(x => x.Name == methodChild.Name);
             if(methodParent == null)
             {
-                ValidateVirtualAndOverride(methodChild, classParent);
+                try
+                {
+                    ValidateVirtualAndOverride(methodChild, classParent);
+                }
+                catch(MethodException)
+                {
+                    throw new MethodException("There is no parent class with this method.");
+                }
             }
             else if(methodParent.Stereotype != KeyWord.Virtual)
             {
