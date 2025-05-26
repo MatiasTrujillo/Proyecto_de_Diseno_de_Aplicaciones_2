@@ -557,7 +557,7 @@ public class MethodServiceTest
     [TestMethod]
     public void CreateLocalVariable_ShouldAddLocalVariable_WhenLocalVariableIsValid()
     {
-        var classT = new TypeDTO { Name = "TestClass", Kind = "class"};
+        var classT = new TypeDTO { Name = "TestClass", Kind = "class" };
 
         var localVariableDto = new LocalVariableDTO { Name = "TestParameter", LocalVariableType = classT };
 

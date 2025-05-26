@@ -1,6 +1,5 @@
 using System;
 using Simulator.BussinesLogic.Exception;
-using Simulator.Domain;
 using Simulator.DTO;
 using Simulator.IBussinesLogic;
 using Simulator.IDataAcces;
