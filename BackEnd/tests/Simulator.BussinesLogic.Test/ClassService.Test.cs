@@ -641,4 +641,44 @@ public class ClassServiceTest
         Assert.AreEqual(oneHeritageParent, existingClass.Parents[0]);
         Assert.AreEqual(secondHeritageParent, existingClass.Parents[1]);
     }
+
+    [TestMethod]
+    public void UpdateClass_WithValidInterface_UpdatesUnimplementedMethodsFromInterfacesSignatures()
+    {
+        var classId = Guid.NewGuid();
+        var oneHeritageId = Guid.NewGuid();
+        var aSignatureId = Guid.NewGuid();
+
+        var existingClass = new Class { Id = classId, Name = "OldName" };
+        var aSignature = new MethodSignature { Id = aSignatureId, Name = "SignatureName", ReturnType = new Primitive(), Parameters = [new Parameter("Parameter", new Primitive())] };
+        var oneHeritageParent = new Interface { Id = oneHeritageId, Name = "ParentInterface", MethodSignatures = [aSignature] };
+
+        _mockInterfaceRepository.Setup(r => r.Find(oneHeritageId)).Returns(oneHeritageParent);
+        _mockClassRepository.Setup(r => r.FindAllTypes()).Returns([existingClass, oneHeritageParent]);
+        _mockClassRepository.Setup(r => r.FindAll()).Returns([existingClass]);
+        _mockClassRepository.Setup(r => r.Find(classId)).Returns(existingClass);
+        _mockInterfaceRepository.Setup(r => r.Find(oneHeritageId)).Returns(oneHeritageParent);
+        _mockClassRepository.Setup(r => r.Update(It.IsAny<Class>()));
+
+        _mockAttributeRepository.Setup(r => r.FindAll()).Returns([]);
+        _mockMethodRepository.Setup(r => r.FindAll()).Returns([]);
+
+        var dto = new UpdateClassDTO
+        {
+            Name = "NewName",
+            IdClass = oneHeritageId
+        };
+
+        _classService.UpdateClass(classId, dto);
+
+        Assert.AreEqual("NewName", existingClass.Name);
+        Assert.AreEqual(1, existingClass.Parents.Count);
+        Assert.AreEqual(oneHeritageParent, existingClass.Parents[0]);
+        Assert.AreEqual(existingClass.Methods.Count, 1);
+        Assert.AreEqual(existingClass.Methods[0].Name, aSignature.Name);
+        Assert.AreEqual(existingClass.Methods[0].ReturnType, aSignature.ReturnType);
+        Assert.AreEqual(existingClass.Methods[0].Parameters.Count, aSignature.Parameters.Count);
+        Assert.AreEqual(existingClass.Methods[0].Parameters[0].Name, aSignature.Parameters[0].Name);
+        Assert.AreEqual(existingClass.Methods[0].Parameters[0].ParameterType, aSignature.Parameters[0].ParameterType);
+    }
 }
