@@ -39,6 +39,7 @@ builder.Services.AddScoped<IMethodService, MethodService>();
 builder.Services.AddScoped<INameSpaceService, NameSpaceService>();
 builder.Services.AddScoped<IInterfaceService, InterfaceService>();
 builder.Services.AddScoped<ISessionService, SessionService>();
+builder.Services.AddScoped<IExportService, ExporterService>();
 
 builder.Services.AddControllers();
 
