@@ -96,6 +96,14 @@ public class ClassService(
             if(isInterface)
             {
                 classT.Parents.Add(heritageInterfaceT);
+                foreach(var signature in heritageInterfaceT.MethodSignatures)
+                {
+                    if(classT.Methods is null || !classT.Methods.Any(m => m.Name == signature.Name && m.Parameters.Count == signature.Parameters.Count && m.ReturnType == signature.ReturnType))
+                    {
+                        var methodT = new Method(signature.Name, Accessibility.Public, null, [], signature.Parameters, [], signature.ReturnType, false);
+                        classT.Methods.Add(methodT);
+                    }
+                }
             }
             else
             {
