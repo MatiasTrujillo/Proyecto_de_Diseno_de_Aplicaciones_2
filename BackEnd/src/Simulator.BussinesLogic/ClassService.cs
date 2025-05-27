@@ -114,7 +114,18 @@ public class ClassService(
 
     private static bool NotHasImplementedThisSignature(Class classT, MethodSignature signature)
     {
-        return classT.Methods is null || !classT.Methods.Any(m => m.Name == signature.Name && m.Parameters.Count == signature.Parameters.Count && m.ReturnType == signature.ReturnType);
+        return classT.Methods is null || !classT.Methods.Any(m => m.Name == signature.Name && HasSameParemeters(m, signature) && m.ReturnType == signature.ReturnType);
+    }
+
+    private static bool HasSameParemeters(Method aMethod, MethodSignature signature)
+    {
+        var itHas = aMethod.Parameters.Count == signature.Parameters.Count;
+        foreach(var parameter in signature.Parameters)
+        {
+            itHas = itHas && aMethod.Parameters.Any(p => p.Name == parameter.Name && p.ParameterType == parameter.ParameterType);
+        }
+
+        return itHas;
     }
 
     private void ManageName(UpdateClassDTO uClass, Class classT)
