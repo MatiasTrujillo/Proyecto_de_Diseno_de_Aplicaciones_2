@@ -5,7 +5,6 @@ using Simulator.Domain;
 using Simulator.DTO;
 using Simulator.IBussinesLogic;
 using Simulator.IDataAcces;
-using Type = Simulator.Domain.Type;
 
 namespace Simulator.BussinesLogic;
 

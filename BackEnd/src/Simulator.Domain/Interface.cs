@@ -18,17 +18,10 @@ public class Interface : Type
         MethodSignatures = methodSignatures;
     }
 
-    public Interface(string name, List<MethodSignature> methodSignatures, NameSpace nameSpace)
-    {
-        Id = Guid.NewGuid();
-        Name = name;
-        MethodSignatures = methodSignatures;
-    }
-
     public Interface()
     {
         Id = Guid.NewGuid();
-        Name = String.Empty;
+        Name = string.Empty;
         MethodSignatures = [];
     }
 

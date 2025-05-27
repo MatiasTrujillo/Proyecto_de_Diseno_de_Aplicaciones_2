@@ -900,7 +900,7 @@ public class MethodService(
     {
         if(methodChild.IsOverride)
         {
-            if (classChild.Parents == null || classChild.Parents.Count == 0)
+            if(classChild.Parents == null || classChild.Parents.Count == 0)
             {
                 throw new MethodException("There is no parent class with this method.");
             }
