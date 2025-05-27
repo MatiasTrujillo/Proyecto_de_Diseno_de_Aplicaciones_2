@@ -73,10 +73,11 @@ public class ClassService(
         {
             var isInterface = ValidateParentIdExists(uClass.IdClass.Value);
             ValidateClassIsNotInUse(id);
-            var heritageClassT = new Type();
+            var heritageClassT = new Class();
+            var heritageInterfaceT = new Interface();
             if(isInterface)
             {
-                heritageClassT = _interfaceRepository.Find(uClass.IdClass.Value);
+                heritageInterfaceT = _interfaceRepository.Find(uClass.IdClass.Value);
             }
             else
             {
@@ -93,7 +94,14 @@ public class ClassService(
                 throw new InvalidClassException("An abstract class cannot inherit from a concrete class.");
             }
 
-            classT.Parents.Add(heritageClassT);
+            if(isInterface)
+            {
+                classT.Parents.Add(heritageInterfaceT);
+            }
+            else
+            {
+                classT.Parents.Add(heritageClassT);
+            }
         }
     }
 

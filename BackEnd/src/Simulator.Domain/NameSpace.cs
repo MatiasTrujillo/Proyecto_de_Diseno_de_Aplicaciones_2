@@ -1,13 +1,14 @@
 namespace Simulator.Domain;
 
-public class NameSpace
+public class NameSpace : INamespaceComponent
 {
-    public Guid Id { get; set; }
+    public override Guid Id { get; set; }
     public string Name { get; set; }
     public virtual NameSpace? Father { get; set; }
 
     public NameSpace()
     {
+        Id = Guid.NewGuid();
         Name = string.Empty;
         Father = null;
     }

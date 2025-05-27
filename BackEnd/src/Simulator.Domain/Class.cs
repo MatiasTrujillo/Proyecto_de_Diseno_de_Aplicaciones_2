@@ -7,7 +7,6 @@ public class Class : Type
     public KeyWord? Stereotype { get; set; }
     public virtual List<Type>? Parents { get; set; }
     public virtual List<Attribute>? Attributes { get; set; }
-    public virtual NameSpace NameSpace { get; set; }
 
     public Class()
         : base(string.Empty)
@@ -16,10 +15,9 @@ public class Class : Type
         Stereotype = null;
         Parents = [];
         Attributes = [];
-        NameSpace = new NameSpace();
     }
 
-    public Class(KeyWord? stereotype, List<Type>? hierarchyClass, List<Attribute> attributes, List<Method> methods, string name, NameSpace nameSpace)
+    public Class(KeyWord? stereotype, List<Type>? hierarchyClass, List<Attribute> attributes, List<Method> methods, string name)
         : base(name)
     {
         ValidateName(name);
@@ -28,7 +26,6 @@ public class Class : Type
         Parents = hierarchyClass;
         Attributes = attributes;
         Methods = methods;
-        NameSpace = nameSpace;
     }
 
     private void ValidateName(string name)
@@ -48,4 +45,6 @@ public class Class : Type
             throw new ClassException("The class name must not contain spaces.");
         }
     }
+
+    public override Guid Id { get; set; }
 }

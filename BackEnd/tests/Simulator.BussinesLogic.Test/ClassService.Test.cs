@@ -39,10 +39,6 @@ public class ClassServiceTest
         {
             Name = "Pedro",
             Stereotype = KeyWord.Sealed,
-            NameSpace = new NameSpaceDTO
-            {
-                Name = "NameSpace",
-            }
         };
 
         var objectClass = new Class { Name = "Object" };
@@ -62,36 +58,18 @@ public class ClassServiceTest
     }
 
     [TestMethod]
-    public void ToEntity_ShouldThrowArgumentNullException_WhenLocalVariableTypeIsNull()
-    {
-        var dto = new ClassDTO { Name = "myVar", NameSpace = null };
-
-        var exception = Assert.ThrowsException<ArgumentNullException>(dto.ToEntity);
-
-        Assert.AreEqual("The Type property cannot be null. (Parameter 'NameSpace')", exception.Message);
-    }
-
-    [TestMethod]
     public void CreateClass_ShouldNotCallRepositoryAdd_WithRepeatedClassName()
     {
         var dto1 = new ClassDTO
         {
             Name = "Pedro",
-            Stereotype = KeyWord.Sealed,
-            NameSpace = new NameSpaceDTO
-            {
-                Name = "NameSpace",
-            }
+            Stereotype = KeyWord.Sealed
         };
 
         var dto2 = new ClassDTO
         {
             Name = "Pedro",
-            Stereotype = null,
-            NameSpace = new NameSpaceDTO
-            {
-                Name = "NameSpace",
-            }
+            Stereotype = null
         };
 
         var classes = new List<Type> { dto1.ToEntity() };
@@ -114,11 +92,7 @@ public class ClassServiceTest
         var dto = new ClassDTO
         {
             Name = "Class",
-            Stereotype = invalidStereoType,
-            NameSpace = new NameSpaceDTO
-            {
-                Name = "NameSpace",
-            }
+            Stereotype = invalidStereoType
         };
 
         _mockClassRepository.Setup(r => r.FindAllTypes())
@@ -138,11 +112,7 @@ public class ClassServiceTest
         var dto = new ClassDTO
         {
             Name = string.Empty,
-            Stereotype = KeyWord.Sealed,
-            NameSpace = new NameSpaceDTO
-            {
-                Name = "NameSpace",
-            }
+            Stereotype = KeyWord.Sealed
         };
 
         _mockClassRepository.Setup(r => r.FindAllTypes())
@@ -162,11 +132,7 @@ public class ClassServiceTest
         var dto = new ClassDTO
         {
             Name = "class",
-            Stereotype = KeyWord.Sealed,
-            NameSpace = new NameSpaceDTO
-            {
-                Name = "NameSpace",
-            }
+            Stereotype = KeyWord.Sealed
         };
 
         _mockClassRepository.Setup(r => r.FindAllTypes())
@@ -186,11 +152,7 @@ public class ClassServiceTest
         var dto = new ClassDTO
         {
             Name = "Class Name",
-            Stereotype = KeyWord.Sealed,
-            NameSpace = new NameSpaceDTO
-            {
-                Name = "NameSpace",
-            }
+            Stereotype = KeyWord.Sealed
         };
 
         _mockClassRepository.Setup(r => r.FindAllTypes())
@@ -208,8 +170,7 @@ public class ClassServiceTest
     public void DeleteClass_ShouldDeleteClass_WhenValid()
     {
         var id = Guid.NewGuid();
-        var nameSpace = new NameSpace("NameSpace", null);
-        var original = new Class(KeyWord.Sealed, null, [], [], "Class2", nameSpace) { Id = id };
+        var original = new Class(KeyWord.Sealed, null, [], [], "Class2") { Id = id };
 
         _mockClassRepository.Setup(r => r.Find(id)).Returns(original);
         _mockClassRepository.Setup(r => r.FindAll()).Returns([original]);
@@ -528,11 +489,7 @@ public class ClassServiceTest
         var dto = new ClassDTO
         {
             Name = "Class",
-            Stereotype = invalidStereoType,
-            NameSpace = new NameSpaceDTO
-            {
-                Name = "NameSpace",
-            }
+            Stereotype = invalidStereoType
         };
 
         _mockClassRepository.Setup(r => r.FindAllTypes())
@@ -575,11 +532,7 @@ public class ClassServiceTest
         var dto = new ClassDTO
         {
             Name = "Class",
-            Stereotype = invalidStereoType,
-            NameSpace = new NameSpaceDTO
-            {
-                Name = "NameSpace",
-            }
+            Stereotype = invalidStereoType
         };
 
         _mockClassRepository.Setup(r => r.FindAllTypes())

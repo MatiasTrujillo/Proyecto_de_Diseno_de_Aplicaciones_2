@@ -31,7 +31,7 @@ public class MethodServiceTest
             Name = "FirstMethodDto",
             Accessibility = Accessibility.Private,
             Stereotype = null,
-            ReturnType = new TypeDTO { Name = "TestClass", }
+            ReturnType = new TypeDTO { Name = "TestClass", Kind = "class" }
         };
         _otherMethodDto = new MethodDTO()
         {
@@ -46,6 +46,7 @@ public class MethodServiceTest
             ParameterType = new TypeDTO
             {
                 Name = "TestClass",
+                Kind = "class"
             }
         };
         _mockMethodRepository = new Mock<IMethodRepository>(MockBehavior.Strict);
@@ -86,7 +87,7 @@ public class MethodServiceTest
     [TestMethod]
     public void CreateMethod_ShouldThrowException_WhenReturnTypeIsNull()
     {
-        var classT = new TypeDTO { Name = "TestClass" };
+        var classT = new TypeDTO { Name = "TestClass", Kind = "class" };
         var method = new MethodDTO
         {
             Name = "TestMethod",
@@ -102,15 +103,32 @@ public class MethodServiceTest
     }
 
     [TestMethod]
+    public void CreateMethod_ShouldThrowException_WhenReturnTypeIsInvalid()
+    {
+        var classT = new TypeDTO { Name = "TestClass", Kind = "wrong" };
+        var method = new MethodDTO
+        {
+            Name = "TestMethod",
+            Accessibility = Accessibility.Public,
+            Stereotype = null,
+            ReturnType = classT
+        };
+        var classes = new List<Type>();
+        _mockClassRepository.Setup(repo => repo.FindAllTypes()).Returns(classes);
+
+        var exception = Assert.ThrowsException<InvalidOperationException>(() => _methodService.CreateMethod(method));
+        Assert.AreEqual($"Unknown type kind: {classT.Kind}", exception.Message);
+    }
+
+    [TestMethod]
     public void CreateMethod_ShouldThrowException_WhenKeyAccessibilityIsNotValid()
     {
         var invalidAccessibility = (Accessibility)100;
-        var classT = new TypeDTO { Name = "TestClass" };
+        var classT = new TypeDTO { Name = "TestClass", Kind = "class" };
         var method = new MethodDTO
         {
             Name = "TestMethod",
             Accessibility = invalidAccessibility,
-            Stereotype = null,
             ReturnType = classT
         };
         var classes = new List<Type>();
@@ -124,7 +142,7 @@ public class MethodServiceTest
     public void CreateMethod_ShouldThrowExcepton_WhenKeyWordIsNotValid()
     {
         var invalidStereotype = (KeyWord)100;
-        var classT = new TypeDTO { Name = "TestClass" };
+        var classT = new TypeDTO { Name = "TestClass", Kind = "class" };
         var method = new MethodDTO
         {
             Name = "TestMethod",
@@ -464,7 +482,7 @@ public class MethodServiceTest
     [TestMethod]
     public void CreateParameter_ShouldAddParameter_WhenParameterIsValid()
     {
-        var classT = new TypeDTO { Name = "TestClass" };
+        var classT = new TypeDTO { Name = "TestClass", Kind = "class" };
 
         var parameterDto = new ParameterDTO { Name = "TestParameter", ParameterType = classT };
 
@@ -493,7 +511,7 @@ public class MethodServiceTest
     [TestMethod]
     public void CreateParameter_ShouldThrowException_WhenParameterNameIsEmpty()
     {
-        var classT = new TypeDTO { Name = "TestClass" };
+        var classT = new TypeDTO { Name = "TestClass", Kind = "class" };
 
         var parameterDto = new ParameterDTO { Name = string.Empty, ParameterType = classT };
 
@@ -513,7 +531,7 @@ public class MethodServiceTest
     [DataRow("Object")]
     public void CreateParameter_ShouldThrowException_WhenNameIsReservedKeyword(string reservedName)
     {
-        var dto = new ParameterDTO { Name = reservedName, ParameterType = new TypeDTO { Name = "SomeType" }, };
+        var dto = new ParameterDTO { Name = reservedName, ParameterType = new TypeDTO { Name = "SomeType", Kind = "class" }, };
 
         _mockClassRepository
             .Setup(repo => repo.FindAllTypes())
@@ -539,7 +557,7 @@ public class MethodServiceTest
     [TestMethod]
     public void CreateLocalVariable_ShouldAddLocalVariable_WhenLocalVariableIsValid()
     {
-        var classT = new TypeDTO { Name = "TestClass" };
+        var classT = new TypeDTO { Name = "TestClass", Kind = "class" };
 
         var localVariableDto = new LocalVariableDTO { Name = "TestParameter", LocalVariableType = classT };
 
@@ -563,7 +581,7 @@ public class MethodServiceTest
     [DataRow("Object")]
     public void CreateLocalVariable_ShouldThrowException_WhenNameIsReservedKeyword(string reservedName)
     {
-        var dto = new LocalVariableDTO { Name = reservedName, LocalVariableType = new TypeDTO { Name = "SomeType" }, };
+        var dto = new LocalVariableDTO { Name = reservedName, LocalVariableType = new TypeDTO { Name = "SomeType", Kind = "class" }, };
 
         _mockClassRepository
             .Setup(repo => repo.FindAllTypes())
@@ -608,7 +626,7 @@ public class MethodServiceTest
     [TestMethod]
     public void CreateLocalVariable_ShouldThrowException_WhenNameIsEmpty()
     {
-        var classT = new TypeDTO { Name = "TestClass" };
+        var classT = new TypeDTO { Name = "TestClass", Kind = "class" };
 
         var localVariableDto = new LocalVariableDTO { Name = string.Empty, LocalVariableType = classT };
 
@@ -2140,7 +2158,7 @@ public class MethodServiceTest
     [TestMethod]
     public void CreateMethodSignature_ShouldAddMethodSignature_WhenMethodSignatureIsValid()
     {
-        var classT = new TypeDTO { Name = "TestClass" };
+        var classT = new TypeDTO { Name = "TestClass", Kind = "class" };
 
         var methodSignatureDto = new MethodSignatureDTO { Name = "Signature", ReturnType = classT };
 

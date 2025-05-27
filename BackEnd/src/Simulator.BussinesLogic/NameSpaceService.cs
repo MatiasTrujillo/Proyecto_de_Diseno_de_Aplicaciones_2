@@ -1,6 +1,5 @@
 using System;
 using Simulator.BussinesLogic.Exception;
-using Simulator.Domain;
 using Simulator.DTO;
 using Simulator.IBussinesLogic;
 using Simulator.IDataAcces;
@@ -8,8 +7,7 @@ using Simulator.IDataAcces;
 namespace Simulator.BussinesLogic;
 
 public class NameSpaceService(
-    INameSpaceRepository nameSpaceRepository,
-    IClassRepository classRepository
+    INameSpaceRepository nameSpaceRepository
     ) : INameSpaceService
 {
     public Guid CreateNameSpace(NameSpaceDTO nameSpaceDto)
@@ -31,29 +29,6 @@ public class NameSpaceService(
         nameSpaceRepository.Update(nameSpace);
     }
 
-    public void AsociateToClass(Guid id, Guid idClass)
-    {
-        ValidateNameSpaceExistence(id);
-        ValidateClassExistence(idClass);
-        var nameSpace = nameSpaceRepository.Find(id);
-        var classEntity = classRepository.Find(idClass);
-        ValidateClassDontHaveNameSpace(classEntity);
-        classEntity.NameSpace = nameSpace;
-        classRepository.Update(classEntity);
-    }
-
-    private void ValidateClassDontHaveNameSpace(Class idClass)
-    {
-        if(idClass.NameSpace != null)
-        {
-            throw new NameSpaceException("Class already has a NameSpace");
-        }
-    }
-
-    public void AsociateToInterface(Guid id, Guid idInterface)
-    {
-    }
-
     private void ValidateUniqueNameSpace(string nameSpace)
     {
         var nameSpaces = nameSpaceRepository.FindAll();
@@ -63,15 +38,6 @@ public class NameSpaceService(
             {
                 throw new NameSpaceException("NameSpace already exists");
             }
-        }
-    }
-
-    private void ValidateClassExistence(Guid idClass)
-    {
-        var classEntity = classRepository.Find(idClass);
-        if(classEntity == null)
-        {
-            throw new NameSpaceException("Class does not exist");
         }
     }
 
