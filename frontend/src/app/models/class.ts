@@ -1,6 +1,6 @@
-import { Stereotype } from './stereotype';
+import { KeyWord } from './KeyWord';
 
 export interface Class {
-    name: string;
-    Stereotype: Stereotype;
+  name: string;
+  stereotype: KeyWord | null;
 }
