@@ -2,11 +2,12 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import { SimulatorService } from '../services/simulator.service';
+import { CreateclassComponent } from '../createclass/createclass.component';
 
 @Component({
   selector: 'app-nav-menu',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule,CreateclassComponent],
   templateUrl: './nav-menu.component.html',
   styleUrls: ['./nav-menu.component.css']
 })

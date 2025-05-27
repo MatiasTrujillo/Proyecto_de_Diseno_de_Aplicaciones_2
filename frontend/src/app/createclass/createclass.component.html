@@ -1,22 +1,34 @@
-<div class="form-container">
-  <h2>Create a Class</h2>
+<!-- createclass.component.html -->
+<div class="class-form">
+  <mat-card>
+    <mat-card-title></mat-card-title>
+    <mat-card-content>
+      <form (ngSubmit)="createClass()" class="form-fields">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Nombre de la Clase</mat-label>
+          <input matInput [(ngModel)]="className" name="className" required />
+        </mat-form-field>
 
-  <div>
-    <label for="className">Class Name:</label>
-    <input type="text" id="className" [(ngModel)]="className" required />
-  </div>
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Estereotipo</mat-label>
+          <mat-select [(ngModel)]="stereotype" name="stereotype">
+            <mat-option [value]="null">-- Ninguno --</mat-option>
+            <mat-option *ngFor="let label of keyWords" [value]="getKeyValue(label)">
+              {{ label }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
 
-  <div>
-  <label for="stereotype">Stereotype:</label>
-  <select id="stereotype" [(ngModel)]="stereotype" required>
-    <option [ngValue]="null">-- Select a keyword --</option>
-    <option *ngFor="let label of keyWords" [ngValue]="getKeyValue(label)">
-      {{ label }}
-    </option>
-  </select>
-</div>
+        <div class="button-container">
+          <button mat-raised-button color="primary" type="submit">
+            Crear Clase
+          </button>
+        </div>
 
-  <button (click)="createClass()">Create</button>
-
-  <p [ngClass]="{ 'error': isError, 'success': !isError }">{{ message }}</p>
+        <mat-hint *ngIf="message" [ngClass]="{ 'error-msg': isError, 'success-msg': !isError }">
+          {{ message }}
+        </mat-hint>
+      </form>
+    </mat-card-content>
+  </mat-card>
 </div>
