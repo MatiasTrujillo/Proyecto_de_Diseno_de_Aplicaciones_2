@@ -7,9 +7,8 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\..\Simulator.TransformerExporter\Simulator.TransformerExporter.csproj" />
-      <ProjectReference Include="..\Simulator.DTO\Simulator.DTO.csproj" />
-      <ProjectReference Include="..\Simulator.ExportersAbstractions\Simulator.Exporters.Abstractions.csproj" />
+        <ProjectReference Include="..\Simulator.DTO\Simulator.DTO.csproj" />
+        <ProjectReference Include="..\Simulator.Exporters.Abstractions\Simulator.Exporters.Abstractions.csproj" />
     </ItemGroup>
     
 </Project>

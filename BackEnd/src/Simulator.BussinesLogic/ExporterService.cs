@@ -12,7 +12,6 @@ public class ExporterService(IMethodService service) : IExportService
 {
     public string[] GetAvailableExporters()
     {
-        Console.WriteLine("holaaaaaaaaaaaaa1");
         var assemblies = LoadAssemblies();
         return [.. assemblies.SelectMany(a => a.GetTypes())
             .Where(t => t.IsClass && !t.IsAbstract && typeof(ITransformerExporter).IsAssignableFrom(t))

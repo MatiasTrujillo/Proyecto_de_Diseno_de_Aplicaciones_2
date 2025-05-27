@@ -1,5 +1,4 @@
-﻿
-using System.Text;
+﻿using System.Text;
 using Simulator.Transformer.Abstractions;
 
 namespace Simulator.HTMLExporter;
