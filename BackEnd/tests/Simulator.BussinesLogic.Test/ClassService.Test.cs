@@ -553,8 +553,7 @@ public class ClassServiceTest
         _classService.UpdateClass(id, dto);
 
         _mockClassRepository.Verify(r => r.Update(It.Is<Class>(c =>
-            c.Id == id
-        )), Times.Once);
+            c.Id == id)), Times.Once);
     }
 
     [TestMethod]
@@ -575,8 +574,7 @@ public class ClassServiceTest
         _classService.UpdateClass(id, dto);
 
         _mockClassRepository.Verify(r => r.Update(It.Is<Class>(c =>
-            c.Id == id
-        )), Times.Once);
+            c.Id == id)), Times.Once);
     }
 
     [TestMethod]

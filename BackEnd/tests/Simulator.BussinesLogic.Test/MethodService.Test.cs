@@ -336,7 +336,7 @@ public class MethodServiceTest
     {
         var methodId = Guid.NewGuid();
         var method1 = new InvokedMethod();
-        var method = new Method { Id = methodId, Name = "TestMethod", Methods = [method1]};
+        var method = new Method { Id = methodId, Name = "TestMethod", Methods = [method1] };
 
         _mockMethodRepository.Setup(repo => repo.Find(methodId)).Returns(method);
         _mockClassRepository.Setup(repo => repo.FindAll()).Returns([]);
@@ -542,7 +542,7 @@ public class MethodServiceTest
     [TestMethod]
     public void CreateParameter_ShouldThrowException_WhenParameterIsNotValid()
     {
-        var exception = Assert.ThrowsException<ParameterNotFoundException>(() => _methodService.CreateParameter(null));
+        var exception = Assert.ThrowsException<ParameterNotFoundException>(() => _methodService.CreateParameter(null!));
 
         Assert.AreEqual("Parameter cannot be null.", exception.Message);
     }

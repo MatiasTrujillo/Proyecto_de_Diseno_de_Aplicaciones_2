@@ -1,4 +1,4 @@
-namespace Simulator.Transformer.Abstractions;
+namespace Simulator.Exporters.Abstractions;
 
 public class TransformerForExporter(Guid referenceId, Guid objectToCreateId, Guid methodId)
 {

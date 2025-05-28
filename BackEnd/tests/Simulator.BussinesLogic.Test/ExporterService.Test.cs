@@ -1,17 +1,14 @@
-using Moq;
-using Simulator.BussinesLogic;
-using Simulator.IBussinesLogic;
+namespace Simulator.BussinesLogic.Test;
 
 [TestClass]
 public class ExporterServiceTests
 {
-    private string _exportersPath = null!;
-    private string _htmlExporterDllPath = null!;
+    private readonly string _exportersPath = null!;
+    private readonly string _htmlExporterDllPath = null!;
 
     [TestMethod]
     public void GetAvailableExporters_ShouldReturnHtml_WhenHtmlExporterDllExists()
     {
-        var methodServiceMock = new Mock<IMethodService>();
         var exporterService = new ExporterService();
 
         var available = exporterService.GetAvailableExporters();
@@ -22,12 +19,12 @@ public class ExporterServiceTests
     [TestCleanup]
     public void Cleanup()
     {
-        if (File.Exists(_htmlExporterDllPath))
+        if(File.Exists(_htmlExporterDllPath))
         {
             File.Delete(_htmlExporterDllPath);
         }
 
-        if (Directory.Exists(_exportersPath) && !Directory.EnumerateFileSystemEntries(_exportersPath).Any())
+        if(Directory.Exists(_exportersPath) && !Directory.EnumerateFileSystemEntries(_exportersPath).Any())
         {
             Directory.Delete(_exportersPath);
         }
