@@ -8,7 +8,7 @@ using Simulator.Transformer.Abstractions;
 
 namespace Simulator.BussinesLogic;
 
-public class ExporterService(IMethodService service) : IExportService
+public class ExporterService() : IExportService
 {
     public string[] GetAvailableExporters()
     {
@@ -18,6 +18,7 @@ public class ExporterService(IMethodService service) : IExportService
             .Select(t => ((ITransformerExporter)(Activator.CreateInstance(t) ?? throw new System.Exception())).GetFormat())];
     }
 
+/*
     public string ExportTransfer(string exporterType, TransformerForExporter transformer)
     {
         var assemblies = LoadAssemblies();
@@ -33,7 +34,7 @@ public class ExporterService(IMethodService service) : IExportService
         var transfer = service.ExecuteMethod(transformer.ReferenceId, transformer.ObjectToCreateId, transformer.MethodId);
 
         return instance.Export(transfer);
-    }
+    }*/
 
     private static IEnumerable<Assembly> LoadAssemblies()
     {

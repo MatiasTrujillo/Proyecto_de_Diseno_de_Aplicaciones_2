@@ -6,6 +6,6 @@ namespace Simulator.IBussinesLogic;
 
 public interface IExportService
 {
-    string ExportTransfer(string exporterType, TransformerForExporter transformer);
+    // string ExportTransfer(string exporterType, TransformerForExporter transformer);
     string[] GetAvailableExporters();
 }

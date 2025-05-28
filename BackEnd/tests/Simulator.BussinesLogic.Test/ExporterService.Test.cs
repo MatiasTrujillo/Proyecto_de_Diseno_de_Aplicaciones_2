@@ -12,7 +12,7 @@ public class ExporterServiceTests
     public void GetAvailableExporters_ShouldReturnHtml_WhenHtmlExporterDllExists()
     {
         var methodServiceMock = new Mock<IMethodService>();
-        var exporterService = new ExporterService(methodServiceMock.Object);
+        var exporterService = new ExporterService();
 
         var available = exporterService.GetAvailableExporters();
 
