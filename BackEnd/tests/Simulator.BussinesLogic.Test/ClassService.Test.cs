@@ -15,6 +15,7 @@ public class ClassServiceTest
     private Mock<IClassRepository> _mockClassRepository = null!;
     private Mock<IAttributeRepository> _mockAttributeRepository = null!;
     private Mock<IMethodRepository> _mockMethodRepository = null!;
+    private Mock<IInterfaceRepository> _mockInterfaceRepository = null!;
     private ClassService _classService = null!;
 
     [TestInitialize]
@@ -23,11 +24,12 @@ public class ClassServiceTest
         _mockClassRepository = new Mock<IClassRepository>(MockBehavior.Strict);
         _mockAttributeRepository = new Mock<IAttributeRepository>(MockBehavior.Strict);
         _mockMethodRepository = new Mock<IMethodRepository>(MockBehavior.Strict);
+        _mockInterfaceRepository = new Mock<IInterfaceRepository>(MockBehavior.Strict);
         _mockClassRepository
             .Setup(repo => repo.Add(It.IsAny<Class>()));
         _mockAttributeRepository.Setup(repo => repo.Add(It.IsAny<Attribute>()));
         _mockMethodRepository.Setup(repo => repo.Add(It.IsAny<Method>()));
-        _classService = new ClassService(_mockClassRepository.Object, _mockAttributeRepository.Object, _mockMethodRepository.Object);
+        _classService = new ClassService(_mockClassRepository.Object, _mockAttributeRepository.Object, _mockMethodRepository.Object, _mockInterfaceRepository.Object);
     }
 
     [TestMethod]
@@ -51,7 +53,8 @@ public class ClassServiceTest
             It.Is<Class>(a =>
                 a.Name == dto.Name &&
                 a.Stereotype == dto.Stereotype &&
-                a.HierarchyClass == objectClass)), Times.Once);
+                a.Parents.Contains(objectClass) &&
+                a.Parents.Count == 1)), Times.Once);
     }
 
     [TestMethod]
@@ -246,7 +249,7 @@ public class ClassServiceTest
         _classService.UpdateClass(classId, dto);
 
         Assert.AreEqual("NewName", existingClass.Name);
-        Assert.AreEqual(newHeritageClass, existingClass.HierarchyClass);
+        Assert.AreEqual(newHeritageClass, existingClass.Parents[0]);
     }
 
     [TestMethod]
@@ -472,14 +475,16 @@ public class ClassServiceTest
         var id = Guid.NewGuid();
         var heritageId = Guid.NewGuid();
 
-        var classT = new Class { Id = id, Name = "OldName", HierarchyClass = null };
-        var classInUse = new Class { Id = Guid.NewGuid(), HierarchyClass = new Class { Id = id } };
+        var classT = new Class { Id = id, Name = "OldName", Parents = null };
+        var classInUse = new Class { Id = Guid.NewGuid(), Parents = [new Class { Id = id }] };
         var heritageClass = new Class { Id = heritageId };
 
         _mockClassRepository.Setup(r => r.FindAll()).Returns([classT, classInUse, heritageClass]);
+        _mockClassRepository.Setup(r => r.FindAllTypes()).Returns([classT, classInUse, heritageClass]);
 
         _mockClassRepository.Setup(r => r.Find(id)).Returns(classT);
         _mockClassRepository.Setup(r => r.Find(heritageId)).Returns(heritageClass);
+        _mockClassRepository.Setup(r => r.Update(It.IsAny<Class>()));
 
         _mockAttributeRepository.Setup(r => r.FindAll()).Returns([]);
         _mockMethodRepository.Setup(r => r.FindAll()).Returns([]);
@@ -618,5 +623,119 @@ public class ClassServiceTest
         });
 
         Assert.AreEqual("The stereotype is not valid", exception.Message);
+    }
+
+    [TestMethod]
+    public void UpdateClass_WithValidInterface_UpdatesSuccessfullyWithInterfaceParent()
+    {
+        var classId = Guid.NewGuid();
+        var heritageId = Guid.NewGuid();
+
+        var existingClass = new Class { Id = classId, Name = "OldName" };
+        var newHeritageInterface = new Interface { Id = heritageId, Name = "ParentInterface" };
+
+        _mockInterfaceRepository.Setup(r => r.Find(heritageId)).Returns(newHeritageInterface);
+        _mockClassRepository.Setup(r => r.FindAllTypes()).Returns([existingClass, newHeritageInterface]);
+        _mockClassRepository.Setup(r => r.FindAll()).Returns([existingClass]);
+        _mockClassRepository.Setup(r => r.Find(classId)).Returns(existingClass);
+        _mockInterfaceRepository.Setup(r => r.Find(heritageId)).Returns(newHeritageInterface);
+        _mockClassRepository.Setup(r => r.Update(It.IsAny<Class>()));
+
+        _mockAttributeRepository.Setup(r => r.FindAll()).Returns([]);
+        _mockMethodRepository.Setup(r => r.FindAll()).Returns([]);
+
+        var dto = new UpdateClassDTO
+        {
+            Name = "NewName",
+            IdClass = heritageId
+        };
+
+        _classService.UpdateClass(classId, dto);
+
+        Assert.AreEqual("NewName", existingClass.Name);
+        Assert.AreEqual(newHeritageInterface, existingClass.Parents[0]);
+        Assert.AreEqual(1, existingClass.Parents.Count);
+    }
+
+    [TestMethod]
+    public void UpdateClass_WithValidParents_UpdatesSuccessfullyWithMultiplesParents()
+    {
+        var classId = Guid.NewGuid();
+        var oneHeritageId = Guid.NewGuid();
+        var secondHeritageId = Guid.NewGuid();
+
+        var existingClass = new Class { Id = classId, Name = "OldName" };
+        var oneHeritageParent = new Interface { Id = oneHeritageId, Name = "ParentInterface" };
+        var secondHeritageParent = new Class { Id = secondHeritageId, Name = "ParentClass" };
+
+        _mockInterfaceRepository.Setup(r => r.Find(oneHeritageId)).Returns(oneHeritageParent);
+        _mockClassRepository.Setup(r => r.FindAllTypes()).Returns([existingClass, oneHeritageParent, secondHeritageParent]);
+        _mockClassRepository.Setup(r => r.FindAll()).Returns([existingClass, secondHeritageParent]);
+        _mockClassRepository.Setup(r => r.Find(classId)).Returns(existingClass);
+        _mockClassRepository.Setup(r => r.Find(secondHeritageId)).Returns(secondHeritageParent);
+        _mockInterfaceRepository.Setup(r => r.Find(oneHeritageId)).Returns(oneHeritageParent);
+        _mockClassRepository.Setup(r => r.Update(It.IsAny<Class>()));
+
+        _mockAttributeRepository.Setup(r => r.FindAll()).Returns([]);
+        _mockMethodRepository.Setup(r => r.FindAll()).Returns([]);
+
+        var dto = new UpdateClassDTO
+        {
+            Name = "NewName",
+            IdClass = oneHeritageId
+        };
+        var secondDto = new UpdateClassDTO
+        {
+            Name = "NewName",
+            IdClass = secondHeritageId
+        };
+
+        _classService.UpdateClass(classId, dto);
+        _classService.UpdateClass(classId, secondDto);
+
+        Assert.AreEqual("NewName", existingClass.Name);
+        Assert.AreEqual(2, existingClass.Parents.Count);
+        Assert.AreEqual(oneHeritageParent, existingClass.Parents[0]);
+        Assert.AreEqual(secondHeritageParent, existingClass.Parents[1]);
+    }
+
+    [TestMethod]
+    public void UpdateClass_WithValidInterface_UpdatesUnimplementedMethodsFromInterfacesSignatures()
+    {
+        var classId = Guid.NewGuid();
+        var oneHeritageId = Guid.NewGuid();
+        var aSignatureId = Guid.NewGuid();
+
+        var existingClass = new Class { Id = classId, Name = "OldName" };
+        var aSignature = new MethodSignature { Id = aSignatureId, Name = "SignatureName", ReturnType = new Primitive(), Parameters = [new Parameter("Parameter", new Primitive())] };
+        var oneHeritageParent = new Interface { Id = oneHeritageId, Name = "ParentInterface", MethodSignatures = [aSignature] };
+
+        _mockInterfaceRepository.Setup(r => r.Find(oneHeritageId)).Returns(oneHeritageParent);
+        _mockClassRepository.Setup(r => r.FindAllTypes()).Returns([existingClass, oneHeritageParent]);
+        _mockClassRepository.Setup(r => r.FindAll()).Returns([existingClass]);
+        _mockClassRepository.Setup(r => r.Find(classId)).Returns(existingClass);
+        _mockInterfaceRepository.Setup(r => r.Find(oneHeritageId)).Returns(oneHeritageParent);
+        _mockClassRepository.Setup(r => r.Update(It.IsAny<Class>()));
+
+        _mockAttributeRepository.Setup(r => r.FindAll()).Returns([]);
+        _mockMethodRepository.Setup(r => r.FindAll()).Returns([]);
+
+        var dto = new UpdateClassDTO
+        {
+            Name = "NewName",
+            IdClass = oneHeritageId
+        };
+
+        _classService.UpdateClass(classId, dto);
+
+        Assert.AreEqual("NewName", existingClass.Name);
+        Assert.AreEqual(1, existingClass.Parents.Count);
+        Assert.AreEqual(oneHeritageParent, existingClass.Parents[0]);
+        Assert.AreEqual(existingClass.Methods.Count, 1);
+        Assert.AreEqual(existingClass.Methods[0].Name, aSignature.Name);
+        Assert.AreEqual(existingClass.Methods[0].ReturnType, aSignature.ReturnType);
+        Assert.AreEqual(existingClass.Methods[0].Parameters.Count, aSignature.Parameters.Count);
+        Assert.AreEqual(existingClass.Methods[0].Parameters[0].Name, aSignature.Parameters[0].Name);
+        Assert.AreEqual(existingClass.Methods[0].Parameters[0].ParameterType, aSignature.Parameters[0].ParameterType);
     }
 }

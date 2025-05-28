@@ -148,7 +148,7 @@ public class InterfaceService_Test
         var entity = dto.ToEntity();
         var id = entity.Id;
         var aClass = new Class();
-        aClass.HierarchyClass = entity;
+        aClass.Parents = [entity];
 
         _mockInterfaceRepository.Setup(r => r.Delete(It.IsAny<Guid>()));
         _mockInterfaceRepository.Setup(r => r.FindAll()).Returns([entity]);

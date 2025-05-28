@@ -40,6 +40,19 @@ public sealed class SqlContext : DbContext
         modelBuilder.Entity<Interface>()
             .HasBaseType<Type>();
 
+        modelBuilder.Entity<Class>()
+            .HasMany(c => c.Parents)
+            .WithMany()
+            .UsingEntity<Dictionary<string, object>>(
+                "ClassParents",
+                j => j.HasOne<Type>().WithMany().HasForeignKey("ParentId"),
+                j => j.HasOne<Class>().WithMany().HasForeignKey("ClassId"),
+                j =>
+                {
+                    j.HasKey("ClassId", "ParentId");
+                    j.ToTable("ClassParents");
+                });
+
         modelBuilder.Entity<MethodSignature>(entity =>
         {
             entity.HasKey(m => m.Id);

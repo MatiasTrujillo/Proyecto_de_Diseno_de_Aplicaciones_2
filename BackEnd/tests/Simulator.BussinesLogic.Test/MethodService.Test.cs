@@ -163,7 +163,7 @@ public class MethodServiceTest
         var methodParent = new Method { Id = Guid.NewGuid(), Name = "TestMethod" };
         var classParent = new Class { Id = Guid.NewGuid(), Name = "TestClass", Methods = [methodParent] };
         var methodChild = new Method { Id = Guid.NewGuid(), Name = "TestMethod", IsOverride = true };
-        var classChild = new Class { Id = Guid.NewGuid(), Name = "TestClass", Methods = [], HierarchyClass = classParent };
+        var classChild = new Class { Id = Guid.NewGuid(), Name = "TestClass", Methods = [], Parents = [classParent] };
 
         _mockMethodRepository.Setup(repo => repo.Find(methodParent.Id)).Returns(methodParent);
         _mockMethodRepository.Setup(repo => repo.Find(methodChild.Id)).Returns(methodChild);
@@ -180,7 +180,7 @@ public class MethodServiceTest
     {
         var classParent = new Class { Id = Guid.NewGuid(), Name = "TestClass", Methods = [] };
         var methodChild = new Method { Id = Guid.NewGuid(), Name = "TestMethod", IsOverride = true };
-        var classChild = new Class { Id = Guid.NewGuid(), Name = "TestClass", Methods = [], HierarchyClass = classParent };
+        var classChild = new Class { Id = Guid.NewGuid(), Name = "TestClass", Methods = [], Parents = [classParent] };
 
         _mockMethodRepository.Setup(repo => repo.Find(methodChild.Id)).Returns(methodChild);
         _mockClassRepository.Setup(repo => repo.Find(classParent.Id)).Returns(classParent);
@@ -197,7 +197,7 @@ public class MethodServiceTest
         var methodParent = new Method { Id = Guid.NewGuid(), Name = "TestMethod", Stereotype = KeyWord.Virtual };
         var classParent = new Class { Id = Guid.NewGuid(), Name = "TestClass", Methods = [methodParent] };
         var methodChild = new Method { Id = Guid.NewGuid(), Name = "TestMethod", IsOverride = true };
-        var classChild = new Class { Id = Guid.NewGuid(), Name = "TestClass", Methods = [], HierarchyClass = classParent };
+        var classChild = new Class { Id = Guid.NewGuid(), Name = "TestClass", Methods = [], Parents = [classParent] };
 
         _mockMethodRepository.Setup(repo => repo.Find(methodParent.Id)).Returns(methodParent);
         _mockMethodRepository.Setup(repo => repo.Find(methodChild.Id)).Returns(methodChild);
@@ -216,9 +216,9 @@ public class MethodServiceTest
     {
         var methodGrand = new Method { Id = Guid.NewGuid(), Name = "TestMethod", Stereotype = KeyWord.Virtual };
         var classGrand = new Class { Id = Guid.NewGuid(), Name = "TestClass", Methods = [methodGrand] };
-        var classParent = new Class { Id = Guid.NewGuid(), Name = "TestClass", Methods = [], HierarchyClass = classGrand };
+        var classParent = new Class { Id = Guid.NewGuid(), Name = "TestClass", Methods = [], Parents = [classGrand] };
         var methodChild = new Method { Id = Guid.NewGuid(), Name = "TestMethod", IsOverride = true };
-        var classChild = new Class { Id = Guid.NewGuid(), Name = "TestClass", Methods = [], HierarchyClass = classParent };
+        var classChild = new Class { Id = Guid.NewGuid(), Name = "TestClass", Methods = [], Parents = [classParent] };
 
         _mockMethodRepository.Setup(repo => repo.Find(methodGrand.Id)).Returns(methodGrand);
         _mockMethodRepository.Setup(repo => repo.Find(methodChild.Id)).Returns(methodChild);
@@ -777,7 +777,7 @@ public class MethodServiceTest
         var classWithMethod = new Class
         {
             Methods = [method],
-            HierarchyClass = null
+            Parents = null
         };
 
         _mockMethodRepository.Setup(r => r.Find(methodId)).Returns(method);
@@ -894,7 +894,7 @@ public class MethodServiceTest
         var classWithMethod = new Class
         {
             Methods = [method],
-            HierarchyClass = null
+            Parents = null
         };
 
         _mockMethodRepository.Setup(r => r.Find(It.IsAny<Guid>())).Returns(method);
@@ -936,7 +936,7 @@ public class MethodServiceTest
         var classWithMethod = new Class
         {
             Methods = [method],
-            HierarchyClass = baseClass
+            Parents = [baseClass]
         };
 
         _mockMethodRepository.Setup(m => m.Find(methodId)).Returns(method);
@@ -1372,7 +1372,7 @@ public class MethodServiceTest
             Id = Guid.NewGuid(),
             Name = "Motor",
             Stereotype = null,
-            HierarchyClass = null,
+            Parents = null,
             Attributes = [],
             Methods = [encender, apagar]
         };
@@ -1390,7 +1390,7 @@ public class MethodServiceTest
             Id = Guid.NewGuid(),
             Name = "Auto",
             Stereotype = null,
-            HierarchyClass = null,
+            Parents = null,
             Attributes = [motorAuto],
             Methods = [iniciarViaje, detenerViaje]
         };
@@ -1493,7 +1493,7 @@ public class MethodServiceTest
             Id = Guid.NewGuid(),
             Name = "Notificacion",
             Stereotype = KeyWord.Abstract,
-            HierarchyClass = null,
+            Parents = null,
             Attributes = [],
             Methods = [enviar, confirmar]
         };
@@ -1503,7 +1503,7 @@ public class MethodServiceTest
             Id = Guid.NewGuid(),
             Name = "Email",
             Stereotype = null,
-            HierarchyClass = notificacion,
+            Parents = [notificacion],
             Attributes = [],
             Methods = [enviarEmail]
         };
@@ -1513,7 +1513,7 @@ public class MethodServiceTest
             Id = Guid.NewGuid(),
             Name = "SMS",
             Stereotype = null,
-            HierarchyClass = notificacion,
+            Parents = [notificacion],
             Attributes = [],
             Methods = [enviarSMS]
         };
@@ -1549,7 +1549,7 @@ public class MethodServiceTest
             Id = Guid.NewGuid(),
             Name = "Notificador",
             Stereotype = null,
-            HierarchyClass = null,
+            Parents = null,
             Attributes = [],
             Methods = [notificar]
         };
@@ -1676,7 +1676,7 @@ public class MethodServiceTest
             Id = Guid.NewGuid(),
             Name = "Entrada",
             Stereotype = null,
-            HierarchyClass = null,
+            Parents = null,
             Attributes = [],
             Methods = [esValidoEntrada, inicializar, limpiar]
         };
@@ -1686,7 +1686,7 @@ public class MethodServiceTest
             Id = Guid.NewGuid(),
             Name = "EntradaTexto",
             Stereotype = null,
-            HierarchyClass = entrada,
+            Parents = [entrada],
             Attributes = [],
             Methods = [esValidoEntradaTexto]
         };
@@ -1696,7 +1696,7 @@ public class MethodServiceTest
             Id = Guid.NewGuid(),
             Name = "EntradaTextoEspecial",
             Stereotype = KeyWord.Sealed,
-            HierarchyClass = entradaTexto,
+            Parents = [entradaTexto],
             Attributes = [],
             Methods = [esValidoEntradaTextoEspecial]
         };
@@ -1725,7 +1725,7 @@ public class MethodServiceTest
             Id = Guid.NewGuid(),
             Name = "Validador",
             Stereotype = null,
-            HierarchyClass = null,
+            Parents = null,
             Attributes = [],
             Methods = [validar]
         };
@@ -1809,7 +1809,7 @@ public class MethodServiceTest
             Id = Guid.NewGuid(),
             Name = "Logger",
             Stereotype = null,
-            HierarchyClass = null,
+            Parents = null,
             Attributes = [],
             Methods = [registrar],
         };
@@ -1844,7 +1844,7 @@ public class MethodServiceTest
             Id = Guid.NewGuid(),
             Name = "Usuario",
             Stereotype = null,
-            HierarchyClass = null,
+            Parents = null,
             Attributes = [nombre],
             Methods = [validar],
         };
@@ -1953,7 +1953,7 @@ public class MethodServiceTest
             Stereotype = KeyWord.Sealed,
             Attributes = [clavePrivada],
             Methods = [validarCredencialesAP],
-            HierarchyClass = autenticador
+            Parents = [autenticador]
         };
 
         var stringPrimitive = new Primitive(PrimitiveType.String);
@@ -2016,7 +2016,7 @@ public class MethodServiceTest
             Stereotype = null,
             Attributes = [id],
             Methods = [validarIdentidad],
-            HierarchyClass = null,
+            Parents = null,
         };
 
         var mensaje = new Parameter
@@ -2049,7 +2049,7 @@ public class MethodServiceTest
             Name = "Comunicacion",
             Stereotype = null,
             Attributes = [],
-            HierarchyClass = null,
+            Parents = null,
             Methods = [enviarNotificacion],
         };
 
@@ -2118,7 +2118,7 @@ public class MethodServiceTest
             Stereotype = KeyWord.Abstract,
             Methods = [ejecutar, validar, realizarProcesoProceso],
             Attributes = [notificador],
-            HierarchyClass = null,
+            Parents = null,
         };
 
         var inventarioDisponible = new Attribute
@@ -2166,7 +2166,7 @@ public class MethodServiceTest
             Stereotype = KeyWord.Sealed,
             Methods = [realizarProcesoPC, comprobarInventario],
             Attributes = [inventarioDisponible],
-            HierarchyClass = proceso,
+            Parents = [proceso],
         };
 
         var stringPrimitive = new Primitive(PrimitiveType.String);

@@ -28,7 +28,7 @@ public class Method
     }
 
     public Method(string name, Accessibility accessibility, KeyWord? stereotype, List<InvokedMethod> methods,
-        List<Parameter> parameters,
+        List<Parameter>? parameters,
         List<LocalVariable> localVariables, Type? returnType)
     {
         ValidateMethodName(name);
@@ -44,7 +44,7 @@ public class Method
     }
 
     public Method(string name, Accessibility accessibility, KeyWord? stereotype, List<InvokedMethod> methods,
-        List<Parameter> parameters,
+        List<Parameter>? parameters,
         List<LocalVariable> localVariables, Type? returnType, bool isOverride)
     {
         ValidateMethodName(name);

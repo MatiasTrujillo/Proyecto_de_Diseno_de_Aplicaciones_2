@@ -11,11 +11,12 @@ namespace Simulator.BussinesLogic;
 public class ClassService(
     IClassRepository classRepository,
     IAttributeRepository attributeRepository,
-    IMethodRepository methodRepository) : IClassService
+    IMethodRepository methodRepository, IInterfaceRepository interfaceRepository) : IClassService
 {
     private readonly IClassRepository _classRepository = classRepository;
     private readonly IAttributeRepository _attributeRepository = attributeRepository;
     private readonly IMethodRepository _methodRepository = methodRepository;
+    private readonly IInterfaceRepository _interfaceRepository = interfaceRepository;
 
     public Guid CreateClass(ClassDTO classDto)
     {
@@ -24,7 +25,7 @@ public class ClassService(
         var objectClass = classes.FirstOrDefault(c => c.Name == "Object") as Class;
         ValidateStereotypeInCreate(aClass.Stereotype);
         ValidateClassNameIsUnique(aClass.Name);
-        aClass.HierarchyClass = objectClass;
+        aClass.Parents = [objectClass];
         _classRepository.Add(aClass);
         return aClass.Id;
     }
@@ -69,9 +70,18 @@ public class ClassService(
     {
         if(uClass.IdClass != null)
         {
-            ValidateClassIdExists(uClass.IdClass.Value);
+            var isInterface = ValidateParentIdExists(uClass.IdClass.Value);
             ValidateClassIsNotInUse(id);
-            var heritageClassT = _classRepository.Find(uClass.IdClass.Value);
+            var heritageClassT = new Class();
+            var heritageInterfaceT = new Interface();
+            if(isInterface)
+            {
+                heritageInterfaceT = _interfaceRepository.Find(uClass.IdClass.Value);
+            }
+            else
+            {
+                heritageClassT = _classRepository.Find(uClass.IdClass.Value);
+            }
 
             if(classT.Stereotype == KeyWord.Sealed)
             {
@@ -83,8 +93,39 @@ public class ClassService(
                 throw new InvalidClassException("An abstract class cannot inherit from a concrete class.");
             }
 
-            classT.HierarchyClass = heritageClassT;
+            if(isInterface)
+            {
+                classT.Parents.Add(heritageInterfaceT);
+                foreach(var signature in heritageInterfaceT.MethodSignatures)
+                {
+                    if(NotHasImplementedThisSignature(classT, signature))
+                    {
+                        var methodT = new Method(signature.Name, Accessibility.Public, null, [], signature.Parameters, [], signature.ReturnType, false);
+                        classT.Methods.Add(methodT);
+                    }
+                }
+            }
+            else
+            {
+                classT.Parents.Add(heritageClassT);
+            }
         }
+    }
+
+    private static bool NotHasImplementedThisSignature(Class classT, MethodSignature signature)
+    {
+        return classT.Methods is null || !classT.Methods.Any(m => m.Name == signature.Name && HasSameParemeters(m, signature) && m.ReturnType == signature.ReturnType);
+    }
+
+    private static bool HasSameParemeters(Method aMethod, MethodSignature signature)
+    {
+        var itHas = aMethod.Parameters.Count == signature.Parameters.Count;
+        foreach(var parameter in signature.Parameters)
+        {
+            itHas = itHas && aMethod.Parameters.Any(p => p.Name == parameter.Name && p.ParameterType == parameter.ParameterType);
+        }
+
+        return itHas;
     }
 
     private void ManageName(UpdateClassDTO uClass, Class classT)
@@ -122,7 +163,7 @@ public class ClassService(
         var classes = _classRepository.FindAll();
         var attributeT = _attributeRepository.FindAll();
         var methods = _methodRepository.FindAll();
-        if(classes.Any(c => c.HierarchyClass != null && c.HierarchyClass.Id == id) ||
+        if(classes.Any(c => c.Parents != null && c.Parents.Find(c => c.Id == id) is not null) ||
            attributeT.Any(a => a.Type == classT) ||
            methods.Any(m => m.ReturnType == classT))
         {
@@ -148,6 +189,18 @@ public class ClassService(
         {
             throw new ClassNotFoundException("There is no class with this id");
         }
+    }
+
+    private bool ValidateParentIdExists(Guid id)
+    {
+        var classes = _classRepository.FindAllTypes();
+
+        if(!classes.Exists(classT => classT.Id == id && classT is not Primitive))
+        {
+            throw new ClassNotFoundException("There is no class with this id");
+        }
+
+        return classes.Any(classT => classT.Id == id && classT is Interface);
     }
 
     private void ValidateName(string name)

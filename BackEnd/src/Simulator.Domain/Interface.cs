@@ -18,5 +18,12 @@ public class Interface : Type
         MethodSignatures = methodSignatures;
     }
 
+    public Interface()
+    {
+        Id = Guid.NewGuid();
+        Name = string.Empty;
+        MethodSignatures = [];
+    }
+
     public override Guid Id { get; set; }
 }
