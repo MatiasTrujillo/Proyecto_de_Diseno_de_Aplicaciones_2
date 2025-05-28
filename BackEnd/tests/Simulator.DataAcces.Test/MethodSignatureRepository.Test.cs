@@ -138,5 +138,16 @@ public class MethodSignatureRepository_Test
         updatedInDb!.Parameters.Should().HaveCount(1);
         updatedInDb.Parameters[0].Id.Should().Be(aParameter.Id);
     }
+
+    [TestMethod]
+    public void Update_WhenMethodSignatureDoesNotExist_ShouldNotThrowOrChangeAnything()
+    {
+        var nonExistentSignature = new MethodSignature("NonExistent", null, []);
+
+        Action act = () => new MethodSignatureRepository(_context).Update(nonExistentSignature);
+
+        act.Should().NotThrow();
+        _context.MethodSignatures.Any(ms => ms.Id == nonExistentSignature.Id).Should().BeFalse();
+    }
     #endregion
 }

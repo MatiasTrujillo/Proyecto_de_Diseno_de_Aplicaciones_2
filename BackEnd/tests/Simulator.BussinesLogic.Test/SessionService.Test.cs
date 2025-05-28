@@ -94,4 +94,46 @@ public class SessionServiceTests
 
         _sessionService.LogOut(_sessionEntity.Token);
     }
+
+    [TestMethod]
+    [ExpectedException(typeof(InvalidOperationException))]
+    public void LogIn_ShouldThrow_WhenSessionAlreadyActive()
+    {
+        _sessionEntity.IsActive = true;
+        _mockSessionRepository.Setup(repo => repo.Find(_sessionEntity.Token)).Returns(_sessionEntity);
+
+        _sessionService.LogIn(_sessionEntity.Token);
+    }
+
+    [TestMethod]
+    [ExpectedException(typeof(InvalidOperationException))]
+    public void LogOut_ShouldThrow_WhenSessionAlreadyInactive()
+    {
+        _sessionEntity.IsActive = false;
+        _mockSessionRepository.Setup(repo => repo.Find(_sessionEntity.Token)).Returns(_sessionEntity);
+
+        _sessionService.LogOut(_sessionEntity.Token);
+    }
+
+    [TestMethod]
+    public void IsActive_ShouldReturnTrue_WhenSessionIsActive()
+    {
+        _sessionEntity.IsActive = true;
+        _mockSessionRepository.Setup(repo => repo.Find(_sessionEntity.Token)).Returns(_sessionEntity);
+
+        var result = _sessionService.IsActive(_sessionEntity.Token);
+
+        Assert.IsTrue(result);
+    }
+
+    [TestMethod]
+    public void IsActive_ShouldReturnFalse_WhenSessionIsInactive()
+    {
+        _sessionEntity.IsActive = false;
+        _mockSessionRepository.Setup(repo => repo.Find(_sessionEntity.Token)).Returns(_sessionEntity);
+
+        var result = _sessionService.IsActive(_sessionEntity.Token);
+
+        Assert.IsFalse(result);
+    }
 }

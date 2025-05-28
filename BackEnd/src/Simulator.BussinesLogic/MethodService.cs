@@ -99,7 +99,6 @@ public class MethodService(
         var type = localVariableT.LocalVariableType.Name;
         var returnType = _classRepository.FindAllTypes().FirstOrDefault(c => c.Name == type);
         localVariableT.LocalVariableType = returnType;
-        ValidateMethodReturnType(localVariableT.LocalVariableType);
         _localVariableRepository.Add(localVariableT);
         return localVariableT.Id;
     }
@@ -138,7 +137,6 @@ public class MethodService(
         var type = parameterT.ParameterType.Name;
         var returnType = _classRepository.FindAllTypes().FirstOrDefault(c => c.Name == type);
         parameterT.ParameterType = returnType;
-        ValidateMethodReturnType(parameterT.ParameterType);
         _parameterRepository.Add(parameterT);
         return parameterT.Id;
     }
@@ -678,14 +676,6 @@ public class MethodService(
         }
     }
 
-    private void ValidateMethodReturnType(Type? methodTReturnType)
-    {
-        if(methodTReturnType == null)
-        {
-            throw new TypeNotFoundException("Method return type not found.");
-        }
-    }
-
     private void ValidateMethodDTOExist(MethodDTO method)
     {
         if(method == null)
@@ -938,7 +928,6 @@ public class MethodService(
         var type = methodSignatureT!.ReturnType?.Name;
         var returnType = _classRepository.FindAllTypes().FirstOrDefault(t => t.Name == type);
         methodSignatureT.ReturnType = returnType;
-        ValidateMethodReturnType(methodSignatureT.ReturnType);
         _methodSignatureRepository.Add(methodSignatureT);
         return methodSignatureT.Id;
     }

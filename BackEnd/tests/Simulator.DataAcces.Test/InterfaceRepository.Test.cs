@@ -74,6 +74,16 @@ public class InterfaceRepository_Test
         result.Id.Should().Be(anInterface.Id);
         result.Name.Should().Be(anInterface.Name);
     }
+
+    [TestMethod]
+    public void Find_WhenInterfaceDoesNotExist_ShouldReturnNull()
+    {
+        var nonExistentId = Guid.NewGuid();
+
+        var result = _repository.Find(nonExistentId);
+
+        result.Should().BeNull();
+    }
     #endregion
 
     #region FindAll
@@ -157,6 +167,23 @@ public class InterfaceRepository_Test
         saved.Id.Should().Be(anInterface.Id);
         saved.MethodSignatures.Count.Should().Be(1);
         saved.MethodSignatures[0].Id.Should().Be(aMethodSignature.Id);
+    }
+
+    [TestMethod]
+    public void Update_WhenInterfaceDoesNotExist_ShouldNotThrowButDoNothing()
+    {
+        var nonExistentInterface = new Interface("GhostInterface")
+        {
+            Id = Guid.NewGuid()
+        };
+
+        Action act = () => _repository.Update(nonExistentInterface);
+
+        act.Should().NotThrow();
+
+        using var refreshedContext = ProgramTest.BuildTestDbContext();
+        var result = refreshedContext.Interfaces.Find(nonExistentInterface.Id);
+        result.Should().BeNull();
     }
     #endregion
 

@@ -362,7 +362,22 @@ public class ClassServiceTest
         _mockClassRepository.Setup(r => r.FindAll()).Returns([classT]);
         _mockClassRepository.Setup(r => r.Find(id)).Returns(classT);
 
-        var dto = new UpdateClassDTO { Name = "invalidName" };
+        var dto = new UpdateClassDTO { Name = "I nvalidName" };
+
+        _classService.UpdateClass(id, dto);
+    }
+
+    [TestMethod]
+    [ExpectedException(typeof(InvalidClassException))]
+    public void UpdateClass_WithInvalidNameSpaces_ThrowsException()
+    {
+        var id = Guid.NewGuid();
+        var classT = new Class { Id = id, Name = "OldName" };
+
+        _mockClassRepository.Setup(r => r.FindAll()).Returns([classT]);
+        _mockClassRepository.Setup(r => r.Find(id)).Returns(classT);
+
+        var dto = new UpdateClassDTO { Name = "inval idName" };
 
         _classService.UpdateClass(id, dto);
     }
@@ -523,6 +538,48 @@ public class ClassServiceTest
         });
 
         Assert.AreEqual("The stereotype is not valid", exception.Message);
+    }
+
+    [TestMethod]
+    public void UpdateClass_ShouldUpdateStereotypeToSealed()
+    {
+        var id = Guid.NewGuid();
+        var classT = new Class { Id = id, Name = "OldName" };
+
+        _mockClassRepository.Setup(r => r.FindAll()).Returns([classT]);
+        _mockClassRepository.Setup(r => r.Find(id)).Returns(classT);
+        _mockClassRepository.Setup(r => r.Update(It.IsAny<Class>()));
+
+        var dto = new UpdateClassDTO
+        {
+            Stereotype = "sealed"
+        };
+
+        _classService.UpdateClass(id, dto);
+
+        _mockClassRepository.Verify(r => r.Update(It.Is<Class>(c =>
+            c.Id == id)), Times.Once);
+    }
+
+    [TestMethod]
+    public void UpdateClass_ShouldUpdateStereotypeToAbstract()
+    {
+        var id = Guid.NewGuid();
+        var classT = new Class { Id = id, Name = "OldName" };
+
+        _mockClassRepository.Setup(r => r.FindAll()).Returns([classT]);
+        _mockClassRepository.Setup(r => r.Find(id)).Returns(classT);
+        _mockClassRepository.Setup(r => r.Update(It.IsAny<Class>()));
+
+        var dto = new UpdateClassDTO
+        {
+            Stereotype = "abstract"
+        };
+
+        _classService.UpdateClass(id, dto);
+
+        _mockClassRepository.Verify(r => r.Update(It.Is<Class>(c =>
+            c.Id == id)), Times.Once);
     }
 
     [TestMethod]

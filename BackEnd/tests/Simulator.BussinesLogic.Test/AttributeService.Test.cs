@@ -145,6 +145,37 @@ public class AttributeServiceTest
     }
 
     [TestMethod]
+    public void AsociateAtributeToClass_ShouldThrowException_WhenClassNotExist()
+    {
+        var classId = Guid.NewGuid();
+        var existingAttribute = new Attribute
+        {
+            Id = Guid.NewGuid(),
+            Name = "Agility",
+            Accessibility = Accessibility.Public
+        };
+
+        var newAttribute = new Attribute
+        {
+            Id = Guid.NewGuid(),
+            Name = "Agility",
+            Accessibility = Accessibility.Public
+        };
+
+        _mockClassRepository
+            .Setup(repo => repo.Find(It.IsAny<Guid>())).Returns((Class)null!);
+
+        _mockAttributeRepository
+            .Setup(repo => repo.Find(It.IsAny<Guid>()))
+            .Returns(newAttribute);
+
+        var ex = Assert.ThrowsException<ClassNotFoundException>(() =>
+            _attributeService.AsociateAttribute(classId, newAttribute.Id));
+
+        Assert.AreEqual("Class not found", ex.Message);
+    }
+
+    [TestMethod]
     public void CreateAttribute_ShouldThrowException_WhenClassNotFound()
     {
         var dto = new AttributeDto
@@ -529,6 +560,44 @@ public class AttributeServiceTest
 
         Assert.AreEqual(invoked, attribute.InvokedMethod);
         _mockAttributeRepository.Verify(r => r.Update(attribute), Times.Once);
+    }
+
+    [TestMethod]
+    public void SetInvokeMethod_ShouldNotAssignInvokedMethodWhenTypeIsNotPrimitive()
+    {
+        var attributeId = Guid.NewGuid();
+        var invokeId = Guid.NewGuid();
+
+        var attribute = new Attribute { Id = attributeId, Name = "attr1", Type = new Class { Name = "TestClass" } };
+        var invoked = new InvokedMethod { Id = invokeId, ReferenceName = "refName" };
+
+        _mockAttributeRepository.Setup(r => r.Find(attributeId)).Returns(attribute);
+        _mockInvokeMethodRepository.Setup(r => r.Find(invokeId)).Returns(invoked);
+
+        var exp = Assert.ThrowsException<InvalidAttributeException>(() =>
+        {
+            _attributeService.SetInvokeMethodToAttribute(attributeId, invokeId);
+        });
+        Assert.AreEqual("In v1 of this program only primitive types are accepted.", exp.Message);
+    }
+
+    [TestMethod]
+    public void SetInvokeMethod_ShouldNotAssignInvokedMethodWhenInvokedMethodNull()
+    {
+        var attributeId = Guid.NewGuid();
+        var invokeId = Guid.NewGuid();
+
+        var attribute = new Attribute { Id = attributeId, Name = "attr1", Type = new Class { Name = "TestClass" } };
+        var invoked = new InvokedMethod { Id = invokeId, ReferenceName = "refName" };
+
+        _mockAttributeRepository.Setup(r => r.Find(attributeId)).Returns(attribute);
+        _mockInvokeMethodRepository.Setup(r => r.Find(invokeId)).Returns((InvokedMethod)null!);
+
+        var exp = Assert.ThrowsException<InvokedMethodNotFoundException>(() =>
+        {
+            _attributeService.SetInvokeMethodToAttribute(attributeId, invokeId);
+        });
+        Assert.AreEqual("Invoked Method not found.", exp.Message);
     }
 
     [TestMethod]

@@ -15,4 +15,8 @@
       <ProjectReference Include="..\Simulator.IBussinesLogic\Simulator.IBussinesLogic.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="Exporters\" />
+    </ItemGroup>
+
 </Project>

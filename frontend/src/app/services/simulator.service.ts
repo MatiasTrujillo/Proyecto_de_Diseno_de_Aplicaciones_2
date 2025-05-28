@@ -4,6 +4,7 @@ import { Observable, throwError } from 'rxjs';
 import { tap, catchError } from 'rxjs/operators';
 import { environment } from '../Environment/environment';
 import { Session } from '../models/Session';
+import { Class } from '../models/class';
 
 @Injectable({
   providedIn: 'root'
@@ -16,7 +17,7 @@ export class SimulatorService {
   signIn(session: Session): Observable<{ token: string }> {
     return this.http.post<{ token: string }>(`${this.apiUrl}/sessions`, session).pipe(
       tap((res) => {
-        localStorage.setItem('authToken', res.token); // Guardar el token
+        localStorage.setItem('authToken', res.token);
       }),
       catchError((error) => {
         return throwError(() => error);
@@ -40,5 +41,13 @@ export class SimulatorService {
     }
 
     return this.http.patch<{ message: string }>(`${this.apiUrl}/sessions/logout/${resolvedToken}`, null);
+  }
+
+  createClass(classData: Class): Observable<{ id: string }> {
+    return this.http.post<{ id: string }>(`${this.apiUrl}/classes`, classData).pipe(
+      catchError((error) => {
+        return throwError(() => error);
+      })
+    );
   }
 }

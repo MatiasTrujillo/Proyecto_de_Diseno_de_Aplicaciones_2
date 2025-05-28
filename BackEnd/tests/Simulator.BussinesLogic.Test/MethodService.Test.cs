@@ -332,6 +332,45 @@ public class MethodServiceTest
     }
 
     [TestMethod]
+    public void DeleteMethod_ShouldThrowException_WhenMethodIsAssociatedWithInvokedMethod2()
+    {
+        var methodId = Guid.NewGuid();
+        var method1 = new InvokedMethod();
+        var method = new Method { Id = methodId, Name = "TestMethod", Methods = [method1] };
+
+        _mockMethodRepository.Setup(repo => repo.Find(methodId)).Returns(method);
+        _mockClassRepository.Setup(repo => repo.FindAll()).Returns([]);
+
+        var invokedMethods = new List<InvokedMethod> { new InvokedMethod { Id = Guid.NewGuid(), MethodId = methodId } };
+
+        _mockInvokedMethodRepository.Setup(repo => repo.FindAll()).Returns(invokedMethods);
+
+        var exception = Assert.ThrowsException<InvalidMethodException>(() => _methodService.DeleteMethod(methodId));
+
+        Assert.AreEqual("Method is associated with another method.", exception.Message);
+        _mockMethodRepository.Verify(repo => repo.Delete(It.IsAny<Guid>()), Times.Never);
+    }
+
+    [TestMethod]
+    public void DeleteMethod_ShouldThrowException_IfMethodIsInAClass()
+    {
+        var methodId = Guid.NewGuid();
+        var method = new Method { Id = methodId, Name = "TestMethod" };
+        var classT = new Class { Id = Guid.NewGuid(), Name = "TestClass", Methods = [method] };
+
+        _mockMethodRepository.Setup(repo => repo.Find(methodId)).Returns(method);
+        _mockClassRepository.Setup(repo => repo.FindAll()).Returns([classT]);
+
+        var invokedMethods = new List<InvokedMethod> { new InvokedMethod { Id = Guid.NewGuid(), MethodId = methodId } };
+        _mockInvokedMethodRepository.Setup(repo => repo.FindAll()).Returns(invokedMethods);
+
+        var exception = Assert.ThrowsException<MethodInUseException>(() => _methodService.DeleteMethod(methodId));
+
+        Assert.AreEqual("Method is associated with a class.", exception.Message);
+        _mockMethodRepository.Verify(repo => repo.Delete(It.IsAny<Guid>()), Times.Never);
+    }
+
+    [TestMethod]
     public void AddLocalVariableToMethod_ShouldAddLocalVariable_WhenValidInputsProvided()
     {
         var methodId = Guid.NewGuid();
@@ -503,7 +542,7 @@ public class MethodServiceTest
     [TestMethod]
     public void CreateParameter_ShouldThrowException_WhenParameterIsNotValid()
     {
-        var exception = Assert.ThrowsException<ParameterNotFoundException>(() => _methodService.CreateParameter(null));
+        var exception = Assert.ThrowsException<ParameterNotFoundException>(() => _methodService.CreateParameter(null!));
 
         Assert.AreEqual("Parameter cannot be null.", exception.Message);
     }
