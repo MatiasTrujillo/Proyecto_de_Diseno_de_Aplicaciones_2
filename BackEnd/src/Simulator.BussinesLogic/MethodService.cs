@@ -34,7 +34,7 @@ public class MethodService(
         Type? returnType = null;
         ValidateAccesibility(methodT.Accessibility);
         ValidateKeyWord(methodT.Stereotype);
-        var type = string.Empty;
+        string type;
         if(methodT.ReturnType != null)
         {
             if(methodT.ReturnType is Primitive primitive)
@@ -44,7 +44,7 @@ public class MethodService(
             else
             {
                 ValidateMethodReturnTypeString(methodT.ReturnType.Name);
-                 type = methodT.ReturnType.Name;
+                type = methodT.ReturnType.Name;
             }
 
             returnType = _classRepository.FindAllTypes().FirstOrDefault(c => c.Name == type);

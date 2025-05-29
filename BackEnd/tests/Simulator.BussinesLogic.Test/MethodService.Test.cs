@@ -85,6 +85,42 @@ public class MethodServiceTest
     }
 
     [TestMethod]
+    public void CreateMethod_ShouldCallRepositoryAdd_WithPrimitiveReturnType()
+    {
+        // Arrange
+        var classes = new List<Type>();
+        _mockClassRepository.Setup(repo => repo.FindAllTypes()).Returns(classes);
+
+        var primitiveTypeName = "int";
+        var methodDto = new MethodDTO
+        {
+            Name = "TestMethod",
+            Accessibility = Accessibility.Public,
+            Stereotype = null,
+            ReturnType = new TypeDTO
+            {
+                Name = primitiveTypeName,
+                Kind = "primitive"
+            }
+        };
+
+        var primitive = new Primitive(PrimitiveType.Int);
+        primitive.Name = "int"; // Necesario para que coincida con `type` en el service
+        classes.Add(primitive);
+
+        // Act
+        _methodService.CreateMethod(methodDto);
+
+        // Assert
+        _mockMethodRepository.Verify(repo => repo.Add(
+            It.Is<Method>(m =>
+                m.Name.Equals(methodDto.Name) &&
+                m.Accessibility == methodDto.Accessibility &&
+                m.Stereotype == null &&
+                m.ReturnType is Primitive)), Times.Once);
+    }
+
+    [TestMethod]
     public void CreateMethod_ShouldThrowException_WhenReturnTypeIsNull()
     {
         var classT = new TypeDTO { Name = "TestClass", Kind = "class" };
@@ -100,6 +136,24 @@ public class MethodServiceTest
 
         var exception = Assert.ThrowsException<TypeNotFoundException>(() => _methodService.CreateMethod(method));
         Assert.AreEqual("Method return type not found.", exception.Message);
+    }
+
+    [TestMethod]
+    public void CreateMethod_ShouldThrowException_WhenReturnTypePrimitiveIsNull()
+    {
+        var primitive = new TypeDTO { Name = "not", Kind = "primitive" };
+        var method = new MethodDTO
+        {
+            Name = "TestMethod",
+            Accessibility = Accessibility.Public,
+            Stereotype = null,
+            ReturnType = primitive
+        };
+        var classes = new List<Type>();
+        _mockClassRepository.Setup(repo => repo.FindAllTypes()).Returns(classes);
+
+        var exception = Assert.ThrowsException<InvalidOperationException>(() => _methodService.CreateMethod(method));
+        Assert.AreEqual("Invalid primitive type name: not", exception.Message);
     }
 
     [TestMethod]

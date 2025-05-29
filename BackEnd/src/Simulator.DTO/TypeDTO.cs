@@ -19,7 +19,7 @@ public class TypeDTO
 
     private PrimitiveType ParsePrimitiveType(string name)
     {
-        if (Enum.TryParse<PrimitiveType>(name, ignoreCase: true, out var result))
+        if(Enum.TryParse<PrimitiveType>(name, ignoreCase: true, out var result))
         {
             return result;
         }

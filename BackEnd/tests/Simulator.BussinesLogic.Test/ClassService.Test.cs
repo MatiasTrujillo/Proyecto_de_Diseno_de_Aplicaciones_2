@@ -738,4 +738,28 @@ public class ClassServiceTest
         Assert.AreEqual(existingClass.Methods[0].Parameters[0].Name, aSignature.Parameters[0].Name);
         Assert.AreEqual(existingClass.Methods[0].Parameters[0].ParameterType, aSignature.Parameters[0].ParameterType);
     }
+
+    [TestMethod]
+    public void GetTypes_ShouldReturnListOfTypes()
+    {
+        var expectedTypes = new List<Type>
+        {
+            new Class(null, null, null!, null!, "TestClass"),
+            new Interface("ITestInterface"),
+            new Primitive { Name = "int" }
+        };
+
+        _mockClassRepository.Setup(repo => repo.FindAllTypes())
+            .Returns(expectedTypes);
+
+        var result = _classService.GetTypes();
+
+        Assert.IsNotNull(result);
+        Assert.AreEqual(3, result.Count);
+        Assert.IsTrue(result.Any(t => t.Name == "TestClass"));
+        Assert.IsTrue(result.Any(t => t.Name == "ITestInterface"));
+        Assert.IsTrue(result.Any(t => t.Name == "int"));
+
+        _mockClassRepository.Verify(repo => repo.FindAllTypes(), Times.Once);
+    }
 }
