@@ -25,7 +25,7 @@ public class AttributeService(IAttributeRepository attributeRepository, IClassRe
         var typeT = _classRepository.FindAll().FirstOrDefault(c => c.Name == type);
         ValidateAccesibility(attribute.Accessibility);
         ValidateStereotype(attribute.Stereotype);
-        ValidateAttributeType(attribute.Type);
+        ValidateAttributeType(attribute.Type); // aca
         attribute.Type = typeT;
         _attributeRepository.Add(attribute);
         return attribute.Id;

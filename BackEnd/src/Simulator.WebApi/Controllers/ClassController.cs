@@ -30,4 +30,13 @@ public class ClassController(IClassService classService) : ControllerBase
         _classService.DeleteClass(id);
         return NoContent();
     }
+
+    [HttpGet]
+    public IActionResult GetTypes()
+    {
+        var types = _classService.GetTypes()
+            .Select(t => t.ToDTO())
+            .ToList();
+        return Ok(types);
+    }
 }
