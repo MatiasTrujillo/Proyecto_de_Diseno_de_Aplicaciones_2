@@ -34,10 +34,19 @@ public class MethodService(
         Type? returnType = null;
         ValidateAccesibility(methodT.Accessibility);
         ValidateKeyWord(methodT.Stereotype);
+        var type = string.Empty;
         if(methodT.ReturnType != null)
         {
-            ValidateMethodReturnTypeString(methodT.ReturnType.Name);
-            var type = methodT.ReturnType.Name;
+            if(methodT.ReturnType is Primitive primitive)
+            {
+                type = primitive.PrimitiveType.ToString().ToLower();
+            }
+            else
+            {
+                ValidateMethodReturnTypeString(methodT.ReturnType.Name);
+                 type = methodT.ReturnType.Name;
+            }
+
             returnType = _classRepository.FindAllTypes().FirstOrDefault(c => c.Name == type);
         }
 
@@ -129,11 +138,6 @@ public class MethodService(
     {
         ValidateParameterIsNotNull(parameter);
         var parameterT = parameter.ToEntity();
-        if(parameter.Name == string.Empty)
-        {
-            throw new LocalVariableNotFoundException("Parameter Name cannot be empty.");
-        }
-
         var type = parameterT.ParameterType.Name;
         var returnType = _classRepository.FindAllTypes().FirstOrDefault(c => c.Name == type);
         parameterT.ParameterType = returnType;

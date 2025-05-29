@@ -12,8 +12,18 @@ public class TypeDTO
         {
             "class" => new Class(null, null, null!, null!, Name),
             "interface" => new Interface(Name),
-            "primitive" => new Primitive(),
+            "primitive" => new Primitive(ParsePrimitiveType(Name)),
             _ => throw new InvalidOperationException($"Unknown type kind: {Kind}")
         };
+    }
+
+    private PrimitiveType ParsePrimitiveType(string name)
+    {
+        if (Enum.TryParse<PrimitiveType>(name, ignoreCase: true, out var result))
+        {
+            return result;
+        }
+
+        throw new InvalidOperationException($"Invalid primitive type name: {name}");
     }
 }

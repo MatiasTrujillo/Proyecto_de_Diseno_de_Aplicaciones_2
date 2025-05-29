@@ -1,10 +1,12 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Simulator.BussinesLogic.Exception;
 using Simulator.Domain;
 using Simulator.DTO;
 using Simulator.IBussinesLogic;
 using Simulator.IDataAcces;
+using Type = Simulator.Domain.Type;
 
 namespace Simulator.BussinesLogic;
 
@@ -56,6 +58,11 @@ public class ClassService(
         ManageStereotype(uClass, classT);
         ManageHierarchyClass(id, uClass, classT);
         _classRepository.Update(classT);
+    }
+
+    public List<Type> GetTypes()
+    {
+        return _classRepository.FindAllTypes();
     }
 
     private void ManageStereotype(UpdateClassDTO uClass, Class classT)
