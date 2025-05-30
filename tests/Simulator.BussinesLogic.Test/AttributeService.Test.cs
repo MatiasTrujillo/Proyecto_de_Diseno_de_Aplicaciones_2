@@ -224,6 +224,34 @@ public class AttributeServiceTest
     }
 
     [TestMethod]
+    public void CreateAttribute_ShouldThrowException_WhenInstanceTypeNotSubclassOfReferenceType2()
+    {
+        var aClass3 = new Class { Id = Guid.NewGuid(), Name = "class3" };
+        var aClass1 = new Class { Id = Guid.NewGuid(), Name = "class1" };
+        var aClass2 = new Class { Id = Guid.NewGuid(), Name = "class2", HierarchyClass = aClass3 };
+        var dto = new AttributeDto
+        {
+            Name = "Agility",
+            Accessibility = Accessibility.Public,
+            ReferenceType = new TypeDTO { Name = aClass1.Name },
+            InstanceType = new TypeDTO { Name = aClass2.Name },
+        };
+
+        _mockClassRepository
+            .Setup(repo => repo.FindAll())
+            .Returns([aClass1, aClass2]);
+
+        _mockClassRepository
+            .Setup(repo => repo.FindAllTypes())
+            .Returns([aClass1, aClass2]);
+
+        var exception = Assert.ThrowsException<InvalidAttributeException>(() =>
+            _attributeService.CreateAttribute(dto));
+
+        Assert.AreEqual("Instance Type is not a subclass of Reference Type", exception.Message);
+    }
+
+    [TestMethod]
     public void CreateAttribute_ShouldThrowArgumentException_WhenNameIsEmpty()
     {
         var dto = new AttributeDto

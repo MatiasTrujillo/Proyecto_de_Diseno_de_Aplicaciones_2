@@ -256,7 +256,7 @@ public class AttributeService(IAttributeRepository attributeRepository, IClassRe
 
         if(reference != instance && instance.HierarchyClass != reference)
         {
-            ValidateInstanceClassRecursive(reference, instance);
+            ValidateInstanceClassRecursive(reference, instance.HierarchyClass!);
         }
     }
 
