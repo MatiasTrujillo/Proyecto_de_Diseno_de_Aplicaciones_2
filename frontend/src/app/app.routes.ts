@@ -5,7 +5,7 @@ import { CreateclassComponent } from './Classes/createclass/createclass.componen
 import { CreateMethodComponent } from './Methods/createmethod/createmethod.component';
 import { CreateattributeComponent } from './Attributes/createattribute/createattribute.component';
 import { CreatelocalvariableComponent } from './createlocalvariable/createlocalvariable.component';
-import { CreateinterfaceComponent } from './Interface/createinterface/createinterface.component';
+import { CreateinterfaceComponent } from './Interfaces/createinterface/createinterface.component';
 
 export const routes: Routes = [
   { path: '', component: SessionComponent },

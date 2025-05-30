@@ -5,12 +5,6 @@
   <div class="nav-right">
     <button (click)="logout()" class="logout-button">Cerrar sesión</button>
   </div>
-  <div>
-    <a routerLink="/createInterface" class="nav-button">
-      <i class="fas fa-plus"></i>
-      Crear una Interfaz
-    </a>
-  </div>
 </nav>
 
 <div class="card-container">
@@ -37,7 +31,14 @@
     <p>Assign a local variable to your methods.</p>
     <button (click)="openModal('localVariable')">Open</button>
   </div>
+
+  <div class="card">
+    <h3>Create Interface</h3>
+    <p>Define a new interface for your simulation logic.</p>
+    <button (click)="openModal('interface')">Open</button>
+  </div>
 </div>
+
 
 <div class="modal" *ngIf="activeModal === 'class'">
   <div class="modal-content">
@@ -64,5 +65,12 @@
   <div class="modal-content">
     <button class="close" (click)="closeModal()">×</button>
     <app-createlocalvariable></app-createlocalvariable>
+  </div>
+</div>
+
+<div class="modal" *ngIf="activeModal === 'interface'">
+  <div class="modal-content">
+    <button class="close" (click)="closeModal()">×</button>
+    <app-createinterface></app-createinterface>
   </div>
 </div>

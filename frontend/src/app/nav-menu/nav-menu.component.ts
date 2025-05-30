@@ -6,11 +6,12 @@ import { CreateclassComponent } from '../Classes/createclass/createclass.compone
 import { CreateMethodComponent } from '../Methods/createmethod/createmethod.component';
 import { CreateattributeComponent } from '../Attributes/createattribute/createattribute.component';
 import { CreatelocalvariableComponent } from '../createlocalvariable/createlocalvariable.component';
+import { CreateinterfaceComponent } from '../Interfaces/createinterface/createinterface.component';
 
 @Component({
   selector: 'app-nav-menu',
   standalone: true,
-  imports: [CommonModule, RouterModule,CreateclassComponent,CreateMethodComponent,CreateattributeComponent,CreatelocalvariableComponent ],
+  imports: [CommonModule, RouterModule,CreateclassComponent,CreateMethodComponent,CreateattributeComponent,CreatelocalvariableComponent,CreateinterfaceComponent ],
   templateUrl: './nav-menu.component.html',
   styleUrls: ['./nav-menu.component.css']
 })

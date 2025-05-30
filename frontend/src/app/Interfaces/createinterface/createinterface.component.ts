@@ -12,8 +12,7 @@ import { MatSnackBar, MatSnackBarModule  } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-createinterface',
-  imports: [FormsModule, CommonModule,  CommonModule,
-    FormsModule,
+  imports: [FormsModule, CommonModule,
     MatCardModule,
     MatFormFieldModule,
     MatInputModule,
