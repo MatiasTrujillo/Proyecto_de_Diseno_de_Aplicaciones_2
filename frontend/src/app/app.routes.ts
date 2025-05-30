@@ -1,10 +1,16 @@
 import { Routes } from '@angular/router';
 import { SessionComponent } from './session/session.component';
 import { NavMenuComponent } from './nav-menu/nav-menu.component';
-import { CreateclassComponent } from './createclass/createclass.component';
+import { CreateclassComponent } from './Classes/createclass/createclass.component';
+import { CreateMethodComponent } from './Methods/createmethod/createmethod.component';
+import { CreateattributeComponent } from './Attributes/createattribute/createattribute.component';
+import { CreatelocalvariableComponent } from './createlocalvariable/createlocalvariable.component';
 
 export const routes: Routes = [
   { path: '', component: SessionComponent },
   { path: 'navMenu', component: NavMenuComponent },
   { path: 'createClass', component: CreateclassComponent },
+  { path: 'createMethod', component: CreateMethodComponent },
+  { path: 'createAttribute', component: CreateattributeComponent },
+  { path: 'createLocalVariable', component: CreatelocalvariableComponent },
 ];

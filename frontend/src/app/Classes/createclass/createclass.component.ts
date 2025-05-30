@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
-import { SimulatorService } from '../services/simulator.service';
-import { Class } from '../models/class';
-import { KeyWord } from '../models/KeyWord';
+import { SimulatorService } from '../../services/simulator.service';
+import { Class } from '../../models/class';
+import { KeyWord } from '../../models/KeyWord';
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
