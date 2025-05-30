@@ -9,7 +9,6 @@ import { Type } from '../models/Type';
 import { Method } from '../models/method';
 import { Attribute } from '../models/attribute';
 import { LocalVariable } from '../models/localvariable';
-
 import { Interface } from '../models/Interface';
 
 @Injectable({
