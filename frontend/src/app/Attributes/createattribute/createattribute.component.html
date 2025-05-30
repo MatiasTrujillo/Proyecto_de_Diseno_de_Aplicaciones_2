@@ -1,0 +1,22 @@
+<form [formGroup]="attributeForm" (ngSubmit)="onSubmit()">
+  <label for="name">Name:</label>
+  <input id="name" formControlName="name" type="text" />
+
+  <label for="type">Return Type</label>
+    <select id="type" formControlName="type">
+      <option *ngFor="let type of types" [value]="type.name">{{ type.name }}</option>
+    </select>
+
+  <label for="accessibility">Accessibility</label>
+    <select id="accessibility" formControlName="accessibility">
+      <option *ngFor="let acc of accessibilities; let i = index" [value]="i">{{ acc }}</option>
+    </select>
+
+  <label for="stereotype">Stereotype (optional)</label>
+    <select id="stereotype" formControlName="stereotype">
+      <option value="">None</option>
+      <option *ngFor="let kw of keyWords; let i = index" [value]="i">{{ kw }}</option>
+    </select>
+
+  <button type="submit" [disabled]="attributeForm.invalid">Create Attribute</button>
+</form>

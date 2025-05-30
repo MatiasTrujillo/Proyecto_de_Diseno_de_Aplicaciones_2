@@ -5,6 +5,11 @@ import { tap, catchError } from 'rxjs/operators';
 import { environment } from '../Environment/environment';
 import { Session } from '../models/Session';
 import { Class } from '../models/class';
+import { Type } from '../models/Type';
+import { Method } from '../models/method';
+import { Attribute } from '../models/attribute';
+import { LocalVariable } from '../models/localvariable';
+
 
 @Injectable({
   providedIn: 'root'
@@ -48,6 +53,36 @@ export class SimulatorService {
       catchError((error) => {
         return throwError(() => error);
       })
+    );
+  }
+
+  getTypes(): Observable<Type[]> {
+    return this.http.get<Type[]>(`${this.apiUrl}/classes`).pipe(
+      catchError((error) => {
+        return throwError(() => error);
+      })
+    );
+  }
+
+  createMethod(method: Method): Observable<{ id: string }> {
+    return this.http.post<{ id: string }>(`${this.apiUrl}/methods`, method).pipe(
+      catchError((error) => {
+        return throwError(() => error);
+      })
+    );
+  }
+
+  createAttribute(attribute: Attribute): Observable<{ id: string }> {
+    return this.http.post<{ id: string }>(`${this.apiUrl}/attributes`, attribute).pipe(
+      catchError((error) => {
+        return throwError(() => error);
+      })
+    );
+  }
+
+  createLocalVariable(localVariable: LocalVariable): Observable<{ id: string }> {
+    return this.http.post<{ id: string }>(`${this.apiUrl}/localVariables`, localVariable).pipe(
+      catchError((error) => throwError(() => error))
     );
   }
 }

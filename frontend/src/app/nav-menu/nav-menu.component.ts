@@ -2,12 +2,15 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import { SimulatorService } from '../services/simulator.service';
-import { CreateclassComponent } from '../createclass/createclass.component';
+import { CreateclassComponent } from '../Classes/createclass/createclass.component';
+import { CreateMethodComponent } from '../Methods/createmethod/createmethod.component';
+import { CreateattributeComponent } from '../Attributes/createattribute/createattribute.component';
+import { CreatelocalvariableComponent } from '../createlocalvariable/createlocalvariable.component';
 
 @Component({
   selector: 'app-nav-menu',
   standalone: true,
-  imports: [CommonModule, RouterModule,CreateclassComponent],
+  imports: [CommonModule, RouterModule,CreateclassComponent,CreateMethodComponent,CreateattributeComponent,CreatelocalvariableComponent ],
   templateUrl: './nav-menu.component.html',
   styleUrls: ['./nav-menu.component.css']
 })
@@ -18,7 +21,7 @@ export class NavMenuComponent {
   ) {}
 
   logout(): void {
-  const token = localStorage.getItem('authToken'); // Obtener el token guardado
+  const token = localStorage.getItem('authToken');
   if (!token) {
     console.error('No token found in localStorage.');
     return;
@@ -35,4 +38,15 @@ export class NavMenuComponent {
     }
   );
 }
+
+activeModal: string | null = null;
+
+openModal(modalName: string): void {
+  this.activeModal = modalName;
+}
+
+closeModal(): void {
+  this.activeModal = null;
+}
+
 }
