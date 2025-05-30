@@ -5,6 +5,7 @@ import { tap, catchError } from 'rxjs/operators';
 import { environment } from '../Environment/environment';
 import { Session } from '../models/Session';
 import { Class } from '../models/class';
+import { Interface } from '../models/Interface';
 
 @Injectable({
   providedIn: 'root'
@@ -45,6 +46,14 @@ export class SimulatorService {
 
   createClass(classData: Class): Observable<{ id: string }> {
     return this.http.post<{ id: string }>(`${this.apiUrl}/classes`, classData).pipe(
+      catchError((error) => {
+        return throwError(() => error);
+      })
+    );
+  }
+
+  createInterface(interfaceData: Interface): Observable<{ id: string }> {
+    return this.http.post<{ id: string }>(`${this.apiUrl}/interfaces`, interfaceData).pipe(
       catchError((error) => {
         return throwError(() => error);
       })
