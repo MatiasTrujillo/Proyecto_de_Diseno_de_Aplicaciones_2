@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Linq;
 using Simulator.BussinesLogic.Exception;
 using Simulator.Domain;
@@ -23,8 +24,8 @@ public class AttributeService(IAttributeRepository attributeRepository, IClassRe
         var attribute = aDTO.ToEntity();
         var type = aDTO.ReferenceType.Name;
         var instanceType = aDTO.InstanceType.Name;
-        var typeT = _classRepository.FindAll().FirstOrDefault(c => c.Name == type);
-        var instanceTypeT = _classRepository.FindAll().FirstOrDefault(c => c.Name == instanceType);
+        var typeT = _classRepository.FindAllTypes().FirstOrDefault(c => c.Name == type);
+        var instanceTypeT = _classRepository.FindAllTypes().FirstOrDefault(c => c.Name == instanceType);
         ValidateAccesibility(attribute.Accessibility);
         ValidateStereotype(attribute.Stereotype);
         ValidateAttributeType(attribute.ReferenceType);
@@ -55,8 +56,8 @@ public class AttributeService(IAttributeRepository attributeRepository, IClassRe
         ValidateAttributeTypeUp(uAttribute.IdReferenceType);
         var type = _classRepository.FindAllTypes().FirstOrDefault(x => x.Id == uAttribute.IdReferenceType);
         var instanceType = _classRepository.FindAllTypes().FirstOrDefault(x => x.Id == uAttribute.IdInstanceType);
-        var typeT = _classRepository.FindAll().FirstOrDefault(c => c.Name == type.Name);
-        var instanceTypeT = _classRepository.FindAll().FirstOrDefault(c => c.Name == instanceType.Name);
+        var typeT = _classRepository.FindAllTypes().FirstOrDefault(c => c.Name == type.Name);
+        var instanceTypeT = _classRepository.FindAllTypes().FirstOrDefault(c => c.Name == instanceType.Name);
         ValidateInstanceClass(typeT, instanceTypeT); // validar y ASIGNAR
         attribute.ReferenceType = typeT;
         attribute.InstanceType = instanceTypeT;
@@ -272,6 +273,6 @@ public class AttributeService(IAttributeRepository attributeRepository, IClassRe
 
     private bool BothPrimitiveButDifferent(Type? referenceType, Type? instanceType)
     {
-        return instanceType is Primitive && referenceType is Primitive && referenceType != instanceType;
+        return instanceType is Primitive a && referenceType is Primitive b && a.PrimitiveType != b.PrimitiveType;
     }
 }
