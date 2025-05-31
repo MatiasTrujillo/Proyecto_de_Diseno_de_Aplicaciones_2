@@ -58,7 +58,7 @@ public class AttributeService(IAttributeRepository attributeRepository, IClassRe
         var instanceType = _classRepository.FindAllTypes().FirstOrDefault(x => x.Id == uAttribute.IdInstanceType);
         var typeT = _classRepository.FindAllTypes().FirstOrDefault(c => c.Name == type.Name);
         var instanceTypeT = _classRepository.FindAllTypes().FirstOrDefault(c => c.Name == instanceType.Name);
-        ValidateInstanceClass(typeT, instanceTypeT); // validar y ASIGNAR
+        ValidateInstanceClass(typeT, instanceTypeT);
         attribute.ReferenceType = typeT;
         attribute.InstanceType = instanceTypeT;
         _attributeRepository.Update(attribute);

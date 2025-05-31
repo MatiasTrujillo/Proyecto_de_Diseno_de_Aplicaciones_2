@@ -118,7 +118,7 @@ public class MethodRepositoryTest
     {
         var returnType = new Class { Id = Guid.NewGuid(), Name = "ReturnClass" };
         var parameter = new Parameter { Id = Guid.NewGuid(), Name = "Parameter1", ParameterType = returnType };
-        var localVariable = new LocalVariable { Id = Guid.NewGuid(), Name = "LocalVar1", LocalVariableReferenceType = returnType };
+        var localVariable = new LocalVariable { Id = Guid.NewGuid(), Name = "LocalVar1", ReferenceType = returnType };
         var relatedMethod = new Method { Id = Guid.NewGuid(), Name = "RelatedMethod" };
 
         _context.Classes.Add(returnType);
@@ -229,7 +229,7 @@ public class MethodRepositoryTest
             Name = "Method 1",
             Parameters = [new Parameter { Id = Guid.NewGuid(), Name = "param1", ParameterType = new Primitive() }],
             LocalVariables =
-                [new LocalVariable { Id = Guid.NewGuid(), Name = "localVar1", LocalVariableReferenceType = new Primitive() }],
+                [new LocalVariable { Id = Guid.NewGuid(), Name = "localVar1", ReferenceType = new Primitive() }],
             ReturnType = new Primitive()
         };
 
@@ -239,7 +239,7 @@ public class MethodRepositoryTest
             Name = "Method 2",
             Parameters = [new Parameter { Id = Guid.NewGuid(), Name = "param2", ParameterType = new Primitive() }],
             LocalVariables =
-                [new LocalVariable { Id = Guid.NewGuid(), Name = "localVar2", LocalVariableReferenceType = new Primitive() }],
+                [new LocalVariable { Id = Guid.NewGuid(), Name = "localVar2", ReferenceType = new Primitive() }],
             ReturnType = new Primitive()
         };
 

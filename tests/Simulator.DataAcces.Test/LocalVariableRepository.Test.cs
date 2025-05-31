@@ -26,7 +26,7 @@ public class LocalVariableRepositoryTest
         {
             Id = Guid.NewGuid(),
             Name = "myParam",
-            LocalVariableReferenceType = _primitive
+            ReferenceType = _primitive
         };
     }
 
@@ -52,13 +52,13 @@ public class LocalVariableRepositoryTest
         _repository.Add(_localVariable);
 
         using var refreshedContext = ProgramTest.BuildTestDbContext();
-        var saved = refreshedContext.LocalVariables.Include(l => l.LocalVariableReferenceType).FirstOrDefault(l => l.Id == _localVariable.Id);
+        var saved = refreshedContext.LocalVariables.Include(l => l.ReferenceType).FirstOrDefault(l => l.Id == _localVariable.Id);
 
         saved.Should().NotBeNull();
         saved!.Name.Should().Be(_localVariable.Name);
-        saved.LocalVariableReferenceType.Should().NotBeNull();
-        saved.LocalVariableReferenceType!.Id.Should().Be(_primitive.Id);
-        saved.LocalVariableReferenceType.Name.Should().Be(_primitive.Name);
+        saved.ReferenceType.Should().NotBeNull();
+        saved.ReferenceType!.Id.Should().Be(_primitive.Id);
+        saved.ReferenceType.Name.Should().Be(_primitive.Name);
     }
     #endregion
 
@@ -75,8 +75,8 @@ public class LocalVariableRepositoryTest
         result.Should().NotBeNull();
         result!.Id.Should().Be(_localVariable.Id);
         result.Name.Should().Be(_localVariable.Name);
-        result.LocalVariableReferenceType.Should().NotBeNull();
-        result.LocalVariableReferenceType!.Name.Should().Be(_primitive.Name);
+        result.ReferenceType.Should().NotBeNull();
+        result.ReferenceType!.Name.Should().Be(_primitive.Name);
     }
 
     [TestMethod]
@@ -102,7 +102,7 @@ public class LocalVariableRepositoryTest
         {
             Id = Guid.NewGuid(),
             Name = "myOtherParam",
-            LocalVariableReferenceType = secondPrimitive
+            ReferenceType = secondPrimitive
         };
 
         _context.Primitives.AddRange(_primitive, secondPrimitive);
@@ -115,12 +115,12 @@ public class LocalVariableRepositoryTest
         results.Should().HaveCount(2);
 
         results.Should().ContainSingle(v => v.Id == _localVariable.Id &&
-                                            v.LocalVariableReferenceType != null &&
-                                            v.LocalVariableReferenceType.Name == _primitive.Name);
+                                            v.ReferenceType != null &&
+                                            v.ReferenceType.Name == _primitive.Name);
 
         results.Should().ContainSingle(v => v.Id == secondLocalVariable.Id &&
-                                            v.LocalVariableReferenceType != null &&
-                                            v.LocalVariableReferenceType.Name == secondPrimitive.Name);
+                                            v.ReferenceType != null &&
+                                            v.ReferenceType.Name == secondPrimitive.Name);
     }
     #endregion
 
@@ -136,18 +136,18 @@ public class LocalVariableRepositoryTest
         {
             Id = _localVariable.Id,
             Name = "updatedParam",
-            LocalVariableReferenceType = _primitive
+            ReferenceType = _primitive
         };
 
         _repository.Update(updatedVariable);
 
         using var refreshedContext = ProgramTest.BuildTestDbContext();
-        var updatedInDb = refreshedContext.LocalVariables.Include(l => l.LocalVariableReferenceType).FirstOrDefault(l => l.Id == _localVariable.Id);
+        var updatedInDb = refreshedContext.LocalVariables.Include(l => l.ReferenceType).FirstOrDefault(l => l.Id == _localVariable.Id);
 
         updatedInDb.Should().NotBeNull();
         updatedInDb!.Name.Should().Be("updatedParam");
-        updatedInDb.LocalVariableReferenceType.Should().NotBeNull();
-        updatedInDb.LocalVariableReferenceType!.Id.Should().Be(_primitive.Id);
+        updatedInDb.ReferenceType.Should().NotBeNull();
+        updatedInDb.ReferenceType!.Id.Should().Be(_primitive.Id);
     }
     #endregion
 }

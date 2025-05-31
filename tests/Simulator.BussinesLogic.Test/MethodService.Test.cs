@@ -537,22 +537,47 @@ public class MethodServiceTest
     [TestMethod]
     public void CreateLocalVariable_ShouldAddLocalVariable_WhenLocalVariableIsValid()
     {
-        var classT = new TypeDTO { Name = "TestClass" };
+        var classT = new Class { Name = "TestClass" };
+        var classChild = new Class { Name = "Child", HierarchyClass = classT };
 
-        var localVariableDto = new LocalVariableDTO { Name = "TestParameter", LocalVariableType = classT };
+        var localVariableDto = new LocalVariableDTO { Name = "TestParameter", ReferenceType = new TypeDTO { Name = classT.Name }, InstanceType = new TypeDTO { Name = classChild.Name } };
 
         _mockLocalVariableRepository
             .Setup(r => r.Add(It.Is<LocalVariable>(p =>
-                p.Name == localVariableDto.Name && p.LocalVariableReferenceType.Name == classT.Name)));
+                p.Name == localVariableDto.Name && p.ReferenceType.Name == classT.Name)));
 
         _mockClassRepository
             .Setup(repo => repo.FindAllTypes())
-            .Returns([new Class { Name = "TestClass" }]);
+            .Returns([classT, classChild]);
 
         var result = _methodService.CreateLocalVariable(localVariableDto);
 
         Assert.AreNotEqual(Guid.Empty, result);
         _mockLocalVariableRepository.Verify(r => r.Add(It.IsAny<LocalVariable>()), Times.Once);
+    }
+
+    [TestMethod]
+    public void CreateLocalVariable_ShouldThrowException_WhenInstanceTypeNotSubclassOfReferenceType()
+    {
+        var classT = new Class { Name = "TestClass" };
+        var classChild = new Class { Name = "Child" };
+
+        var localVariableDto = new LocalVariableDTO { Name = "TestParameter", ReferenceType = new TypeDTO { Name = classT.Name }, InstanceType = new TypeDTO { Name = classChild.Name } };
+
+        _mockLocalVariableRepository
+            .Setup(r => r.Add(It.Is<LocalVariable>(p =>
+                p.Name == localVariableDto.Name && p.ReferenceType.Name == classT.Name && p.InstanceType.Name == classChild.Name)));
+
+        _mockClassRepository
+            .Setup(repo => repo.FindAllTypes())
+            .Returns([classT, classChild]);
+
+        var ex = Assert.ThrowsException<LocalVariableException>(() =>
+        {
+            _methodService.CreateLocalVariable(localVariableDto);
+        });
+
+        Assert.AreEqual("Instance Type is not a subclass of Reference Type", ex.Message);
     }
 
     [DataTestMethod]
@@ -561,11 +586,14 @@ public class MethodServiceTest
     [DataRow("Object")]
     public void CreateLocalVariable_ShouldThrowException_WhenNameIsReservedKeyword(string reservedName)
     {
-        var dto = new LocalVariableDTO { Name = reservedName, LocalVariableType = new TypeDTO { Name = "SomeType" }, };
+        var classT = new Class { Name = "TestClass" };
+        var classChild = new Class { Name = "Child", HierarchyClass = classT };
+
+        var dto = new LocalVariableDTO { Name = reservedName, ReferenceType = new TypeDTO { Name = classT.Name }, InstanceType = new TypeDTO { Name = classChild.Name } };
 
         _mockClassRepository
             .Setup(repo => repo.FindAllTypes())
-            .Returns([new Class { Name = "SomeType", Id = Guid.NewGuid() }]);
+            .Returns([classChild, classT]);
 
         var ex = Assert.ThrowsException<LocalVariableException>(() =>
         {
@@ -608,7 +636,7 @@ public class MethodServiceTest
     {
         var classT = new TypeDTO { Name = "TestClass" };
 
-        var localVariableDto = new LocalVariableDTO { Name = string.Empty, LocalVariableType = classT };
+        var localVariableDto = new LocalVariableDTO { Name = string.Empty, ReferenceType = classT };
 
         _mockClassRepository
             .Setup(repo => repo.FindAllTypes())
@@ -1006,7 +1034,7 @@ public class MethodServiceTest
             Id = methodId,
             Name = "MainMethod",
             Parameters = [],
-            LocalVariables = [new LocalVariable { Name = "MyLocal", LocalVariableReferenceType = localVarClass }],
+            LocalVariables = [new LocalVariable { Name = "MyLocal", ReferenceType = localVarClass }],
             Methods = []
         };
         var invokedMethod = new InvokedMethod
@@ -1062,7 +1090,7 @@ public class MethodServiceTest
         {
             Id = localVariableId,
             Name = "myVar",
-            LocalVariableReferenceType = new Class()
+            ReferenceType = new Class()
         };
 
         var invokedMethod = new InvokedMethod
@@ -1212,7 +1240,7 @@ public class MethodServiceTest
     [TestMethod]
     public void ToEntity_ShouldThrowArgumentNullException_WhenLocalVariableTypeIsNull()
     {
-        var dto = new LocalVariableDTO { Name = "myVar", LocalVariableType = null };
+        var dto = new LocalVariableDTO { Name = "myVar", ReferenceType = null };
 
         var exception = Assert.ThrowsException<ArgumentNullException>(dto.ToEntity);
 
@@ -1463,7 +1491,7 @@ public class MethodServiceTest
         {
             Id = Guid.NewGuid(),
             Name = "otroAviso",
-            LocalVariableReferenceType = email
+            ReferenceType = email
         };
 
         var notificar = new Method
@@ -1646,7 +1674,7 @@ public class MethodServiceTest
         {
             Id = Guid.NewGuid(),
             Name = "input",
-            LocalVariableReferenceType = entradaTextoEspecial
+            ReferenceType = entradaTextoEspecial
         };
 
         var validar = new Method

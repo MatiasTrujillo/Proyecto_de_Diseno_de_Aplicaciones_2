@@ -188,97 +188,6 @@ public class AttributeServiceTest
     }
 
     [TestMethod]
-    public void CreateAttribute_ShouldThrowException_WhenInstanceTypeNotSubclassOfReferenceType()
-    {
-        var aClass1 = new Class { Id = Guid.NewGuid(), Name = "class1" };
-        var aClass2 = new Class { Id = Guid.NewGuid(), Name = "class2" };
-        var dto = new AttributeDto
-        {
-            Name = "Agility",
-            Accessibility = Accessibility.Public,
-            ReferenceType = new TypeDTO { Name = aClass1.Name },
-            InstanceType = new TypeDTO { Name = aClass2.Name },
-        };
-
-        var attribute = new Attribute
-        {
-            Id = Guid.NewGuid(),
-            Name = "Agility",
-            Accessibility = Accessibility.Public,
-            ReferenceType = new Type { Name = dto.ReferenceType.Name },
-            InstanceType = new Type { Name = dto.InstanceType.Name }
-        };
-
-        _mockClassRepository
-            .Setup(repo => repo.FindAll())
-            .Returns([aClass1, aClass2]);
-
-        _mockClassRepository
-            .Setup(repo => repo.FindAllTypes())
-            .Returns([aClass1, aClass2]);
-
-        var exception = Assert.ThrowsException<InvalidAttributeException>(() =>
-            _attributeService.CreateAttribute(dto));
-
-        Assert.AreEqual("Instance Type is not a subclass of Reference Type", exception.Message);
-    }
-
-    [TestMethod]
-    public void CreateAttribute_ShouldThrowException_WhenInstanceTypeNotSubclassOfReferenceType2()
-    {
-        var aClass3 = new Class { Id = Guid.NewGuid(), Name = "class3" };
-        var aClass1 = new Class { Id = Guid.NewGuid(), Name = "class1" };
-        var aClass2 = new Class { Id = Guid.NewGuid(), Name = "class2", HierarchyClass = aClass3 };
-        var dto = new AttributeDto
-        {
-            Name = "Agility",
-            Accessibility = Accessibility.Public,
-            ReferenceType = new TypeDTO { Name = aClass1.Name },
-            InstanceType = new TypeDTO { Name = aClass2.Name },
-        };
-
-        _mockClassRepository
-            .Setup(repo => repo.FindAll())
-            .Returns([aClass1, aClass2]);
-
-        _mockClassRepository
-            .Setup(repo => repo.FindAllTypes())
-            .Returns([aClass1, aClass2]);
-
-        var exception = Assert.ThrowsException<InvalidAttributeException>(() =>
-            _attributeService.CreateAttribute(dto));
-
-        Assert.AreEqual("Instance Type is not a subclass of Reference Type", exception.Message);
-    }
-
-    [TestMethod]
-    public void CreateAttribute_ShouldThrowException_WhenReferenceTypeIsPrimitive()
-    {
-        var aClass1 = new Class { Id = Guid.NewGuid(), Name = "class1" };
-        var aPrimitive1 = new Primitive(PrimitiveType.Bool);
-        var dto = new AttributeDto
-        {
-            Name = "Agility",
-            Accessibility = Accessibility.Public,
-            ReferenceType = new TypeDTO { Name = aPrimitive1.Name },
-            InstanceType = new TypeDTO { Name = aClass1.Name },
-        };
-
-        _mockClassRepository
-            .Setup(repo => repo.FindAll())
-            .Returns([aClass1]);
-
-        _mockClassRepository
-            .Setup(repo => repo.FindAllTypes())
-            .Returns([aClass1, aPrimitive1]);
-
-        var exception = Assert.ThrowsException<InvalidAttributeException>(() =>
-            _attributeService.CreateAttribute(dto));
-
-        Assert.AreEqual("Invalid reference type or instance type. If one is primitive, both should be primitive. If both are, then they must be the same.", exception.Message);
-    }
-
-    [TestMethod]
     public void CreateAttribute_ShouldThrowException_WhenBothTypesArePrimitiveButDifferent()
     {
         var aPrimitive2 = new Primitive(PrimitiveType.Int) { Name = "prim2" };
@@ -536,52 +445,6 @@ public class AttributeServiceTest
         _mockAttributeRepository.Verify(r => r.Update(attribute), Times.Once);
         Assert.AreEqual("NewName", attribute.Name);
         Assert.AreEqual(Accessibility.Public, attribute.Accessibility);
-    }
-
-    [TestMethod]
-    public void UpdateAttribute_ShouldThrowException_WhenInstanceTypeNotSubclassOfReferenceType()
-    {
-        var attributeId = Guid.NewGuid();
-        var referenceTypeId = Guid.NewGuid();
-        var instanceTypeId = Guid.NewGuid();
-        var attribute = new Attribute { Id = attributeId, Name = "OldName", Accessibility = Accessibility.Private };
-        var dto = new UpdateAttributeDTO { Name = "NewName", Accessibility = "public", IdReferenceType = referenceTypeId, IdInstanceType = instanceTypeId };
-        var auxClass1 = new Class { Id = referenceTypeId, Name = "class1" };
-        var auxClass2 = new Class { Id = instanceTypeId, Name = "class2" };
-
-        _mockAttributeRepository.Setup(r => r.Find(attributeId)).Returns(attribute);
-        _mockClassRepository.Setup(r => r.FindAll()).Returns([auxClass1, auxClass2]);
-        _mockClassRepository.Setup(r => r.FindAllTypes()).Returns([auxClass1, auxClass2]);
-        _mockAttributeRepository.Setup(r => r.Update(attribute));
-
-        var ex = Assert.ThrowsException<InvalidAttributeException>(() =>
-            _attributeService.UpdateAttribute(attributeId, dto));
-
-        Assert.AreEqual("Instance Type is not a subclass of Reference Type", ex.Message);
-    }
-
-    [TestMethod]
-    public void UpdateAttribute_ShouldThrowException_WhenInstanceTypeIsPrimitive()
-    {
-        var attributeId = Guid.NewGuid();
-        var referenceTypeId = Guid.NewGuid();
-        var instanceTypeId = Guid.NewGuid();
-
-        var attribute = new Attribute { Id = attributeId, Name = "OldName", Accessibility = Accessibility.Private };
-        var dto = new UpdateAttributeDTO { Name = "NewName", Accessibility = "public", IdReferenceType = referenceTypeId, IdInstanceType = instanceTypeId };
-
-        var auxClass1 = new Class { Id = referenceTypeId, Name = "class1" };
-        var auxPrimitive2 = new Primitive { Id = instanceTypeId, Name = "primitive2" };
-
-        _mockAttributeRepository.Setup(r => r.Find(attributeId)).Returns(attribute);
-        _mockClassRepository.Setup(r => r.FindAll()).Returns([auxClass1]);
-        _mockClassRepository.Setup(r => r.FindAllTypes()).Returns([auxClass1, auxPrimitive2]);
-        _mockAttributeRepository.Setup(r => r.Update(attribute));
-
-        var ex = Assert.ThrowsException<InvalidAttributeException>(() =>
-            _attributeService.UpdateAttribute(attributeId, dto));
-
-        Assert.AreEqual("Invalid reference type or instance type. If one is primitive, both should be primitive. If both are, then they must be the same.", ex.Message);
     }
 
     [TestMethod]
@@ -901,5 +764,133 @@ public class AttributeServiceTest
         var ex = Assert.ThrowsException<InvalidAttributeException>(() => _attributeService.UpdateAttribute(attributeId, dto));
 
         Assert.AreEqual("Invalid stereotype value. Attribute stereotype can only be null or static.", ex.Message);
+    }
+
+    [TestMethod]
+    public void CreateAttribute_ShouldThrowException_WhenInstanceTypeNotSubclassOfReferenceType()
+    {
+        var aClass1 = new Class { Id = Guid.NewGuid(), Name = "class1" };
+        var aClass2 = new Class { Id = Guid.NewGuid(), Name = "class2" };
+        var dto = new AttributeDto
+        {
+            Name = "Agility",
+            Accessibility = Accessibility.Public,
+            ReferenceType = new TypeDTO { Name = aClass1.Name },
+            InstanceType = new TypeDTO { Name = aClass2.Name },
+        };
+
+        _mockClassRepository
+            .Setup(repo => repo.FindAll())
+            .Returns([aClass1, aClass2]);
+
+        _mockClassRepository
+            .Setup(repo => repo.FindAllTypes())
+            .Returns([aClass1, aClass2]);
+
+        var exception = Assert.ThrowsException<InvalidAttributeException>(() =>
+            _attributeService.CreateAttribute(dto));
+
+        Assert.AreEqual("Instance Type is not a subclass of Reference Type", exception.Message);
+    }
+
+    [TestMethod]
+    public void CreateAttribute_ShouldThrowException_WhenInstanceTypeNotSubclassOfReferenceType2()
+    {
+        var aClass3 = new Class { Id = Guid.NewGuid(), Name = "class3" };
+        var aClass1 = new Class { Id = Guid.NewGuid(), Name = "class1" };
+        var aClass2 = new Class { Id = Guid.NewGuid(), Name = "class2", HierarchyClass = aClass3 };
+        var dto = new AttributeDto
+        {
+            Name = "Agility",
+            Accessibility = Accessibility.Public,
+            ReferenceType = new TypeDTO { Name = aClass1.Name },
+            InstanceType = new TypeDTO { Name = aClass2.Name },
+        };
+
+        _mockClassRepository
+            .Setup(repo => repo.FindAll())
+            .Returns([aClass1, aClass2]);
+
+        _mockClassRepository
+            .Setup(repo => repo.FindAllTypes())
+            .Returns([aClass1, aClass2]);
+
+        var exception = Assert.ThrowsException<InvalidAttributeException>(() =>
+            _attributeService.CreateAttribute(dto));
+
+        Assert.AreEqual("Instance Type is not a subclass of Reference Type", exception.Message);
+    }
+
+    [TestMethod]
+    public void CreateAttribute_ShouldThrowException_WhenReferenceTypeIsPrimitive()
+    {
+        var aClass1 = new Class { Id = Guid.NewGuid(), Name = "class1" };
+        var aPrimitive1 = new Primitive(PrimitiveType.Bool);
+        var dto = new AttributeDto
+        {
+            Name = "Agility",
+            Accessibility = Accessibility.Public,
+            ReferenceType = new TypeDTO { Name = aPrimitive1.Name },
+            InstanceType = new TypeDTO { Name = aClass1.Name },
+        };
+
+        _mockClassRepository
+            .Setup(repo => repo.FindAll())
+            .Returns([aClass1]);
+
+        _mockClassRepository
+            .Setup(repo => repo.FindAllTypes())
+            .Returns([aClass1, aPrimitive1]);
+
+        var exception = Assert.ThrowsException<InvalidAttributeException>(() =>
+            _attributeService.CreateAttribute(dto));
+
+        Assert.AreEqual("Invalid reference type or instance type. If one is primitive, both should be primitive. If both are, then they must be the same.", exception.Message);
+    }
+
+    [TestMethod]
+    public void UpdateAttribute_ShouldThrowException_WhenInstanceTypeNotSubclassOfReferenceType()
+    {
+        var attributeId = Guid.NewGuid();
+        var referenceTypeId = Guid.NewGuid();
+        var instanceTypeId = Guid.NewGuid();
+        var attribute = new Attribute { Id = attributeId, Name = "OldName", Accessibility = Accessibility.Private };
+        var dto = new UpdateAttributeDTO { Name = "NewName", Accessibility = "public", IdReferenceType = referenceTypeId, IdInstanceType = instanceTypeId };
+        var auxClass1 = new Class { Id = referenceTypeId, Name = "class1" };
+        var auxClass2 = new Class { Id = instanceTypeId, Name = "class2" };
+
+        _mockAttributeRepository.Setup(r => r.Find(attributeId)).Returns(attribute);
+        _mockClassRepository.Setup(r => r.FindAll()).Returns([auxClass1, auxClass2]);
+        _mockClassRepository.Setup(r => r.FindAllTypes()).Returns([auxClass1, auxClass2]);
+        _mockAttributeRepository.Setup(r => r.Update(attribute));
+
+        var ex = Assert.ThrowsException<InvalidAttributeException>(() =>
+            _attributeService.UpdateAttribute(attributeId, dto));
+
+        Assert.AreEqual("Instance Type is not a subclass of Reference Type", ex.Message);
+    }
+
+    [TestMethod]
+    public void UpdateAttribute_ShouldThrowException_WhenInstanceTypeIsPrimitive()
+    {
+        var attributeId = Guid.NewGuid();
+        var referenceTypeId = Guid.NewGuid();
+        var instanceTypeId = Guid.NewGuid();
+
+        var attribute = new Attribute { Id = attributeId, Name = "OldName", Accessibility = Accessibility.Private };
+        var dto = new UpdateAttributeDTO { Name = "NewName", Accessibility = "public", IdReferenceType = referenceTypeId, IdInstanceType = instanceTypeId };
+
+        var auxClass1 = new Class { Id = referenceTypeId, Name = "class1" };
+        var auxPrimitive2 = new Primitive { Id = instanceTypeId, Name = "primitive2" };
+
+        _mockAttributeRepository.Setup(r => r.Find(attributeId)).Returns(attribute);
+        _mockClassRepository.Setup(r => r.FindAll()).Returns([auxClass1]);
+        _mockClassRepository.Setup(r => r.FindAllTypes()).Returns([auxClass1, auxPrimitive2]);
+        _mockAttributeRepository.Setup(r => r.Update(attribute));
+
+        var ex = Assert.ThrowsException<InvalidAttributeException>(() =>
+            _attributeService.UpdateAttribute(attributeId, dto));
+
+        Assert.AreEqual("Invalid reference type or instance type. If one is primitive, both should be primitive. If both are, then they must be the same.", ex.Message);
     }
 }

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Castle.Core.Logging;
 using Simulator.BussinesLogic.Exception;
 using Simulator.Domain;
 using Simulator.Domain.Exception;
@@ -95,10 +96,13 @@ public class MethodService(
         }
 
         var localVariableT = localVariable.ToEntity();
-        var type = localVariableT.LocalVariableReferenceType.Name;
-        var returnType = _classRepository.FindAllTypes().FirstOrDefault(c => c.Name == type);
-        localVariableT.LocalVariableReferenceType = returnType;
-        ValidateMethodReturnType(localVariableT.LocalVariableReferenceType);
+        var referenceTypeName = localVariableT.ReferenceType.Name;
+        var referenceType = _classRepository.FindAllTypes().FirstOrDefault(c => c.Name == referenceTypeName);
+        var instanceTypeName = localVariableT.InstanceType.Name;
+        var instanceType = _classRepository.FindAllTypes().FirstOrDefault(c => c.Name == instanceTypeName);
+        ValidateInstanceClass(referenceType, instanceType);
+        localVariableT.ReferenceType = referenceType;
+        ValidateMethodReturnType(localVariableT.ReferenceType);
         _localVariableRepository.Add(localVariableT);
         return localVariableT.Id;
     }
@@ -109,7 +113,7 @@ public class MethodService(
         var invokedMethod = _invokedMethodRepository.Find(idInvokeGuid);
         ValidateLocalVariableExist(localVariable);
         ValidateInvokedMethodExist(invokedMethod);
-        ValidateTypeIsPrimitive(localVariable.LocalVariableReferenceType);
+        ValidateTypeIsPrimitive(localVariable.ReferenceType);
         localVariable.InvokedMethod = invokedMethod;
         _localVariableRepository.Update(localVariable);
     }
@@ -412,7 +416,7 @@ public class MethodService(
         var aLocal = method.LocalVariables!.FirstOrDefault(x => x.Name == invokedMethod.ReferenceName);
         if(aLocal != null)
         {
-            var aClass = _classRepository.FindAll().FirstOrDefault(x => x.Name == aLocal.LocalVariableReferenceType.Name);
+            var aClass = _classRepository.FindAll().FirstOrDefault(x => x.Name == aLocal.ReferenceType.Name);
             if(aClass != null)
             {
                 aClass = FindClassWithMethod(aClass, invokedMethodMethod);
@@ -750,7 +754,7 @@ public class MethodService(
 
     private void ManageLocalVariable(Method method, LocalVariable? localVar)
     {
-        if(localVar?.LocalVariableReferenceType is Class classLocalVarType)
+        if(localVar?.ReferenceType is Class classLocalVarType)
         {
             var localVarClass = _classRepository.Find(classLocalVarType.Id);
             if(localVarClass == null || !HasMethodInHierarchy(localVarClass, method.Id))
@@ -875,5 +879,46 @@ public class MethodService(
                 throw new MethodException("Parent class must have this method as virtual.");
             }
         }
+    }
+
+    private void ValidateInstanceClass(Type? referenceType, Type? instanceType)
+    {
+        if(BothPrimitiveButDifferent(referenceType, instanceType) || ReferenceNotPrimitive(referenceType, instanceType) || InstanceNotPrimitive(referenceType, instanceType))
+        {
+            throw new LoggerException("Invalid reference type or instance type. If one is primitive, both should be primitive. If both are, then they must be the same.");
+        }
+
+        if(referenceType is Class reference && instanceType is Class instance)
+        {
+            ValidateInstanceClassRecursive(reference, instance);
+        }
+    }
+
+    private void ValidateInstanceClassRecursive(Class reference, Class instance)
+    {
+        if(reference != instance && instance.HierarchyClass == null)
+        {
+            throw new LocalVariableException("Instance Type is not a subclass of Reference Type");
+        }
+
+        if(reference != instance && instance.HierarchyClass != reference)
+        {
+            ValidateInstanceClassRecursive(reference, instance.HierarchyClass!);
+        }
+    }
+
+    private bool InstanceNotPrimitive(Type? referenceType, Type? instanceType)
+    {
+        return instanceType is not Primitive && referenceType is Primitive;
+    }
+
+    private bool ReferenceNotPrimitive(Type? referenceType, Type? instanceType)
+    {
+        return instanceType is Primitive && referenceType is not Primitive;
+    }
+
+    private bool BothPrimitiveButDifferent(Type? referenceType, Type? instanceType)
+    {
+        return instanceType is Primitive a && referenceType is Primitive b && a.PrimitiveType != b.PrimitiveType;
     }
 }
