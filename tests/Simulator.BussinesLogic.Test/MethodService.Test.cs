@@ -605,6 +605,30 @@ public class MethodServiceTest
         Assert.AreEqual("Instance Type is not a subclass of Reference Type", ex.Message);
     }
 
+    [TestMethod]
+    public void CreateLocalVariable_ShouldThrowException_WhenInstanceTypeIsPrimitive()
+    {
+        var classT = new Class { Name = "TestClass" };
+        var primitive1 = new Primitive(PrimitiveType.Bool) { Name = "Prim" };
+
+        var localVariableDto = new LocalVariableDTO { Name = "TestParameter", ReferenceType = new TypeDTO { Name = classT.Name }, InstanceType = new TypeDTO { Name = primitive1.Name } };
+
+        _mockLocalVariableRepository
+            .Setup(r => r.Add(It.Is<LocalVariable>(p =>
+                p.Name == localVariableDto.Name && p.ReferenceType.Name == classT.Name)));
+
+        _mockClassRepository
+            .Setup(repo => repo.FindAllTypes())
+            .Returns([classT, primitive1]);
+
+        var ex = Assert.ThrowsException<LocalVariableException>(() =>
+        {
+            _methodService.CreateLocalVariable(localVariableDto);
+        });
+
+        Assert.AreEqual("Invalid reference type or instance type. If one is primitive, both should be primitive. If both are, then they must be the same.", ex.Message);
+    }
+
     [DataTestMethod]
     [DataRow("base")]
     [DataRow("this")]

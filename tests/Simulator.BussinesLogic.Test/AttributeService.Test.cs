@@ -188,33 +188,6 @@ public class AttributeServiceTest
     }
 
     [TestMethod]
-    public void CreateAttribute_ShouldThrowException_WhenBothTypesArePrimitiveButDifferent()
-    {
-        var aPrimitive2 = new Primitive(PrimitiveType.Int) { Name = "prim2" };
-        var aPrimitive1 = new Primitive(PrimitiveType.Bool) { Name = "prim1" };
-        var dto = new AttributeDto
-        {
-            Name = "Agility",
-            Accessibility = Accessibility.Public,
-            ReferenceType = new TypeDTO { Name = aPrimitive1.Name },
-            InstanceType = new TypeDTO { Name = aPrimitive2.Name },
-        };
-
-        _mockClassRepository
-            .Setup(repo => repo.FindAll())
-            .Returns([]);
-
-        _mockClassRepository
-            .Setup(repo => repo.FindAllTypes())
-            .Returns([aPrimitive2, aPrimitive1]);
-
-        var exception = Assert.ThrowsException<InvalidAttributeException>(() =>
-            _attributeService.CreateAttribute(dto));
-
-        Assert.AreEqual("Invalid reference type or instance type. If one is primitive, both should be primitive. If both are, then they must be the same.", exception.Message);
-    }
-
-    [TestMethod]
     public void CreateAttribute_ShouldCreate_WhenBothTypesArePrimitiveAndTheSame()
     {
         var aPrimitive2 = new Primitive(PrimitiveType.Bool) { Name = "prim2" };
@@ -841,6 +814,33 @@ public class AttributeServiceTest
         _mockClassRepository
             .Setup(repo => repo.FindAllTypes())
             .Returns([aClass1, aPrimitive1]);
+
+        var exception = Assert.ThrowsException<InvalidAttributeException>(() =>
+            _attributeService.CreateAttribute(dto));
+
+        Assert.AreEqual("Invalid reference type or instance type. If one is primitive, both should be primitive. If both are, then they must be the same.", exception.Message);
+    }
+
+    [TestMethod]
+    public void CreateAttribute_ShouldThrowException_WhenBothTypesArePrimitiveButDifferent()
+    {
+        var aPrimitive2 = new Primitive(PrimitiveType.Int) { Name = "prim2" };
+        var aPrimitive1 = new Primitive(PrimitiveType.Bool) { Name = "prim1" };
+        var dto = new AttributeDto
+        {
+            Name = "Agility",
+            Accessibility = Accessibility.Public,
+            ReferenceType = new TypeDTO { Name = aPrimitive1.Name },
+            InstanceType = new TypeDTO { Name = aPrimitive2.Name },
+        };
+
+        _mockClassRepository
+            .Setup(repo => repo.FindAll())
+            .Returns([]);
+
+        _mockClassRepository
+            .Setup(repo => repo.FindAllTypes())
+            .Returns([aPrimitive2, aPrimitive1]);
 
         var exception = Assert.ThrowsException<InvalidAttributeException>(() =>
             _attributeService.CreateAttribute(dto));

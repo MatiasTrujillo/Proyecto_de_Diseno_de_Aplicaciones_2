@@ -885,7 +885,7 @@ public class MethodService(
     {
         if(BothPrimitiveButDifferent(referenceType, instanceType) || ReferenceNotPrimitive(referenceType, instanceType) || InstanceNotPrimitive(referenceType, instanceType))
         {
-            throw new LoggerException("Invalid reference type or instance type. If one is primitive, both should be primitive. If both are, then they must be the same.");
+            throw new LocalVariableException("Invalid reference type or instance type. If one is primitive, both should be primitive. If both are, then they must be the same.");
         }
 
         if(referenceType is Class reference && instanceType is Class instance)
