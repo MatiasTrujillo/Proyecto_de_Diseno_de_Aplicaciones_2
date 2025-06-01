@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Castle.Core.Logging;
 using Simulator.BussinesLogic.Exception;
 using Simulator.Domain;
 using Simulator.Domain.Exception;

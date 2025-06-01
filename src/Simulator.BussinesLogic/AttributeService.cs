@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Linq;
 using Simulator.BussinesLogic.Exception;
 using Simulator.Domain;
@@ -29,7 +28,7 @@ public class AttributeService(IAttributeRepository attributeRepository, IClassRe
         ValidateAccesibility(attribute.Accessibility);
         ValidateStereotype(attribute.Stereotype);
         ValidateAttributeType(attribute.ReferenceType);
-        ValidateTypesExists(typeT,  instanceTypeT);
+        ValidateTypesExists(typeT, instanceTypeT);
         ValidateInstanceClass(typeT, instanceTypeT);
         AssignTypes(attribute, typeT, instanceTypeT);
 
