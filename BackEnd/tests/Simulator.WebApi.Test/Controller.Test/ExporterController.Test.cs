@@ -1,4 +1,6 @@
+using Microsoft.AspNetCore.Mvc;
 using Moq;
+using Simulator.Exporters.Abstractions;
 using Simulator.IBussinesLogic;
 using Simulator.WebApi.Controllers;
 
@@ -20,14 +22,26 @@ public class ExportersControllerTests
     [TestMethod]
     public void GetAll_ReturnsAvailableExporters()
     {
-        // Arrange
         var expected = new[] { "Exporter1", "Exporter2" };
         _mockExportService.Setup(service => service.GetAvailableExporters()).Returns(expected);
 
-        // Act
         var result = _controller.GetAll();
 
-        // Assert
         CollectionAssert.AreEqual(expected, result);
+    }
+
+    [TestMethod]
+    public void Export_ReturnsOk_WhenExporterSucceeds()
+    {
+        var exporterName = "ValidExporter";
+        var input = new TransformerForExporter();
+        var expectedResult = "{\"success\":true}";
+        _mockExportService.Setup(s => s.ExportTransfer(exporterName, input)).Returns(expectedResult);
+
+        var result = _controller.Export(exporterName, input);
+
+        Assert.IsInstanceOfType(result, typeof(OkObjectResult));
+        var okResult = (OkObjectResult)result;
+        Assert.AreEqual(200, okResult.StatusCode);
     }
 }

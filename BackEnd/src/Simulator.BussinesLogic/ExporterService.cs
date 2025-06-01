@@ -10,6 +10,43 @@ namespace Simulator.BussinesLogic;
 
 public class ExporterService() : IExportService
 {
+    private readonly IMethodService? _methodService;
+
+    public ExporterService(IMethodService methodService)
+        : this()
+    {
+        _methodService = methodService;
+    }
+
+    public string ExportTransfer(string exporterType, TransformerForExporter transformer)
+    {
+        var assemblies = LoadAssemblies();
+
+        var exporterTypeMatch = assemblies
+            .SelectMany(a => a.GetTypes())
+            .FirstOrDefault(t =>
+                t.IsClass &&
+                !t.IsAbstract &&
+                typeof(ITransformerExporter).IsAssignableFrom(t) &&
+                ((ITransformerExporter)(Activator.CreateInstance(t)!)).GetFormat() == exporterType
+            );
+
+        if (exporterTypeMatch == null)
+        {
+            throw new InvalidOperationException($"Exporter type '{exporterType}' not found.");
+        }
+
+        var exporter = (ITransformerExporter)(Activator.CreateInstance(exporterTypeMatch)!);
+
+        var result = _methodService?.ExecuteMethod(
+            transformer.ReferenceId,
+            transformer.ObjectToCreateId,
+            transformer.MethodId
+        );
+
+        return exporter.Export(result);
+    }
+
     public string[] GetAvailableExporters()
     {
         var assemblies = LoadAssemblies();
