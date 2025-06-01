@@ -572,11 +572,12 @@ public class AttributeServiceTest
 
         _mockAttributeRepository.Setup(r => r.Find(id)).Returns(attribute);
         _mockClassRepository.Setup(r => r.FindAll()).Returns([new Class { Id = Guid.NewGuid() }]);
+        _mockClassRepository.Setup(r => r.FindAllTypes()).Returns([new Class { Id = Guid.NewGuid() }]);
 
         var ex = Assert.ThrowsException<TypeNotFoundException>(() =>
             _attributeService.UpdateAttribute(id, dto));
 
-        Assert.AreEqual("Return type not found.", ex.Message);
+        Assert.AreEqual("Instance Type and Reference Type cannot be null.", ex.Message);
     }
 
     [TestMethod]

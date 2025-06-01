@@ -29,8 +29,10 @@ public class AttributeService(IAttributeRepository attributeRepository, IClassRe
         ValidateAccesibility(attribute.Accessibility);
         ValidateStereotype(attribute.Stereotype);
         ValidateAttributeType(attribute.ReferenceType);
+        ValidateTypesExists(typeT,  instanceTypeT);
         ValidateInstanceClass(typeT, instanceTypeT);
-        attribute.ReferenceType = typeT;
+        AssignTypes(attribute, typeT, instanceTypeT);
+
         _attributeRepository.Add(attribute);
         return attribute.Id;
     }
@@ -53,14 +55,12 @@ public class AttributeService(IAttributeRepository attributeRepository, IClassRe
         ValidateName(uAttribute.Name, attribute);
         ValidateAccessibility(uAttribute.Accessibility, attribute);
         ManageStereotype(uAttribute.Stereotype, attribute);
-        ValidateAttributeTypeUp(uAttribute.IdReferenceType);
-        var type = _classRepository.FindAllTypes().FirstOrDefault(x => x.Id == uAttribute.IdReferenceType);
-        var instanceType = _classRepository.FindAllTypes().FirstOrDefault(x => x.Id == uAttribute.IdInstanceType);
-        var typeT = _classRepository.FindAllTypes().FirstOrDefault(c => c.Name == type.Name);
-        var instanceTypeT = _classRepository.FindAllTypes().FirstOrDefault(c => c.Name == instanceType.Name);
+        var typeT = _classRepository.FindAllTypes().FirstOrDefault(x => x.Id == uAttribute.IdReferenceType);
+        var instanceTypeT = _classRepository.FindAllTypes().FirstOrDefault(x => x.Id == uAttribute.IdInstanceType);
+        ValidateTypesExists(typeT, instanceTypeT);
         ValidateInstanceClass(typeT, instanceTypeT);
-        attribute.ReferenceType = typeT;
-        attribute.InstanceType = instanceTypeT;
+        AssignTypes(attribute, typeT, instanceTypeT);
+
         _attributeRepository.Update(attribute);
     }
 
@@ -210,15 +210,6 @@ public class AttributeService(IAttributeRepository attributeRepository, IClassRe
         }
     }
 
-    private void ValidateAttributeTypeUp(Guid? methodTReturnType)
-    {
-        var classes = _classRepository.FindAll();
-        if(methodTReturnType != null && classes.All(c => c.Id != methodTReturnType))
-        {
-            throw new TypeNotFoundException("Return type not found.");
-        }
-    }
-
     private void ValidateAccesibility(Accessibility aDtoAccessibility)
     {
         if(!Enum.IsDefined(typeof(Accessibility), aDtoAccessibility))
@@ -274,5 +265,34 @@ public class AttributeService(IAttributeRepository attributeRepository, IClassRe
     private bool BothPrimitiveButDifferent(Type? referenceType, Type? instanceType)
     {
         return instanceType is Primitive a && referenceType is Primitive b && a.PrimitiveType != b.PrimitiveType;
+    }
+
+    private void ValidateTypesExists(Type? referenceType, Type? instanceType)
+    {
+        if(referenceType is null || instanceType is null)
+        {
+            throw new TypeNotFoundException("Instance Type and Reference Type cannot be null.");
+        }
+    }
+
+    private void AssignTypes(Attribute attribute, Type? typeT, Type? instanceTypeT)
+    {
+        if(typeT is Primitive p1)
+        {
+            attribute.ReferenceType = p1;
+        }
+        else if(typeT is Class c1)
+        {
+            attribute.ReferenceType = c1;
+        }
+
+        if(instanceTypeT is Primitive p2)
+        {
+            attribute.InstanceType = p2;
+        }
+        else if(instanceTypeT is Class c2)
+        {
+            attribute.InstanceType = c2;
+        }
     }
 }
