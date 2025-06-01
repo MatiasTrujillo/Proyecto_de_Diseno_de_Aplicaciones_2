@@ -100,9 +100,10 @@ public class MethodService(
         var referenceType = _classRepository.FindAllTypes().FirstOrDefault(c => c.Name == referenceTypeName);
         var instanceTypeName = localVariableT.InstanceType.Name;
         var instanceType = _classRepository.FindAllTypes().FirstOrDefault(c => c.Name == instanceTypeName);
+        ValidateTypesExists(referenceType, instanceType);
         ValidateInstanceClass(referenceType, instanceType);
-        localVariableT.ReferenceType = referenceType;
-        ValidateMethodReturnType(localVariableT.ReferenceType);
+        AssignTypes(localVariableT, referenceType, instanceType);
+
         _localVariableRepository.Add(localVariableT);
         return localVariableT.Id;
     }
@@ -920,5 +921,34 @@ public class MethodService(
     private bool BothPrimitiveButDifferent(Type? referenceType, Type? instanceType)
     {
         return instanceType is Primitive a && referenceType is Primitive b && a.PrimitiveType != b.PrimitiveType;
+    }
+
+    private void ValidateTypesExists(Type? referenceType, Type? instanceType)
+    {
+        if(referenceType is null || instanceType is null)
+        {
+            throw new TypeNotFoundException("Instance Type and Reference Type cannot be null.");
+        }
+    }
+
+    private void AssignTypes(LocalVariable localVariable, Type? typeT, Type? instanceTypeT)
+    {
+        if(typeT is Primitive p1)
+        {
+            localVariable.ReferenceType = p1;
+        }
+        else if(typeT is Class c1)
+        {
+            localVariable.ReferenceType = c1;
+        }
+
+        if(instanceTypeT is Primitive p2)
+        {
+            localVariable.InstanceType = p2;
+        }
+        else if(instanceTypeT is Class c2)
+        {
+            localVariable.InstanceType = c2;
+        }
     }
 }
