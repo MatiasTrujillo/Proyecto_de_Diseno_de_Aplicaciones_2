@@ -1,0 +1,33 @@
+<div class="form-container">
+  <h2>Create Local Variable</h2>
+
+  <form [formGroup]="localVariableFrom" (ngSubmit)="onSubmit()">
+    <div class="form-group">
+      <label for="name">Variable Name</label>
+      <input
+        id="name"
+        type="text"
+        formControlName="name"
+        placeholder="Enter variable name"
+      />
+      <div class="error" *ngIf="localVariableFrom.get('name')?.invalid && localVariableFrom.get('name')?.touched">
+        Name is required.
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="localVariableType">Variable Type</label>
+      <select id="localVariableType" formControlName="localVariableType">
+        <option value="" disabled selected>Select a type</option>
+        <option *ngFor="let type of localVariableTypes" [value]="type.name">
+          {{ type.name }} ({{ type.kind }})
+        </option>
+      </select>
+      <div class="error" *ngIf="localVariableFrom.get('localVariableType')?.invalid && localVariableFrom.get('localVariableType')?.touched">
+        Type is required.
+      </div>
+    </div>
+
+    <button type="submit" [disabled]="localVariableFrom.invalid">Create</button>
+  </form>
+</div>

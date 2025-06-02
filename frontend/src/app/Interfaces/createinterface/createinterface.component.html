@@ -1,0 +1,25 @@
+<!-- createInterface.component.html -->
+<div class="class-form">
+    <mat-card>
+      <mat-card-title></mat-card-title>
+      <mat-card-content>
+        <form (ngSubmit)="createInterface()" class="form-fields">
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Nombre de la Interfaz</mat-label>
+            <input matInput [(ngModel)]="interfaceName" name="interfaceName" required />
+          </mat-form-field>
+  
+          <div class="button-container">
+            <button mat-raised-button color="primary" type="submit">
+              Crear Interface
+            </button>
+          </div>
+  
+          <mat-hint *ngIf="message" [ngClass]="{ 'error-msg': isError, 'success-msg': !isError }">
+            {{ message }}
+          </mat-hint>
+        </form>
+      </mat-card-content>
+    </mat-card>
+  </div>
+  
