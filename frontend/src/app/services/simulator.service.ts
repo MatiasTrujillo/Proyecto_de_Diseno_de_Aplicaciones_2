@@ -10,6 +10,7 @@ import { Method } from '../models/method';
 import { Attribute } from '../models/attribute';
 import { LocalVariable } from '../models/localvariable';
 import { Interface } from '../models/Interface';
+import { UpdateClass } from '../models/updateClass';
 
 @Injectable({
   providedIn: 'root'
@@ -56,8 +57,32 @@ export class SimulatorService {
     );
   }
 
+  updateClass(id: string, updatedClass: Partial<UpdateClass>): Observable<{ message: string }> {
+    return this.http.put<{ message: string }>(`${this.apiUrl}/classes/${id}`, updatedClass).pipe(
+      catchError((error) => {
+        return throwError(() => error);
+      })
+    );
+  }
+
+  deleteClass(id: string): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/classes/${id}`).pipe(
+      catchError((error) => {
+        return throwError(() => error);
+      })
+    );
+  }
+
+  getClasses(): Observable<Class[]> {
+    return this.http.get<Class[]>(`${this.apiUrl}/classes`).pipe(
+      catchError((error) => {
+        return throwError(() => error);
+      })
+    );
+  }
+
   getTypes(): Observable<Type[]> {
-    return this.http.get<Type[]>(`${this.apiUrl}/classes`).pipe(
+    return this.http.get<Type[]>(`${this.apiUrl}/types`).pipe(
       catchError((error) => {
         return throwError(() => error);
       })
