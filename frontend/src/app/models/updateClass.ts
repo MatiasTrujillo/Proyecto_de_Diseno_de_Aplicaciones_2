@@ -1,4 +1,7 @@
+import { KeyWord } from './KeyWord';
+
 export interface UpdateClass {
-  name: string;
-  // otros campos si tenés
+  name: string | null;
+  stereotype: KeyWord | null;
+  idClass: string | null;
 }
