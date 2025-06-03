@@ -10,6 +10,7 @@ import { CreatelocalvariableComponent } from '../createlocalvariable/createlocal
 import { CreateinterfaceComponent } from '../Interfaces/createinterface/createinterface.component';
 import { UpdateclassComponent } from '../Classes/updateclass/updateclass.component';
 import { DeleteclassComponent } from '../Classes/deleteclass/deleteclass.component';
+import { DeleteinterfaceComponent } from '../Interfaces/deleteinterface/deleteinterface.component';
 
 @Component({
   selector: 'app-nav-menu',
@@ -22,7 +23,8 @@ import { DeleteclassComponent } from '../Classes/deleteclass/deleteclass.compone
     CreatelocalvariableComponent,
     CreateinterfaceComponent, 
     UpdateclassComponent,
-    DeleteclassComponent ],
+    DeleteclassComponent,
+    DeleteinterfaceComponent ],
   templateUrl: './nav-menu.component.html',
   styleUrls: ['./nav-menu.component.css']
 })

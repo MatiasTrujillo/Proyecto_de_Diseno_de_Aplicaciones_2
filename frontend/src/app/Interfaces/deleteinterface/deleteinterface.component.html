@@ -9,7 +9,7 @@
 <form [formGroup]="deleteForm" (ngSubmit)="onDelete()">
   <label for="interfaceId">Select a interface to delete:</label>
   <select formControlName="interfaceId" required>
-    <option *ngFor="let i of interfaces" [value]="i.idInterface">{{ c.name }}</option>
+    <option *ngFor="let i of interfaces" [value]="i.idInterface">{{ i.name }}</option>
   </select>
 
   <br /><br />
