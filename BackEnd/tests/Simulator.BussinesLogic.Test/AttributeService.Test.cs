@@ -44,7 +44,7 @@ public class AttributeServiceTest
             Accessibility = Accessibility.Public,
             ReferenceType = new TypeDTO
             {
-                Name = "TestType"
+                Name = "TestType",
                 Kind = "class"
             },
             InstanceType = new TypeDTO
@@ -864,7 +864,7 @@ public class AttributeServiceTest
     {
         var aClass3 = new Class { Id = Guid.NewGuid(), Name = "class3" };
         var aClass1 = new Class { Id = Guid.NewGuid(), Name = "class1" };
-        var aClass2 = new Class { Id = Guid.NewGuid(), Name = "class2", HierarchyClass = aClass3 };
+        var aClass2 = new Class { Id = Guid.NewGuid(), Name = "class2", Parents = aClass3 };
         var dto = new AttributeDto
         {
             Name = "Agility",

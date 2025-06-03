@@ -319,7 +319,7 @@ public class MethodService(
             return result;
         }
 
-        if(anAttribute.Type is Primitive attributePrimitive && invokedMethodMethod.Name == "ToString")
+        if(anAttribute.ReferenceType is Primitive attributePrimitive && invokedMethodMethod.Name == "ToString")
         {
             var primitiveTypeName = attributePrimitive.PrimitiveType.ToString();
             result.Add(AddToResult($"this.{anAttribute.Name}", primitiveTypeName, invokedMethodMethod));
@@ -972,14 +972,14 @@ public class MethodService(
 
     private void ValidateInstanceClassRecursive(Class reference, Class instance)
     {
-        if(reference != instance && instance.HierarchyClass == null)
+        if(reference != instance && instance.Parents == null)
         {
             throw new LocalVariableException("Instance Type is not a subclass of Reference Type");
         }
 
-        if(reference != instance && instance.HierarchyClass != reference)
+        if(reference != instance && instance.Parents != reference)
         {
-            ValidateInstanceClassRecursive(reference, instance.HierarchyClass!);
+            ValidateInstanceClassRecursive(reference, instance.Parents!);
         }
     }
 

@@ -232,23 +232,78 @@ public class AttributeService(IAttributeRepository attributeRepository, IClassRe
             throw new InvalidAttributeException("Invalid reference type or instance type. If one is primitive, both should be primitive. If both are, then they must be the same.");
         }
 
-        if(referenceType is Class reference && instanceType is Class instance)
+        if(referenceType is Class referenceClass && instanceType is Class instanceClass)
         {
-            ValidateInstanceClassRecursive(reference, instance);
+            var res = CaseReferenceClassRecursive(referenceClass, instanceClass);
+            if(!res)
+            {
+                throw new InvalidAttributeException("Instance Type is not a subclass of Reference Type");
+            }
         }
-    }
-
-    private void ValidateInstanceClassRecursive(Class reference, Class instance)
-    {
-        if(reference != instance && instance.HierarchyClass == null)
+        else if(referenceType is Interface referenceInterface2 && instanceType is Class instanceClass2)
+        {
+            var res = CaseReferenceInterfaceRecursive(referenceInterface2, instanceClass2);
+            if(!res)
+            {
+                throw new InvalidAttributeException("Instance Type is not a subclass of Reference Type");
+            }
+        }
+        else if(referenceType is Class && instanceType is Interface)
         {
             throw new InvalidAttributeException("Instance Type is not a subclass of Reference Type");
         }
-
-        if(reference != instance && instance.HierarchyClass != reference)
+        else if(referenceType is Interface referenceInterface && instanceType is Interface instanceInterface && referenceInterface != instanceInterface)
         {
-            ValidateInstanceClassRecursive(reference, instance.HierarchyClass!);
+            throw new InvalidAttributeException("Instance Type is not a subclass of Reference Type");
         }
+    }
+
+    private bool CaseReferenceInterfaceRecursive(Interface reference, Class instance)
+    {
+        if(instance.Parents is null)
+        {
+            return false;
+        }
+
+        var aux = new bool[instance.Parents.Count];
+
+        for(var i = 0; i < instance.Parents.Count; i++)
+        {
+            if(instance.Parents[i] is Class c)
+            {
+                aux[i] = CaseReferenceInterfaceRecursive(reference, c);
+            }
+            else if(instance.Parents[i] is Interface inter && reference == inter)
+            {
+                aux[i] = true;
+            }
+        }
+
+        return aux.Any(x => x);
+    }
+
+    private bool CaseReferenceClassRecursive(Class reference, Class instance)
+    {
+        if(reference == instance)
+        {
+            return true;
+        }
+
+        if(instance.Parents is null)
+        {
+            return false;
+        }
+
+        var aux = new bool[instance.Parents.Count];
+        for(var i = 0; i < instance.Parents.Count; i++)
+        {
+            if(instance.Parents[i] is Class c)
+            {
+                aux[i] = CaseReferenceClassRecursive(reference, c);
+            }
+        }
+
+        return aux.Any(x => x);
     }
 
     private bool InstanceNotPrimitive(Type? referenceType, Type? instanceType)

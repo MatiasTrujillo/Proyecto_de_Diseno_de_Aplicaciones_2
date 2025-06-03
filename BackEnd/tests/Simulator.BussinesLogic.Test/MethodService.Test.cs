@@ -652,7 +652,7 @@ public class MethodServiceTest
     {
         // var classT = new TypeDTO { Name = "TestClass", Kind = "class" };
         var classT = new Class { Name = "TestClass" };
-        var classChild = new Class { Name = "Child", HierarchyClass = classT };
+        var classChild = new Class { Name = "Child", Parents = classT };
 
         var localVariableDto = new LocalVariableDTO { Name = "TestParameter", ReferenceType = new TypeDTO { Name = classT.Name }, InstanceType = new TypeDTO { Name = classChild.Name } };
 
@@ -699,7 +699,7 @@ public class MethodServiceTest
     {
         var class3 = new Class { Name = "Class3" };
         var classT = new Class { Name = "TestClass" };
-        var classChild = new Class { Name = "Child", HierarchyClass = class3 };
+        var classChild = new Class { Name = "Child", Parents = class3 };
 
         var localVariableDto = new LocalVariableDTO { Name = "TestParameter", ReferenceType = new TypeDTO { Name = classT.Name }, InstanceType = new TypeDTO { Name = classChild.Name } };
 
@@ -751,7 +751,7 @@ public class MethodServiceTest
     {
         // var dto = new LocalVariableDTO { Name = reservedName, LocalVariableType = new TypeDTO { Name = "SomeType", Kind = "class" }, };
         var classT = new Class { Name = "TestClass" };
-        var classChild = new Class { Name = "Child", HierarchyClass = classT };
+        var classChild = new Class { Name = "Child", Parents = classT };
 
         var dto = new LocalVariableDTO { Name = reservedName, ReferenceType = new TypeDTO { Name = classT.Name }, InstanceType = new TypeDTO { Name = classChild.Name } };
 
