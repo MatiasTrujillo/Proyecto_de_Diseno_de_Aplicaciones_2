@@ -4,6 +4,7 @@ import { Router, RouterModule } from '@angular/router';
 import { SimulatorService } from '../services/simulator.service';
 import { CreateclassComponent } from '../Classes/createclass/createclass.component';
 import { CreateMethodComponent } from '../Methods/createmethod/createmethod.component';
+import { CreateMethodSignaturesComponent } from '../MethodSignatures/createSignature/createmethodsignatures.component';
 import { CreateattributeComponent } from '../Attributes/createattribute/createattribute.component';
 import { CreatelocalvariableComponent } from '../createlocalvariable/createlocalvariable.component';
 import { CreateinterfaceComponent } from '../Interfaces/createinterface/createinterface.component';
@@ -16,6 +17,7 @@ import { DeleteclassComponent } from '../Classes/deleteclass/deleteclass.compone
   imports: [CommonModule, RouterModule,
     CreateclassComponent,
     CreateMethodComponent,
+    CreateMethodSignaturesComponent,
     CreateattributeComponent,
     CreatelocalvariableComponent,
     CreateinterfaceComponent, 

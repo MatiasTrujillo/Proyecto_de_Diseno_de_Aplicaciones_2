@@ -41,6 +41,12 @@
     <p>Define a new interface for your simulation logic.</p>
     <button (click)="openModal('interface')">Open</button>
   </div>
+
+  <div class="card">
+    <h3>Create MethodSignature</h3>
+    <p>Defina a method signature and associate it with an interface.</p>
+    <button (click)="openModal('methodsignature')">Create</button>
+  </div>
 </div>
 
 
@@ -90,5 +96,12 @@
   <div class="modal-content">
     <button class="close" (click)="closeModal()">×</button>
     <app-createinterface></app-createinterface>
+  </div>
+</div>
+
+<div class="modal" *ngIf="activeModal === 'methodsignature'">
+  <div class="modal-content">
+    <button class="close" (click)="closeModal()">×</button>
+    <app-createmethodsignatures></app-createmethodsignatures>
   </div>
 </div>
