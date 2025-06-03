@@ -1,0 +1,17 @@
+<h2>Delete Interface</h2>
+
+<!-- Success message -->
+<div *ngIf="message" class="success-message">{{ message }}</div>
+
+<!-- Error message -->
+<div *ngIf="error" class="error-message">{{ error }}</div>
+
+<form [formGroup]="deleteForm" (ngSubmit)="onDelete()">
+  <label for="interfaceId">Select a interface to delete:</label>
+  <select formControlName="interfaceId" required>
+    <option *ngFor="let i of interfaces" [value]="i.idInterface">{{ c.name }}</option>
+  </select>
+
+  <br /><br />
+  <button type="submit">Delete</button>
+</form>

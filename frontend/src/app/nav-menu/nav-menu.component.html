@@ -40,6 +40,7 @@
     <h3>Create Interface</h3>
     <p>Define a new interface for your simulation logic.</p>
     <button (click)="openModal('interface')">Open</button>
+    <button class="danger" (click)="openModal('deleteinterface')">Delete</button>
   </div>
 
   <div class="card">
@@ -96,6 +97,13 @@
   <div class="modal-content">
     <button class="close" (click)="closeModal()">×</button>
     <app-createinterface></app-createinterface>
+  </div>
+</div>
+
+<div class="modal" *ngIf="activeModal === 'deleteinterface'">
+  <div class="modal-content">
+    <button class="close" (click)="closeModal()">×</button>
+    <app-deleteinterface></app-deleteinterface>
   </div>
 </div>
 

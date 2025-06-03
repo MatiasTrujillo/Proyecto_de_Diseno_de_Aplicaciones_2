@@ -127,4 +127,20 @@ export class SimulatorService {
       })
     );
   }
+
+  getInterfaces(): Observable<Interface[]> {
+    return this.http.get<Interface[]>(`${this.apiUrl}/interfaces`).pipe(
+      catchError((error) => {
+        return throwError(() => error);
+      })
+    );
+  }
+
+  deleteInterface(id: string): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/interfaces/${id}`).pipe(
+      catchError((error) => {
+        return throwError(() => error);
+      })
+    );
+  }
 }
