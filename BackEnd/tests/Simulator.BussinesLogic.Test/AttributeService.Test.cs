@@ -54,24 +54,24 @@ public class AttributeServiceTest
             }
         };
 
+        var classReference = new Class { Name = dto.ReferenceType.Name };
+        var classInstance = new Class { Name = dto.InstanceType.Name };
         var attribute = new Attribute
         {
             Id = Guid.NewGuid(),
             Name = "Strength",
             Accessibility = Accessibility.Private,
-            ReferenceType = new Type { Name = dto.ReferenceType.Name },
-            InstanceType = new Type { Name = dto.ReferenceType.Name }
-            
-            // Type = new Class { Name = dto.Type.Name }
+            ReferenceType = classReference,
+            InstanceType = classInstance
         };
 
         _mockClassRepository
             .Setup(repo => repo.FindAll())
-            .Returns([new Class { Name = dto.ReferenceType.Name }]);
+            .Returns([classInstance, classReference]);
 
         _mockClassRepository
             .Setup(repo => repo.FindAllTypes())
-            .Returns([new Class { Name = dto.ReferenceType.Name }]);
+            .Returns([classInstance, classReference]);
 
         _mockAttributeRepository
             .Setup(repo => repo.Find(It.IsAny<Guid>()))
@@ -195,20 +195,20 @@ public class AttributeServiceTest
             InstanceType = new TypeDTO { Name = "TestType", Kind = "class" }
         };
 
+        var classReference = new Class { Name = dto.ReferenceType.Name };
+        var classInstance = new Class { Name = dto.InstanceType.Name };
         var attribute = new Attribute
         {
             Id = Guid.NewGuid(),
             Name = "Agility",
             Accessibility = Accessibility.Public,
-            
-            // Type = new Class { Name = dto.Type.Name }
-            ReferenceType = new Type { Name = dto.ReferenceType.Name },
-            InstanceType = new Type { Name = dto.ReferenceType.Name }
+            ReferenceType = classReference,
+            InstanceType = classInstance
         };
 
         _mockClassRepository
             .Setup(repo => repo.FindAll())
-            .Returns([new Class { Name = dto.ReferenceType.Name }]);
+            .Returns([classInstance, classReference]);
 
         _mockClassRepository
             .Setup(repo => repo.FindAllTypes())
@@ -224,38 +224,6 @@ public class AttributeServiceTest
         Assert.AreEqual("Return type not found.", exception.Message);
     }
 
-    // mover abajo
-    [TestMethod]
-    public void CreateAttribute_ShouldCreate_WhenBothTypesArePrimitiveAndTheSame()
-    {
-        var aPrimitive2 = new Primitive(PrimitiveType.Bool) { Name = "prim2" };
-        var aPrimitive1 = new Primitive(PrimitiveType.Bool) { Name = "prim1" };
-        var dto = new AttributeDto
-        {
-            Name = "Agility",
-            Accessibility = Accessibility.Public,
-            ReferenceType = new TypeDTO { Name = aPrimitive1.Name },
-            InstanceType = new TypeDTO { Name = aPrimitive2.Name },
-        };
-
-        _mockClassRepository
-            .Setup(repo => repo.FindAll())
-            .Returns([]);
-
-        _mockClassRepository
-            .Setup(repo => repo.FindAllTypes())
-            .Returns([aPrimitive2, aPrimitive1]);
-
-        _attributeService.CreateAttribute(dto);
-
-        _mockAttributeRepository.Verify(repo => repo.Add(
-            It.Is<Attribute>(a =>
-                a.Name == dto.Name &&
-                a.Accessibility == dto.Accessibility &&
-                a.ReferenceType != null &&
-                a.ReferenceType.Name == dto.ReferenceType.Name)), Times.Once);
-    }
-
     [TestMethod]
     public void CreateAttribute_ShouldThrowArgumentException_WhenNameIsEmpty()
     {
@@ -263,8 +231,6 @@ public class AttributeServiceTest
         {
             Name = string.Empty,
             Accessibility = Accessibility.Public,
-            
-            // Type = new TypeDTO { Name = "TestType", Kind = "class" }
             ReferenceType = new TypeDTO { Name = "TestType", Kind = "class" },
             InstanceType = new TypeDTO { Name = "TestType", Kind = "class" }
         };
@@ -298,8 +264,6 @@ public class AttributeServiceTest
         {
             Name = reservedName,
             Accessibility = Accessibility.Public,
-            
-            // Type = new TypeDTO { Name = "TestType", Kind = "class" }
             ReferenceType = new TypeDTO { Name = "TestType", Kind = "class" },
             InstanceType = new TypeDTO { Name = "TestType", Kind = "class" }
         };
@@ -331,8 +295,6 @@ public class AttributeServiceTest
         {
             Name = longName,
             Accessibility = Accessibility.Public,
-            
-            // Type = new TypeDTO { Name = "TestType", Kind = "class" }
             ReferenceType = new TypeDTO { Name = "TestType" },
             InstanceType = new TypeDTO { Name = "TestType" }
         };
@@ -364,8 +326,6 @@ public class AttributeServiceTest
         {
             Name = "Name",
             Accessibility = invalidAccessibility,
-            
-            // Type = new TypeDTO { Name = "SomeClass", Kind = "class" }
             ReferenceType = new TypeDTO { Name = "SomeClass" },
             InstanceType = new TypeDTO { Name = "SomeClass" }
         };
@@ -452,7 +412,7 @@ public class AttributeServiceTest
         var attribute = new Attribute { Id = attributeId, Name = "OldName", Accessibility = Accessibility.Private };
         var dto = new UpdateAttributeDTO { Name = "NewName", Accessibility = "public", IdReferenceType = referenceTypeId, IdInstanceType = instanceTypeId };
         var auxClass1 = new Class { Id = referenceTypeId, Name = "class1" };
-        var auxClass2 = new Class { Id = instanceTypeId, Name = "class2", HierarchyClass = auxClass1 };
+        var auxClass2 = new Class { Id = instanceTypeId, Name = "class2", Parents = [auxClass1] };
 
         _mockAttributeRepository.Setup(r => r.Find(attributeId)).Returns(attribute);
         _mockClassRepository.Setup(r => r.FindAll()).Returns([auxClass1, auxClass2]);
@@ -540,7 +500,7 @@ public class AttributeServiceTest
 
         var dto = new UpdateAttributeDTO { Name = "Attr", Accessibility = "protected", IdReferenceType = referenceTypeId, IdInstanceType = instanceTypeId };
         var auxClass1 = new Class { Id = referenceTypeId, Name = "class1" };
-        var auxClass2 = new Class { Id = instanceTypeId, Name = "class2", HierarchyClass = auxClass1 };
+        var auxClass2 = new Class { Id = instanceTypeId, Name = "class2", Parents = [auxClass1] };
 
         _mockAttributeRepository.Setup(r => r.Find(id)).Returns(existingAttribute);
         _mockClassRepository.Setup(r => r.FindAll()).Returns([auxClass1, auxClass2]);
@@ -561,7 +521,7 @@ public class AttributeServiceTest
 
         var dto = new UpdateAttributeDTO { Name = "Attr", Accessibility = "private", IdReferenceType = referenceTypeId, IdInstanceType = instanceTypeId };
         var auxClass1 = new Class { Id = referenceTypeId, Name = "class1" };
-        var auxClass2 = new Class { Id = instanceTypeId, Name = "class2", HierarchyClass = auxClass1 };
+        var auxClass2 = new Class { Id = instanceTypeId, Name = "class2", Parents = [auxClass1] };
 
         _mockAttributeRepository.Setup(r => r.Find(id)).Returns(existingAttribute);
         _mockClassRepository.Setup(r => r.FindAll()).Returns([auxClass1, auxClass2]);
@@ -582,7 +542,7 @@ public class AttributeServiceTest
 
         var dto = new UpdateAttributeDTO { Name = "Attr", Accessibility = "public", IdReferenceType = referenceTypeId, IdInstanceType = instanceTypeId };
         var auxClass1 = new Class { Id = referenceTypeId, Name = "class1" };
-        var auxClass2 = new Class { Id = instanceTypeId, Name = "class2", HierarchyClass = auxClass1 };
+        var auxClass2 = new Class { Id = instanceTypeId, Name = "class2", Parents = [auxClass1] };
 
         _mockAttributeRepository.Setup(r => r.Find(id)).Returns(existingAttribute);
         _mockClassRepository.Setup(r => r.FindAll()).Returns([auxClass1, auxClass2]);
@@ -650,7 +610,7 @@ public class AttributeServiceTest
         var attributeId = Guid.NewGuid();
         var invokeId = Guid.NewGuid();
 
-        var attribute = new Attribute { Id = attributeId, Name = "attr1", Type = new Class { Name = "TestClass" } };
+        var attribute = new Attribute { Id = attributeId, Name = "attr1", ReferenceType = new Class { Name = "TestClass" } };
         var invoked = new InvokedMethod { Id = invokeId, ReferenceName = "refName" };
 
         _mockAttributeRepository.Setup(r => r.Find(attributeId)).Returns(attribute);
@@ -669,7 +629,7 @@ public class AttributeServiceTest
         var attributeId = Guid.NewGuid();
         var invokeId = Guid.NewGuid();
 
-        var attribute = new Attribute { Id = attributeId, Name = "attr1", Type = new Class { Name = "TestClass" } };
+        var attribute = new Attribute { Id = attributeId, Name = "attr1", ReferenceType = new Class { Name = "TestClass" } };
         var invoked = new InvokedMethod { Id = invokeId, ReferenceName = "refName" };
 
         _mockAttributeRepository.Setup(r => r.Find(attributeId)).Returns(attribute);
@@ -691,7 +651,7 @@ public class AttributeServiceTest
             Accessibility = Accessibility.Public,
             ReferenceType = new TypeDTO
             {
-                Name = "TestType"
+                Name = "TestType",
                 Kind = "class"
             },
             InstanceType = new TypeDTO
@@ -702,25 +662,25 @@ public class AttributeServiceTest
             Stereotype = KeyWord.Static
         };
 
+        var classReference = new Class { Name = dto.ReferenceType.Name };
+        var classInstance = new Class { Name = dto.InstanceType.Name };
         var attribute = new Attribute
         {
             Id = Guid.NewGuid(),
             Name = "Strength",
             Accessibility = Accessibility.Private,
-            
-            // Type = new Class { Name = dto.Type.Name },
-            ReferenceType = new Type { Name = dto.ReferenceType.Name },
-            InstanceType = new Type { Name = dto.ReferenceType.Name },
+            ReferenceType = classReference,
+            InstanceType = classInstance,
             Stereotype = KeyWord.Static
         };
 
         _mockClassRepository
             .Setup(repo => repo.FindAll())
-            .Returns([new Class { Name = dto.ReferenceType.Name }]);
+            .Returns([classReference, classInstance]);
 
         _mockClassRepository
             .Setup(repo => repo.FindAllTypes())
-            .Returns([new Class { Name = dto.ReferenceType.Name }]);
+            .Returns([classReference, classInstance]);
 
         _mockAttributeRepository
             .Setup(repo => repo.Find(It.IsAny<Guid>()))
@@ -759,25 +719,25 @@ public class AttributeServiceTest
             Stereotype = KeyWord.Abstract
         };
 
+        var classReference = new Class { Name = dto.ReferenceType.Name };
+        var classInstance = new Class { Name = dto.InstanceType.Name };
         var attribute = new Attribute
         {
             Id = Guid.NewGuid(),
             Name = "Strength",
             Accessibility = Accessibility.Private,
-            
-            // Type = new Class { Name = dto.Type.Name },
-            ReferenceType = new Type { Name = dto.ReferenceType.Name },
-            InstanceType = new Type { Name = dto.ReferenceType.Name },
+            ReferenceType = classReference,
+            InstanceType = classInstance,
             Stereotype = KeyWord.Static
         };
 
         _mockClassRepository
             .Setup(repo => repo.FindAll())
-            .Returns([new Class { Name = dto.ReferenceType.Name }]);
+            .Returns([classReference, classInstance]);
 
         _mockClassRepository
             .Setup(repo => repo.FindAllTypes())
-            .Returns([new Class { Name = dto.ReferenceType.Name }]);
+            .Returns([classReference, classInstance]);
 
         _mockAttributeRepository
             .Setup(repo => repo.Find(It.IsAny<Guid>()))
@@ -800,7 +760,7 @@ public class AttributeServiceTest
         var attribute = new Attribute { Id = attributeId, Name = "OldName", Accessibility = Accessibility.Private };
         var dto = new UpdateAttributeDTO { Name = "NewName", Accessibility = "public", Stereotype = "static", IdReferenceType = referenceTypeId, IdInstanceType = instanceTypeId };
         var auxClass1 = new Class { Id = referenceTypeId, Name = "class1" };
-        var auxClass2 = new Class { Id = instanceTypeId, Name = "class2", HierarchyClass = auxClass1 };
+        var auxClass2 = new Class { Id = instanceTypeId, Name = "class2", Parents = [auxClass1] };
 
         _mockAttributeRepository.Setup(r => r.Find(attributeId)).Returns(attribute);
         _mockClassRepository.Setup(r => r.FindAll()).Returns([auxClass1, auxClass2]);
@@ -864,7 +824,7 @@ public class AttributeServiceTest
     {
         var aClass3 = new Class { Id = Guid.NewGuid(), Name = "class3" };
         var aClass1 = new Class { Id = Guid.NewGuid(), Name = "class1" };
-        var aClass2 = new Class { Id = Guid.NewGuid(), Name = "class2", Parents = aClass3 };
+        var aClass2 = new Class { Id = Guid.NewGuid(), Name = "class2", Parents = [aClass3] };
         var dto = new AttributeDto
         {
             Name = "Agility",
@@ -939,6 +899,37 @@ public class AttributeServiceTest
             _attributeService.CreateAttribute(dto));
 
         Assert.AreEqual("Invalid reference type or instance type. If one is primitive, both should be primitive. If both are, then they must be the same.", exception.Message);
+    }
+
+    [TestMethod]
+    public void CreateAttribute_ShouldCreate_WhenBothTypesArePrimitiveAndTheSame()
+    {
+        var aPrimitive2 = new Primitive(PrimitiveType.Bool) { Name = "prim2" };
+        var aPrimitive1 = new Primitive(PrimitiveType.Bool) { Name = "prim1" };
+        var dto = new AttributeDto
+        {
+            Name = "Agility",
+            Accessibility = Accessibility.Public,
+            ReferenceType = new TypeDTO { Name = aPrimitive1.Name },
+            InstanceType = new TypeDTO { Name = aPrimitive2.Name },
+        };
+
+        _mockClassRepository
+            .Setup(repo => repo.FindAll())
+            .Returns([]);
+
+        _mockClassRepository
+            .Setup(repo => repo.FindAllTypes())
+            .Returns([aPrimitive2, aPrimitive1]);
+
+        _attributeService.CreateAttribute(dto);
+
+        _mockAttributeRepository.Verify(repo => repo.Add(
+            It.Is<Attribute>(a =>
+                a.Name == dto.Name &&
+                a.Accessibility == dto.Accessibility &&
+                a.ReferenceType != null &&
+                a.ReferenceType.Name == dto.ReferenceType.Name)), Times.Once);
     }
 
     [TestMethod]
