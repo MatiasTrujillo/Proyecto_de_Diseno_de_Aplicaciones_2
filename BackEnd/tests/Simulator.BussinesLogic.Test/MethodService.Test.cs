@@ -1141,6 +1141,32 @@ public class MethodServiceTest
     }
 
     [TestMethod]
+    public void GetMethods_ShouldReturnListOfMethodDTOs_WhenMethodsExist()
+    {
+        var methods = new List<Method>
+        {
+            new Method
+            {
+                Id = Guid.NewGuid(),
+                Name = "TestMethod",
+                Accessibility = Accessibility.Public,
+                Stereotype = null,
+                ReturnType = new Primitive(PrimitiveType.Int)
+            }
+        };
+        _mockMethodRepository.Setup(r => r.FindAll()).Returns(methods);
+
+        var result = _methodService.GetMethods();
+
+        Assert.AreEqual(1, result.Count);
+        Assert.AreEqual(methods[0].Id.ToString(), result[0].Id);
+        Assert.AreEqual("TestMethod", result[0].Name);
+        Assert.AreEqual(Accessibility.Public, result[0].Accessibility);
+        Assert.AreEqual(null, result[0].Stereotype);
+        Assert.IsNotNull(result[0].ReturnType);
+    }
+
+    [TestMethod]
     public void SetInvokeMethodToALocalVariable_ShouldAssociateInvokedMethodToLocalVariable()
     {
         var localVariableId = Guid.NewGuid();

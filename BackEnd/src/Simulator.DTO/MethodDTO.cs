@@ -4,6 +4,7 @@ namespace Simulator.DTO;
 
 public class MethodDTO
 {
+    public string? Id { get; set; } = null;
     public string Name { get; set; } = string.Empty;
     public Accessibility Accessibility { get; set; } = Accessibility.Public;
     public KeyWord? Stereotype { get; set; } = null;

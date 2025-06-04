@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Simulator.BussinesLogic.Exception;
 using Simulator.Domain;
@@ -70,6 +71,19 @@ public class AttributeService(IAttributeRepository attributeRepository, IClassRe
         ValidateTypeIsPrimitive(attributeT.Type);
         attributeT.InvokedMethod = invokeT;
         _attributeRepository.Update(attributeT);
+    }
+
+    public List<AttributeDto> GetAttributes()
+    {
+        return _attributeRepository.FindAll()
+            .Select(a => new AttributeDto
+            {
+                Id = a.Id.ToString(),
+                Name = a.Name,
+                Accessibility = a.Accessibility,
+                Type = a.Type?.ToDTO(),
+                Stereotype = a.Stereotype
+            }).ToList();
     }
 
     private void ValidateTypeIsPrimitive(Type? attributeTType)
