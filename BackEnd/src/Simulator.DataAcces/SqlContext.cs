@@ -117,6 +117,19 @@ public sealed class SqlContext : DbContext
                     j.ToTable("MethodInvokedMethod");
                 });
 
+        modelBuilder.Entity<Attribute>()
+            .HasMany(m => m.InvokedMethods)
+            .WithMany()
+            .UsingEntity<Dictionary<string, object>>(
+                "AttributeInvokedMethods",
+                j => j.HasOne<InvokedMethod>().WithMany().HasForeignKey("InvokedMethodId"),
+                j => j.HasOne<Attribute>().WithMany().HasForeignKey("AttributeId"),
+                j =>
+                {
+                    j.HasKey("AttributeId", "InvokedMethodId");
+                    j.ToTable("AttributeInvokedMethods");
+                });
+
         modelBuilder.Entity<Interface>()
             .HasMany(t => t.MethodSignatures)
             .WithMany()

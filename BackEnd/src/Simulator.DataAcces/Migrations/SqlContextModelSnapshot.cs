@@ -25,6 +25,21 @@ namespace Simulator.DataAcces.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("AttributeInvokedMethods", b =>
+                {
+                    b.Property<Guid>("AttributeId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("InvokedMethodId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("AttributeId", "InvokedMethodId");
+
+                    b.HasIndex("InvokedMethodId");
+
+                    b.ToTable("AttributeInvokedMethods", (string)null);
+                });
+
             modelBuilder.Entity("ClassParents", b =>
                 {
                     b.Property<Guid>("ClassId")
@@ -85,9 +100,6 @@ namespace Simulator.DataAcces.Migrations
                     b.Property<Guid?>("InstanceTypeId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid?>("InvokedMethodId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -103,8 +115,6 @@ namespace Simulator.DataAcces.Migrations
                     b.HasIndex("ClassId");
 
                     b.HasIndex("InstanceTypeId");
-
-                    b.HasIndex("InvokedMethodId");
 
                     b.HasIndex("ReferenceTypeId");
 
@@ -383,35 +393,35 @@ namespace Simulator.DataAcces.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("2151c622-ae5d-4b58-9091-b943d1ec047c"),
+                            Id = new Guid("d775694b-fe70-419f-97a7-23eb9b738f00"),
                             MethodId = new Guid("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb"),
                             Name = "Obj",
                             ParameterTypeId = new Guid("dddddddd-dddd-dddd-dddd-dddddddddddd")
                         },
                         new
                         {
-                            Id = new Guid("29cfc2d6-ec7e-4689-a762-0821d9874a1d"),
+                            Id = new Guid("8ccc02c2-2bfd-4040-9e54-dd45831e9974"),
                             MethodId = new Guid("bbbbbbbb-2222-2222-2222-bbbbbbbbbbbb"),
                             Name = "Obj",
                             ParameterTypeId = new Guid("dddddddd-dddd-dddd-dddd-dddddddddddd")
                         },
                         new
                         {
-                            Id = new Guid("1522d1fa-d8e1-4d6c-be25-5d1bb219eac8"),
+                            Id = new Guid("37e52f34-b98e-4c0d-966e-627204e0a845"),
                             MethodId = new Guid("44444444-4444-4444-4444-444444444444"),
                             Name = "StrToParse",
                             ParameterTypeId = new Guid("22222222-2222-2222-2222-222222222222")
                         },
                         new
                         {
-                            Id = new Guid("9f4a90be-9f1b-4a73-bd92-951c8eee2e28"),
+                            Id = new Guid("8e63ec95-e792-48b7-9517-2300287d3b3f"),
                             MethodId = new Guid("aaaaaaaa-1111-1111-1111-aaaaaaaaaaaa"),
                             Name = "StrIsNullOrEmpty",
                             ParameterTypeId = new Guid("22222222-2222-2222-2222-222222222222")
                         },
                         new
                         {
-                            Id = new Guid("ca98f20c-e15b-480c-b809-35953a9aa9bf"),
+                            Id = new Guid("2a720504-a148-4105-9bfc-46c405e05d26"),
                             MethodId = new Guid("77777777-7777-7777-7777-777777777777"),
                             Name = "StrToCompare",
                             ParameterTypeId = new Guid("22222222-2222-2222-2222-222222222222")
@@ -639,82 +649,97 @@ namespace Simulator.DataAcces.Migrations
                         },
                         new
                         {
-                            Id = new Guid("fa7e86c6-c31c-47f0-9c7d-6bc99d57efa8"),
+                            Id = new Guid("ef2c1ef0-e40e-4ecb-bf2b-766fed44216d"),
                             Name = "byte",
                             PrimitiveType = 1
                         },
                         new
                         {
-                            Id = new Guid("c43110f7-780c-4a67-9640-62a6eae1bee3"),
+                            Id = new Guid("b680807d-db86-4c70-a12a-9b986de0abdc"),
                             Name = "sByte",
                             PrimitiveType = 2
                         },
                         new
                         {
-                            Id = new Guid("e60579ef-1111-4a96-a1f0-6bb5f003c2ae"),
+                            Id = new Guid("090ebc78-49f6-4f32-828d-15082dbbf4cf"),
                             Name = "char",
                             PrimitiveType = 3
                         },
                         new
                         {
-                            Id = new Guid("7c75eabf-6321-4e92-a72f-64d4a9648cd6"),
+                            Id = new Guid("ded0109b-344b-473f-a5fd-1be06134d61c"),
                             Name = "decimal",
                             PrimitiveType = 4
                         },
                         new
                         {
-                            Id = new Guid("4d15115c-d566-4c7c-82a1-de2bec5a7fb9"),
+                            Id = new Guid("77673fd4-aa6e-4b25-a40c-3720c1adc217"),
                             Name = "double",
                             PrimitiveType = 5
                         },
                         new
                         {
-                            Id = new Guid("ef0ab172-1f45-4514-a86b-72f684509a02"),
+                            Id = new Guid("2a20f1bf-91fa-4a2e-b10d-390979da5c17"),
                             Name = "float",
                             PrimitiveType = 6
                         },
                         new
                         {
-                            Id = new Guid("8e4d82f4-83b0-4203-8480-00fdd2856f00"),
+                            Id = new Guid("5a188952-c94a-4f3d-bd52-b26dbd1d4070"),
                             Name = "uint",
                             PrimitiveType = 8
                         },
                         new
                         {
-                            Id = new Guid("4b67ac8e-f5c6-4117-bb1f-1c21fd96b387"),
+                            Id = new Guid("09209d23-9c31-427c-ac1a-89db0fa60929"),
                             Name = "nint",
                             PrimitiveType = 9
                         },
                         new
                         {
-                            Id = new Guid("cbe761e0-ad74-45f1-b7d2-1e6557735983"),
+                            Id = new Guid("61aee306-e545-4b54-9457-2b413f121495"),
                             Name = "nuint",
                             PrimitiveType = 10
                         },
                         new
                         {
-                            Id = new Guid("d802b6bb-41ed-4628-b136-443d4e788730"),
+                            Id = new Guid("183f5b94-2612-4598-847c-8015ec72c47f"),
                             Name = "long",
                             PrimitiveType = 11
                         },
                         new
                         {
-                            Id = new Guid("dda23b92-2fb5-461a-8e48-36e52037b2e1"),
+                            Id = new Guid("b6003fb9-194c-4b91-b538-7e0cea5eff30"),
                             Name = "ulong",
                             PrimitiveType = 12
                         },
                         new
                         {
-                            Id = new Guid("de431b6c-135c-4970-b316-eb1e5aa0fa67"),
+                            Id = new Guid("7664da91-38c0-4927-b398-510d73d43db5"),
                             Name = "short",
                             PrimitiveType = 13
                         },
                         new
                         {
-                            Id = new Guid("637b0b9a-2391-4cb4-800e-134e6d1899f4"),
+                            Id = new Guid("64130187-be6d-449c-91ca-55ef07927438"),
                             Name = "ushort",
                             PrimitiveType = 14
                         });
+                });
+
+            modelBuilder.Entity("AttributeInvokedMethods", b =>
+                {
+                    b.HasOne("Simulator.Domain.Attribute", null)
+                        .WithMany()
+                        .HasForeignKey("AttributeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Simulator.Domain.InvokedMethod", null)
+                        .WithMany()
+                        .HasForeignKey("InvokedMethodId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("ClassParents", b =>
@@ -772,17 +797,11 @@ namespace Simulator.DataAcces.Migrations
                         .WithMany()
                         .HasForeignKey("InstanceTypeId");
 
-                    b.HasOne("Simulator.Domain.InvokedMethod", "InvokedMethod")
-                        .WithMany()
-                        .HasForeignKey("InvokedMethodId");
-
                     b.HasOne("Simulator.Domain.Type", "ReferenceType")
                         .WithMany()
                         .HasForeignKey("ReferenceTypeId");
 
                     b.Navigation("InstanceType");
-
-                    b.Navigation("InvokedMethod");
 
                     b.Navigation("ReferenceType");
                 });

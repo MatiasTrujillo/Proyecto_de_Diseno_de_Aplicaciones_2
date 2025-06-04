@@ -599,7 +599,7 @@ public class AttributeServiceTest
 
         _attributeService.SetInvokeMethodToAttribute(attributeId, invokeId);
 
-        Assert.AreEqual(invoked, attribute.InvokedMethod);
+        Assert.IsTrue(attribute.InvokedMethods.Contains(invoked));
         _mockAttributeRepository.Verify(r => r.Update(attribute), Times.Once);
     }
 

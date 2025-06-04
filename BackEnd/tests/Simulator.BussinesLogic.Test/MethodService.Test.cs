@@ -2076,7 +2076,7 @@ public class MethodServiceTest
             Name = "clavePrivada",
             Accessibility = Accessibility.Private,
             ReferenceType = new Primitive(PrimitiveType.String),
-            InvokedMethod = toStringInvoked
+            InvokedMethods = [toStringInvoked]
         };
 
         var validarCredencialesAP = new Method

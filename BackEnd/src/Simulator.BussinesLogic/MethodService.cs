@@ -310,9 +310,9 @@ public class MethodService(
     {
         var result = new List<string>();
         var invokedMethodMethod = _methodRepository.Find(invokedMethod.MethodId);
-        Console.WriteLine("CaseThisAttribute- " + oTC.Attributes[0].InvokedMethod + " el invokedMethod");
+        Console.WriteLine("CaseThisAttribute- " + oTC.Attributes[0].InvokedMethods + " el invokedMethod");
         var anAttribute = oTC.Attributes!.FirstOrDefault(x =>
-            x.InvokedMethod != null && x.InvokedMethod.MethodId == invokedMethod.MethodId);
+            x.InvokedMethods != null && x.InvokedMethods!.Exists(i => i.MethodId == invokedMethod.MethodId));
 
         if(anAttribute == null)
         {

@@ -9,7 +9,7 @@ public class Attribute
     public Accessibility Accessibility { get; set; }
     public virtual Type? ReferenceType { get; set; }
     public virtual Type? InstanceType { get; set; }
-    public virtual InvokedMethod? InvokedMethod { get; set; }
+    public virtual List<InvokedMethod>? InvokedMethods { get; set; }
     public KeyWord? Stereotype { get; set; }
 
     public Attribute()
@@ -18,7 +18,7 @@ public class Attribute
         Name = string.Empty;
         Accessibility = Accessibility.Public;
         ReferenceType = new Primitive(PrimitiveType.Int);
-        InvokedMethod = null;
+        InvokedMethods = [];
     }
 
     public Attribute(string name, Accessibility accessibility, Type referenceType)
@@ -28,7 +28,7 @@ public class Attribute
         Name = name;
         Accessibility = accessibility;
         ReferenceType = referenceType;
-        InvokedMethod = null;
+        InvokedMethods = [];
     }
 
     public Attribute(string name, Accessibility accessibility, Type referenceType, KeyWord? stereotype)
@@ -38,7 +38,7 @@ public class Attribute
         Name = name;
         Accessibility = accessibility;
         ReferenceType = referenceType;
-        InvokedMethod = null;
+        InvokedMethods = [];
         Stereotype = stereotype;
     }
 
@@ -50,7 +50,7 @@ public class Attribute
         Accessibility = accessibility;
         ReferenceType = referenceType;
         InstanceType = instanceType;
-        InvokedMethod = null;
+        InvokedMethods = [];
         Stereotype = stereotype;
     }
 

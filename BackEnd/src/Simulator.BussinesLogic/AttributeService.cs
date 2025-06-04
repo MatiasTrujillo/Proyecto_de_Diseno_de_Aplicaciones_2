@@ -78,7 +78,7 @@ public class AttributeService(IAttributeRepository attributeRepository, IClassRe
         ValidateAttributeExist(attributeT);
         ValidateInvokedMethodExist(invokeT);
         ValidateTypeIsPrimitive(attributeT.ReferenceType);
-        attributeT.InvokedMethod = invokeT;
+        attributeT.InvokedMethods.Add(invokeT);
         _attributeRepository.Update(attributeT);
     }
 
