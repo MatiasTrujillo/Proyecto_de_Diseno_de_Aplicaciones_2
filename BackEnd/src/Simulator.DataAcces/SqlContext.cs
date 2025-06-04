@@ -143,6 +143,19 @@ public sealed class SqlContext : DbContext
                     j.ToTable("ParameterInvokedMethods");
                 });
 
+        modelBuilder.Entity<LocalVariable>()
+            .HasMany(p => p.InvokedMethods)
+            .WithMany()
+            .UsingEntity<Dictionary<string, object>>(
+                "LocalVariableInvokedMethods",
+                j => j.HasOne<InvokedMethod>().WithMany().HasForeignKey("InvokedMethodId"),
+                j => j.HasOne<LocalVariable>().WithMany().HasForeignKey("LocalVariableId"),
+                j =>
+                {
+                    j.HasKey("LocalVariableId", "InvokedMethodId");
+                    j.ToTable("LocalVariableInvokedMethods");
+                });
+
         modelBuilder.Entity<Interface>()
             .HasMany(t => t.MethodSignatures)
             .WithMany()

@@ -8,14 +8,14 @@ public class LocalVariable
     public string Name { get; set; }
     public virtual Type? ReferenceType { get; set; }
     public virtual Type? InstanceType { get; set; }
-    public virtual InvokedMethod? InvokedMethod { get; set; }
+    public virtual List<InvokedMethod>? InvokedMethods { get; set; }
 
     public LocalVariable()
     {
         Id = Guid.NewGuid();
         Name = string.Empty;
         ReferenceType = new Primitive();
-        InvokedMethod = null;
+        InvokedMethods = [];
     }
 
     public LocalVariable(string name, Type referenceType)
@@ -24,7 +24,7 @@ public class LocalVariable
         Id = Guid.NewGuid();
         Name = name;
         ReferenceType = referenceType;
-        InvokedMethod = null;
+        InvokedMethods = [];
     }
 
     public LocalVariable(string name, Type referenceType, Type instanceType)
@@ -34,7 +34,7 @@ public class LocalVariable
         Name = name;
         ReferenceType = referenceType;
         InstanceType = instanceType;
-        InvokedMethod = null;
+        InvokedMethods = [];
     }
 
     private static readonly HashSet<string> ReservedKeywords =

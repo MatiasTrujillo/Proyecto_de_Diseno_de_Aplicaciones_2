@@ -124,7 +124,7 @@ public class MethodService(
         ValidateLocalVariableExist(localVariable);
         ValidateInvokedMethodExist(invokedMethod);
         ValidateTypeIsPrimitive(localVariable.ReferenceType);
-        localVariable.InvokedMethod = invokedMethod;
+        localVariable.InvokedMethods.Add(invokedMethod);
         _localVariableRepository.Update(localVariable);
     }
 

@@ -1260,7 +1260,7 @@ public class MethodServiceTest
 
         _methodService.SetInvokeMethodToLocalVariable(localVariableId, invokedMethodId);
 
-        Assert.AreEqual(invokedMethod, localVariable.InvokedMethod);
+        Assert.IsTrue(localVariable.InvokedMethods.Contains(invokedMethod));
         _mockLocalVariableRepository.Verify(repo => repo.Update(localVariable), Times.Once);
     }
 
