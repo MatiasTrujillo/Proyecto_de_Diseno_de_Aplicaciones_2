@@ -1,0 +1,14 @@
+
+<div *ngIf="message" class="success-message">{{ message }}</div>
+
+<div *ngIf="errorMessage" class="error-message">{{ errorMessage }}</div>
+
+<form [formGroup]="deleteForm" (ngSubmit)="onDelete()">
+  <label for="methodId">Selecciona un método a eliminar:</label>
+  <select formControlName="methodId" required>
+    <option *ngFor="let method of methods" [value]="method.id">{{ method.name }}</option>
+  </select>
+
+  <br /><br />
+  <button type="submit">Eliminar</button>
+</form>

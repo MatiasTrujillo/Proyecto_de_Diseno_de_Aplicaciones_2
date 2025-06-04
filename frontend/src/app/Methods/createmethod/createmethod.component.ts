@@ -32,6 +32,7 @@ export class CreateMethodComponent implements OnInit {
 
   ngOnInit(): void {
     this.methodForm = this.fb.group({
+      id : [''],
       name: ['', Validators.required],
       returnType: ['', Validators.required],
       accessibility: ['', Validators.required],
@@ -51,6 +52,7 @@ export class CreateMethodComponent implements OnInit {
     const formValue = this.methodForm.value;
 
     const method: Method = {
+      id: '',
       name: formValue.name,
       returnType: this.types.find(t => t.name === formValue.returnType)!,
       accessibility: +formValue.accessibility,

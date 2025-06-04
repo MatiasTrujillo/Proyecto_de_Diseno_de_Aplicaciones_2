@@ -9,6 +9,13 @@ import { CreatelocalvariableComponent } from '../createlocalvariable/createlocal
 import { CreateinterfaceComponent } from '../Interfaces/createinterface/createinterface.component';
 import { UpdateclassComponent } from '../Classes/updateclass/updateclass.component';
 import { DeleteclassComponent } from '../Classes/deleteclass/deleteclass.component';
+import { UpdateattributeComponent } from '../Attributes/updateattribute/updateattribute.component';
+import { AssociateattributewithclassComponent } from '../Attributes/associateattributewithclass/associateattributewithclass.component';
+import { DeleteattributeComponent } from '../Attributes/deleteattribute/deleteattribute.component';
+import { SetinvokedmethodtoattributeComponent } from '../Attributes/setinvokedmethodtoattribute/setinvokedmethodtoattribute.component';
+import { AssociatemethodwithclassComponent } from '../Methods/associatemethodwithclass/associatemethodwithclass.component';
+import { DeletemethodComponent } from '../Methods/deletemethod/deletemethod.component';
+
 
 @Component({
   selector: 'app-nav-menu',
@@ -20,7 +27,13 @@ import { DeleteclassComponent } from '../Classes/deleteclass/deleteclass.compone
     CreatelocalvariableComponent,
     CreateinterfaceComponent, 
     UpdateclassComponent,
-    DeleteclassComponent ],
+    DeleteclassComponent,
+    AssociateattributewithclassComponent,
+    UpdateattributeComponent,
+    DeleteattributeComponent,
+    SetinvokedmethodtoattributeComponent,
+    AssociatemethodwithclassComponent,
+    DeletemethodComponent,],
   templateUrl: './nav-menu.component.html',
   styleUrls: ['./nav-menu.component.css']
 })

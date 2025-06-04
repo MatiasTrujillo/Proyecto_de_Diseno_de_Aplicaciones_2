@@ -1,0 +1,21 @@
+
+<div>
+  <label>Attribute:</label>
+  <select [(ngModel)]="selectedAttributeId">
+    <option value="">-- Select Attribute --</option>
+    <option *ngFor="let attr of attributes" [value]="attr.id">{{ attr.name }}</option>
+  </select>
+</div>
+
+<div>
+  <label>Class:</label>
+  <select [(ngModel)]="selectedClassId">
+    <option value="">-- Select Class --</option>
+    <option *ngFor="let cls of classes" [value]="cls.idClass">{{ cls.name }}</option>
+  </select>
+</div>
+
+<button (click)="associate()">Associate</button>
+
+<div *ngIf="message" style="color: green;">{{ message }}</div>
+<div *ngIf="error" style="color: red;">{{ error }}</div>

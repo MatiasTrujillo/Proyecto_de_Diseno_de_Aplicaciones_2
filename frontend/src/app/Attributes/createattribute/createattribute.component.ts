@@ -50,6 +50,7 @@ export class CreateattributeComponent implements OnInit {
 
   const formValue = this.attributeForm.value;
   const attribute: Attribute = {
+    id: '',
     name: formValue.name,
     accessibility: Number(formValue.accessibility),
     type: this.types.find(t => t.name === formValue.type)!,
