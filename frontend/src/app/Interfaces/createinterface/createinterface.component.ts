@@ -40,7 +40,7 @@ export class CreateinterfaceComponent {
 
   const interfaceDto: Interface = {
     name: this.interfaceName,
-    idInterface: null
+    id: null
   };
 
   this.simulatorService.createInterface(interfaceDto).subscribe({

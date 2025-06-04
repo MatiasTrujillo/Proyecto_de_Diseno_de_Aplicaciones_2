@@ -7,11 +7,10 @@
 <div *ngIf="error" class="error-message">{{ error }}</div>
 
 <form [formGroup]="deleteForm" (ngSubmit)="onDelete()">
-  <label for="interfaceId">Select a interface to delete:</label>
-  <select formControlName="interfaceId" required>
-    <option *ngFor="let i of interfaces" [value]="i.idInterface">{{ i.name }}</option>
+  <label for="id">Select a interface to delete:</label>
+  <select formControlName="id" required>
+    <option *ngFor="let i of interfaces" [value]="i.id">{{ i.name }}</option>
   </select>
-
   <br /><br />
   <button type="submit">Delete</button>
 </form>

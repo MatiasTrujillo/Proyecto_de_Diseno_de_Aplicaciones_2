@@ -24,7 +24,7 @@ export class DeleteinterfaceComponent implements OnInit {
 
   ngOnInit(): void {
     this.deleteForm = this.fb.group({
-      classId: ['']
+      id: ['']
     });
 
     this.loadInterfaces();
@@ -38,14 +38,14 @@ export class DeleteinterfaceComponent implements OnInit {
   }
 
   onDelete(): void {
-    const interfaceId = this.deleteForm.value.interfaceId;
+    const id = this.deleteForm.value.id;
 
-    if (!interfaceId) {
+    if (!id) {
       this.error = 'Please select an interface to delete.';
       return;
     }
 
-    this.simulatorService.deleteInterface(interfaceId).subscribe({
+    this.simulatorService.deleteInterface(id).subscribe({
       next: () => {
         this.message = 'Interface deleted successfully.';
         this.error = null;
