@@ -639,7 +639,7 @@ public class MethodServiceTest
     }
 
     [TestMethod]
-    public void CreateLocalVariable_ShouldThrowException_WhenLocalVaraiableIsNotValid()
+    public void CreateLocalVariable_ShouldThrowException_WhenLocalVariableIsNotValid()
     {
         var exception =
             Assert.ThrowsException<LocalVariableNotFoundException>(() => _methodService.CreateLocalVariable(null));
