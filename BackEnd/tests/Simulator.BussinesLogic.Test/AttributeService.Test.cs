@@ -964,6 +964,33 @@ public class AttributeServiceTest
     }
 
     [TestMethod]
+    public void CreateAttribute_ShouldThrowException_WhenReferenceIsInterfaceButInstanceIsNotSubtype()
+    {
+        var anInterface1 = new Interface { Name = "Inter1" };
+        var aClass1 = new Class { Name = "Class1" };
+        var dto = new AttributeDto
+        {
+            Name = "Agility",
+            Accessibility = Accessibility.Public,
+            ReferenceType = new TypeDTO { Name = anInterface1.Name, Kind = "interface" },
+            InstanceType = new TypeDTO { Name = aClass1.Name, Kind = "class" },
+        };
+
+        _mockClassRepository
+            .Setup(repo => repo.FindAll())
+            .Returns([aClass1]);
+
+        _mockClassRepository
+            .Setup(repo => repo.FindAllTypes())
+            .Returns([aClass1, anInterface1]);
+
+        var exception = Assert.ThrowsException<InvalidAttributeException>(() =>
+            _attributeService.CreateAttribute(dto));
+
+        Assert.AreEqual("Instance Type is not a subclass of Reference Type", exception.Message);
+    }
+
+    [TestMethod]
     public void UpdateAttribute_ShouldThrowException_WhenInstanceTypeNotSubclassOfReferenceType()
     {
         var attributeId = Guid.NewGuid();
