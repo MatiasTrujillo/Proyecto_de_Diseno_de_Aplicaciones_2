@@ -7,6 +7,7 @@ import { Session } from '../models/Session';
 import { Class } from '../models/class';
 import { Type } from '../models/Type';
 import { Method } from '../models/method';
+import { MethodSignature } from '../models/MethodSignature';
 import { Attribute } from '../models/attribute';
 import { LocalVariable } from '../models/localvariable';
 import { Interface } from '../models/Interface';
@@ -113,6 +114,14 @@ export class SimulatorService {
 
   createInterface(interfaceData: Interface): Observable<{ id: string }> {
     return this.http.post<{ id: string }>(`${this.apiUrl}/interfaces`, interfaceData).pipe(
+      catchError((error) => {
+        return throwError(() => error);
+      })
+    );
+  }
+
+  createMethodSignature(methodSignature: MethodSignature): Observable<{ id: string }> {
+    return this.http.post<{ id: string }>(`${this.apiUrl}/methodSignature`, methodSignature).pipe(
       catchError((error) => {
         return throwError(() => error);
       })
