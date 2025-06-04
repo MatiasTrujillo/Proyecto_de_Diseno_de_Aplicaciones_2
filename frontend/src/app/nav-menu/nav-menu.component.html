@@ -36,12 +36,16 @@
     <button (click)="openModal('localVariable')">Open</button>
   </div>
 
+<div class="card-container">
   <div class="card">
     <h3>Interface</h3>
     <p>Define a new interface for your simulation logic.</p>
-    <button (click)="openModal('interface')">Open</button>
-    <button class="danger" (click)="openModal('deleteinterface')">Delete</button>
+    <div class="button-group">
+      <button class="primary" (click)="openModal('interface')">Create</button>
+      <button class="danger" (click)="openModal('deleteinterface')">Delete</button>
+    </div>
   </div>
+</div>
 
   <div class="card">
     <h3>Create MethodSignature</h3>

@@ -12,5 +12,7 @@
     <option *ngFor="let i of interfaces" [value]="i.id">{{ i.name }}</option>
   </select>
   <br /><br />
-  <button type="submit">Delete</button>
+  <div class="button-container">
+      <button mat-raised-button color="primary" type="submit">Delete</button>
+  </div>
 </form>
