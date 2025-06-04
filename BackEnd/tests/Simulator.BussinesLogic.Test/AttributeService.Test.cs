@@ -991,6 +991,36 @@ public class AttributeServiceTest
     }
 
     [TestMethod]
+    public void CreateAttribute_ShouldCreate_WhenBothAreTheSameInterface()
+    {
+        var anInterface1 = new Interface { Name = "Inter1" };
+        var dto = new AttributeDto
+        {
+            Name = "Agility",
+            Accessibility = Accessibility.Public,
+            ReferenceType = new TypeDTO { Name = anInterface1.Name, Kind = "interface" },
+            InstanceType = new TypeDTO { Name = anInterface1.Name, Kind = "interface" },
+        };
+
+        _mockClassRepository
+            .Setup(repo => repo.FindAll())
+            .Returns([]);
+
+        _mockClassRepository
+            .Setup(repo => repo.FindAllTypes())
+            .Returns([anInterface1]);
+
+        _attributeService.CreateAttribute(dto);
+
+        _mockAttributeRepository.Verify(repo => repo.Add(
+            It.Is<Attribute>(a =>
+                a.Name == dto.Name &&
+                a.Accessibility == dto.Accessibility &&
+                a.ReferenceType != null &&
+                a.ReferenceType.Name == dto.ReferenceType.Name)), Times.Once);
+    }
+
+    [TestMethod]
     public void UpdateAttribute_ShouldThrowException_WhenInstanceTypeNotSubclassOfReferenceType()
     {
         var attributeId = Guid.NewGuid();
