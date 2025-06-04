@@ -742,6 +742,28 @@ public class MethodServiceTest
         Assert.AreEqual("Invalid reference type or instance type. If one is primitive, both should be primitive. If both are, then they must be the same.", ex.Message);
     }
 
+    [TestMethod]
+    public void CreateLocalVariable_ShouldCreate_WhenReferenceIsInterfaceAndInstanceIsSubclass()
+    {
+        var interface1 = new Interface { Name = "Inter1" };
+        var class1 = new Class { Name = "Class1", Parents = [interface1] };
+
+        var localVariableDto = new LocalVariableDTO { Name = "TestParameter", ReferenceType = new TypeDTO { Name = interface1.Name, Kind = "interface" }, InstanceType = new TypeDTO { Name = class1.Name, Kind = "class" } };
+
+        _mockLocalVariableRepository
+            .Setup(r => r.Add(It.Is<LocalVariable>(p =>
+                p.Name == localVariableDto.Name && p.ReferenceType.Name == interface1.Name && p.InstanceType.Name == class1.Name)));
+
+        _mockClassRepository
+            .Setup(repo => repo.FindAllTypes())
+            .Returns([interface1, class1]);
+
+        var result = _methodService.CreateLocalVariable(localVariableDto);
+
+        Assert.AreNotEqual(Guid.Empty, result);
+        _mockLocalVariableRepository.Verify(r => r.Add(It.IsAny<LocalVariable>()), Times.Once);
+    }
+
     [DataTestMethod]
     [DataRow("base")]
     [DataRow("this")]
