@@ -5,7 +5,6 @@ using Simulator.Domain.Exception;
 using Simulator.DTO;
 using Simulator.IDataAcces;
 using Attribute = Simulator.Domain.Attribute;
-using Type = Simulator.Domain.Type;
 
 namespace Simulator.BussinesLogic.Test;
 
@@ -326,7 +325,7 @@ public class AttributeServiceTest
         {
             Name = "Name",
             Accessibility = invalidAccessibility,
-            ReferenceType = new TypeDTO { Name = "SomeClass", Kind = "class"},
+            ReferenceType = new TypeDTO { Name = "SomeClass", Kind = "class" },
             InstanceType = new TypeDTO { Name = "SomeClass", Kind = "class" }
         };
 

@@ -653,7 +653,7 @@ public class MethodServiceTest
         var classT = new Class { Name = "TestClass" };
         var classChild = new Class { Name = "Child", Parents = [classT] };
 
-        var localVariableDto = new LocalVariableDTO { Name = "TestParameter", ReferenceType = new TypeDTO { Name = classT.Name, Kind = "class" }, InstanceType = new TypeDTO { Name = classChild.Name, Kind = "class" }};
+        var localVariableDto = new LocalVariableDTO { Name = "TestParameter", ReferenceType = new TypeDTO { Name = classT.Name, Kind = "class" }, InstanceType = new TypeDTO { Name = classChild.Name, Kind = "class" } };
 
         _mockLocalVariableRepository
             .Setup(r => r.Add(It.Is<LocalVariable>(p =>
