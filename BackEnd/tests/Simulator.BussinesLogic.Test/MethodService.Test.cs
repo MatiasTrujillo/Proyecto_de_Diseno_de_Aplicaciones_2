@@ -1265,7 +1265,7 @@ public class MethodServiceTest
     }
 
     [TestMethod]
-    public void SetInvokeMethodToALocalVariable_ShouldThrowException_WhenTypeIsNotPrimitive()
+    public void SetInvokeMethodToALocalVariable_ShouldThrowException_WhenTypeIsNotPrimitiveorClass()
     {
         var localVariableId = Guid.NewGuid();
         var invokedMethodId = Guid.NewGuid();
@@ -1274,7 +1274,7 @@ public class MethodServiceTest
         {
             Id = localVariableId,
             Name = "myVar",
-            ReferenceType = new Class()
+            ReferenceType = new Interface()
         };
 
         var invokedMethod = new InvokedMethod
@@ -1290,11 +1290,11 @@ public class MethodServiceTest
 
         var exception = Assert.ThrowsException<InvalidAttributeException>(() => _methodService.SetInvokeMethodToLocalVariable(localVariableId, invokedMethodId));
 
-        Assert.AreEqual("In v1 of this program only primitive types are accepted.", exception.Message);
+        Assert.AreEqual("In v2 of this program only Class and Primitive types are accepted.", exception.Message);
     }
 
     [TestMethod]
-    public void SetInvokeMethodToAParameter_ShouldThrowException_WhenTypeIsNotPrimitive()
+    public void SetInvokeMethodToAParameter_ShouldThrowException_WhenTypeIsNotPrimitiveorClass()
     {
         var id = Guid.NewGuid();
         var invokedMethodId = Guid.NewGuid();
@@ -1303,7 +1303,7 @@ public class MethodServiceTest
         {
             Id = id,
             Name = "myVar",
-            ParameterType = new Class()
+            ParameterType = new Interface()
         };
 
         var invokedMethod = new InvokedMethod
@@ -1319,7 +1319,7 @@ public class MethodServiceTest
 
         var exception = Assert.ThrowsException<InvalidAttributeException>(() => _methodService.SetInvokeMethodToParameter(id, invokedMethodId));
 
-        Assert.AreEqual("In v1 of this program only primitive types are accepted.", exception.Message);
+        Assert.AreEqual("In v2 of this program only Class and Primitive types are accepted.", exception.Message);
     }
 
     [TestMethod]
