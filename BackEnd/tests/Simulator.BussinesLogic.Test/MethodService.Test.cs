@@ -1358,7 +1358,7 @@ public class MethodServiceTest
 
         _methodService.SetInvokeMethodToParameter(parameterId, invokedMethodId);
 
-        Assert.AreEqual(invokedMethod, parameter.InvokedMethod);
+        Assert.IsTrue(parameter.InvokedMethods.Contains(invokedMethod));
         _mockParameterRepository.Verify(repo => repo.Update(parameter), Times.Once);
     }
 
@@ -1395,11 +1395,11 @@ public class MethodServiceTest
             .Returns(invokedMethod);
 
         _mockParameterRepository
-            .Setup(repo => repo.Update(It.Is<Parameter>(p => p == parameter && p.InvokedMethod == invokedMethod)));
+            .Setup(repo => repo.Update(It.Is<Parameter>(p => p == parameter && p.InvokedMethods.Contains(invokedMethod)))).Verifiable();
 
         _methodService.SetInvokeMethodToParameter(parameterId, invokedMethodId);
 
-        Assert.AreEqual(invokedMethod, parameter.InvokedMethod);
+        Assert.IsTrue(parameter.InvokedMethods.Contains(invokedMethod));
         _mockParameterRepository.Verify(repo => repo.Update(parameter), Times.Once);
     }
 

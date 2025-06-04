@@ -157,7 +157,7 @@ public class MethodService(
         ValidateParameterExist(parameter);
         ValidateInvokedMethodExist(invokedMethod);
         ValidateTypeIsPrimitive(parameter.ParameterType);
-        parameter.InvokedMethod = invokedMethod;
+        parameter.InvokedMethods.Add(invokedMethod);
         _parameterRepository.Update(parameter);
     }
 

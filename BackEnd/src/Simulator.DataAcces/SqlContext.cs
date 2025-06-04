@@ -118,7 +118,7 @@ public sealed class SqlContext : DbContext
                 });
 
         modelBuilder.Entity<Attribute>()
-            .HasMany(m => m.InvokedMethods)
+            .HasMany(a => a.InvokedMethods)
             .WithMany()
             .UsingEntity<Dictionary<string, object>>(
                 "AttributeInvokedMethods",
@@ -128,6 +128,19 @@ public sealed class SqlContext : DbContext
                 {
                     j.HasKey("AttributeId", "InvokedMethodId");
                     j.ToTable("AttributeInvokedMethods");
+                });
+
+        modelBuilder.Entity<Parameter>()
+            .HasMany(p => p.InvokedMethods)
+            .WithMany()
+            .UsingEntity<Dictionary<string, object>>(
+                "ParameterInvokedMethods",
+                j => j.HasOne<InvokedMethod>().WithMany().HasForeignKey("InvokedMethodId"),
+                j => j.HasOne<Parameter>().WithMany().HasForeignKey("ParameterId"),
+                j =>
+                {
+                    j.HasKey("ParameterId", "InvokedMethodId");
+                    j.ToTable("ParameterInvokedMethods");
                 });
 
         modelBuilder.Entity<Interface>()
