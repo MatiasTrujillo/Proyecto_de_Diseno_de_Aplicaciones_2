@@ -961,7 +961,7 @@ public class MethodService(
     {
         if(BothPrimitiveButDifferent(referenceType, instanceType) || ReferenceNotPrimitive(referenceType, instanceType) || InstanceNotPrimitive(referenceType, instanceType))
         {
-            throw new InvalidAttributeException("Invalid reference type or instance type. If one is primitive, both should be primitive. If both are, then they must be the same.");
+            throw new LocalVariableException("Invalid reference type or instance type. If one is primitive, both should be primitive. If both are, then they must be the same.");
         }
 
         if(referenceType is Class referenceClass && instanceType is Class instanceClass)
@@ -969,7 +969,7 @@ public class MethodService(
             var res = CaseReferenceClassRecursive(referenceClass, instanceClass);
             if(!res)
             {
-                throw new InvalidAttributeException("Instance Type is not a subclass of Reference Type");
+                throw new LocalVariableException("Instance Type is not a subclass of Reference Type");
             }
         }
         else if(referenceType is Interface referenceInterface2 && instanceType is Class instanceClass2)
@@ -977,16 +977,16 @@ public class MethodService(
             var res = CaseReferenceInterfaceRecursive(referenceInterface2, instanceClass2);
             if(!res)
             {
-                throw new InvalidAttributeException("Instance Type is not a subclass of Reference Type");
+                throw new LocalVariableException("Instance Type is not a subclass of Reference Type");
             }
         }
         else if(referenceType is Class && instanceType is Interface)
         {
-            throw new InvalidAttributeException("Instance Type is not a subclass of Reference Type");
+            throw new LocalVariableException("Instance Type is not a subclass of Reference Type");
         }
         else if(referenceType is Interface referenceInterface && instanceType is Interface instanceInterface && referenceInterface != instanceInterface)
         {
-            throw new InvalidAttributeException("Instance Type is not a subclass of Reference Type");
+            throw new LocalVariableException("Instance Type is not a subclass of Reference Type");
         }
     }
 

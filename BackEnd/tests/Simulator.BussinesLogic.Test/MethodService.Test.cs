@@ -650,11 +650,10 @@ public class MethodServiceTest
     [TestMethod]
     public void CreateLocalVariable_ShouldAddLocalVariable_WhenLocalVariableIsValid()
     {
-        // var classT = new TypeDTO { Name = "TestClass", Kind = "class" };
         var classT = new Class { Name = "TestClass" };
         var classChild = new Class { Name = "Child", Parents = [classT] };
 
-        var localVariableDto = new LocalVariableDTO { Name = "TestParameter", ReferenceType = new TypeDTO { Name = classT.Name }, InstanceType = new TypeDTO { Name = classChild.Name } };
+        var localVariableDto = new LocalVariableDTO { Name = "TestParameter", ReferenceType = new TypeDTO { Name = classT.Name, Kind = "class" }, InstanceType = new TypeDTO { Name = classChild.Name, Kind = "class" }};
 
         _mockLocalVariableRepository
             .Setup(r => r.Add(It.Is<LocalVariable>(p =>
@@ -676,7 +675,7 @@ public class MethodServiceTest
         var classT = new Class { Name = "TestClass" };
         var classChild = new Class { Name = "Child" };
 
-        var localVariableDto = new LocalVariableDTO { Name = "TestParameter", ReferenceType = new TypeDTO { Name = classT.Name }, InstanceType = new TypeDTO { Name = classChild.Name } };
+        var localVariableDto = new LocalVariableDTO { Name = "TestParameter", ReferenceType = new TypeDTO { Name = classT.Name, Kind = "class" }, InstanceType = new TypeDTO { Name = classChild.Name, Kind = "class" } };
 
         _mockLocalVariableRepository
             .Setup(r => r.Add(It.Is<LocalVariable>(p =>
@@ -701,7 +700,7 @@ public class MethodServiceTest
         var classT = new Class { Name = "TestClass" };
         var classChild = new Class { Name = "Child", Parents = [class3] };
 
-        var localVariableDto = new LocalVariableDTO { Name = "TestParameter", ReferenceType = new TypeDTO { Name = classT.Name }, InstanceType = new TypeDTO { Name = classChild.Name } };
+        var localVariableDto = new LocalVariableDTO { Name = "TestParameter", ReferenceType = new TypeDTO { Name = classT.Name, Kind = "class" }, InstanceType = new TypeDTO { Name = classChild.Name, Kind = "class" } };
 
         _mockLocalVariableRepository
             .Setup(r => r.Add(It.Is<LocalVariable>(p =>
@@ -725,7 +724,7 @@ public class MethodServiceTest
         var classT = new Class { Name = "TestClass" };
         var primitive1 = new Primitive(PrimitiveType.Bool) { Name = "Prim" };
 
-        var localVariableDto = new LocalVariableDTO { Name = "TestParameter", ReferenceType = new TypeDTO { Name = classT.Name }, InstanceType = new TypeDTO { Name = primitive1.Name } };
+        var localVariableDto = new LocalVariableDTO { Name = "TestParameter", ReferenceType = new TypeDTO { Name = classT.Name, Kind = "class" }, InstanceType = new TypeDTO { Name = primitive1.Name, Kind = "class" } };
 
         _mockLocalVariableRepository
             .Setup(r => r.Add(It.Is<LocalVariable>(p =>
@@ -749,11 +748,10 @@ public class MethodServiceTest
     [DataRow("Object")]
     public void CreateLocalVariable_ShouldThrowException_WhenNameIsReservedKeyword(string reservedName)
     {
-        // var dto = new LocalVariableDTO { Name = reservedName, LocalVariableType = new TypeDTO { Name = "SomeType", Kind = "class" }, };
         var classT = new Class { Name = "TestClass" };
         var classChild = new Class { Name = "Child", Parents = [classT] };
 
-        var dto = new LocalVariableDTO { Name = reservedName, ReferenceType = new TypeDTO { Name = classT.Name }, InstanceType = new TypeDTO { Name = classChild.Name } };
+        var dto = new LocalVariableDTO { Name = reservedName, ReferenceType = new TypeDTO { Name = classT.Name, Kind = "class" }, InstanceType = new TypeDTO { Name = classChild.Name, Kind = "class" } };
 
         _mockClassRepository
             .Setup(repo => repo.FindAllTypes())

@@ -295,8 +295,8 @@ public class AttributeServiceTest
         {
             Name = longName,
             Accessibility = Accessibility.Public,
-            ReferenceType = new TypeDTO { Name = "TestType" },
-            InstanceType = new TypeDTO { Name = "TestType" }
+            ReferenceType = new TypeDTO { Name = "TestType", Kind = "class" },
+            InstanceType = new TypeDTO { Name = "TestType", Kind = "class" }
         };
 
         var classEntity = new Class
@@ -326,8 +326,8 @@ public class AttributeServiceTest
         {
             Name = "Name",
             Accessibility = invalidAccessibility,
-            ReferenceType = new TypeDTO { Name = "SomeClass" },
-            InstanceType = new TypeDTO { Name = "SomeClass" }
+            ReferenceType = new TypeDTO { Name = "SomeClass", Kind = "class"},
+            InstanceType = new TypeDTO { Name = "SomeClass", Kind = "class" }
         };
 
         var classEntity = new Class
@@ -795,14 +795,14 @@ public class AttributeServiceTest
     [TestMethod]
     public void CreateAttribute_ShouldThrowException_WhenInstanceTypeNotSubclassOfReferenceType()
     {
-        var aClass1 = new Class { Id = Guid.NewGuid(), Name = "class1" };
-        var aClass2 = new Class { Id = Guid.NewGuid(), Name = "class2" };
+        var aClass1 = new Class { Id = Guid.NewGuid(), Name = "Class1" };
+        var aClass2 = new Class { Id = Guid.NewGuid(), Name = "Class2" };
         var dto = new AttributeDto
         {
             Name = "Agility",
             Accessibility = Accessibility.Public,
-            ReferenceType = new TypeDTO { Name = aClass1.Name },
-            InstanceType = new TypeDTO { Name = aClass2.Name },
+            ReferenceType = new TypeDTO { Name = aClass1.Name, Kind = "class" },
+            InstanceType = new TypeDTO { Name = aClass2.Name, Kind = "class" },
         };
 
         _mockClassRepository
@@ -822,15 +822,15 @@ public class AttributeServiceTest
     [TestMethod]
     public void CreateAttribute_ShouldThrowException_WhenInstanceTypeNotSubclassOfReferenceType2()
     {
-        var aClass3 = new Class { Id = Guid.NewGuid(), Name = "class3" };
-        var aClass1 = new Class { Id = Guid.NewGuid(), Name = "class1" };
-        var aClass2 = new Class { Id = Guid.NewGuid(), Name = "class2", Parents = [aClass3] };
+        var aClass3 = new Class { Id = Guid.NewGuid(), Name = "Class3" };
+        var aClass1 = new Class { Id = Guid.NewGuid(), Name = "Class1" };
+        var aClass2 = new Class { Id = Guid.NewGuid(), Name = "Class2", Parents = [aClass3] };
         var dto = new AttributeDto
         {
             Name = "Agility",
             Accessibility = Accessibility.Public,
-            ReferenceType = new TypeDTO { Name = aClass1.Name },
-            InstanceType = new TypeDTO { Name = aClass2.Name },
+            ReferenceType = new TypeDTO { Name = aClass1.Name, Kind = "class" },
+            InstanceType = new TypeDTO { Name = aClass2.Name, Kind = "class" },
         };
 
         _mockClassRepository
@@ -850,14 +850,14 @@ public class AttributeServiceTest
     [TestMethod]
     public void CreateAttribute_ShouldThrowException_WhenReferenceTypeIsPrimitive()
     {
-        var aClass1 = new Class { Id = Guid.NewGuid(), Name = "class1" };
-        var aPrimitive1 = new Primitive(PrimitiveType.Bool);
+        var aClass1 = new Class { Id = Guid.NewGuid(), Name = "Class1" };
+        var aPrimitive1 = new Primitive(PrimitiveType.Bool) { Name = "Prim1" };
         var dto = new AttributeDto
         {
             Name = "Agility",
             Accessibility = Accessibility.Public,
-            ReferenceType = new TypeDTO { Name = aPrimitive1.Name },
-            InstanceType = new TypeDTO { Name = aClass1.Name },
+            ReferenceType = new TypeDTO { Name = aPrimitive1.Name, Kind = "class" },
+            InstanceType = new TypeDTO { Name = aClass1.Name, Kind = "class" },
         };
 
         _mockClassRepository
@@ -877,14 +877,14 @@ public class AttributeServiceTest
     [TestMethod]
     public void CreateAttribute_ShouldThrowException_WhenBothTypesArePrimitiveButDifferent()
     {
-        var aPrimitive2 = new Primitive(PrimitiveType.Int) { Name = "prim2" };
-        var aPrimitive1 = new Primitive(PrimitiveType.Bool) { Name = "prim1" };
+        var aPrimitive2 = new Primitive(PrimitiveType.Int) { Name = "Prim2" };
+        var aPrimitive1 = new Primitive(PrimitiveType.Bool) { Name = "Prim1" };
         var dto = new AttributeDto
         {
             Name = "Agility",
             Accessibility = Accessibility.Public,
-            ReferenceType = new TypeDTO { Name = aPrimitive1.Name },
-            InstanceType = new TypeDTO { Name = aPrimitive2.Name },
+            ReferenceType = new TypeDTO { Name = aPrimitive1.Name, Kind = "class" },
+            InstanceType = new TypeDTO { Name = aPrimitive2.Name, Kind = "class" },
         };
 
         _mockClassRepository
@@ -904,14 +904,14 @@ public class AttributeServiceTest
     [TestMethod]
     public void CreateAttribute_ShouldCreate_WhenBothTypesArePrimitiveAndTheSame()
     {
-        var aPrimitive2 = new Primitive(PrimitiveType.Bool) { Name = "prim2" };
-        var aPrimitive1 = new Primitive(PrimitiveType.Bool) { Name = "prim1" };
+        var aPrimitive2 = new Primitive(PrimitiveType.Bool) { Name = "Prim2" };
+        var aPrimitive1 = new Primitive(PrimitiveType.Bool) { Name = "Prim1" };
         var dto = new AttributeDto
         {
             Name = "Agility",
             Accessibility = Accessibility.Public,
-            ReferenceType = new TypeDTO { Name = aPrimitive1.Name },
-            InstanceType = new TypeDTO { Name = aPrimitive2.Name },
+            ReferenceType = new TypeDTO { Name = aPrimitive1.Name, Kind = "class" },
+            InstanceType = new TypeDTO { Name = aPrimitive2.Name, Kind = "class" },
         };
 
         _mockClassRepository
