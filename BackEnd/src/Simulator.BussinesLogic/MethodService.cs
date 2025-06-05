@@ -200,7 +200,7 @@ public class MethodService(
         }
     }
 
-    public string ExecuteMethod(Guid referenceId, Guid objectToCreateId, Guid methodId)
+    public string ExecuteMethod(Guid referenceId, Guid objectToCreateId, Guid methodId, List<TypeDTO> parameterInstanceTypes)
     {
         var reference = _classRepository.FindAll().FirstOrDefault(x => x.Id == referenceId);
         var objectToCreate = _classRepository.FindAll().FirstOrDefault(x => x.Id == objectToCreateId);
@@ -213,6 +213,7 @@ public class MethodService(
         ValidateMethodExist(method!);
         ValidateMethodIsInClass(reference.Methods!, methodId);
         method = FindMethod(reference.Methods!, methodId);
+        ValidateParameterInstanceType(method.Parameters, parameterInstanceTypes);
 
         result = result.Concat(FirstLine(reference, objectToCreate!, method)).ToList();
         result = result.Concat(WriteOtherLines(reference, objectToCreate!, method, method)).ToList();
@@ -1080,6 +1081,21 @@ public class MethodService(
         else if(instanceTypeT is Class c2)
         {
             localVariable.InstanceType = c2;
+        }
+    }
+
+    private void ValidateParameterInstanceType(List<Parameter>? parameters, List<TypeDTO> types)
+    {
+        if(parameters.Count != types.Count)
+        {
+            throw new ParameterException("The number of types is not the same as the number of parameters.");
+        }
+
+        var allTypes = _classRepository.FindAllTypes();
+        for(var i = 0; i < parameters.Count; i++)
+        {
+            var type = allTypes.FirstOrDefault(x => x.Name == types[i].Name); // name o id ??
+            ValidateInstanceClass(parameters[i].ReferenceType, type);
         }
     }
 }

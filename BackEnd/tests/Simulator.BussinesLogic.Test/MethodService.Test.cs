@@ -1554,7 +1554,7 @@ public class MethodServiceTest
         _mockMethodRepository.Setup(repo => repo.Find(encenderInvoked.MethodId)).Returns(encender);
         _mockMethodRepository.Setup(repo => repo.Find(iniciarViajeInvoked.MethodId)).Returns(iniciarViaje);
 
-        var result = _methodService.ExecuteMethod(auto.Id, auto.Id, iniciarViaje.Id);
+        var result = _methodService.ExecuteMethod(auto.Id, auto.Id, iniciarViaje.Id, []);
         Console.WriteLine(result);
         var result2 =
             "Auto.IniciarViaje() -> Auto.IniciarViaje()\n" +
@@ -1715,8 +1715,8 @@ public class MethodServiceTest
         _mockMethodRepository.Setup(repo => repo.Find(enviarInvoked1.MethodId)).Returns(enviar);
         _mockMethodRepository.Setup(repo => repo.Find(enviarInvoked2.MethodId)).Returns(enviarEmail);
 
-        var result = _methodService.ExecuteMethod(notificador.Id, notificador.Id, notificar.Id);
-        var result2 = _methodService.ExecuteMethod(notificacion.Id, sms.Id, enviar.Id);
+        var result = _methodService.ExecuteMethod(notificador.Id, notificador.Id, notificar.Id, []);
+        var result2 = _methodService.ExecuteMethod(notificacion.Id, sms.Id, enviar.Id, []);
         Console.WriteLine(result2);
         Console.WriteLine("----------------------------------------------");
         Console.WriteLine(result);
@@ -1892,7 +1892,7 @@ public class MethodServiceTest
         _mockMethodRepository.Setup(repo => repo.Find(inicializarInvoked.MethodId)).Returns(inicializar);
         _mockMethodRepository.Setup(repo => repo.Find(limpiarInvoked.MethodId)).Returns(limpiar);
 
-        var result = _methodService.ExecuteMethod(validador.Id, validador.Id, validar.Id);
+        var result = _methodService.ExecuteMethod(validador.Id, validador.Id, validar.Id, []);
 
         var res =
             "Validador.Validar() -> Validador.Validar()\n" +
@@ -2121,7 +2121,7 @@ public class MethodServiceTest
         _mockMethodRepository.Setup(repo => repo.Find(logAccesoInvoked.MethodId)).Returns(logAcceso);
         _mockMethodRepository.Setup(repo => repo.Find(toStringInvoked.MethodId)).Returns(toString);
 
-        var result = _methodService.ExecuteMethod(autenticador.Id, autenticadorPassword.Id, autenticar.Id);
+        var result = _methodService.ExecuteMethod(autenticador.Id, autenticadorPassword.Id, autenticar.Id, []);
 
         var res =
             "Autenticador.Autenticar(Usuario) -> Autenticador.Autenticar(Usuario)\n" +
@@ -2333,7 +2333,7 @@ public class MethodServiceTest
         _mockMethodRepository.Setup(repo => repo.Find(validarIdentidadInvoked.MethodId)).Returns(validarIdentidad);
         _mockMethodRepository.Setup(repo => repo.Find(realizarProcesoProcesoInvoked.MethodId)).Returns(realizarProcesoProceso);
 
-        var result = _methodService.ExecuteMethod(proceso.Id, procesoCompra.Id, ejecutar.Id);
+        var result = _methodService.ExecuteMethod(proceso.Id, procesoCompra.Id, ejecutar.Id, []);
 
         var res =
             "Proceso.Ejecutar(Cliente) -> Proceso.Ejecutar(Cliente)\n" +
