@@ -114,12 +114,13 @@ public class MethodControllerTest
         var referenceId = Guid.NewGuid();
         var oTCId = Guid.NewGuid();
         var methodId = Guid.NewGuid();
-        _methodServiceMock.Setup(service => service.ExecuteMethod(referenceId, oTCId, methodId))
+        var parameterTypes = new List<TypeDTO>();
+        _methodServiceMock.Setup(service => service.ExecuteMethod(referenceId, oTCId, methodId, parameterTypes))
             .Verifiable();
 
-        var result = _controller.ExecuteMethod(referenceId, oTCId, methodId);
+        var result = _controller.ExecuteMethod(referenceId, oTCId, methodId, parameterTypes);
 
         Assert.IsNotNull(result);
-        _methodServiceMock.Verify(service => service.ExecuteMethod(referenceId, oTCId, methodId), Times.Once);
+        _methodServiceMock.Verify(service => service.ExecuteMethod(referenceId, oTCId, methodId, parameterTypes), Times.Once);
     }
 }
