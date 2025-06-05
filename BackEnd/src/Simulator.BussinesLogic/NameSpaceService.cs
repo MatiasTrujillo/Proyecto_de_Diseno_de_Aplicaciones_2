@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using Simulator.BussinesLogic.Exception;
+using Simulator.Domain;
 using Simulator.DTO;
 using Simulator.IBussinesLogic;
 using Simulator.IDataAcces;
@@ -60,13 +61,18 @@ public class NameSpaceService(
         var nameSpace = nameSpaceRepository.Find(nameSpaceId);
         var interfaceEntity = interfaceRepository.Find(interfaceId);
 
+        ValidateInterface(interfaceEntity);
+
+        interfaceEntity.NameSpace = nameSpace;
+        interfaceRepository.Update(interfaceEntity);
+    }
+
+    private static void ValidateInterface(Interface interfaceEntity)
+    {
         if(interfaceEntity == null)
         {
             throw new NameSpaceException("Interface does not exist");
         }
-
-        interfaceEntity.NameSpace = nameSpace;
-        interfaceRepository.Update(interfaceEntity);
     }
 
     public void RemoveNameSpace(Guid id)
