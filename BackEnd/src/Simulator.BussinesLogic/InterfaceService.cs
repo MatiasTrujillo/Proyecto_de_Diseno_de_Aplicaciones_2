@@ -123,4 +123,9 @@ public class InterfaceService(
             throw new InterfaceNotFoundException("There is no interface with this id.");
         }
     }
+
+    public List<Interface> GetInterfaces()
+    {
+        return _interfaceRepository.FindAll();
+    }
 }
