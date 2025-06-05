@@ -21,12 +21,10 @@ public class NameSpaceService_Test
         _mockNameSpaceRepository = new Mock<INameSpaceRepository>(MockBehavior.Strict);
         _mockClassRepository = new Mock<IClassRepository>(MockBehavior.Strict);
         _mockInterfaceRepository = new Mock<IInterfaceRepository>(MockBehavior.Strict);
-        _nameSpaceService = new NameSpaceService(_mockNameSpaceRepository.Object, _mockClassRepository.Object, _mockInterfaceRepository.Object);
+        _nameSpaceService = new NameSpaceService(_mockNameSpaceRepository.Object, _mockClassRepository.Object,
+            _mockInterfaceRepository.Object);
 
-        _dto = new NameSpaceDTO
-        {
-            Name = "MyNamespace"
-        };
+        _dto = new NameSpaceDTO { Name = "MyNamespace" };
     }
 
     [TestMethod]
@@ -221,6 +219,10 @@ public class NameSpaceService_Test
         _mockNameSpaceRepository.Setup(r => r.Update(parent));
         _mockNameSpaceRepository.Setup(r => r.Update(child));
 
+        _mockNameSpaceRepository
+            .Setup(r => r.FindAllNamespaceComponents())
+            .Returns([parent, child]);
+
         _nameSpaceService.AddChildToNameSpace(parent.Id, child.Id);
 
         Assert.AreEqual(parent, child.Father);
@@ -235,6 +237,9 @@ public class NameSpaceService_Test
         ns.Father = ns;
 
         _mockNameSpaceRepository.Setup(r => r.Find(ns.Id)).Returns(ns);
+        _mockNameSpaceRepository
+            .Setup(r => r.FindAllNamespaceComponents())
+            .Returns([ns]);
 
         _nameSpaceService.AddChildToNameSpace(ns.Id, ns.Id);
     }
@@ -243,26 +248,37 @@ public class NameSpaceService_Test
     public void RemoveChildFromNameSpace_ShouldRemoveSuccessfully()
     {
         var parent = new NameSpace("Parent", null);
-        var child = new NameSpace("Child", parent);
+        var child = new NameSpace("Child", null);
         parent.AddChild(child);
+
+        _mockNameSpaceRepository
+            .Setup(r => r.FindAllNamespaceComponents())
+            .Returns([child]);
 
         _mockNameSpaceRepository.Setup(r => r.Find(parent.Id)).Returns(parent);
         _mockNameSpaceRepository.Setup(r => r.Find(child.Id)).Returns(child);
-        _mockNameSpaceRepository.Setup(r => r.Update(parent));
-        _mockNameSpaceRepository.Setup(r => r.Update(child));
+
+        _mockNameSpaceRepository.Setup(r => r.Update(It.IsAny<NameSpace>()));
 
         _nameSpaceService.RemoveChildFromNameSpace(parent.Id, child.Id);
 
         Assert.IsFalse(parent.Childs.Contains(child));
         Assert.IsNull(child.Father);
+
+        _mockNameSpaceRepository.Verify(r => r.Update(parent), Times.Once);
+        _mockNameSpaceRepository.Verify(r => r.Update(child), Times.Once);
     }
 
     [TestMethod]
     [ExpectedException(typeof(NameSpaceException))]
-    public void RemoveChildFromNameSpace_ShouldThrow_WhenNotAChild()
+    public void RemoveChildFromNameSpace_ShouldThrowIfChildIsNotInParent()
     {
         var parent = new NameSpace("Parent", null);
-        var child = new NameSpace("NotAChild", null); // no está en la lista del padre
+        var child = new NameSpace("Child", null);
+
+        _mockNameSpaceRepository
+            .Setup(r => r.FindAllNamespaceComponents())
+            .Returns([child]);
 
         _mockNameSpaceRepository.Setup(r => r.Find(parent.Id)).Returns(parent);
         _mockNameSpaceRepository.Setup(r => r.Find(child.Id)).Returns(child);

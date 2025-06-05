@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using Simulator.BussinesLogic.Exception;
 using Simulator.DTO;
 using Simulator.IBussinesLogic;
@@ -49,7 +50,7 @@ public class NameSpaceService(
         }
 
         classEntity.NameSpace = nameSpace;
-        classRepository.Update(classEntity); // ✅ Faltaba esto
+        classRepository.Update(classEntity);
     }
 
     public void AssociateNameSpaceToInterface(Guid nameSpaceId, Guid interfaceId)
@@ -88,8 +89,11 @@ public class NameSpaceService(
 
     public void AddChildToNameSpace(Guid parentId, Guid childId)
     {
+        var nc = nameSpaceRepository.FindAllNamespaceComponents();
+        var nameSpace = nc.Select(nct => nct)
+            .FirstOrDefault(ns => ns.Id == childId);
+        ValidateNameSpaceComponentExistence(nameSpace);
         ValidateNameSpaceExistence(parentId);
-        ValidateNameSpaceExistence(childId);
         ValidateDiferentNameSpaces(parentId, childId);
         ValidateNoCircularReference(parentId, childId);
 
@@ -104,8 +108,11 @@ public class NameSpaceService(
 
     public void RemoveChildFromNameSpace(Guid parentId, Guid childId)
     {
+        var nc = nameSpaceRepository.FindAllNamespaceComponents();
+        var nameSpace = nc.Select(nct => nct)
+            .FirstOrDefault(ns => ns.Id == childId);
         ValidateNameSpaceExistence(parentId);
-        ValidateNameSpaceExistence(childId);
+        ValidateNameSpaceComponentExistence(nameSpace);
 
         var parent = nameSpaceRepository.Find(parentId);
 
@@ -135,10 +142,18 @@ public class NameSpaceService(
         }
     }
 
+    private void ValidateNameSpaceComponentExistence(NamespaceComponent? nameSpace)
+    {
+        if(nameSpace == null)
+        {
+            throw new NameSpaceException("NameSpace does not exist");
+        }
+    }
+
     private void ValidateNameSpaceExistence(Guid id)
     {
-        var nameSpace = nameSpaceRepository.Find(id);
-        if(nameSpace == null)
+        var nc = nameSpaceRepository.Find(id);
+        if(nc == null)
         {
             throw new NameSpaceException("NameSpace does not exist");
         }

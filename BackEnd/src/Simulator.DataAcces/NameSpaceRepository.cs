@@ -41,4 +41,10 @@ public class NameSpaceRepository(SqlContext context) : INameSpaceRepository
         return context.NameSpaces
             .ToList();
     }
+
+    public List<NamespaceComponent> FindAllNamespaceComponents()
+    {
+        return context.NamespaceComponents
+            .ToList();
+    }
 }
