@@ -25,11 +25,27 @@ public sealed class SqlContext : DbContext
     public DbSet<Interface> Interfaces { get; set; }
     public DbSet<MethodSignature> MethodSignatures { get; set; }
     public DbSet<Session> Sessions { get; set; }
+    public DbSet<NamespaceComponent> NamespaceComponents { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        modelBuilder.Entity<NameSpace>()
+            .HasOne(n => n.Father)
+            .WithMany()
+            .HasForeignKey("FatherId")
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<NamespaceComponent>()
+            .HasOne(nc => nc.NameSpace)
+            .WithMany(ns => ns.Childs)
+            .HasForeignKey(nc => nc.NameSpaceId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<NamespaceComponent>()
+            .HasKey(s => s.Id);
+
         modelBuilder.Entity<Type>()
-            .HasKey(t => t.Id);
+            .HasBaseType<NamespaceComponent>();
 
         modelBuilder.Entity<Class>()
             .HasBaseType<Type>();

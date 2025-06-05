@@ -45,6 +45,4 @@ public class Class : Type
             throw new ClassException("The class name must not contain spaces.");
         }
     }
-
-    public override Guid Id { get; set; }
 }

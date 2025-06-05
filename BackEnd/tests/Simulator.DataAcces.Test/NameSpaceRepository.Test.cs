@@ -122,4 +122,20 @@ public class NameSpaceRepository_Test
         result!.Name.Should().Be("UpdatedNS");
     }
     #endregion
+
+    #region Delete
+    [TestMethod]
+    public void Delete_WhenNamespaceExists_ShouldRemoveIt()
+    {
+        _context.NameSpaces.Add(aNameSpace);
+        _context.SaveChanges();
+
+        _repository.Delete(aNameSpace);
+        _context.SaveChanges();
+
+        using var freshContext = ProgramTest.BuildTestDbContext();
+        var result = freshContext.NameSpaces.FirstOrDefault(n => n.Id == aNameSpace.Id);
+        result.Should().BeNull();
+    }
+    #endregion
 }
