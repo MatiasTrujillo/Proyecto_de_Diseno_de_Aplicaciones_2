@@ -31,4 +31,99 @@ public class NameSpaceControllerTest
 
         _mockNameSpaceService.Verify(service => service.CreateNameSpace(nameSpaceDto), Times.Once);
     }
+
+    [TestMethod]
+    public void AssociateNameSpaceToClass_ShouldReturnNoContent()
+    {
+        var nameSpaceId = Guid.NewGuid();
+        var classId = Guid.NewGuid();
+
+        _mockNameSpaceService
+            .Setup(service => service.AssociateNameSpaceToClass(nameSpaceId, classId));
+
+        var result = _controller.AssociateNameSpaceToClass(nameSpaceId, classId) as NoContentResult;
+
+        Assert.IsNotNull(result);
+        Assert.AreEqual(204, result.StatusCode);
+        _mockNameSpaceService.Verify(service => service.AssociateNameSpaceToClass(nameSpaceId, classId), Times.Once);
+    }
+
+    [TestMethod]
+    public void AssociateNameSpaceToInterface_ShouldReturnNoContent()
+    {
+        var nameSpaceId = Guid.NewGuid();
+        var interfaceId = Guid.NewGuid();
+
+        _mockNameSpaceService
+            .Setup(service => service.AssociateNameSpaceToInterface(nameSpaceId, interfaceId));
+
+        var result = _controller.AssociateNameSpaceToInterface(nameSpaceId, interfaceId) as NoContentResult;
+
+        Assert.IsNotNull(result);
+        Assert.AreEqual(204, result.StatusCode);
+        _mockNameSpaceService.Verify(service => service.AssociateNameSpaceToInterface(nameSpaceId, interfaceId), Times.Once);
+    }
+
+    [TestMethod]
+    public void AddFatherToNameSpace_ShouldReturnNoContent()
+    {
+        var id = Guid.NewGuid();
+        var idFather = Guid.NewGuid();
+
+        _mockNameSpaceService
+            .Setup(service => service.AddFatherToNameSpace(id, idFather));
+
+        var result = _controller.AddFatherToNameSpace(id, idFather) as NoContentResult;
+
+        Assert.IsNotNull(result);
+        Assert.AreEqual(204, result.StatusCode);
+        _mockNameSpaceService.Verify(service => service.AddFatherToNameSpace(id, idFather), Times.Once);
+    }
+
+    [TestMethod]
+    public void RemoveNameSpace_ShouldReturnNoContent()
+    {
+        var id = Guid.NewGuid();
+
+        _mockNameSpaceService
+            .Setup(service => service.RemoveNameSpace(id));
+
+        var result = _controller.RemoveNameSpace(id) as NoContentResult;
+
+        Assert.IsNotNull(result);
+        Assert.AreEqual(204, result.StatusCode);
+        _mockNameSpaceService.Verify(service => service.RemoveNameSpace(id), Times.Once);
+    }
+
+    [TestMethod]
+    public void AddChildToNameSpace_ShouldReturnNoContent()
+    {
+        var parentId = Guid.NewGuid();
+        var childId = Guid.NewGuid();
+
+        _mockNameSpaceService
+            .Setup(service => service.AddChildToNameSpace(parentId, childId));
+
+        var result = _controller.AddChildToNameSpace(parentId, childId) as NoContentResult;
+
+        Assert.IsNotNull(result);
+        Assert.AreEqual(204, result.StatusCode);
+        _mockNameSpaceService.Verify(service => service.AddChildToNameSpace(parentId, childId), Times.Once);
+    }
+
+    [TestMethod]
+    public void RemoveChildFromNameSpace_ShouldReturnNoContent()
+    {
+        var parentId = Guid.NewGuid();
+        var childId = Guid.NewGuid();
+
+        _mockNameSpaceService
+            .Setup(service => service.RemoveChildFromNameSpace(parentId, childId));
+
+        var result = _controller.RemoveChildFromNameSpace(parentId, childId) as NoContentResult;
+
+        Assert.IsNotNull(result);
+        Assert.AreEqual(204, result.StatusCode);
+        _mockNameSpaceService.Verify(service => service.RemoveChildFromNameSpace(parentId, childId), Times.Once);
+    }
 }
