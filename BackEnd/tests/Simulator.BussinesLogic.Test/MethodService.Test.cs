@@ -581,7 +581,7 @@ public class MethodServiceTest
 
         _mockParameterRepository
             .Setup(r => r.Add(It.Is<Parameter>(p =>
-                p.Name == parameterDto.Name && p.ParameterType.Name == classT.Name)));
+                p.Name == parameterDto.Name && p.ReferenceType.Name == classT.Name && p.InstanceType.Name == classT.Name)));
 
         _mockClassRepository
             .Setup(repo => repo.FindAllTypes())
@@ -1184,7 +1184,7 @@ public class MethodServiceTest
         {
             Id = methodId,
             Name = "MainMethod",
-            Parameters = [new Parameter { Name = "MyParam", ParameterType = paramClass }],
+            Parameters = [new Parameter { Name = "MyParam", ReferenceType = paramClass }],
             LocalVariables = [],
             Methods = []
         };
@@ -1303,7 +1303,7 @@ public class MethodServiceTest
         {
             Id = id,
             Name = "myVar",
-            ParameterType = new Class()
+            ReferenceType = new Class()
         };
 
         var invokedMethod = new InvokedMethod
@@ -1688,7 +1688,7 @@ public class MethodServiceTest
                 {
                     Id = Guid.NewGuid(),
                     Name = "aviso",
-                    ParameterType = notificacion
+                    ReferenceType = notificacion
                 }
 
             ],
@@ -1937,7 +1937,7 @@ public class MethodServiceTest
         {
             Id = Guid.NewGuid(),
             Name = "Mensaje",
-            ParameterType = new Primitive(PrimitiveType.String),
+            ReferenceType = new Primitive(PrimitiveType.String),
         };
 
         var registrar = new Method
@@ -2006,7 +2006,7 @@ public class MethodServiceTest
         {
             Id = Guid.NewGuid(),
             Name = "usuario",
-            ParameterType = usuario
+            ReferenceType = usuario
         };
 
         var validarCredencialesAutenticator = new Method
@@ -2176,7 +2176,7 @@ public class MethodServiceTest
         {
             Id = Guid.NewGuid(),
             Name = "mensaje",
-            ParameterType = new Primitive(PrimitiveType.String)
+            ReferenceType = new Primitive(PrimitiveType.String)
         };
 
         var enviarNotificacion = new Method
@@ -2214,7 +2214,7 @@ public class MethodServiceTest
             Accessibility = Accessibility.Protected,
         };
 
-        var clienteParam = new Parameter { Id = Guid.NewGuid(), Name = "cliente", ParameterType = cliente };
+        var clienteParam = new Parameter { Id = Guid.NewGuid(), Name = "cliente", ReferenceType = cliente };
 
         var realizarProcesoProceso = new Method
         {

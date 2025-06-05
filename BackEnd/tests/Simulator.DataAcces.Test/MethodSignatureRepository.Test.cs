@@ -29,7 +29,7 @@ public class MethodSignatureRepository_Test
         {
             Id = Guid.NewGuid(),
             Name = "aParameter",
-            ParameterType = secondPrimitive,
+            ReferenceType = secondPrimitive,
             InvokedMethod = null
         };
 

@@ -131,7 +131,7 @@ public class ClassService(
         var itHas = aMethod.Parameters.Count == signature.Parameters.Count;
         foreach(var parameter in signature.Parameters)
         {
-            itHas = itHas && aMethod.Parameters.Any(p => p.Name == parameter.Name && p.ParameterType == parameter.ParameterType);
+            itHas = itHas && aMethod.Parameters.Any(p => p.Name == parameter.Name && p.ReferenceType == parameter.ReferenceType);
         }
 
         return itHas;
