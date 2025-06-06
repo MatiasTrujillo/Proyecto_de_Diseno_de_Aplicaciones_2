@@ -1707,6 +1707,8 @@ public class MethodServiceTest
             Methods = [notificar]
         };
 
+        var notificacionType = new TypeDTO { Id = Guid.NewGuid(), Name = "Notificacion" };
+
         _mockClassRepository.Setup(repo => repo.FindAll()).Returns([notificador, sms, email, notificacion]);
         _mockClassRepository.Setup(repo => repo.FindAllTypes()).Returns([notificador, sms, email, notificacion]);
         _mockMethodRepository.Setup(repo => repo.FindAll()).Returns([notificar, enviar]);
@@ -1715,7 +1717,7 @@ public class MethodServiceTest
         _mockMethodRepository.Setup(repo => repo.Find(enviarInvoked1.MethodId)).Returns(enviar);
         _mockMethodRepository.Setup(repo => repo.Find(enviarInvoked2.MethodId)).Returns(enviarEmail);
 
-        var result = _methodService.ExecuteMethod(notificador.Id, notificador.Id, notificar.Id, []);
+        var result = _methodService.ExecuteMethod(notificador.Id, notificador.Id, notificar.Id, [notificacionType]);
         var result2 = _methodService.ExecuteMethod(notificacion.Id, sms.Id, enviar.Id, []);
         Console.WriteLine(result2);
         Console.WriteLine("----------------------------------------------");
@@ -2109,6 +2111,12 @@ public class MethodServiceTest
             Parents = [autenticador]
         };
 
+        var usuarioType = new TypeDTO
+        {
+            Id = Guid.NewGuid(),
+            Name = "Usuario",
+        };
+
         var stringPrimitive = new Primitive(PrimitiveType.String);
 
         _mockClassRepository.Setup(repo => repo.FindAll()).Returns([usuario, logger, autenticador, autenticadorPassword]);
@@ -2121,7 +2129,7 @@ public class MethodServiceTest
         _mockMethodRepository.Setup(repo => repo.Find(logAccesoInvoked.MethodId)).Returns(logAcceso);
         _mockMethodRepository.Setup(repo => repo.Find(toStringInvoked.MethodId)).Returns(toString);
 
-        var result = _methodService.ExecuteMethod(autenticador.Id, autenticadorPassword.Id, autenticar.Id, []);
+        var result = _methodService.ExecuteMethod(autenticador.Id, autenticadorPassword.Id, autenticar.Id, [usuarioType]);
 
         var res =
             "Autenticador.Autenticar(Usuario) -> Autenticador.Autenticar(Usuario)\n" +
@@ -2322,6 +2330,12 @@ public class MethodServiceTest
             Parents = [proceso],
         };
 
+        var clienteType = new TypeDTO
+        {
+            Id = Guid.NewGuid(),
+            Name = "Cliente",
+        };
+
         var stringPrimitive = new Primitive(PrimitiveType.String);
 
         _mockClassRepository.Setup(repo => repo.FindAll()).Returns([cliente, comunicacion, proceso, procesoCompra]);
@@ -2333,7 +2347,7 @@ public class MethodServiceTest
         _mockMethodRepository.Setup(repo => repo.Find(validarIdentidadInvoked.MethodId)).Returns(validarIdentidad);
         _mockMethodRepository.Setup(repo => repo.Find(realizarProcesoProcesoInvoked.MethodId)).Returns(realizarProcesoProceso);
 
-        var result = _methodService.ExecuteMethod(proceso.Id, procesoCompra.Id, ejecutar.Id, []);
+        var result = _methodService.ExecuteMethod(proceso.Id, procesoCompra.Id, ejecutar.Id, [clienteType]);
 
         var res =
             "Proceso.Ejecutar(Cliente) -> Proceso.Ejecutar(Cliente)\n" +
