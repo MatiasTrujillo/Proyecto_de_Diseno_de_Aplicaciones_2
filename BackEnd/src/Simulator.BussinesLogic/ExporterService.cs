@@ -28,22 +28,20 @@ public class ExporterService() : IExportService
                 t.IsClass &&
                 !t.IsAbstract &&
                 typeof(ITransformerExporter).IsAssignableFrom(t) &&
-                ((ITransformerExporter)(Activator.CreateInstance(t)!)).GetFormat() == exporterType
-            );
+                ((ITransformerExporter)Activator.CreateInstance(t)!).GetFormat() == exporterType);
 
-        if (exporterTypeMatch == null)
+        if(exporterTypeMatch == null)
         {
             throw new InvalidOperationException($"Exporter type '{exporterType}' not found.");
         }
 
-        var exporter = (ITransformerExporter)(Activator.CreateInstance(exporterTypeMatch)!);
+        var exporter = (ITransformerExporter)Activator.CreateInstance(exporterTypeMatch)!;
 
         var result = _methodService?.ExecuteMethod(
             transformer.ReferenceId,
             transformer.ObjectToCreateId,
             transformer.MethodId,
-            transformer.ParameterTypes
-        );
+            transformer.ParameterTypes);
 
         return exporter.Export(result);
     }

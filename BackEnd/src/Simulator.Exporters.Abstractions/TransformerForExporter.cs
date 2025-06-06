@@ -10,5 +10,5 @@ public class TransformerForExporter(Guid referenceId, Guid objectToCreateId, Gui
     public Guid ReferenceId { get; set; } = referenceId;
     public Guid ObjectToCreateId { get; set; } = objectToCreateId;
     public Guid MethodId { get; set; } = methodId;
-    public virtual List<TypeDTO> ParameterTypes { get; set; } = new List<TypeDTO>();
+    public virtual List<TypeDTO> ParameterTypes { get; set; } = [];
 }

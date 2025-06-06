@@ -743,7 +743,7 @@ public class MethodService(
         }
     }
 
-    private void ValidateInvokedMethodReferenceName(string invokedMethodReferenceName, Method method, Method methodR )
+    private void ValidateInvokedMethodReferenceName(string invokedMethodReferenceName, Method method, Method methodR)
     {
         var classT = _classRepository.FindAll()
             .FirstOrDefault(c => c.Methods != null && c.Methods.Any(m => m.Id == methodR.Id));
