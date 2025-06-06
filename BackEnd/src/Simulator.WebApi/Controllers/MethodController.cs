@@ -46,9 +46,9 @@ public class MethodController(IMethodService methodService) : ControllerBase
     }
 
     [HttpGet("{methodId}/referenceClass/{referenceId}/objectToCreateClass/{objectToCreateId}")]
-    public IActionResult ExecuteMethod([FromRoute] Guid referenceId, [FromRoute] Guid objectToCreateId, [FromRoute] Guid methodId)
+    public IActionResult ExecuteMethod([FromRoute] Guid referenceId, [FromRoute] Guid objectToCreateId, [FromRoute] Guid methodId, [FromBody] List<TypeDTO> parametersType)
     {
-        var result = _amethodService.ExecuteMethod(referenceId, objectToCreateId, methodId);
+        var result = _amethodService.ExecuteMethod(referenceId, objectToCreateId, methodId, parametersType);
         return Ok(result);
     }
 
