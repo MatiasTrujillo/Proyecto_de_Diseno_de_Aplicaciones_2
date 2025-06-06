@@ -30,7 +30,7 @@ public class MethodSignatureRepository_Test
             Id = Guid.NewGuid(),
             Name = "aParameter",
             ReferenceType = secondPrimitive,
-            InvokedMethod = null
+            InvokedMethods = []
         };
 
         secondSignature = new MethodSignature
