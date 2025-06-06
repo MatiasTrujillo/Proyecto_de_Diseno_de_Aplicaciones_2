@@ -1094,7 +1094,7 @@ public class MethodService(
         var allTypes = _classRepository.FindAllTypes();
         for(var i = 0; i < parameters.Count; i++)
         {
-            var type = allTypes.FirstOrDefault(x => x.Name == types[i].Name); // name o id ??
+            var type = allTypes.FirstOrDefault(x => x.Name == types[i].Name);
             ValidateInstanceClass(parameters[i].ReferenceType, type);
         }
     }
