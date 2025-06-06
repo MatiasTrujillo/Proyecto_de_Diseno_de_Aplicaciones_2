@@ -2,5 +2,6 @@
 
 public interface ITransformerExporter
 {
+    string Export(string? data);
     string GetFormat();
 }

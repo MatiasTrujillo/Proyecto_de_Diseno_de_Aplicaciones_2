@@ -1451,7 +1451,7 @@ public class MethodServiceTest
     {
         var encender = new Method
         {
-            Id = Guid.NewGuid(),
+            Id = Guid.NewGuid(), // 2ecb55dc-487c-4039-bc3a-b69588fc6ea6
             Name = "Encender",
             Accessibility = Accessibility.Public,
             Methods = [],
@@ -1462,14 +1462,14 @@ public class MethodServiceTest
 
         var encenderInvoked = new InvokedMethod
         {
-            Id = Guid.NewGuid(),
+            Id = Guid.NewGuid(), // 81a97a90-c88d-4fba-8560-93a8dc6c3a0c
             MethodId = encender.Id,
             ReferenceName = "motorAuto"
         };
 
         var apagar = new Method
         {
-            Id = Guid.NewGuid(),
+            Id = Guid.NewGuid(), // 4d44c93b-0212-41cf-8174-f54cc854ab74
             Name = "Apagar",
             Accessibility = Accessibility.Public,
             Methods = [],
@@ -1480,14 +1480,14 @@ public class MethodServiceTest
 
         var apagarInvoked = new InvokedMethod
         {
-            Id = Guid.NewGuid(),
+            Id = Guid.NewGuid(), // 90826973-b3e2-4dfa-8f68-cb6b5d21ab54
             MethodId = apagar.Id,
             ReferenceName = "motorAuto"
         };
 
         var iniciarViaje = new Method
         {
-            Id = Guid.NewGuid(),
+            Id = Guid.NewGuid(), // 1e4fea0f-d93a-440f-a555-df7d81b8747f
             Name = "IniciarViaje",
             Accessibility = Accessibility.Public,
             Methods = [],
@@ -1498,7 +1498,7 @@ public class MethodServiceTest
 
         var iniciarViajeInvoked = new InvokedMethod
         {
-            Id = iniciarViaje.Id,
+            Id = iniciarViaje.Id, // a23e5652-b8b3-4fec-9ff3-f4212270f7f1
             MethodId = iniciarViaje.Id,
             ReferenceName = "this"
         };
@@ -1507,7 +1507,7 @@ public class MethodServiceTest
 
         var detenerViaje = new Method
         {
-            Id = Guid.NewGuid(),
+            Id = Guid.NewGuid(), // 0267b17c-3388-40d2-b406-325e94336cb0
             Name = "DetenerViaje",
             Accessibility = Accessibility.Public,
             Methods = [],
@@ -1519,17 +1519,17 @@ public class MethodServiceTest
 
         var motor = new Class()
         {
-            Id = Guid.NewGuid(),
+            Id = Guid.NewGuid(), // f23382e9-c58f-4041-ad59-7f77e206d856
             Name = "Motor",
             Stereotype = null,
             Parents = null,
             Attributes = [],
-            Methods = [encender, apagar]
+            Methods = [encender, apagar] // check
         };
 
         var motorAuto = new Attribute
         {
-            Id = Guid.NewGuid(),
+            Id = Guid.NewGuid(), // 4c52a563-8a5b-474f-9652-8a52a45d0b44
             Name = "motorAuto",
             Accessibility = Accessibility.Private,
             ReferenceType = motor
@@ -1537,7 +1537,7 @@ public class MethodServiceTest
 
         var auto = new Class
         {
-            Id = Guid.NewGuid(),
+            Id = Guid.NewGuid(), // eaa7898d-8ff4-4164-9b99-4b8779bae7db
             Name = "Auto",
             Stereotype = null,
             Parents = null,
@@ -1558,6 +1558,7 @@ public class MethodServiceTest
             "\tmotorAuto.Encender() -> Motor.Encender()\n" +
             "\tthis.IniciarViaje() -> Auto.IniciarViaje()";
         Assert.AreEqual(result, result2);
+        Console.WriteLine(result);
     }
 
     [TestMethod]
