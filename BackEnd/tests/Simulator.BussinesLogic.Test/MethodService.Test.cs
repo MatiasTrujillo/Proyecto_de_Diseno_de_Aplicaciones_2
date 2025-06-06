@@ -87,7 +87,6 @@ public class MethodServiceTest
     [TestMethod]
     public void CreateMethod_ShouldCallRepositoryAdd_WithPrimitiveReturnType()
     {
-        // Arrange
         var classes = new List<Type>();
         _mockClassRepository.Setup(repo => repo.FindAllTypes()).Returns(classes);
 
@@ -105,13 +104,11 @@ public class MethodServiceTest
         };
 
         var primitive = new Primitive(PrimitiveType.Int);
-        primitive.Name = "int"; // Necesario para que coincida con `type` en el service
+        primitive.Name = "int";
         classes.Add(primitive);
 
-        // Act
         _methodService.CreateMethod(methodDto);
 
-        // Assert
         _mockMethodRepository.Verify(repo => repo.Add(
             It.Is<Method>(m =>
                 m.Name.Equals(methodDto.Name) &&
