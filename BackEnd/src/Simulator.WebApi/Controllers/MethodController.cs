@@ -45,10 +45,10 @@ public class MethodController(IMethodService methodService) : ControllerBase
         return Created(string.Empty, new { message = "Parameter added successfully" });
     }
 
-    [HttpGet("{methodId}/referenceClass/{referenceId}/objectToCreateClass/{objectToCreateId}")]
-    public IActionResult ExecuteMethod([FromRoute] Guid referenceId, [FromRoute] Guid objectToCreateId, [FromRoute] Guid methodId)
+    [HttpPost("{methodId}/referenceClass/{referenceId}/objectToCreateClass/{objectToCreateId}")]
+    public IActionResult ExecuteMethod([FromRoute] Guid referenceId, [FromRoute] Guid objectToCreateId, [FromRoute] Guid methodId, [FromBody] List<TypeDTO> parameterTypes)
     {
-        var result = _amethodService.ExecuteMethod(referenceId, objectToCreateId, methodId);
+        var result = _amethodService.ExecuteMethod(referenceId, objectToCreateId, methodId, parameterTypes);
         return Ok(result);
     }
 

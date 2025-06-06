@@ -87,7 +87,6 @@ public class MethodServiceTest
     [TestMethod]
     public void CreateMethod_ShouldCallRepositoryAdd_WithPrimitiveReturnType()
     {
-        // Arrange
         var classes = new List<Type>();
         _mockClassRepository.Setup(repo => repo.FindAllTypes()).Returns(classes);
 
@@ -105,13 +104,11 @@ public class MethodServiceTest
         };
 
         var primitive = new Primitive(PrimitiveType.Int);
-        primitive.Name = "int"; // Necesario para que coincida con `type` en el service
+        primitive.Name = "int";
         classes.Add(primitive);
 
-        // Act
         _methodService.CreateMethod(methodDto);
 
-        // Assert
         _mockMethodRepository.Verify(repo => repo.Add(
             It.Is<Method>(m =>
                 m.Name.Equals(methodDto.Name) &&
@@ -581,7 +578,7 @@ public class MethodServiceTest
 
         _mockParameterRepository
             .Setup(r => r.Add(It.Is<Parameter>(p =>
-                p.Name == parameterDto.Name && p.ParameterType.Name == classT.Name)));
+                p.Name == parameterDto.Name && p.ReferenceType.Name == classT.Name && p.InstanceType.Name == classT.Name)));
 
         _mockClassRepository
             .Setup(repo => repo.FindAllTypes())
@@ -1184,7 +1181,7 @@ public class MethodServiceTest
         {
             Id = methodId,
             Name = "MainMethod",
-            Parameters = [new Parameter { Name = "MyParam", ParameterType = paramClass }],
+            Parameters = [new Parameter { Name = "MyParam", ReferenceType = paramClass }],
             LocalVariables = [],
             Methods = []
         };
@@ -1303,7 +1300,7 @@ public class MethodServiceTest
         {
             Id = id,
             Name = "myVar",
-            ParameterType = new Interface()
+            ReferenceType = new Interface()
         };
 
         var invokedMethod = new InvokedMethod
@@ -1454,7 +1451,7 @@ public class MethodServiceTest
     {
         var encender = new Method
         {
-            Id = Guid.NewGuid(),
+            Id = Guid.NewGuid(), // 2ecb55dc-487c-4039-bc3a-b69588fc6ea6
             Name = "Encender",
             Accessibility = Accessibility.Public,
             Methods = [],
@@ -1465,14 +1462,14 @@ public class MethodServiceTest
 
         var encenderInvoked = new InvokedMethod
         {
-            Id = Guid.NewGuid(),
+            Id = Guid.NewGuid(), // 81a97a90-c88d-4fba-8560-93a8dc6c3a0c
             MethodId = encender.Id,
             ReferenceName = "motorAuto"
         };
 
         var apagar = new Method
         {
-            Id = Guid.NewGuid(),
+            Id = Guid.NewGuid(), // 4d44c93b-0212-41cf-8174-f54cc854ab74
             Name = "Apagar",
             Accessibility = Accessibility.Public,
             Methods = [],
@@ -1483,14 +1480,14 @@ public class MethodServiceTest
 
         var apagarInvoked = new InvokedMethod
         {
-            Id = Guid.NewGuid(),
+            Id = Guid.NewGuid(), // 90826973-b3e2-4dfa-8f68-cb6b5d21ab54
             MethodId = apagar.Id,
             ReferenceName = "motorAuto"
         };
 
         var iniciarViaje = new Method
         {
-            Id = Guid.NewGuid(),
+            Id = Guid.NewGuid(), // 1e4fea0f-d93a-440f-a555-df7d81b8747f
             Name = "IniciarViaje",
             Accessibility = Accessibility.Public,
             Methods = [],
@@ -1501,7 +1498,7 @@ public class MethodServiceTest
 
         var iniciarViajeInvoked = new InvokedMethod
         {
-            Id = iniciarViaje.Id,
+            Id = iniciarViaje.Id, // a23e5652-b8b3-4fec-9ff3-f4212270f7f1
             MethodId = iniciarViaje.Id,
             ReferenceName = "this"
         };
@@ -1510,7 +1507,7 @@ public class MethodServiceTest
 
         var detenerViaje = new Method
         {
-            Id = Guid.NewGuid(),
+            Id = Guid.NewGuid(), // 0267b17c-3388-40d2-b406-325e94336cb0
             Name = "DetenerViaje",
             Accessibility = Accessibility.Public,
             Methods = [],
@@ -1522,17 +1519,17 @@ public class MethodServiceTest
 
         var motor = new Class()
         {
-            Id = Guid.NewGuid(),
+            Id = Guid.NewGuid(), // f23382e9-c58f-4041-ad59-7f77e206d856
             Name = "Motor",
             Stereotype = null,
             Parents = null,
             Attributes = [],
-            Methods = [encender, apagar]
+            Methods = [encender, apagar] // check
         };
 
         var motorAuto = new Attribute
         {
-            Id = Guid.NewGuid(),
+            Id = Guid.NewGuid(), // 4c52a563-8a5b-474f-9652-8a52a45d0b44
             Name = "motorAuto",
             Accessibility = Accessibility.Private,
             ReferenceType = motor
@@ -1540,7 +1537,7 @@ public class MethodServiceTest
 
         var auto = new Class
         {
-            Id = Guid.NewGuid(),
+            Id = Guid.NewGuid(), // eaa7898d-8ff4-4164-9b99-4b8779bae7db
             Name = "Auto",
             Stereotype = null,
             Parents = null,
@@ -1554,7 +1551,7 @@ public class MethodServiceTest
         _mockMethodRepository.Setup(repo => repo.Find(encenderInvoked.MethodId)).Returns(encender);
         _mockMethodRepository.Setup(repo => repo.Find(iniciarViajeInvoked.MethodId)).Returns(iniciarViaje);
 
-        var result = _methodService.ExecuteMethod(auto.Id, auto.Id, iniciarViaje.Id);
+        var result = _methodService.ExecuteMethod(auto.Id, auto.Id, iniciarViaje.Id, []);
         Console.WriteLine(result);
         var result2 =
             "Auto.IniciarViaje() -> Auto.IniciarViaje()\n" +
@@ -1688,7 +1685,7 @@ public class MethodServiceTest
                 {
                     Id = Guid.NewGuid(),
                     Name = "aviso",
-                    ParameterType = notificacion
+                    ReferenceType = notificacion
                 }
 
             ],
@@ -1707,6 +1704,8 @@ public class MethodServiceTest
             Methods = [notificar]
         };
 
+        var notificacionType = new TypeDTO { Id = Guid.NewGuid(), Name = "Notificacion" };
+
         _mockClassRepository.Setup(repo => repo.FindAll()).Returns([notificador, sms, email, notificacion]);
         _mockClassRepository.Setup(repo => repo.FindAllTypes()).Returns([notificador, sms, email, notificacion]);
         _mockMethodRepository.Setup(repo => repo.FindAll()).Returns([notificar, enviar]);
@@ -1715,8 +1714,8 @@ public class MethodServiceTest
         _mockMethodRepository.Setup(repo => repo.Find(enviarInvoked1.MethodId)).Returns(enviar);
         _mockMethodRepository.Setup(repo => repo.Find(enviarInvoked2.MethodId)).Returns(enviarEmail);
 
-        var result = _methodService.ExecuteMethod(notificador.Id, notificador.Id, notificar.Id);
-        var result2 = _methodService.ExecuteMethod(notificacion.Id, sms.Id, enviar.Id);
+        var result = _methodService.ExecuteMethod(notificador.Id, notificador.Id, notificar.Id, [notificacionType]);
+        var result2 = _methodService.ExecuteMethod(notificacion.Id, sms.Id, enviar.Id, []);
         Console.WriteLine(result2);
         Console.WriteLine("----------------------------------------------");
         Console.WriteLine(result);
@@ -1892,7 +1891,7 @@ public class MethodServiceTest
         _mockMethodRepository.Setup(repo => repo.Find(inicializarInvoked.MethodId)).Returns(inicializar);
         _mockMethodRepository.Setup(repo => repo.Find(limpiarInvoked.MethodId)).Returns(limpiar);
 
-        var result = _methodService.ExecuteMethod(validador.Id, validador.Id, validar.Id);
+        var result = _methodService.ExecuteMethod(validador.Id, validador.Id, validar.Id, []);
 
         var res =
             "Validador.Validar() -> Validador.Validar()\n" +
@@ -1937,7 +1936,7 @@ public class MethodServiceTest
         {
             Id = Guid.NewGuid(),
             Name = "Mensaje",
-            ParameterType = new Primitive(PrimitiveType.String),
+            ReferenceType = new Primitive(PrimitiveType.String),
         };
 
         var registrar = new Method
@@ -2006,7 +2005,7 @@ public class MethodServiceTest
         {
             Id = Guid.NewGuid(),
             Name = "usuario",
-            ParameterType = usuario
+            ReferenceType = usuario
         };
 
         var validarCredencialesAutenticator = new Method
@@ -2109,6 +2108,12 @@ public class MethodServiceTest
             Parents = [autenticador]
         };
 
+        var usuarioType = new TypeDTO
+        {
+            Id = Guid.NewGuid(),
+            Name = "Usuario",
+        };
+
         var stringPrimitive = new Primitive(PrimitiveType.String);
 
         _mockClassRepository.Setup(repo => repo.FindAll()).Returns([usuario, logger, autenticador, autenticadorPassword]);
@@ -2121,7 +2126,7 @@ public class MethodServiceTest
         _mockMethodRepository.Setup(repo => repo.Find(logAccesoInvoked.MethodId)).Returns(logAcceso);
         _mockMethodRepository.Setup(repo => repo.Find(toStringInvoked.MethodId)).Returns(toString);
 
-        var result = _methodService.ExecuteMethod(autenticador.Id, autenticadorPassword.Id, autenticar.Id);
+        var result = _methodService.ExecuteMethod(autenticador.Id, autenticadorPassword.Id, autenticar.Id, [usuarioType]);
 
         var res =
             "Autenticador.Autenticar(Usuario) -> Autenticador.Autenticar(Usuario)\n" +
@@ -2176,7 +2181,7 @@ public class MethodServiceTest
         {
             Id = Guid.NewGuid(),
             Name = "mensaje",
-            ParameterType = new Primitive(PrimitiveType.String)
+            ReferenceType = new Primitive(PrimitiveType.String)
         };
 
         var enviarNotificacion = new Method
@@ -2214,7 +2219,7 @@ public class MethodServiceTest
             Accessibility = Accessibility.Protected,
         };
 
-        var clienteParam = new Parameter { Id = Guid.NewGuid(), Name = "cliente", ParameterType = cliente };
+        var clienteParam = new Parameter { Id = Guid.NewGuid(), Name = "cliente", ReferenceType = cliente };
 
         var realizarProcesoProceso = new Method
         {
@@ -2322,6 +2327,12 @@ public class MethodServiceTest
             Parents = [proceso],
         };
 
+        var clienteType = new TypeDTO
+        {
+            Id = Guid.NewGuid(),
+            Name = "Cliente",
+        };
+
         var stringPrimitive = new Primitive(PrimitiveType.String);
 
         _mockClassRepository.Setup(repo => repo.FindAll()).Returns([cliente, comunicacion, proceso, procesoCompra]);
@@ -2333,7 +2344,7 @@ public class MethodServiceTest
         _mockMethodRepository.Setup(repo => repo.Find(validarIdentidadInvoked.MethodId)).Returns(validarIdentidad);
         _mockMethodRepository.Setup(repo => repo.Find(realizarProcesoProcesoInvoked.MethodId)).Returns(realizarProcesoProceso);
 
-        var result = _methodService.ExecuteMethod(proceso.Id, procesoCompra.Id, ejecutar.Id);
+        var result = _methodService.ExecuteMethod(proceso.Id, procesoCompra.Id, ejecutar.Id, [clienteType]);
 
         var res =
             "Proceso.Ejecutar(Cliente) -> Proceso.Ejecutar(Cliente)\n" +

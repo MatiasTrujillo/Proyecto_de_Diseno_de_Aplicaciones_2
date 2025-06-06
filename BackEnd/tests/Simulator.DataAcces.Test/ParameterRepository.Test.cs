@@ -26,7 +26,7 @@ public class ParameterRepositoryTest
         {
             Id = Guid.NewGuid(),
             Name = "myParam",
-            ParameterType = _primitive
+            ReferenceType = _primitive
         };
     }
 
@@ -52,13 +52,13 @@ public class ParameterRepositoryTest
         _repository.Add(_parameter);
 
         using var refreshedContext = ProgramTest.BuildTestDbContext();
-        var saved = refreshedContext.Parameters.Include(p => p.ParameterType).FirstOrDefault(p => p.Id == _parameter.Id);
+        var saved = refreshedContext.Parameters.Include(p => p.ReferenceType).FirstOrDefault(p => p.Id == _parameter.Id);
 
         saved.Should().NotBeNull();
         saved!.Name.Should().Be(_parameter.Name);
-        saved.ParameterType.Should().NotBeNull();
-        saved.ParameterType!.Id.Should().Be(_primitive.Id);
-        saved.ParameterType.Name.Should().Be(_primitive.Name);
+        saved.ReferenceType.Should().NotBeNull();
+        saved.ReferenceType!.Id.Should().Be(_primitive.Id);
+        saved.ReferenceType.Name.Should().Be(_primitive.Name);
     }
     #endregion
 
@@ -75,8 +75,8 @@ public class ParameterRepositoryTest
         result.Should().NotBeNull();
         result!.Id.Should().Be(_parameter.Id);
         result.Name.Should().Be(_parameter.Name);
-        result.ParameterType.Should().NotBeNull();
-        result.ParameterType!.Name.Should().Be(_primitive.Name);
+        result.ReferenceType.Should().NotBeNull();
+        result.ReferenceType!.Name.Should().Be(_primitive.Name);
     }
 
     [TestMethod]
@@ -96,7 +96,7 @@ public class ParameterRepositoryTest
         {
             Id = Guid.NewGuid(),
             Name = "param2",
-            ParameterType = _primitive
+            ReferenceType = _primitive
         };
 
         _context.Primitives.Add(_primitive);
@@ -133,18 +133,18 @@ public class ParameterRepositoryTest
         {
             Id = _parameter.Id,
             Name = "updatedParam",
-            ParameterType = _primitive
+            ReferenceType = _primitive
         };
 
         _repository.Update(updatedParameter);
 
         using var refreshedContext = ProgramTest.BuildTestDbContext();
-        var updatedInDb = refreshedContext.Parameters.Include(p => p.ParameterType).FirstOrDefault(p => p.Id == _parameter.Id);
+        var updatedInDb = refreshedContext.Parameters.Include(p => p.ReferenceType).FirstOrDefault(p => p.Id == _parameter.Id);
 
         updatedInDb.Should().NotBeNull();
         updatedInDb!.Name.Should().Be("updatedParam");
-        updatedInDb.ParameterType.Should().NotBeNull();
-        updatedInDb.ParameterType!.Id.Should().Be(_primitive.Id);
+        updatedInDb.ReferenceType.Should().NotBeNull();
+        updatedInDb.ReferenceType!.Id.Should().Be(_primitive.Id);
     }
     #endregion
 }

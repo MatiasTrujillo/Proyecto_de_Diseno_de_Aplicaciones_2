@@ -700,7 +700,7 @@ public class ClassServiceTest
         Assert.AreEqual(existingClass.Methods[0].ReturnType, aSignature.ReturnType);
         Assert.AreEqual(existingClass.Methods[0].Parameters.Count, aSignature.Parameters.Count);
         Assert.AreEqual(existingClass.Methods[0].Parameters[0].Name, aSignature.Parameters[0].Name);
-        Assert.AreEqual(existingClass.Methods[0].Parameters[0].ParameterType, aSignature.Parameters[0].ParameterType);
+        Assert.AreEqual(existingClass.Methods[0].Parameters[0].ReferenceType, aSignature.Parameters[0].ReferenceType);
     }
 
     [TestMethod]

@@ -78,7 +78,7 @@ public class MethodService(
         ValidateInvokedMethodExist(invokedMethod);
         var inv = _methodRepository.Find(invokedMethod.MethodId);
         ValidateMethodExist(method);
-        ValidateInvokedMethodReferenceName(invokedMethod.ReferenceName, inv);
+        ValidateInvokedMethodReferenceName(invokedMethod.ReferenceName, inv, method);
         method.Methods?.Add(invokedMethod);
 
         _methodRepository.Update(method);
@@ -143,9 +143,10 @@ public class MethodService(
     {
         ValidateParameterIsNotNull(parameter);
         var parameterT = parameter.ToEntity();
-        var type = parameterT.ParameterType.Name;
+        var type = parameterT.ReferenceType.Name;
         var returnType = _classRepository.FindAllTypes().FirstOrDefault(c => c.Name == type);
-        parameterT.ParameterType = returnType;
+        parameterT.ReferenceType = returnType;
+        parameterT.InstanceType = returnType;
         _parameterRepository.Add(parameterT);
         return parameterT.Id;
     }
@@ -156,7 +157,7 @@ public class MethodService(
         var invokedMethod = _invokedMethodRepository.Find(idInvokeGuid);
         ValidateParameterExist(parameter);
         ValidateInvokedMethodExist(invokedMethod);
-        ValidateTypeIsPrimitive(parameter.ParameterType);
+        ValidateTypeIsPrimitive(parameter.ReferenceType);
         parameter.InvokedMethods.Add(invokedMethod);
         _parameterRepository.Update(parameter);
     }
@@ -199,7 +200,7 @@ public class MethodService(
         }
     }
 
-    public string ExecuteMethod(Guid referenceId, Guid objectToCreateId, Guid methodId)
+    public string ExecuteMethod(Guid referenceId, Guid objectToCreateId, Guid methodId, List<TypeDTO> parameterInstanceTypes)
     {
         var reference = _classRepository.FindAll().FirstOrDefault(x => x.Id == referenceId);
         var objectToCreate = _classRepository.FindAll().FirstOrDefault(x => x.Id == objectToCreateId);
@@ -212,6 +213,7 @@ public class MethodService(
         ValidateMethodExist(method!);
         ValidateMethodIsInClass(reference.Methods!, methodId);
         method = FindMethod(reference.Methods!, methodId);
+        ValidateParameterInstanceType(method.Parameters, parameterInstanceTypes);
 
         result = result.Concat(FirstLine(reference, objectToCreate!, method)).ToList();
         result = result.Concat(WriteOtherLines(reference, objectToCreate!, method, method)).ToList();
@@ -406,7 +408,7 @@ public class MethodService(
         var aParameter = method.Parameters!.FirstOrDefault(x => x.Name == invokedMethod.ReferenceName);
         if(aParameter != null)
         {
-            var aClass = _classRepository.FindAll().FirstOrDefault(x => x.Name == aParameter.ParameterType.Name);
+            var aClass = _classRepository.FindAll().FirstOrDefault(x => x.Name == aParameter.ReferenceType.Name);
             if(aClass != null)
             {
                 aClass = FindClassWithMethod(aClass, invokedMethodMethod);
@@ -510,22 +512,22 @@ public class MethodService(
 
         for(var i = 0; i < method.Parameters.Count; i++)
         {
-            Class aClass = allClasses.FirstOrDefault(x => x.Name == method.Parameters[i].ParameterType.Name);
+            Class aClass = allClasses.FirstOrDefault(x => x.Name == method.Parameters[i].ReferenceType.Name);
             if(aClass != null && aClass.Stereotype != KeyWord.Abstract)
             {
                 if(i == method.Parameters.Count - 1)
                 {
-                    r += $"{method.Parameters[i].ParameterType.Name}";
+                    r += $"{method.Parameters[i].ReferenceType.Name}";
                 }
                 else
                 {
-                    r += $"{method.Parameters[i].ParameterType.Name}, ";
+                    r += $"{method.Parameters[i].ReferenceType.Name}, ";
                 }
 
                 success = true;
             }
 
-            if(!success && method.Parameters[i].ParameterType is Primitive p)
+            if(!success && method.Parameters[i].ReferenceType is Primitive p)
             {
                 if(i == method.Parameters.Count - 1)
                 {
@@ -741,10 +743,10 @@ public class MethodService(
         }
     }
 
-    private void ValidateInvokedMethodReferenceName(string invokedMethodReferenceName, Method method)
+    private void ValidateInvokedMethodReferenceName(string invokedMethodReferenceName, Method method, Method methodR)
     {
         var classT = _classRepository.FindAll()
-            .FirstOrDefault(c => c.Methods != null && c.Methods.Any(m => m.Id == method.Id));
+            .FirstOrDefault(c => c.Methods != null && c.Methods.Any(m => m.Id == methodR.Id));
 
         var existsInParameters = method.Parameters?.Any(p => p.Name == invokedMethodReferenceName) ?? false;
         var existsInLocalVariables = method.LocalVariables?.Any(lv => lv.Name == invokedMethodReferenceName) ?? false;
@@ -757,7 +759,7 @@ public class MethodService(
         {
             var attribute = classT.Attributes?.FirstOrDefault(a => a.Name == invokedMethodReferenceName);
             existsInAttributes = attribute != null;
-            ManageAttribute(method, attribute);
+            ManageAttribute(methodR, attribute);
             existsInMethods = InvokeMethodReferenceThis(invokedMethodReferenceName, method, existsInMethods, classT);
             existingInHeredity = InvokeMethodReferenceBase(invokedMethodReferenceName, method, classT, existingInHeredity);
         }
@@ -779,7 +781,7 @@ public class MethodService(
         if(attribute?.ReferenceType is Class classAttrType)
         {
             var attrClass = _classRepository.Find(classAttrType.Id);
-            if(attrClass == null || !HasMethodInHierarchy(attrClass, method.Id))
+            if(!HasMethodInHierarchy(attrClass, method.Id))
             {
                 throw new MethodException(
                     $"The method with ID '{method.Id}' does not exist in the class of attribute '{attribute.Name}' or its ancestors.");
@@ -803,7 +805,7 @@ public class MethodService(
     private void ManageParams(string invokedMethodReferenceName, Method method)
     {
         var param = method.Parameters?.FirstOrDefault(p => p.Name == invokedMethodReferenceName);
-        if(param?.ParameterType is Class classParamType)
+        if(param?.ReferenceType is Class classParamType)
         {
             var paramClass = _classRepository.Find(classParamType.Id);
             if(paramClass == null || !HasMethodInHierarchy(paramClass, method.Id))
@@ -824,7 +826,7 @@ public class MethodService(
                 return true;
             }
 
-            targetClass = aTargetClass.Parents[0];
+            targetClass = aTargetClass?.Parents?.FirstOrDefault();
         }
 
         return false;
@@ -1079,6 +1081,21 @@ public class MethodService(
         else if(instanceTypeT is Class c2)
         {
             localVariable.InstanceType = c2;
+        }
+    }
+
+    private void ValidateParameterInstanceType(List<Parameter>? parameters, List<TypeDTO> types)
+    {
+        if(parameters.Count != types.Count)
+        {
+            throw new ParameterException("The number of types is not the same as the number of parameters.");
+        }
+
+        var allTypes = _classRepository.FindAllTypes();
+        for(var i = 0; i < parameters.Count; i++)
+        {
+            var type = allTypes.FirstOrDefault(x => x.Name == types[i].Name);
+            ValidateInstanceClass(parameters[i].ReferenceType, type);
         }
     }
 }

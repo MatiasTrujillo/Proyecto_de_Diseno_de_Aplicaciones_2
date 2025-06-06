@@ -6,23 +6,24 @@ public class Parameter
 {
     public Guid Id { get; set; }
     public string Name { get; set; }
-    public virtual Type? ParameterType { get; set; }
+    public virtual Type? ReferenceType { get; set; }
+    public virtual Type? InstanceType { get; set; }
     public virtual List<InvokedMethod>? InvokedMethods { get; set; }
 
     public Parameter()
     {
         Id = Guid.NewGuid();
         Name = string.Empty;
-        ParameterType = new Primitive();
+        ReferenceType = new Primitive();
         InvokedMethods = [];
     }
 
-    public Parameter(string name, Type parameterType)
+    public Parameter(string name, Type referenceType)
     {
         ValidateParameter(name);
         Id = Guid.NewGuid();
         Name = name;
-        ParameterType = parameterType;
+        ReferenceType = referenceType;
         InvokedMethods = [];
     }
 
