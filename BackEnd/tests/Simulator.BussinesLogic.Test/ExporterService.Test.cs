@@ -1,3 +1,4 @@
+using System.Net;
 using Moq;
 using Simulator.Exporters.Abstractions;
 using Simulator.IBussinesLogic;
@@ -61,23 +62,51 @@ public class ExporterServiceTests
     {
         var transformer = new TransformerForExporter(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid());
 
-        var expectedExecutionResult = "Notificador.Notificar() -> Notificador.Notificar()\n" +
-                                      "\taviso.Enviar() -> Notificacion.Enviar()\n" +
-                                      "\taviso.Confirmar() -> Notificacion.Confirmar()\n" +
-                                      "\totroAviso.Enviar() -> Email.Enviar()\n" +
-                                      "\totroAviso.Confirmar() -> Notificacion.Confirmar()";
+        var expectedExecutionResult = "Notificador.Notificar() -&gt Notificador.Notificar()\n" +
+                                      "\taviso.Enviar() -&gt Notificacion.Enviar()\n" +
+                                      "\taviso.Confirmar() -&gt Notificacion.Confirmar()\n" +
+                                      "\totroAviso.Enviar() -&gt Email.Enviar()\n" +
+                                      "\totroAviso.Confirmar() -&gt Notificacion.Confirmar()";
 
         _methodServiceMock
             .Setup(s => s.ExecuteMethod(transformer.ReferenceId, transformer.ObjectToCreateId, transformer.MethodId, new List<TypeDTO>()))
             .Returns(expectedExecutionResult);
 
-        _exporterService = new ExporterService(_methodServiceMock.Object); // importante si espera dependencia
+        _exporterService = new ExporterService(_methodServiceMock.Object);
 
         var result = _exporterService.ExportTransfer("html", transformer);
 
         StringAssert.Contains(result, "<html");
-        StringAssert.Contains(result, expectedExecutionResult); // ahora sí va a matchear
         StringAssert.Contains(result, "</html>");
+
+        var preStart = result.IndexOf("<pre>") + "<pre>".Length;
+        var preEnd = result.IndexOf("</pre>");
+        var preContent = result.Substring(preStart, preEnd - preStart);
+        var decodedPreContent = WebUtility.HtmlDecode(preContent);
+
+        Assert.AreEqual(expectedExecutionResult, decodedPreContent);
+    }
+
+    [TestMethod]
+    public void ExportTransfer_ShouldTrowException_WhenExporterNotExist()
+    {
+        var transformer = new TransformerForExporter(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid());
+
+        var expectedExecutionResult = "Notificador.Notificar() -&gt Notificador.Notificar()\n" +
+                                      "\taviso.Enviar() -&gt Notificacion.Enviar()\n" +
+                                      "\taviso.Confirmar() -&gt Notificacion.Confirmar()\n" +
+                                      "\totroAviso.Enviar() -&gt Email.Enviar()\n" +
+                                      "\totroAviso.Confirmar() -&gt Notificacion.Confirmar()";
+
+        _methodServiceMock
+            .Setup(s => s.ExecuteMethod(transformer.ReferenceId, transformer.ObjectToCreateId, transformer.MethodId, new List<TypeDTO>()))
+            .Returns(expectedExecutionResult);
+
+        _exporterService = new ExporterService(_methodServiceMock.Object);
+
+        var exp = Assert.ThrowsException<InvalidOperationException>(() => _exporterService.ExportTransfer("nonexistent", transformer));
+
+        Assert.AreEqual(exp.Message, "Exporter type 'nonexistent' not found.");
     }
 
     [TestCleanup]

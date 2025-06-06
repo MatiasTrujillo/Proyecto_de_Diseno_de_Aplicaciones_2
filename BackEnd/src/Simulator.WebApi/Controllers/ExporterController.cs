@@ -18,6 +18,6 @@ public sealed class ExportersController(IExportService exporterService) : Contro
     public IActionResult Export(string exporterName, [FromBody] TransformerForExporter data)
     {
         var result = exporterService.ExportTransfer(exporterName, data);
-        return Ok(new { message = "Export successful", data = result });
+        return Ok(result);
     }
 }

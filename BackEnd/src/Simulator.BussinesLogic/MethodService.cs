@@ -78,7 +78,7 @@ public class MethodService(
         ValidateInvokedMethodExist(invokedMethod);
         var inv = _methodRepository.Find(invokedMethod.MethodId);
         ValidateMethodExist(method);
-        ValidateInvokedMethodReferenceName(invokedMethod.ReferenceName, inv);
+        ValidateInvokedMethodReferenceName(invokedMethod.ReferenceName, inv, method);
         method.Methods?.Add(invokedMethod);
 
         _methodRepository.Update(method);
@@ -743,10 +743,10 @@ public class MethodService(
         }
     }
 
-    private void ValidateInvokedMethodReferenceName(string invokedMethodReferenceName, Method method)
+    private void ValidateInvokedMethodReferenceName(string invokedMethodReferenceName, Method method, Method methodR )
     {
         var classT = _classRepository.FindAll()
-            .FirstOrDefault(c => c.Methods != null && c.Methods.Any(m => m.Id == method.Id));
+            .FirstOrDefault(c => c.Methods != null && c.Methods.Any(m => m.Id == methodR.Id));
 
         var existsInParameters = method.Parameters?.Any(p => p.Name == invokedMethodReferenceName) ?? false;
         var existsInLocalVariables = method.LocalVariables?.Any(lv => lv.Name == invokedMethodReferenceName) ?? false;
@@ -759,7 +759,7 @@ public class MethodService(
         {
             var attribute = classT.Attributes?.FirstOrDefault(a => a.Name == invokedMethodReferenceName);
             existsInAttributes = attribute != null;
-            ManageAttribute(method, attribute);
+            ManageAttribute(methodR, attribute);
             existsInMethods = InvokeMethodReferenceThis(invokedMethodReferenceName, method, existsInMethods, classT);
             existingInHeredity = InvokeMethodReferenceBase(invokedMethodReferenceName, method, classT, existingInHeredity);
         }
@@ -781,7 +781,7 @@ public class MethodService(
         if(attribute?.ReferenceType is Class classAttrType)
         {
             var attrClass = _classRepository.Find(classAttrType.Id);
-            if(attrClass == null || !HasMethodInHierarchy(attrClass, method.Id))
+            if(!HasMethodInHierarchy(attrClass, method.Id))
             {
                 throw new MethodException(
                     $"The method with ID '{method.Id}' does not exist in the class of attribute '{attribute.Name}' or its ancestors.");
@@ -826,7 +826,7 @@ public class MethodService(
                 return true;
             }
 
-            targetClass = aTargetClass.Parents[0];
+            targetClass = aTargetClass?.Parents?.FirstOrDefault();
         }
 
         return false;
