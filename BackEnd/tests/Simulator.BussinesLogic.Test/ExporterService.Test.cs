@@ -68,7 +68,7 @@ public class ExporterServiceTests
                                       "\totroAviso.Confirmar() -> Notificacion.Confirmar()";
 
         _methodServiceMock
-            .Setup(s => s.ExecuteMethod(transformer.ReferenceId, transformer.ObjectToCreateId, transformer.MethodId))
+            .Setup(s => s.ExecuteMethod(transformer.ReferenceId, transformer.ObjectToCreateId, transformer.MethodId, new List<TypeDTO>()))
             .Returns(expectedExecutionResult);
 
         _exporterService = new ExporterService(_methodServiceMock.Object); // importante si espera dependencia

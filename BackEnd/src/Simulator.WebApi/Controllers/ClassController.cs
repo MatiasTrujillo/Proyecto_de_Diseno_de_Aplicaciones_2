@@ -18,9 +18,9 @@ public class ClassController(IClassService classService) : ControllerBase
     }
 
     [HttpPut("{id}")]
-    public IActionResult UpdateClass([FromRoute] Guid id, [FromBody] UpdateClassDTO uClass)
+    public IActionResult UpdateClass([FromRoute] string id, [FromBody] UpdateClassDTO uClass)
     {
-        _classService.UpdateClass(id, uClass);
+        _classService.UpdateClass(Guid.Parse(id), uClass);
         return Ok(new { message = "Class updated successfully" });
     }
 
@@ -32,11 +32,11 @@ public class ClassController(IClassService classService) : ControllerBase
     }
 
     [HttpGet]
-    public IActionResult GetTypes()
+    public IActionResult GetClasses()
     {
-        var types = _classService.GetTypes()
-            .Select(t => t.ToDTO())
+        var classes = _classService.GetClasses()
+            .Select(c => c.ToDTO())
             .ToList();
-        return Ok(types);
+        return Ok(classes);
     }
 }

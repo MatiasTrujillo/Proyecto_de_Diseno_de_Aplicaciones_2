@@ -3,6 +3,7 @@ using Type = Simulator.Domain.Type;
 
 public class TypeDTO
 {
+    public Guid? Id { get; set; } = null;
     public string Name { get; set; } = string.Empty;
     public string Kind { get; set; } = string.Empty;
 

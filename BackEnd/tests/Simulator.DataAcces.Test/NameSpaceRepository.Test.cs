@@ -122,4 +122,37 @@ public class NameSpaceRepository_Test
         result!.Name.Should().Be("UpdatedNS");
     }
     #endregion
+
+    #region Delete
+    [TestMethod]
+    public void Delete_WhenNamespaceExists_ShouldRemoveIt()
+    {
+        _context.NameSpaces.Add(aNameSpace);
+        _context.SaveChanges();
+
+        _repository.Delete(aNameSpace);
+        _context.SaveChanges();
+
+        using var freshContext = ProgramTest.BuildTestDbContext();
+        var result = freshContext.NameSpaces.FirstOrDefault(n => n.Id == aNameSpace.Id);
+        result.Should().BeNull();
+    }
+    #endregion
+
+    [TestMethod]
+    public void FindAllNamespaceComponents_WhenComponentsExist_ShouldReturnAll()
+    {
+        var ns1 = new NameSpace { Id = Guid.NewGuid(), Name = "NS1" };
+        var ns2 = new NameSpace { Id = Guid.NewGuid(), Name = "NS2" };
+        _context.NamespaceComponents.Add(ns1);
+        _context.NamespaceComponents.Add(ns2);
+        _context.SaveChanges();
+
+        var result = _repository.FindAllNamespaceComponents();
+
+        result.Should().NotBeNull();
+        result.Should().HaveCount(20);
+        result.Should().ContainSingle(n => n.Id == ns1.Id);
+        result.Should().ContainSingle(n => n.Id == ns2.Id);
+    }
 }

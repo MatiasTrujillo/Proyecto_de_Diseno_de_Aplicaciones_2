@@ -41,7 +41,8 @@ public class ExporterService() : IExportService
         var result = _methodService?.ExecuteMethod(
             transformer.ReferenceId,
             transformer.ObjectToCreateId,
-            transformer.MethodId
+            transformer.MethodId,
+            transformer.ParameterTypes
         );
 
         return exporter.Export(result);

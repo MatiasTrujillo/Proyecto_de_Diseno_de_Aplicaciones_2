@@ -65,29 +65,31 @@ public class ClassService(
         return _classRepository.FindAllTypes();
     }
 
+    public List<Class> GetClasses()
+    {
+        return _classRepository.FindAll();
+    }
+
     private void ManageStereotype(UpdateClassDTO uClass, Class classT)
     {
-        if(!string.IsNullOrWhiteSpace(uClass.Stereotype))
-        {
-            ValidateStereotypeInUpdate(uClass.Stereotype, classT);
-        }
+        ValidateStereotypeInUpdate(uClass.Stereotype, classT);
     }
 
     private void ManageHierarchyClass(Guid id, UpdateClassDTO uClass, Class classT)
     {
         if(uClass.IdClass != null)
         {
-            var isInterface = ValidateParentIdExists(uClass.IdClass.Value);
+            var isInterface = ValidateParentIdExists(Guid.Parse(uClass.IdClass));
             ValidateClassIsNotInUse(id);
             var heritageClassT = new Class();
             var heritageInterfaceT = new Interface();
             if(isInterface)
             {
-                heritageInterfaceT = _interfaceRepository.Find(uClass.IdClass.Value);
+                heritageInterfaceT = _interfaceRepository.Find(Guid.Parse(uClass.IdClass));
             }
             else
             {
-                heritageClassT = _classRepository.Find(uClass.IdClass.Value);
+                heritageClassT = _classRepository.Find(Guid.Parse(uClass.IdClass));
             }
 
             if(classT.Stereotype == KeyWord.Sealed)
@@ -129,7 +131,7 @@ public class ClassService(
         var itHas = aMethod.Parameters.Count == signature.Parameters.Count;
         foreach(var parameter in signature.Parameters)
         {
-            itHas = itHas && aMethod.Parameters.Any(p => p.Name == parameter.Name && p.ParameterType == parameter.ParameterType);
+            itHas = itHas && aMethod.Parameters.Any(p => p.Name == parameter.Name && p.ReferenceType == parameter.ReferenceType);
         }
 
         return itHas;
@@ -148,8 +150,14 @@ public class ClassService(
         }
     }
 
-    private static void ValidateStereotypeInUpdate(string stereotype, Class classT)
+    private static void ValidateStereotypeInUpdate(string? stereotype, Class classT)
     {
+        if(stereotype == null)
+        {
+            classT.Stereotype = null;
+            return;
+        }
+
         if(stereotype.ToLower() == "abstract")
         {
             classT.Stereotype = KeyWord.Abstract;
@@ -157,6 +165,14 @@ public class ClassService(
         else if(stereotype.ToLower() == "sealed")
         {
             classT.Stereotype = KeyWord.Sealed;
+        }
+        else if(stereotype.ToLower() == "virtual")
+        {
+            classT.Stereotype = KeyWord.Virtual;
+        }
+        else if(stereotype.ToLower() == "no change")
+        {
+            return;
         }
         else
         {
@@ -171,7 +187,7 @@ public class ClassService(
         var attributeT = _attributeRepository.FindAll();
         var methods = _methodRepository.FindAll();
         if(classes.Any(c => c.Parents != null && c.Parents.Find(c => c.Id == id) is not null) ||
-           attributeT.Any(a => a.Type == classT) ||
+           attributeT.Any(a => a.ReferenceType == classT) ||
            methods.Any(m => m.ReturnType == classT))
         {
             throw new ClassInUseException("Class is associated with another class, attribute or method");

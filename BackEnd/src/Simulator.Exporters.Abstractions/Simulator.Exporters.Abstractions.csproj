@@ -6,4 +6,8 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Simulator.DTO\Simulator.DTO.csproj" />
+  </ItemGroup>
+
 </Project>

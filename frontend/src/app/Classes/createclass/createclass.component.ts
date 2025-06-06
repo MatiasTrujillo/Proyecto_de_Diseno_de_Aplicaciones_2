@@ -55,6 +55,7 @@ export class CreateclassComponent {
   }
 
   const classDto: Class = {
+    id: null, // Asumiendo que el backend asignará un ID automáticamente
     name: this.className,
     stereotype: this.stereotype
   };

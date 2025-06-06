@@ -87,7 +87,6 @@ public class MethodServiceTest
     [TestMethod]
     public void CreateMethod_ShouldCallRepositoryAdd_WithPrimitiveReturnType()
     {
-        // Arrange
         var classes = new List<Type>();
         _mockClassRepository.Setup(repo => repo.FindAllTypes()).Returns(classes);
 
@@ -105,13 +104,11 @@ public class MethodServiceTest
         };
 
         var primitive = new Primitive(PrimitiveType.Int);
-        primitive.Name = "int"; // Necesario para que coincida con `type` en el service
+        primitive.Name = "int";
         classes.Add(primitive);
 
-        // Act
         _methodService.CreateMethod(methodDto);
 
-        // Assert
         _mockMethodRepository.Verify(repo => repo.Add(
             It.Is<Method>(m =>
                 m.Name.Equals(methodDto.Name) &&
@@ -581,7 +578,7 @@ public class MethodServiceTest
 
         _mockParameterRepository
             .Setup(r => r.Add(It.Is<Parameter>(p =>
-                p.Name == parameterDto.Name && p.ParameterType.Name == classT.Name)));
+                p.Name == parameterDto.Name && p.ReferenceType.Name == classT.Name && p.InstanceType.Name == classT.Name)));
 
         _mockClassRepository
             .Setup(repo => repo.FindAllTypes())
@@ -639,7 +636,7 @@ public class MethodServiceTest
     }
 
     [TestMethod]
-    public void CreateLocalVariable_ShouldThrowException_WhenLocalVaraiableIsNotValid()
+    public void CreateLocalVariable_ShouldThrowException_WhenLocalVariableIsNotValid()
     {
         var exception =
             Assert.ThrowsException<LocalVariableNotFoundException>(() => _methodService.CreateLocalVariable(null));
@@ -650,17 +647,113 @@ public class MethodServiceTest
     [TestMethod]
     public void CreateLocalVariable_ShouldAddLocalVariable_WhenLocalVariableIsValid()
     {
-        var classT = new TypeDTO { Name = "TestClass", Kind = "class" };
+        var classT = new Class { Name = "TestClass" };
+        var classChild = new Class { Name = "Child", Parents = [classT] };
 
-        var localVariableDto = new LocalVariableDTO { Name = "TestParameter", LocalVariableType = classT };
+        var localVariableDto = new LocalVariableDTO { Name = "TestParameter", ReferenceType = new TypeDTO { Name = classT.Name, Kind = "class" }, InstanceType = new TypeDTO { Name = classChild.Name, Kind = "class" } };
 
         _mockLocalVariableRepository
             .Setup(r => r.Add(It.Is<LocalVariable>(p =>
-                p.Name == localVariableDto.Name && p.LocalVariableType.Name == classT.Name)));
+                p.Name == localVariableDto.Name && p.ReferenceType.Name == classT.Name)));
 
         _mockClassRepository
             .Setup(repo => repo.FindAllTypes())
-            .Returns([new Class { Name = "TestClass" }]);
+            .Returns([classT, classChild]);
+
+        var result = _methodService.CreateLocalVariable(localVariableDto);
+
+        Assert.AreNotEqual(Guid.Empty, result);
+        _mockLocalVariableRepository.Verify(r => r.Add(It.IsAny<LocalVariable>()), Times.Once);
+    }
+
+    [TestMethod]
+    public void CreateLocalVariable_ShouldThrowException_WhenInstanceTypeNotSubclassOfReferenceType()
+    {
+        var classT = new Class { Name = "TestClass" };
+        var classChild = new Class { Name = "Child" };
+
+        var localVariableDto = new LocalVariableDTO { Name = "TestParameter", ReferenceType = new TypeDTO { Name = classT.Name, Kind = "class" }, InstanceType = new TypeDTO { Name = classChild.Name, Kind = "class" } };
+
+        _mockLocalVariableRepository
+            .Setup(r => r.Add(It.Is<LocalVariable>(p =>
+                p.Name == localVariableDto.Name && p.ReferenceType.Name == classT.Name && p.InstanceType.Name == classChild.Name)));
+
+        _mockClassRepository
+            .Setup(repo => repo.FindAllTypes())
+            .Returns([classT, classChild]);
+
+        var ex = Assert.ThrowsException<LocalVariableException>(() =>
+        {
+            _methodService.CreateLocalVariable(localVariableDto);
+        });
+
+        Assert.AreEqual("Instance Type is not a subclass of Reference Type", ex.Message);
+    }
+
+    [TestMethod]
+    public void CreateLocalVariable_ShouldThrowException_WhenInstanceTypeNotSubclassOfReferenceType2()
+    {
+        var class3 = new Class { Name = "Class3" };
+        var classT = new Class { Name = "TestClass" };
+        var classChild = new Class { Name = "Child", Parents = [class3] };
+
+        var localVariableDto = new LocalVariableDTO { Name = "TestParameter", ReferenceType = new TypeDTO { Name = classT.Name, Kind = "class" }, InstanceType = new TypeDTO { Name = classChild.Name, Kind = "class" } };
+
+        _mockLocalVariableRepository
+            .Setup(r => r.Add(It.Is<LocalVariable>(p =>
+                p.Name == localVariableDto.Name && p.ReferenceType.Name == classT.Name && p.InstanceType.Name == classChild.Name)));
+
+        _mockClassRepository
+            .Setup(repo => repo.FindAllTypes())
+            .Returns([classT, classChild]);
+
+        var ex = Assert.ThrowsException<LocalVariableException>(() =>
+        {
+            _methodService.CreateLocalVariable(localVariableDto);
+        });
+
+        Assert.AreEqual("Instance Type is not a subclass of Reference Type", ex.Message);
+    }
+
+    [TestMethod]
+    public void CreateLocalVariable_ShouldThrowException_WhenInstanceTypeIsPrimitive()
+    {
+        var classT = new Class { Name = "TestClass" };
+        var primitive1 = new Primitive(PrimitiveType.Bool) { Name = "Prim" };
+
+        var localVariableDto = new LocalVariableDTO { Name = "TestParameter", ReferenceType = new TypeDTO { Name = classT.Name, Kind = "class" }, InstanceType = new TypeDTO { Name = primitive1.Name, Kind = "class" } };
+
+        _mockLocalVariableRepository
+            .Setup(r => r.Add(It.Is<LocalVariable>(p =>
+                p.Name == localVariableDto.Name && p.ReferenceType.Name == classT.Name)));
+
+        _mockClassRepository
+            .Setup(repo => repo.FindAllTypes())
+            .Returns([classT, primitive1]);
+
+        var ex = Assert.ThrowsException<LocalVariableException>(() =>
+        {
+            _methodService.CreateLocalVariable(localVariableDto);
+        });
+
+        Assert.AreEqual("Invalid reference type or instance type. If one is primitive, both should be primitive. If both are, then they must be the same.", ex.Message);
+    }
+
+    [TestMethod]
+    public void CreateLocalVariable_ShouldCreate_WhenReferenceIsInterfaceAndInstanceIsSubclass()
+    {
+        var interface1 = new Interface { Name = "Inter1" };
+        var class1 = new Class { Name = "Class1", Parents = [interface1] };
+
+        var localVariableDto = new LocalVariableDTO { Name = "TestParameter", ReferenceType = new TypeDTO { Name = interface1.Name, Kind = "interface" }, InstanceType = new TypeDTO { Name = class1.Name, Kind = "class" } };
+
+        _mockLocalVariableRepository
+            .Setup(r => r.Add(It.Is<LocalVariable>(p =>
+                p.Name == localVariableDto.Name && p.ReferenceType.Name == interface1.Name && p.InstanceType.Name == class1.Name)));
+
+        _mockClassRepository
+            .Setup(repo => repo.FindAllTypes())
+            .Returns([interface1, class1]);
 
         var result = _methodService.CreateLocalVariable(localVariableDto);
 
@@ -674,11 +767,14 @@ public class MethodServiceTest
     [DataRow("Object")]
     public void CreateLocalVariable_ShouldThrowException_WhenNameIsReservedKeyword(string reservedName)
     {
-        var dto = new LocalVariableDTO { Name = reservedName, LocalVariableType = new TypeDTO { Name = "SomeType", Kind = "class" }, };
+        var classT = new Class { Name = "TestClass" };
+        var classChild = new Class { Name = "Child", Parents = [classT] };
+
+        var dto = new LocalVariableDTO { Name = reservedName, ReferenceType = new TypeDTO { Name = classT.Name, Kind = "class" }, InstanceType = new TypeDTO { Name = classChild.Name, Kind = "class" } };
 
         _mockClassRepository
             .Setup(repo => repo.FindAllTypes())
-            .Returns([new Class { Name = "SomeType", Id = Guid.NewGuid() }]);
+            .Returns([classChild, classT]);
 
         var ex = Assert.ThrowsException<LocalVariableException>(() =>
         {
@@ -721,7 +817,7 @@ public class MethodServiceTest
     {
         var classT = new TypeDTO { Name = "TestClass", Kind = "class" };
 
-        var localVariableDto = new LocalVariableDTO { Name = string.Empty, LocalVariableType = classT };
+        var localVariableDto = new LocalVariableDTO { Name = string.Empty, ReferenceType = classT };
 
         _mockClassRepository
             .Setup(repo => repo.FindAllTypes())
@@ -1026,7 +1122,7 @@ public class MethodServiceTest
             Methods = [method],
             Attributes =
             [
-                new Attribute { Name = referenceName, Type = new Class { Id = classId } }
+                new Attribute { Name = referenceName, ReferenceType = new Class { Id = classId } }
             ]
         };
         var classWithAttr = new Class { Id = classId, Methods = [method] };
@@ -1062,7 +1158,7 @@ public class MethodServiceTest
         };
         var invMethod = new Method { Id = invokedMethod.MethodId, Name = "Invoked" };
         var attrClass = new Class { Id = Guid.NewGuid(), Methods = [] };
-        var attribute = new Simulator.Domain.Attribute { Name = "MyAttr", Type = attrClass };
+        var attribute = new Simulator.Domain.Attribute { Name = "MyAttr", ReferenceType = attrClass };
         var classWithMethod = new Class { Methods = [methodToAdd], Attributes = [attribute] };
 
         _mockMethodRepository.Setup(r => r.Find(methodId)).Returns(methodToAdd);
@@ -1085,7 +1181,7 @@ public class MethodServiceTest
         {
             Id = methodId,
             Name = "MainMethod",
-            Parameters = [new Parameter { Name = "MyParam", ParameterType = paramClass }],
+            Parameters = [new Parameter { Name = "MyParam", ReferenceType = paramClass }],
             LocalVariables = [],
             Methods = []
         };
@@ -1119,7 +1215,7 @@ public class MethodServiceTest
             Id = methodId,
             Name = "MainMethod",
             Parameters = [],
-            LocalVariables = [new LocalVariable { Name = "MyLocal", LocalVariableType = localVarClass }],
+            LocalVariables = [new LocalVariable { Name = "MyLocal", ReferenceType = localVarClass }],
             Methods = []
         };
         var invokedMethod = new InvokedMethod
@@ -1175,7 +1271,7 @@ public class MethodServiceTest
         {
             Id = localVariableId,
             Name = "myVar",
-            LocalVariableType = new Class()
+            ReferenceType = new Class()
         };
 
         var invokedMethod = new InvokedMethod
@@ -1204,7 +1300,7 @@ public class MethodServiceTest
         {
             Id = id,
             Name = "myVar",
-            ParameterType = new Class()
+            ReferenceType = new Class()
         };
 
         var invokedMethod = new InvokedMethod
@@ -1325,7 +1421,7 @@ public class MethodServiceTest
     [TestMethod]
     public void ToEntity_ShouldThrowArgumentNullException_WhenLocalVariableTypeIsNull()
     {
-        var dto = new LocalVariableDTO { Name = "myVar", LocalVariableType = null };
+        var dto = new LocalVariableDTO { Name = "myVar", ReferenceType = null };
 
         var exception = Assert.ThrowsException<ArgumentNullException>(dto.ToEntity);
 
@@ -1341,13 +1437,13 @@ public class MethodServiceTest
     }
 
     [TestMethod]
-    public void ToEntity_ShouldThrowArgumentNullException_WhenTypeArgumentIsNull()
+    public void ToEntity_ShouldThrowArgumentNullException_WhenReferenceAndInstanceTypeArgumentAreNull()
     {
-        var dto = new AttributeDto { Name = "attr1", Accessibility = Accessibility.Private, Type = null };
+        var dto = new AttributeDto { Name = "attr1", Accessibility = Accessibility.Private, ReferenceType = null };
 
         var exception = Assert.ThrowsException<ArgumentNullException>(dto.ToEntity);
 
-        Assert.AreEqual("The Type property cannot be null. (Parameter 'Type')", exception.Message);
+        Assert.AreEqual("The Type property cannot be null. (Parameter 'ReferenceType')", exception.Message);
     }
 
     [TestMethod]
@@ -1436,7 +1532,7 @@ public class MethodServiceTest
             Id = Guid.NewGuid(),
             Name = "motorAuto",
             Accessibility = Accessibility.Private,
-            Type = motor
+            ReferenceType = motor
         };
 
         var auto = new Class
@@ -1455,7 +1551,7 @@ public class MethodServiceTest
         _mockMethodRepository.Setup(repo => repo.Find(encenderInvoked.MethodId)).Returns(encender);
         _mockMethodRepository.Setup(repo => repo.Find(iniciarViajeInvoked.MethodId)).Returns(iniciarViaje);
 
-        var result = _methodService.ExecuteMethod(auto.Id, auto.Id, iniciarViaje.Id);
+        var result = _methodService.ExecuteMethod(auto.Id, auto.Id, iniciarViaje.Id, []);
         Console.WriteLine(result);
         var result2 =
             "Auto.IniciarViaje() -> Auto.IniciarViaje()\n" +
@@ -1576,7 +1672,7 @@ public class MethodServiceTest
         {
             Id = Guid.NewGuid(),
             Name = "otroAviso",
-            LocalVariableType = email
+            ReferenceType = email
         };
 
         var notificar = new Method
@@ -1589,7 +1685,7 @@ public class MethodServiceTest
                 {
                     Id = Guid.NewGuid(),
                     Name = "aviso",
-                    ParameterType = notificacion
+                    ReferenceType = notificacion
                 }
 
             ],
@@ -1608,6 +1704,8 @@ public class MethodServiceTest
             Methods = [notificar]
         };
 
+        var notificacionType = new TypeDTO { Id = Guid.NewGuid(), Name = "Notificacion" };
+
         _mockClassRepository.Setup(repo => repo.FindAll()).Returns([notificador, sms, email, notificacion]);
         _mockClassRepository.Setup(repo => repo.FindAllTypes()).Returns([notificador, sms, email, notificacion]);
         _mockMethodRepository.Setup(repo => repo.FindAll()).Returns([notificar, enviar]);
@@ -1616,8 +1714,8 @@ public class MethodServiceTest
         _mockMethodRepository.Setup(repo => repo.Find(enviarInvoked1.MethodId)).Returns(enviar);
         _mockMethodRepository.Setup(repo => repo.Find(enviarInvoked2.MethodId)).Returns(enviarEmail);
 
-        var result = _methodService.ExecuteMethod(notificador.Id, notificador.Id, notificar.Id);
-        var result2 = _methodService.ExecuteMethod(notificacion.Id, sms.Id, enviar.Id);
+        var result = _methodService.ExecuteMethod(notificador.Id, notificador.Id, notificar.Id, [notificacionType]);
+        var result2 = _methodService.ExecuteMethod(notificacion.Id, sms.Id, enviar.Id, []);
         Console.WriteLine(result2);
         Console.WriteLine("----------------------------------------------");
         Console.WriteLine(result);
@@ -1759,7 +1857,7 @@ public class MethodServiceTest
         {
             Id = Guid.NewGuid(),
             Name = "input",
-            LocalVariableType = entradaTextoEspecial
+            ReferenceType = entradaTextoEspecial
         };
 
         var validar = new Method
@@ -1793,7 +1891,7 @@ public class MethodServiceTest
         _mockMethodRepository.Setup(repo => repo.Find(inicializarInvoked.MethodId)).Returns(inicializar);
         _mockMethodRepository.Setup(repo => repo.Find(limpiarInvoked.MethodId)).Returns(limpiar);
 
-        var result = _methodService.ExecuteMethod(validador.Id, validador.Id, validar.Id);
+        var result = _methodService.ExecuteMethod(validador.Id, validador.Id, validar.Id, []);
 
         var res =
             "Validador.Validar() -> Validador.Validar()\n" +
@@ -1814,7 +1912,7 @@ public class MethodServiceTest
             Id = Guid.NewGuid(),
             Name = "Nombre",
             Accessibility = Accessibility.Public,
-            Type = new Primitive(PrimitiveType.String),
+            ReferenceType = new Primitive(PrimitiveType.String),
         };
 
         var validar = new Method
@@ -1838,7 +1936,7 @@ public class MethodServiceTest
         {
             Id = Guid.NewGuid(),
             Name = "Mensaje",
-            ParameterType = new Primitive(PrimitiveType.String),
+            ReferenceType = new Primitive(PrimitiveType.String),
         };
 
         var registrar = new Method
@@ -1873,7 +1971,7 @@ public class MethodServiceTest
             Id = Guid.NewGuid(),
             Name = "loggerLocal",
             Accessibility = Accessibility.Private,
-            Type = logger
+            ReferenceType = logger
         };
 
         var preparar = new Method
@@ -1907,7 +2005,7 @@ public class MethodServiceTest
         {
             Id = Guid.NewGuid(),
             Name = "usuario",
-            ParameterType = usuario
+            ReferenceType = usuario
         };
 
         var validarCredencialesAutenticator = new Method
@@ -1976,7 +2074,7 @@ public class MethodServiceTest
             Id = Guid.NewGuid(),
             Name = "clavePrivada",
             Accessibility = Accessibility.Private,
-            Type = new Primitive(PrimitiveType.String),
+            ReferenceType = new Primitive(PrimitiveType.String),
             InvokedMethod = toStringInvoked
         };
 
@@ -2010,6 +2108,12 @@ public class MethodServiceTest
             Parents = [autenticador]
         };
 
+        var usuarioType = new TypeDTO
+        {
+            Id = Guid.NewGuid(),
+            Name = "Usuario",
+        };
+
         var stringPrimitive = new Primitive(PrimitiveType.String);
 
         _mockClassRepository.Setup(repo => repo.FindAll()).Returns([usuario, logger, autenticador, autenticadorPassword]);
@@ -2022,7 +2126,7 @@ public class MethodServiceTest
         _mockMethodRepository.Setup(repo => repo.Find(logAccesoInvoked.MethodId)).Returns(logAcceso);
         _mockMethodRepository.Setup(repo => repo.Find(toStringInvoked.MethodId)).Returns(toString);
 
-        var result = _methodService.ExecuteMethod(autenticador.Id, autenticadorPassword.Id, autenticar.Id);
+        var result = _methodService.ExecuteMethod(autenticador.Id, autenticadorPassword.Id, autenticar.Id, [usuarioType]);
 
         var res =
             "Autenticador.Autenticar(Usuario) -> Autenticador.Autenticar(Usuario)\n" +
@@ -2044,7 +2148,7 @@ public class MethodServiceTest
             Id = Guid.NewGuid(),
             Name = "Id",
             Accessibility = Accessibility.Public,
-            Type = new Primitive(PrimitiveType.Int)
+            ReferenceType = new Primitive(PrimitiveType.Int)
         };
 
         var validarIdentidad = new Method
@@ -2077,7 +2181,7 @@ public class MethodServiceTest
         {
             Id = Guid.NewGuid(),
             Name = "mensaje",
-            ParameterType = new Primitive(PrimitiveType.String)
+            ReferenceType = new Primitive(PrimitiveType.String)
         };
 
         var enviarNotificacion = new Method
@@ -2111,11 +2215,11 @@ public class MethodServiceTest
         {
             Id = Guid.NewGuid(),
             Name = "notificador",
-            Type = comunicacion,
+            ReferenceType = comunicacion,
             Accessibility = Accessibility.Protected,
         };
 
-        var clienteParam = new Parameter { Id = Guid.NewGuid(), Name = "cliente", ParameterType = cliente };
+        var clienteParam = new Parameter { Id = Guid.NewGuid(), Name = "cliente", ReferenceType = cliente };
 
         var realizarProcesoProceso = new Method
         {
@@ -2179,7 +2283,7 @@ public class MethodServiceTest
         {
             Id = Guid.NewGuid(),
             Name = "inventarioDisponible",
-            Type = new Primitive(PrimitiveType.Bool),
+            ReferenceType = new Primitive(PrimitiveType.Bool),
             Accessibility = Accessibility.Private
         };
 
@@ -2223,6 +2327,12 @@ public class MethodServiceTest
             Parents = [proceso],
         };
 
+        var clienteType = new TypeDTO
+        {
+            Id = Guid.NewGuid(),
+            Name = "Cliente",
+        };
+
         var stringPrimitive = new Primitive(PrimitiveType.String);
 
         _mockClassRepository.Setup(repo => repo.FindAll()).Returns([cliente, comunicacion, proceso, procesoCompra]);
@@ -2234,7 +2344,7 @@ public class MethodServiceTest
         _mockMethodRepository.Setup(repo => repo.Find(validarIdentidadInvoked.MethodId)).Returns(validarIdentidad);
         _mockMethodRepository.Setup(repo => repo.Find(realizarProcesoProcesoInvoked.MethodId)).Returns(realizarProcesoProceso);
 
-        var result = _methodService.ExecuteMethod(proceso.Id, procesoCompra.Id, ejecutar.Id);
+        var result = _methodService.ExecuteMethod(proceso.Id, procesoCompra.Id, ejecutar.Id, [clienteType]);
 
         var res =
             "Proceso.Ejecutar(Cliente) -> Proceso.Ejecutar(Cliente)\n" +
