@@ -164,7 +164,7 @@ public class MethodService(
 
     private void ValidateTypeIsPrimitive(Type? attributeTType)
     {
-        if(attributeTType?.GetType() != typeof(Class) && attributeTType?.GetType() != typeof(Primitive) )
+        if(attributeTType?.GetType() != typeof(Class) && attributeTType?.GetType() != typeof(Primitive))
         {
             throw new InvalidAttributeException("In v2 of this program only Class and Primitive types are accepted.");
         }
