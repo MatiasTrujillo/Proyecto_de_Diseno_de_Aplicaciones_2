@@ -26,9 +26,25 @@ public class NameSpaceRepository(SqlContext context) : INameSpaceRepository
         context.SaveChanges();
     }
 
+    public void Delete(NameSpace nameSpace)
+    {
+        var existingNameSpace = Find(nameSpace.Id);
+        if(existingNameSpace != null)
+        {
+            context.NameSpaces.Remove(existingNameSpace);
+            context.SaveChanges();
+        }
+    }
+
     public List<NameSpace> FindAll()
     {
         return context.NameSpaces
+            .ToList();
+    }
+
+    public List<NamespaceComponent> FindAllNamespaceComponents()
+    {
+        return context.NamespaceComponents
             .ToList();
     }
 }

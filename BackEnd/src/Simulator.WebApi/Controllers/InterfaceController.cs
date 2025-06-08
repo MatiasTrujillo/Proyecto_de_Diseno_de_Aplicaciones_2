@@ -34,4 +34,13 @@ public class InterfaceController(IInterfaceService interfaceService) : Controlle
         _interfaceService.DeleteInterface(id);
         return NoContent();
     }
+
+    [HttpGet]
+    public IActionResult GetInterfaces()
+    {
+        var interfaces = _interfaceService.GetInterfaces()
+            .Select(i => i.ToDTO())
+            .ToList();
+        return Ok(interfaces);
+    }
 }

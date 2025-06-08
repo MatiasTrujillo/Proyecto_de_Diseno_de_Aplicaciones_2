@@ -117,8 +117,8 @@ public class MethodRepositoryTest
     public void Find_WhenMethodExists_ShouldReturnMethodWithRelations()
     {
         var returnType = new Class { Id = Guid.NewGuid(), Name = "ReturnClass" };
-        var parameter = new Parameter { Id = Guid.NewGuid(), Name = "Parameter1", ParameterType = returnType };
-        var localVariable = new LocalVariable { Id = Guid.NewGuid(), Name = "LocalVar1", LocalVariableType = returnType };
+        var parameter = new Parameter { Id = Guid.NewGuid(), Name = "Parameter1", ReferenceType = returnType };
+        var localVariable = new LocalVariable { Id = Guid.NewGuid(), Name = "LocalVar1", ReferenceType = returnType };
         var relatedMethod = new Method { Id = Guid.NewGuid(), Name = "RelatedMethod" };
 
         _context.Classes.Add(returnType);
@@ -187,7 +187,7 @@ public class MethodRepositoryTest
         {
             Id = parameterId,
             Name = "Param1",
-            ParameterType = new Primitive()
+            ReferenceType = new Primitive()
         };
         _context.Methods.Add(originalMethod);
         _context.Parameters.Add(parameter);
@@ -227,9 +227,9 @@ public class MethodRepositoryTest
         {
             Id = methodId1,
             Name = "Method 1",
-            Parameters = [new Parameter { Id = Guid.NewGuid(), Name = "param1", ParameterType = new Primitive() }],
+            Parameters = [new Parameter { Id = Guid.NewGuid(), Name = "param1", ReferenceType = new Primitive() }],
             LocalVariables =
-                [new LocalVariable { Id = Guid.NewGuid(), Name = "localVar1", LocalVariableType = new Primitive() }],
+                [new LocalVariable { Id = Guid.NewGuid(), Name = "localVar1", ReferenceType = new Primitive() }],
             ReturnType = new Primitive()
         };
 
@@ -237,9 +237,9 @@ public class MethodRepositoryTest
         {
             Id = methodId2,
             Name = "Method 2",
-            Parameters = [new Parameter { Id = Guid.NewGuid(), Name = "param2", ParameterType = new Primitive() }],
+            Parameters = [new Parameter { Id = Guid.NewGuid(), Name = "param2", ReferenceType = new Primitive() }],
             LocalVariables =
-                [new LocalVariable { Id = Guid.NewGuid(), Name = "localVar2", LocalVariableType = new Primitive() }],
+                [new LocalVariable { Id = Guid.NewGuid(), Name = "localVar2", ReferenceType = new Primitive() }],
             ReturnType = new Primitive()
         };
 

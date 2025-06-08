@@ -131,7 +131,7 @@ public class ClassService(
         var itHas = aMethod.Parameters.Count == signature.Parameters.Count;
         foreach(var parameter in signature.Parameters)
         {
-            itHas = itHas && aMethod.Parameters.Any(p => p.Name == parameter.Name && p.ParameterType == parameter.ParameterType);
+            itHas = itHas && aMethod.Parameters.Any(p => p.Name == parameter.Name && p.ReferenceType == parameter.ReferenceType);
         }
 
         return itHas;
@@ -187,7 +187,7 @@ public class ClassService(
         var attributeT = _attributeRepository.FindAll();
         var methods = _methodRepository.FindAll();
         if(classes.Any(c => c.Parents != null && c.Parents.Find(c => c.Id == id) is not null) ||
-           attributeT.Any(a => a.Type == classT) ||
+           attributeT.Any(a => a.ReferenceType == classT) ||
            methods.Any(m => m.ReturnType == classT))
         {
             throw new ClassInUseException("Class is associated with another class, attribute or method");

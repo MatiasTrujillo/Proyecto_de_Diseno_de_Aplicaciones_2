@@ -18,7 +18,7 @@ public class LocalVariableTest
         var localVariableDto = new LocalVariableDTO
         {
             Name = "TestParameter",
-            LocalVariableType = new TypeDTO { Name = "TestType" }
+            ReferenceType = new TypeDTO { Name = "TestType" }
         };
         var expectedParameterId = Guid.NewGuid();
 

@@ -7,8 +7,9 @@ public class Attribute
     public Guid Id { get; set; }
     public string Name { get; set; }
     public Accessibility Accessibility { get; set; }
-    public virtual Type? Type { get; set; }
-    public virtual InvokedMethod? InvokedMethod { get; set; }
+    public virtual Type? ReferenceType { get; set; }
+    public virtual Type? InstanceType { get; set; }
+    public virtual List<InvokedMethod>? InvokedMethods { get; set; }
     public KeyWord? Stereotype { get; set; }
 
     public Attribute()
@@ -16,28 +17,40 @@ public class Attribute
         Id = Guid.NewGuid();
         Name = string.Empty;
         Accessibility = Accessibility.Public;
-        Type = new Primitive(PrimitiveType.Int);
-        InvokedMethod = null;
+        ReferenceType = new Primitive(PrimitiveType.Int);
+        InvokedMethods = [];
     }
 
-    public Attribute(string name, Accessibility accessibility, Type type)
+    public Attribute(string name, Accessibility accessibility, Type referenceType)
     {
         ValidateAttributes(name);
         Id = Guid.NewGuid();
         Name = name;
         Accessibility = accessibility;
-        Type = type;
-        InvokedMethod = null;
+        ReferenceType = referenceType;
+        InvokedMethods = [];
     }
 
-    public Attribute(string name, Accessibility accessibility, Type type, KeyWord? stereotype)
+    public Attribute(string name, Accessibility accessibility, Type referenceType, KeyWord? stereotype)
     {
         ValidateAttributes(name);
         Id = Guid.NewGuid();
         Name = name;
         Accessibility = accessibility;
-        Type = type;
-        InvokedMethod = null;
+        ReferenceType = referenceType;
+        InvokedMethods = [];
+        Stereotype = stereotype;
+    }
+
+    public Attribute(string name, Accessibility accessibility, Type referenceType, Type instanceType, KeyWord? stereotype)
+    {
+        ValidateAttributes(name);
+        Id = Guid.NewGuid();
+        Name = name;
+        Accessibility = accessibility;
+        ReferenceType = referenceType;
+        InstanceType = instanceType;
+        InvokedMethods = [];
         Stereotype = stereotype;
     }
 

@@ -24,7 +24,7 @@ export class DeleteclassComponent implements OnInit {
 
   ngOnInit(): void {
     this.deleteForm = this.fb.group({
-      classId: ['']
+      id: ['']
     });
 
     this.loadClasses();
@@ -38,14 +38,14 @@ export class DeleteclassComponent implements OnInit {
   }
 
   onDelete(): void {
-    const classId = this.deleteForm.value.classId;
+    const id = this.deleteForm.value.id;
 
-    if (!classId) {
+    if (!id) {
       this.error = 'Please select a class to delete.';
       return;
     }
 
-    this.simulatorService.deleteClass(classId).subscribe({
+    this.simulatorService.deleteClass(id).subscribe({
       next: () => {
         this.message = 'Class deleted successfully.';
         this.error = null;

@@ -25,11 +25,27 @@ public sealed class SqlContext : DbContext
     public DbSet<Interface> Interfaces { get; set; }
     public DbSet<MethodSignature> MethodSignatures { get; set; }
     public DbSet<Session> Sessions { get; set; }
+    public DbSet<NamespaceComponent> NamespaceComponents { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        modelBuilder.Entity<NameSpace>()
+            .HasOne(n => n.Father)
+            .WithMany()
+            .HasForeignKey("FatherId")
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<NamespaceComponent>()
+            .HasOne(nc => nc.NameSpace)
+            .WithMany(ns => ns.Childs)
+            .HasForeignKey(nc => nc.NameSpaceId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<NamespaceComponent>()
+            .HasKey(s => s.Id);
+
         modelBuilder.Entity<Type>()
-            .HasKey(t => t.Id);
+            .HasBaseType<NamespaceComponent>();
 
         modelBuilder.Entity<Class>()
             .HasBaseType<Type>();
@@ -115,6 +131,45 @@ public sealed class SqlContext : DbContext
                 {
                     j.HasKey("MethodsId", "InvokedMethodId");
                     j.ToTable("MethodInvokedMethod");
+                });
+
+        modelBuilder.Entity<Attribute>()
+            .HasMany(a => a.InvokedMethods)
+            .WithMany()
+            .UsingEntity<Dictionary<string, object>>(
+                "AttributeInvokedMethods",
+                j => j.HasOne<InvokedMethod>().WithMany().HasForeignKey("InvokedMethodId"),
+                j => j.HasOne<Attribute>().WithMany().HasForeignKey("AttributeId"),
+                j =>
+                {
+                    j.HasKey("AttributeId", "InvokedMethodId");
+                    j.ToTable("AttributeInvokedMethods");
+                });
+
+        modelBuilder.Entity<Parameter>()
+            .HasMany(p => p.InvokedMethods)
+            .WithMany()
+            .UsingEntity<Dictionary<string, object>>(
+                "ParameterInvokedMethods",
+                j => j.HasOne<InvokedMethod>().WithMany().HasForeignKey("InvokedMethodId"),
+                j => j.HasOne<Parameter>().WithMany().HasForeignKey("ParameterId"),
+                j =>
+                {
+                    j.HasKey("ParameterId", "InvokedMethodId");
+                    j.ToTable("ParameterInvokedMethods");
+                });
+
+        modelBuilder.Entity<LocalVariable>()
+            .HasMany(p => p.InvokedMethods)
+            .WithMany()
+            .UsingEntity<Dictionary<string, object>>(
+                "LocalVariableInvokedMethods",
+                j => j.HasOne<InvokedMethod>().WithMany().HasForeignKey("InvokedMethodId"),
+                j => j.HasOne<LocalVariable>().WithMany().HasForeignKey("LocalVariableId"),
+                j =>
+                {
+                    j.HasKey("LocalVariableId", "InvokedMethodId");
+                    j.ToTable("LocalVariableInvokedMethods");
                 });
 
         modelBuilder.Entity<Interface>()

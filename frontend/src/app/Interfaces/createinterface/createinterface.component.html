@@ -6,7 +6,8 @@
         <form (ngSubmit)="createInterface()" class="form-fields">
           <mat-form-field appearance="outline" class="full-width">
             <mat-label>Nombre de la Interfaz</mat-label>
-            <input matInput [(ngModel)]="interfaceName" name="interfaceName" required />
+            <label for="name">Name</label>
+            <input id="name" matInput [(ngModel)]="interfaceName" name="interfaceName" required />
           </mat-form-field>
   
           <div class="button-container">

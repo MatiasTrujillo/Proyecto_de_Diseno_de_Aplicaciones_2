@@ -9,12 +9,12 @@ public class ParameterRepository(SqlContext context) : IParameterRepository
 {
     public void Add(Parameter parameter)
     {
-        if(parameter.ParameterType != null)
+        if(parameter.ReferenceType != null)
         {
-            var type = context.Set<Type>().Find(parameter.ParameterType.Id);
+            var type = context.Set<Type>().Find(parameter.ReferenceType.Id);
             if(type != null)
             {
-                parameter.ParameterType = type;
+                parameter.ReferenceType = type;
             }
         }
 
@@ -25,8 +25,8 @@ public class ParameterRepository(SqlContext context) : IParameterRepository
     public Parameter Find(Guid id)
     {
         var parameter = context.Parameters
-            .Include(p => p.ParameterType)
-            .Include(iv => iv.InvokedMethod)
+            .Include(p => p.ReferenceType)
+            .Include(iv => iv.InvokedMethods)
             .FirstOrDefault(p => p.Id == id);
 
         return parameter;
@@ -35,8 +35,8 @@ public class ParameterRepository(SqlContext context) : IParameterRepository
     public List<Parameter> FindAll()
     {
         return context.Parameters
-            .Include(p => p.ParameterType)
-            .Include(iv => iv.InvokedMethod)
+            .Include(p => p.ReferenceType)
+            .Include(iv => iv.InvokedMethods)
             .ToList();
     }
 

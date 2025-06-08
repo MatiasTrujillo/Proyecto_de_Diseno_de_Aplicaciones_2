@@ -22,12 +22,17 @@ public class AttributeService(IAttributeRepository attributeRepository, IClassRe
     public Guid CreateAttribute(AttributeDto aDTO)
     {
         var attribute = aDTO.ToEntity();
-        var type = aDTO.Type.Name;
-        var typeT = _classRepository.FindAll().FirstOrDefault(c => c.Name == type);
+        var type = aDTO.ReferenceType.Name;
+        var instanceType = aDTO.InstanceType.Name;
+        var typeT = _classRepository.FindAllTypes().FirstOrDefault(c => c.Name == type);
+        var instanceTypeT = _classRepository.FindAllTypes().FirstOrDefault(c => c.Name == instanceType);
         ValidateAccesibility(attribute.Accessibility);
         ValidateStereotype(attribute.Stereotype);
-        ValidateAttributeType(attribute.Type); // aca
-        attribute.Type = typeT;
+        ValidateAttributeType(attribute.ReferenceType);
+        ValidateTypesExists(typeT, instanceTypeT);
+        ValidateInstanceClass(typeT, instanceTypeT);
+        AssignTypes(attribute, typeT, instanceTypeT);
+
         _attributeRepository.Add(attribute);
         return attribute.Id;
     }
@@ -50,7 +55,12 @@ public class AttributeService(IAttributeRepository attributeRepository, IClassRe
         ValidateName(uAttribute.Name, attribute);
         ValidateAccessibility(uAttribute.Accessibility, attribute);
         ManageStereotype(uAttribute.Stereotype, attribute);
-        ValidateAttributeTypeUp(uAttribute.IdType);
+        var typeT = _classRepository.FindAllTypes().FirstOrDefault(x => x.Id == uAttribute.IdReferenceType);
+        var instanceTypeT = _classRepository.FindAllTypes().FirstOrDefault(x => x.Id == uAttribute.IdInstanceType);
+        ValidateTypesExists(typeT, instanceTypeT);
+        ValidateInstanceClass(typeT, instanceTypeT);
+        AssignTypes(attribute, typeT, instanceTypeT);
+
         _attributeRepository.Update(attribute);
     }
 
@@ -68,8 +78,8 @@ public class AttributeService(IAttributeRepository attributeRepository, IClassRe
         var invokeT = _invokeMethodRepository.Find(idInvokeGuid);
         ValidateAttributeExist(attributeT);
         ValidateInvokedMethodExist(invokeT);
-        ValidateTypeIsPrimitive(attributeT.Type);
-        attributeT.InvokedMethod = invokeT;
+        ValidateTypeIsPrimitive(attributeT.ReferenceType);
+        attributeT.InvokedMethods.Add(invokeT);
         _attributeRepository.Update(attributeT);
     }
 
@@ -81,7 +91,7 @@ public class AttributeService(IAttributeRepository attributeRepository, IClassRe
                 Id = a.Id.ToString(),
                 Name = a.Name,
                 Accessibility = a.Accessibility,
-                Type = a.Type?.ToDTO(),
+                ReferenceType = a.ReferenceType?.ToDTO(),
                 Stereotype = a.Stereotype
             }).ToList();
     }
@@ -213,15 +223,6 @@ public class AttributeService(IAttributeRepository attributeRepository, IClassRe
         }
     }
 
-    private void ValidateAttributeTypeUp(Guid? methodTReturnType)
-    {
-        var classes = _classRepository.FindAll();
-        if(methodTReturnType != null && classes.All(c => c.Id != methodTReturnType))
-        {
-            throw new TypeNotFoundException("Return type not found.");
-        }
-    }
-
     private void ValidateAccesibility(Accessibility aDtoAccessibility)
     {
         if(!Enum.IsDefined(typeof(Accessibility), aDtoAccessibility))
@@ -235,6 +236,131 @@ public class AttributeService(IAttributeRepository attributeRepository, IClassRe
         if(stereotype != null && stereotype != KeyWord.Static)
         {
             throw new InvalidAttributeException("Invalid stereotype value. Attribute stereotype can only be null or static.");
+        }
+    }
+
+    private void ValidateInstanceClass(Type? referenceType, Type? instanceType)
+    {
+        if(BothPrimitiveButDifferent(referenceType, instanceType) || ReferenceNotPrimitive(referenceType, instanceType) || InstanceNotPrimitive(referenceType, instanceType))
+        {
+            throw new InvalidAttributeException("Invalid reference type or instance type. If one is primitive, both should be primitive. If both are, then they must be the same.");
+        }
+
+        if(referenceType is Class referenceClass && instanceType is Class instanceClass)
+        {
+            var res = CaseReferenceClassRecursive(referenceClass, instanceClass);
+            if(!res)
+            {
+                throw new InvalidAttributeException("Instance Type is not a subclass of Reference Type");
+            }
+        }
+        else if(referenceType is Interface referenceInterface2 && instanceType is Class instanceClass2)
+        {
+            var res = CaseReferenceInterfaceRecursive(referenceInterface2, instanceClass2);
+            if(!res)
+            {
+                throw new InvalidAttributeException("Instance Type is not a subclass of Reference Type");
+            }
+        }
+        else if(referenceType is Class && instanceType is Interface)
+        {
+            throw new InvalidAttributeException("Instance Type is not a subclass of Reference Type");
+        }
+        else if(referenceType is Interface referenceInterface && instanceType is Interface instanceInterface && referenceInterface != instanceInterface)
+        {
+            throw new InvalidAttributeException("Instance Type is not a subclass of Reference Type");
+        }
+    }
+
+    private bool CaseReferenceInterfaceRecursive(Interface reference, Class instance)
+    {
+        if(instance.Parents is null)
+        {
+            return false;
+        }
+
+        var aux = new bool[instance.Parents.Count];
+
+        for(var i = 0; i < instance.Parents.Count; i++)
+        {
+            if(instance.Parents[i] is Class c)
+            {
+                aux[i] = CaseReferenceInterfaceRecursive(reference, c);
+            }
+            else if(instance.Parents[i] is Interface inter && reference == inter)
+            {
+                aux[i] = true;
+            }
+        }
+
+        return aux.Any(x => x);
+    }
+
+    private bool CaseReferenceClassRecursive(Class reference, Class instance)
+    {
+        if(reference == instance)
+        {
+            return true;
+        }
+
+        if(instance.Parents is null)
+        {
+            return false;
+        }
+
+        var aux = new bool[instance.Parents.Count];
+        for(var i = 0; i < instance.Parents.Count; i++)
+        {
+            if(instance.Parents[i] is Class c)
+            {
+                aux[i] = CaseReferenceClassRecursive(reference, c);
+            }
+        }
+
+        return aux.Any(x => x);
+    }
+
+    private bool InstanceNotPrimitive(Type? referenceType, Type? instanceType)
+    {
+        return instanceType is not Primitive && referenceType is Primitive;
+    }
+
+    private bool ReferenceNotPrimitive(Type? referenceType, Type? instanceType)
+    {
+        return instanceType is Primitive && referenceType is not Primitive;
+    }
+
+    private bool BothPrimitiveButDifferent(Type? referenceType, Type? instanceType)
+    {
+        return instanceType is Primitive a && referenceType is Primitive b && a.PrimitiveType != b.PrimitiveType;
+    }
+
+    private void ValidateTypesExists(Type? referenceType, Type? instanceType)
+    {
+        if(referenceType is null || instanceType is null)
+        {
+            throw new TypeNotFoundException("Instance Type and Reference Type cannot be null.");
+        }
+    }
+
+    private void AssignTypes(Attribute attribute, Type? typeT, Type? instanceTypeT)
+    {
+        if(typeT is Primitive p1)
+        {
+            attribute.ReferenceType = p1;
+        }
+        else if(typeT is Class c1)
+        {
+            attribute.ReferenceType = c1;
+        }
+
+        if(instanceTypeT is Primitive p2)
+        {
+            attribute.InstanceType = p2;
+        }
+        else if(instanceTypeT is Class c2)
+        {
+            attribute.InstanceType = c2;
         }
     }
 }

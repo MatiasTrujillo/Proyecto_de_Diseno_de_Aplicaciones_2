@@ -7,9 +7,9 @@
 <div *ngIf="error" class="error-message">{{ error }}</div>
 
 <form [formGroup]="deleteForm" (ngSubmit)="onDelete()">
-  <label for="classId">Select a class to delete:</label>
-  <select formControlName="classId" required>
-    <option *ngFor="let c of classes" [value]="c.idClass">{{ c.name }}</option>
+  <label for="id">Select a class to delete:</label>
+  <select formControlName="id" required>
+    <option *ngFor="let c of classes" [value]="c.id">{{ c.name }}</option>
   </select>
 
   <br /><br />

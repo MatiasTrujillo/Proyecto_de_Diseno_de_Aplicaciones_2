@@ -9,12 +9,12 @@ public class LocalVariableRepository(SqlContext context) : ILocalVariableReposit
 {
     public void Add(LocalVariable localVariable)
     {
-        if(localVariable.LocalVariableType != null)
+        if(localVariable.ReferenceType != null)
         {
-            var type = context.Set<Type>().Find(localVariable.LocalVariableType.Id);
+            var type = context.Set<Type>().Find(localVariable.ReferenceType.Id);
             if(type != null)
             {
-                localVariable.LocalVariableType = type;
+                localVariable.ReferenceType = type;
             }
         }
 
@@ -25,8 +25,8 @@ public class LocalVariableRepository(SqlContext context) : ILocalVariableReposit
     public LocalVariable Find(Guid id)
     {
         var localVariable = context.LocalVariables
-            .Include(p => p.LocalVariableType)
-            .Include(p => p.InvokedMethod)
+            .Include(p => p.ReferenceType)
+            .Include(p => p.InvokedMethods)
             .FirstOrDefault(p => p.Id == id);
 
         return localVariable;
@@ -35,8 +35,8 @@ public class LocalVariableRepository(SqlContext context) : ILocalVariableReposit
     public List<LocalVariable> FindAll()
     {
         return context.LocalVariables
-            .Include(p => p.LocalVariableType)
-            .Include(p => p.InvokedMethod)
+            .Include(p => p.ReferenceType)
+            .Include(p => p.InvokedMethods)
             .ToList();
     }
 

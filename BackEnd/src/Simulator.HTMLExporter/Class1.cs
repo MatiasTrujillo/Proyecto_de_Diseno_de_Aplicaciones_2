@@ -1,5 +1,5 @@
-﻿using Simulator.Exporters.Abstractions;
-
+﻿using System.Net;
+using Simulator.Exporters.Abstractions;
 namespace Simulator.HTMLExporter;
 
 public class Class1 : ITransformerExporter
@@ -7,6 +7,8 @@ public class Class1 : ITransformerExporter
     public string GetFormat() => "html";
     public string Export(string data)
     {
+        var safeData = WebUtility.HtmlEncode(data);
+
         return $"""
                 <!DOCTYPE html>
                 <html lang="en">
@@ -16,7 +18,7 @@ public class Class1 : ITransformerExporter
                 </head>
                 <body>
                     <h1>Export Result</h1>
-                    <p>{data}</p>
+                    <pre>{safeData}</pre>
                 </body>
                 </html>
                 """;

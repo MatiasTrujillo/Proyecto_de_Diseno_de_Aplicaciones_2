@@ -30,7 +30,7 @@ public class InterfaceRepository_Test
         {
             Id = Guid.NewGuid(),
             Name = "myParam",
-            ParameterType = aPrimitive
+            ReferenceType = aPrimitive
         };
         aMethodSignature = new MethodSignature("AMethodSignature", aPrimitive, [aParameter]);
     }

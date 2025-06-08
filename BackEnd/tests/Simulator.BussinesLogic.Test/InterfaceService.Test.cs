@@ -242,4 +242,21 @@ public class InterfaceService_Test
 
         Assert.AreEqual("Method signature id not found.", exception.Message);
     }
+
+    [TestMethod]
+    public void GetInterfaces_ShouldReturnListOfInterfaces()
+    {
+        _mockClassRepository.Setup(r => r.FindAllTypes())
+            .Returns([]);
+        _mockInterfaceRepository.Setup(r => r.FindAll())
+            .Returns([dto.ToEntity()]);
+
+        _interfaceService.CreateInterface(dto);
+        var result = _interfaceService.GetInterfaces();
+
+        Assert.IsNotNull(result);
+        Assert.AreEqual(1, result.Count);
+        Assert.IsTrue(result.Any(i => i.Name == dto.Name));
+        _mockInterfaceRepository.Verify(repo => repo.FindAll(), Times.Once);
+    }
 }

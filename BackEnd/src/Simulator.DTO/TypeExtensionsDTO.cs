@@ -17,7 +17,7 @@ public static class TypeExtensions
 
         return new TypeDTO
         {
-            IdClass = type.Id,
+            Id = type.Id,
             Name = type.Name,
             Kind = kind
         };
