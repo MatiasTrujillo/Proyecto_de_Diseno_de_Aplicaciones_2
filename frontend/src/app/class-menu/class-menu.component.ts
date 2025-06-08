@@ -5,6 +5,7 @@ import { SimulatorService } from '../services/simulator.service';
 import { UpdateclassComponent } from '../Classes/updateclass/updateclass.component';
 import { DeleteclassComponent } from '../Classes/deleteclass/deleteclass.component';
 import { Router } from '@angular/router';
+import { Class } from '../models/class';
 
 @Component({
   selector: 'app-class-menu',
@@ -15,7 +16,7 @@ import { Router } from '@angular/router';
 })
 export class ClassMenuComponent implements OnInit {
 
-  classes: any[] = [];
+  classes: Class[] = [];
   activeModal: string | null = null;
   selectedClass: any = null;
 
@@ -41,4 +42,16 @@ export class ClassMenuComponent implements OnInit {
   goToHome(): void {
     this.router.navigate(['/navMenu']);
   }
+
+goToClassMenu() {
+  this.router.navigate(['/ClassMenuComponent']);
+}
+
+goToMethodMenu() {
+  this.router.navigate(['/MethodMenuComponent']);
+}
+
+goToNavMenu() {
+  this.router.navigate(['/navMenu']);
+}
 }

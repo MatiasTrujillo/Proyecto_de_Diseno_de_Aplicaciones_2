@@ -1,63 +1,40 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { SimulatorService } from '../../services/simulator.service';
 import { Method } from '../../models/method';
-import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
-import { CommonModule, NgIf, NgFor } from '@angular/common';
+
 
 @Component({
   selector: 'app-deletemethod',
-  standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, NgIf, NgFor],
+   standalone: true,
+  imports: [CommonModule],
   templateUrl: './deletemethod.component.html',
   styleUrls: ['./deletemethod.component.css']
 })
-export class DeletemethodComponent implements OnInit {
-  methods: Method[] = [];
-  deleteForm: FormGroup;
-  message = '';
-  errorMessage = '';
+export class DeletemethodComponent {
+   @Input() methodData!: Method;
+   @Output() close = new EventEmitter<void>();
 
-  constructor(
-    private simulatorService: SimulatorService,
-    private fb: FormBuilder
-  ) {
-    this.deleteForm = this.fb.group({
-      methodId: ['']
-    });
-  }
+  message: string | null = null;
+  error: string | null = null;
 
-  ngOnInit(): void {
-    this.loadMethods();
-  }
-
-  loadMethods(): void {
-    this.simulatorService.getMethods().subscribe({
-      next: (methods) => {
-        this.methods = methods;
-        this.errorMessage = '';
-      },
-      error: (error) => {
-        this.errorMessage = 'Error al cargar los métodos.';
-        console.error(error);
-      }
-    });
-  }
+  constructor(private simulatorService: SimulatorService) {}
 
   onDelete(): void {
-    const methodId = this.deleteForm.value.methodId;
-    if (!methodId) return;
+    if (!this.methodData?.id) {
+      this.error = 'Invalid method selected.';
+      return;
+    }
 
-    this.simulatorService.deleteMethod(methodId).subscribe({
+    this.simulatorService.deleteMethod(this.methodData.id).subscribe({
       next: () => {
-        this.message = 'Método eliminado correctamente.';
-        this.errorMessage = '';
-        this.methods = this.methods.filter(m => m.id !== methodId);
-        this.deleteForm.reset();
+        this.message = 'Method deleted successfully.';
+        this.error = null;
+        this.close.emit();
       },
-      error: (error) => {
-        this.errorMessage = 'Error al eliminar el método.';
-        this.message = '';
-        console.error(error);
+      error: (err) => {
+        this.error = 'Error deleting method: ' + (err?.error?.message || err.message || 'Unknown error');
+        this.message = null;
       }
     });
   }

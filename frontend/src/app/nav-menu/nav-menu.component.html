@@ -9,7 +9,7 @@
 
 <div class="sidebar">
   <button (click)="goToClassMenu()">Manage Class</button>
-  <button (click)="openModal('method')">Nuevo Método</button>
+  <button (click)="goToMethodMenu()">Manage Method</button>
   <button (click)="openModal('attribute')">Nuevo Atributo</button>
   <button (click)="openModal('localVariable')">Variable Local</button>
   <button (click)="openModal('interface')">Nueva Interfaz</button>
@@ -29,12 +29,10 @@
 
   <!-- Method -->
   <div class="card">
-    <h3>Method</h3>
+    <h3>Create Method</h3>
     <p>Create a method and associate it with a class.</p>
     <div class="button-group">
-      <button class="primary" (click)="openModal('method')">Create</button>
-      <button class="secondary" (click)="openModal('associatewithclass')">Associate</button>
-      <button class="danger" (click)="openModal('deletemethod')">Delete</button>
+      <button class="primary" (click)="openModal('method')">Open</button>
     </div>
   </div>
 
@@ -74,14 +72,6 @@
 
 <div class="modal" *ngIf="activeModal === 'method'">
   <div class="modal-content"><button class="close" (click)="closeModal()">×</button><app-create-method></app-create-method></div>
-</div>
-
-<div class="modal" *ngIf="activeModal === 'associatewithclass'">
-  <div class="modal-content"><button class="close" (click)="closeModal()">×</button><app-associatemethodwithclass></app-associatemethodwithclass></div>
-</div>
-
-<div class="modal" *ngIf="activeModal === 'deletemethod'">
-  <div class="modal-content"><button class="close" (click)="closeModal()">×</button><app-deletemethod></app-deletemethod></div>
 </div>
 
 <div class="modal" *ngIf="activeModal === 'attribute'">

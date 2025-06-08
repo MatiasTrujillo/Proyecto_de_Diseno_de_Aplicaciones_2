@@ -25,20 +25,14 @@ import { DeletemethodComponent } from '../Methods/deletemethod/deletemethod.comp
   imports: [CommonModule, RouterModule,
     CreateclassComponent,
     CreateMethodComponent,
-    CreateMethodSignaturesComponent,
     CreateattributeComponent,
     CreatelocalvariableComponent,
     CreateinterfaceComponent,
-    UpdateclassComponent,
-    DeleteclassComponent,
     DeleteinterfaceComponent,
-    DeleteclassComponent,
     AssociateattributewithclassComponent,
     UpdateattributeComponent,
     DeleteattributeComponent,
-    SetinvokedmethodtoattributeComponent,
-    AssociatemethodwithclassComponent,
-    DeletemethodComponent],
+    SetinvokedmethodtoattributeComponent],
   templateUrl: './nav-menu.component.html',
   styleUrls: ['./nav-menu.component.css']
 })
@@ -81,4 +75,7 @@ goToClassMenu() {
   this.router.navigate(['/ClassMenuComponent']);
 }
 
+goToMethodMenu() {
+  this.router.navigate(['/MethodMenuComponent']);
+}
 }

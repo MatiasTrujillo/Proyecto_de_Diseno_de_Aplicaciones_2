@@ -29,7 +29,7 @@ export class DeleteclassComponent {
       next: () => {
         this.message = 'Class deleted successfully.';
         this.error = null;
-        this.close.emit(); // close modal
+        this.close.emit();
       },
       error: (err) => {
         this.error = 'Error deleting class: ' + (err?.error?.message || err.message || 'Unknown error');
