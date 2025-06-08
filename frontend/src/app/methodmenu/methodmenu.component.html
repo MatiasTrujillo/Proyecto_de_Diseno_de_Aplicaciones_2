@@ -1,0 +1,43 @@
+<nav class="navbar">
+  <div class="nav-left">
+    <a routerLink="/" class="logo">Simulator</a>
+  </div>
+  <div class="nav-right">
+    <button (click)="goToNavMenu()" class="logout-button">Go To Menu</button>
+  </div>
+</nav>
+
+<div class="sidebar">
+  <button (click)="goToClassMenu()">Manage Class</button>
+  <button (click)="goToMethodMenu()">Nuevo Método</button>
+</div>
+
+  <div class="card-container">
+  <div class="card" *ngFor="let methodItem of methods">
+    <h3>{{ methodItem.name }}</h3>
+    <div class="button-group">
+      <button class="secondary" (click)="openModal('associatewithclass', methodItem)">Asociate whit class</button>
+      <button class="danger" (click)="openModal('deletemethod', methodItem)">Delete</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal" *ngIf="activeModal === 'associatewithclass'">
+  <div class="modal-content">
+    <button class="close" (click)="closeModal()">×</button>
+    <app-associatemethodwithclass
+      [methodData]="selectedMethod"
+      (close)="closeModal()"
+    ></app-associatemethodwithclass>
+  </div>
+</div>
+
+<div class="modal" *ngIf="activeModal === 'deletemethod'">
+  <div class="modal-content">
+    <button class="close" (click)="closeModal()">×</button>
+    <app-deletemethod
+      [methodData]="selectedMethod"
+      (close)="closeModal()"
+    ></app-deletemethod>
+  </div>
+</div>
