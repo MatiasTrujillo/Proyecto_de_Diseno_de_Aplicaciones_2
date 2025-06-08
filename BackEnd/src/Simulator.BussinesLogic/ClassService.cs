@@ -70,6 +70,19 @@ public class ClassService(
         return _classRepository.FindAll();
     }
 
+    public ClassDTO GetClassId(Guid id)
+    {
+        ValidateClassIdExists(id);
+        var classT = _classRepository.Find(id);
+        var clasDto = new ClassDTO
+        {
+            Name = classT.Name,
+            Stereotype = classT.Stereotype,
+            IdClass = classT.Parents?.FirstOrDefault()?.Id.ToString()
+        };
+        return null;
+    }
+
     private void ManageStereotype(UpdateClassDTO uClass, Class classT)
     {
         ValidateStereotypeInUpdate(uClass.Stereotype, classT);

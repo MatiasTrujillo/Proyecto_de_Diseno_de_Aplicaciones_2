@@ -747,4 +747,31 @@ public class ClassServiceTest
 
         _mockClassRepository.Verify(repo => repo.FindAll(), Times.Once);
     }
+
+    [TestMethod]
+    public void GetClassId_WhenClassExists_ReturnsCorrectClassDTO()
+    {
+        var classId = Guid.NewGuid();
+        var parentId = Guid.NewGuid();
+        var parentClass = new Class { Id = parentId, Name = "ParentClass" };
+        var classT = new Class { Id = classId, Name = "TestClass", Stereotype = KeyWord.Sealed, Parents = new List<Type> { parentClass } };
+
+        var mockClassRepository = new Mock<IClassRepository>(MockBehavior.Strict);
+        mockClassRepository.Setup(r => r.FindAll()).Returns(new List<Class> { classT });
+        mockClassRepository.Setup(r => r.Find(classId)).Returns(classT);
+
+        var service = new ClassService(
+            mockClassRepository.Object,
+            Mock.Of<IAttributeRepository>(),
+            Mock.Of<IMethodRepository>(),
+            Mock.Of<IInterfaceRepository>()
+        );
+
+        var result = service.GetClassId(classId);
+
+        Assert.IsNotNull(result);
+        Assert.AreEqual("TestClass", result.Name);
+        Assert.AreEqual(KeyWord.Sealed, result.Stereotype);
+        Assert.AreEqual(parentId.ToString(), result.IdClass);
+    }
 }
