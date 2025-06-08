@@ -193,7 +193,22 @@ public class MethodService(
 
     public List<MethodDTO> GetMethods()
     {
+        var excludedNames = new List<string>
+        {
+            "ToString",
+            "Equals",
+            "GetHashCode",
+            "Parse",
+            "MaxValue",
+            "MinValue",
+            "CompareTo",
+            "IsNullOrEmpty",
+            "IsNullOrWhiteSpace",
+            "ToLowerCase"
+        };
+
         return _methodRepository.FindAll()
+            .Where(m => !excludedNames.Contains(m.Name))
             .Select(m => new MethodDTO
             {
                 Id = m.Id.ToString(),
