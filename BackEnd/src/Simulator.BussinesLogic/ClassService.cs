@@ -80,7 +80,7 @@ public class ClassService(
             Stereotype = classT.Stereotype,
             IdClass = classT.Parents?.FirstOrDefault()?.Id.ToString()
         };
-        return null;
+        return clasDto;
     }
 
     private void ManageStereotype(UpdateClassDTO uClass, Class classT)
