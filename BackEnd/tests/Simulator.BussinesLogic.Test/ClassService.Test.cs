@@ -754,18 +754,23 @@ public class ClassServiceTest
         var classId = Guid.NewGuid();
         var parentId = Guid.NewGuid();
         var parentClass = new Class { Id = parentId, Name = "ParentClass" };
-        var classT = new Class { Id = classId, Name = "TestClass", Stereotype = KeyWord.Sealed, Parents = new List<Type> { parentClass } };
+        var classT = new Class
+        {
+            Id = classId,
+            Name = "TestClass",
+            Stereotype = KeyWord.Sealed,
+            Parents = [parentClass]
+        };
 
         var mockClassRepository = new Mock<IClassRepository>(MockBehavior.Strict);
-        mockClassRepository.Setup(r => r.FindAll()).Returns(new List<Class> { classT });
+        mockClassRepository.Setup(r => r.FindAll()).Returns([classT]);
         mockClassRepository.Setup(r => r.Find(classId)).Returns(classT);
 
         var service = new ClassService(
             mockClassRepository.Object,
             Mock.Of<IAttributeRepository>(),
             Mock.Of<IMethodRepository>(),
-            Mock.Of<IInterfaceRepository>()
-        );
+            Mock.Of<IInterfaceRepository>());
 
         var result = service.GetClassId(classId);
 
