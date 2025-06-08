@@ -35,7 +35,7 @@ export class ClassMenuComponent implements OnInit {
 
   closeModal(): void {
     this.activeModal = null;
-    this.selectedClass = null;
+    this.selectedClass = null; 
   }
 
   goToHome(): void {

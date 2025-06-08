@@ -1,17 +1,9 @@
 <h2>Delete Class</h2>
 
-<!-- Success message -->
-<div *ngIf="message" class="success-message">{{ message }}</div>
+<p>Are you sure you want to delete the class "{{ classData.name }}"?</p>
 
-<!-- Error message -->
+<div *ngIf="message" class="success-message">{{ message }}</div>
 <div *ngIf="error" class="error-message">{{ error }}</div>
 
-<form [formGroup]="deleteForm" (ngSubmit)="onDelete()">
-  <label for="id">Select a class to delete:</label>
-  <select formControlName="id" required>
-    <option *ngFor="let c of classes" [value]="c.id">{{ c.name }}</option>
-  </select>
-
-  <br /><br />
-  <button type="submit">Delete</button>
-</form>
+<button (click)="onDelete()" class="danger">Confirm Delete</button>
+<button (click)="close.emit()">Cancel</button>

@@ -1,5 +1,3 @@
-<button class="primary" (click)="goToHome()">Volver al Inicio</button>
-
 <div class="card-container">
   <div class="card" *ngFor="let classItem of classes">
     <h3>{{ classItem.name }}</h3>
@@ -15,7 +13,10 @@
 <div class="modal" *ngIf="activeModal === 'updateclass'">
   <div class="modal-content">
     <button class="close" (click)="closeModal()">×</button>
-    <app-updateclass [classData]="selectedClass" (close)="closeModal()"></app-updateclass>
+    <app-updateclass
+      [classData]="selectedClass"
+      (close)="closeModal()"
+    ></app-updateclass>
   </div>
 </div>
 
@@ -23,6 +24,9 @@
 <div class="modal" *ngIf="activeModal === 'deleteclass'">
   <div class="modal-content">
     <button class="close" (click)="closeModal()">×</button>
-    <app-deleteclass [classData]="selectedClass" (close)="closeModal()"></app-deleteclass>
+    <app-deleteclass
+      [classData]="selectedClass"
+      (close)="closeModal()"
+    ></app-deleteclass>
   </div>
 </div>

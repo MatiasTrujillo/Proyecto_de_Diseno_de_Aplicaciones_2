@@ -1,8 +1,6 @@
-import { Component, OnInit } from '@angular/core';
-import { Input, Output, EventEmitter } from '@angular/core';
-import { FormBuilder, FormGroup } from '@angular/forms';
+import { Component, Input, OnInit, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ReactiveFormsModule } from '@angular/forms';
+import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { SimulatorService } from '../../services/simulator.service';
 import { Class } from '../../models/class';
 import { UpdateClass } from '../../models/updateClass';
@@ -16,37 +14,37 @@ import { KeyWord } from '../../models/KeyWord';
   styleUrls: ['./updateclass.component.css']
 })
 export class UpdateclassComponent implements OnInit {
-  @Input() classData: any;
+  @Input() classData: Class | null = null;
   @Output() close = new EventEmitter<void>();
+
   updateForm!: FormGroup;
   message: string | null = null;
   error: string | null = null;
-  classes: Class[] = [];
-  stereotype: KeyWord | null = null;
 
-  keyWordLabels = Object.keys(KeyWord);
   keyWords = Object.keys(KeyWord).filter(k => isNaN(Number(k)));
+  classes: Class[] = [];
 
   constructor(
     private fb: FormBuilder,
     private simulatorService: SimulatorService
   ) {}
 
-  getKeyValue(label: string): number {
-    return KeyWord[label as keyof typeof KeyWord];
-  }
-
   ngOnInit(): void {
     this.updateForm = this.fb.group({
-      classToUpdate: [''],
-      idClass: [''],
-      name: [''],
-      stereotype: ['no change'],
+      classToUpdate: [this.classData?.id || ''],
+      idClass: [this.classData?.id || null],
+      name: [this.classData?.name || ''],
+      stereotype: ['no change']
     });
 
+    // Cargar lista de clases para el select de idClass
     this.simulatorService.getClasses().subscribe({
-      next: (res) => this.classes = res,
-      error: (err) => console.error('Error fetching classes', err)
+      next: (res) => {
+        this.classes = res.filter(c => c.id !== this.classData?.id); // opcional: excluir clase actual
+      },
+      error: (err) => {
+        this.error = 'Error loading classes: ' + (err.message || 'Unknown error');
+      }
     });
   }
 
@@ -55,19 +53,20 @@ export class UpdateclassComponent implements OnInit {
 
     const updateDto: UpdateClass = {
       name: form.name || null,
-      stereotype: form.stereotype || null,
+      stereotype: form.stereotype !== 'no change' ? form.stereotype : null,
       idClass: form.idClass || null
     };
 
     this.simulatorService.updateClass(form.classToUpdate, updateDto).subscribe({
-    next: () => {
-      this.message = 'Class updated successfully';
-      this.error = null;
-    },
-    error: (err) => {
-      this.error = 'Error updating class: ' + (err?.error?.message || err.message || 'Unknown error');
-      this.message = null;
-    }
-  });
+      next: () => {
+        this.message = 'Class updated successfully';
+        this.error = null;
+        this.close.emit(); // cerrar modal
+      },
+      error: (err) => {
+        this.error = 'Error updating class: ' + (err?.error?.message || err.message || 'Unknown error');
+        this.message = null;
+      }
+    });
   }
 }

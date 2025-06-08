@@ -2,10 +2,6 @@
 
 <form [formGroup]="updateForm" (ngSubmit)="onSubmit()">
   <label for="classToUpdate">Class to update:</label>
-  <select formControlName="classToUpdate" required>
-    <option *ngFor="let c of classes" [value]="c.id">{{ c.name }}{{ c.stereotype }}</option>
-  </select>
-
   <br />
 
   <label for="idClass">Inherits from (idClass):</label>
