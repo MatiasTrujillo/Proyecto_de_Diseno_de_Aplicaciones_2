@@ -39,4 +39,11 @@ public class ClassController(IClassService classService) : ControllerBase
             .ToList();
         return Ok(classes);
     }
+
+    [HttpGet("{id}")]
+    public IActionResult GetClassById([FromRoute] Guid id)
+    {
+        var classDto = _classService.GetClassId(id);
+        return Ok(classDto);
+    }
 }

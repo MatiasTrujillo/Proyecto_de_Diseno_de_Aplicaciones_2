@@ -86,4 +86,24 @@ public class ClassControllerTest
 
         _classServiceMock.Verify(service => service.GetClasses(), Times.Once);
     }
+
+    [TestMethod]
+    public void GetClassById_WhenClassExists_ReturnsOkWithClassDto()
+    {
+        var classId = Guid.NewGuid();
+        var expectedDto = new ClassDTO { Name = "TestClass", IdClass = "parentId" };
+
+        var mockService = new Mock<IClassService>();
+        mockService.Setup(s => s.GetClassId(classId)).Returns(expectedDto);
+
+        var controller = new ClassController(mockService.Object);
+
+        var result = controller.GetClassById(classId);
+
+        // Assert
+        Assert.IsInstanceOfType(result, typeof(OkObjectResult));
+        var okResult = result as OkObjectResult;
+        Assert.IsNotNull(okResult);
+        Assert.AreEqual(expectedDto, okResult.Value);
+    }
 }
