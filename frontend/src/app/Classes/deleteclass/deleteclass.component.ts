@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Input, Output, EventEmitter } from '@angular/core';
 import { ReactiveFormsModule, FormBuilder, FormGroup } from '@angular/forms';
 import { SimulatorService } from '../../services/simulator.service';
 import { Class } from '../../models/class';
@@ -12,6 +13,8 @@ import { Class } from '../../models/class';
   styleUrls: ['./deleteclass.component.css']
 })
 export class DeleteclassComponent implements OnInit {
+  @Input() classData: any;
+  @Output() close = new EventEmitter<void>();
   deleteForm!: FormGroup;
   classes: Class[] = [];
   message: string | null = null;

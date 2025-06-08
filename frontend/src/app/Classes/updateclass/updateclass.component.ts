@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { Input, Output, EventEmitter } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule } from '@angular/forms';
@@ -15,6 +16,8 @@ import { KeyWord } from '../../models/KeyWord';
   styleUrls: ['./updateclass.component.css']
 })
 export class UpdateclassComponent implements OnInit {
+  @Input() classData: any;
+  @Output() close = new EventEmitter<void>();
   updateForm!: FormGroup;
   message: string | null = null;
   error: string | null = null;

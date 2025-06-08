@@ -1,1 +1,28 @@
-<p>class-menu works!</p>
+<button class="primary" (click)="goToHome()">Volver al Inicio</button>
+
+<div class="card-container">
+  <div class="card" *ngFor="let classItem of classes">
+    <h3>{{ classItem.name }}</h3>
+    <p>{{ classItem.description || 'No description provided.' }}</p>
+    <div class="button-group">
+      <button class="secondary" (click)="openModal('updateclass', classItem)">Update</button>
+      <button class="danger" (click)="openModal('deleteclass', classItem)">Delete</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal para actualizar -->
+<div class="modal" *ngIf="activeModal === 'updateclass'">
+  <div class="modal-content">
+    <button class="close" (click)="closeModal()">×</button>
+    <app-updateclass [classData]="selectedClass" (close)="closeModal()"></app-updateclass>
+  </div>
+</div>
+
+<!-- Modal para eliminar -->
+<div class="modal" *ngIf="activeModal === 'deleteclass'">
+  <div class="modal-content">
+    <button class="close" (click)="closeModal()">×</button>
+    <app-deleteclass [classData]="selectedClass" (close)="closeModal()"></app-deleteclass>
+  </div>
+</div>

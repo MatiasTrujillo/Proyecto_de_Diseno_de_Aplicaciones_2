@@ -77,4 +77,8 @@ closeModal(): void {
   this.activeModal = null;
 }
 
+goToClassMenu() {
+  this.router.navigate(['/ClassMenuComponent']);
+}
+
 }
