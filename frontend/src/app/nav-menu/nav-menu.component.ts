@@ -31,14 +31,14 @@ import { DeletemethodComponent } from '../Methods/deletemethod/deletemethod.comp
     CreateinterfaceComponent,
     UpdateclassComponent,
     DeleteclassComponent,
-    DeleteinterfaceComponent ],
+    DeleteinterfaceComponent,
     DeleteclassComponent,
     AssociateattributewithclassComponent,
     UpdateattributeComponent,
     DeleteattributeComponent,
     SetinvokedmethodtoattributeComponent,
     AssociatemethodwithclassComponent,
-    DeletemethodComponent,],
+    DeletemethodComponent],
   templateUrl: './nav-menu.component.html',
   styleUrls: ['./nav-menu.component.css']
 })
