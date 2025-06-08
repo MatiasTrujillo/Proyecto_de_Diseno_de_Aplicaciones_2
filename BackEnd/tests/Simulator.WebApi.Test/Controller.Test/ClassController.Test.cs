@@ -59,4 +59,51 @@ public class ClassControllerTest
 
         _classServiceMock.Verify(service => service.UpdateClass(id, dto), Times.Once);
     }
+
+    [TestMethod]
+    public void GetClasses_ShouldReturnOkResult_WithListOfClasses()
+    {
+        var expectedClasses = new List<ClassDTO>
+        {
+            new ClassDTO { IdClass = "7f6aa6cc-506e-4773-bd8f-d4872430c15e", Name = "Class1" },
+            new ClassDTO { IdClass = "7f6aa6cc-506e-4773-bd8f-d4872430c12e", Name = "Class2" }
+        };
+        _classServiceMock.Setup(service => service.GetClasses())
+            .Returns(expectedClasses.Select(c =>
+            {
+                if(c.IdClass != null)
+                {
+                    return new Simulator.Domain.Class { Id = Guid.Parse(c.IdClass), Name = c.Name };
+                }
+
+                return null;
+            }).ToList()!);
+
+        var result = _controller.GetClasses() as OkObjectResult;
+
+        Assert.IsNotNull(result);
+        Assert.AreEqual(200, result.StatusCode);
+
+        _classServiceMock.Verify(service => service.GetClasses(), Times.Once);
+    }
+
+    [TestMethod]
+    public void GetClassById_WhenClassExists_ReturnsOkWithClassDto()
+    {
+        var classId = Guid.NewGuid();
+        var expectedDto = new ClassDTO { Name = "TestClass", IdClass = "parentId" };
+
+        var mockService = new Mock<IClassService>();
+        mockService.Setup(s => s.GetClassId(classId)).Returns(expectedDto);
+
+        var controller = new ClassController(mockService.Object);
+
+        var result = controller.GetClassById(classId);
+
+        // Assert
+        Assert.IsInstanceOfType(result, typeof(OkObjectResult));
+        var okResult = result as OkObjectResult;
+        Assert.IsNotNull(okResult);
+        Assert.AreEqual(expectedDto, okResult.Value);
+    }
 }

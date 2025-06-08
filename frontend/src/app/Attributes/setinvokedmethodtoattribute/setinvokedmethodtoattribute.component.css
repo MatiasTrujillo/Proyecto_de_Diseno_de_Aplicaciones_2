@@ -1,0 +1,26 @@
+.form-group {
+  margin-bottom: 1rem;
+}
+
+.success {
+  color: green;
+  margin-top: 1rem;
+}
+
+.error {
+  color: red;
+  margin-top: 1rem;
+}
+
+.primary {
+  background-color: #2563eb;
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+}
+
+.primary:hover {
+  background-color: #1d4ed8;
+}

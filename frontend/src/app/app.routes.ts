@@ -6,6 +6,7 @@ import { CreateMethodComponent } from './Methods/createmethod/createmethod.compo
 import { CreateattributeComponent } from './Attributes/createattribute/createattribute.component';
 import { CreatelocalvariableComponent } from './createlocalvariable/createlocalvariable.component';
 import { CreateinterfaceComponent } from './Interfaces/createinterface/createinterface.component';
+import { ClassMenuComponent } from './class-menu/class-menu.component';
 
 export const routes: Routes = [
   { path: '', component: SessionComponent },
@@ -15,4 +16,6 @@ export const routes: Routes = [
   { path: 'createMethod', component: CreateMethodComponent },
   { path: 'createAttribute', component: CreateattributeComponent },
   { path: 'createLocalVariable', component: CreatelocalvariableComponent },
+  { path: 'ClassMenuComponent', component: ClassMenuComponent },
+  { path: '**', redirectTo: '' }
 ];

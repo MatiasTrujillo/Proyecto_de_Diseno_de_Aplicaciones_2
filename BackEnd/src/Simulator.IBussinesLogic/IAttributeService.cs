@@ -9,4 +9,5 @@ public interface IAttributeService
     void UpdateAttribute(Guid id, UpdateAttributeDTO uAttribute);
     void DeleteAttribute(Guid id);
     void SetInvokeMethodToAttribute(Guid id, Guid idMethodInvoke);
+    List<AttributeDto> GetAttributes();
 }

@@ -1,0 +1,22 @@
+
+<div *ngIf="message" class="success-message">{{ message }}</div>
+
+<!-- Error message -->
+<div *ngIf="error" class="error-message">{{ error }}</div>
+
+<form [formGroup]="associateForm" (ngSubmit)="onAssociate()">
+  <label for="methodId">Seleccionar método:</label>
+  <select formControlName="methodId" required>
+    <option *ngFor="let method of methods" [value]="method.id">{{ method.name }}</option>
+  </select>
+
+  <br /><br />
+
+  <label for="classId">Seleccionar clase:</label>
+  <select formControlName="classId" required>
+    <option *ngFor="let c of classes" [value]="c.id">{{ c.name }}</option>
+  </select>
+
+  <br /><br />
+  <button type="submit">Asociar</button>
+</form>

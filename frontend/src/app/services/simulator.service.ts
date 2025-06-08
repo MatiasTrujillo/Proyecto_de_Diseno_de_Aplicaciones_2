@@ -12,6 +12,7 @@ import { Attribute } from '../models/attribute';
 import { LocalVariable } from '../models/localvariable';
 import { Interface } from '../models/Interface';
 import { UpdateClass } from '../models/updateClass';
+import { UpdateAttribute } from '../models/UpdateAttribute';
 
 @Injectable({
   providedIn: 'root'
@@ -90,6 +91,28 @@ export class SimulatorService {
     );
   }
 
+  getInvokedMethods(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/invokedMethods`).pipe(
+      catchError((error) => throwError(() => error))
+    );
+  }
+
+  getAttribute(): Observable<Attribute[]> {
+    return this.http.get<Attribute[]>(`${this.apiUrl}/attributes`).pipe(
+      catchError((error) => {
+        return throwError(() => error);
+      })
+    );
+  }
+
+  setInvokeMethodToAttribute(attributeId: string, methodId: string): Observable<{ message: string }> {
+    return this.http.post<{ message: string }>(`${this.apiUrl}/attributes/${attributeId}/invokeMethod/${methodId}`, null).pipe(
+      catchError((error) => {
+        return throwError(() => error);
+      })
+    );
+  }
+
   createMethod(method: Method): Observable<{ id: string }> {
     return this.http.post<{ id: string }>(`${this.apiUrl}/methods`, method).pipe(
       catchError((error) => {
@@ -141,6 +164,59 @@ export class SimulatorService {
       catchError((error) => {
         return throwError(() => error);
       })
+    );
+  }
+
+  associateMethodWithClass(methodId: string, classId: string): Observable<{ message: string }> {
+    return this.http.post<{ message: string }>(
+      `${this.apiUrl}/methods/${methodId}/classes/${classId}`,
+      null
+    ).pipe(
+      catchError((error) => throwError(() => error))
+    );
+  }
+
+  addAMethod(methodId: string, invokedMethodId: string): Observable<{ message: string }> {
+    return this.http.post<{ message: string }>(
+      `${this.apiUrl}/methods/${methodId}/invokedMethods/${invokedMethodId}`,
+      null
+    ).pipe(
+      catchError((error) => throwError(() => error))
+    );
+  }
+
+  deleteMethod(methodId: string): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/methods/${methodId}`).pipe(
+      catchError((error) => throwError(() => error))
+    );
+  }
+
+  getMethods(): Observable<Method[]> {
+    return this.http.get<Method[]>(`${this.apiUrl}/methods`).pipe(
+      catchError((error) => throwError(() => error))
+    );
+  }
+
+  updateAttribute(id: string, updatedAttribute: Partial<UpdateAttribute>): Observable<{ message: string }> {
+    return this.http.put<{ message: string }>(`${this.apiUrl}/attributes/${id}`, updatedAttribute).pipe(
+      catchError((error) => {
+        return throwError(() => error);
+      })
+    );
+  }
+
+  associateAttributeWithClass(attributeId: string, classId: string): Observable<{ message: string }> {
+    return this.http.post<{ message: string }>(
+      `${this.apiUrl}/attributes/${attributeId}/classes/${classId}`,
+      null
+    ).pipe(
+      catchError((error) => throwError(() => error))
+    );
+  }
+
+  deleteAttribute(attributeId: string): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/attributes/${attributeId}`).pipe(
+      catchError((error) => throwError(() => error))
     );
   }
 }

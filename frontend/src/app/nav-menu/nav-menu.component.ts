@@ -11,6 +11,13 @@ import { CreateinterfaceComponent } from '../Interfaces/createinterface/createin
 import { UpdateclassComponent } from '../Classes/updateclass/updateclass.component';
 import { DeleteclassComponent } from '../Classes/deleteclass/deleteclass.component';
 import { DeleteinterfaceComponent } from '../Interfaces/deleteinterface/deleteinterface.component';
+import { UpdateattributeComponent } from '../Attributes/updateattribute/updateattribute.component';
+import { AssociateattributewithclassComponent } from '../Attributes/associateattributewithclass/associateattributewithclass.component';
+import { DeleteattributeComponent } from '../Attributes/deleteattribute/deleteattribute.component';
+import { SetinvokedmethodtoattributeComponent } from '../Attributes/setinvokedmethodtoattribute/setinvokedmethodtoattribute.component';
+import { AssociatemethodwithclassComponent } from '../Methods/associatemethodwithclass/associatemethodwithclass.component';
+import { DeletemethodComponent } from '../Methods/deletemethod/deletemethod.component';
+
 
 @Component({
   selector: 'app-nav-menu',
@@ -21,10 +28,17 @@ import { DeleteinterfaceComponent } from '../Interfaces/deleteinterface/deletein
     CreateMethodSignaturesComponent,
     CreateattributeComponent,
     CreatelocalvariableComponent,
-    CreateinterfaceComponent, 
+    CreateinterfaceComponent,
     UpdateclassComponent,
     DeleteclassComponent,
-    DeleteinterfaceComponent ],
+    DeleteinterfaceComponent,
+    DeleteclassComponent,
+    AssociateattributewithclassComponent,
+    UpdateattributeComponent,
+    DeleteattributeComponent,
+    SetinvokedmethodtoattributeComponent,
+    AssociatemethodwithclassComponent,
+    DeletemethodComponent],
   templateUrl: './nav-menu.component.html',
   styleUrls: ['./nav-menu.component.css']
 })
@@ -61,6 +75,10 @@ openModal(modalName: string): void {
 
 closeModal(): void {
   this.activeModal = null;
+}
+
+goToClassMenu() {
+  this.router.navigate(['/ClassMenuComponent']);
 }
 
 }

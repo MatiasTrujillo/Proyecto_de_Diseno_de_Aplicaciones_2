@@ -11,4 +11,5 @@ public interface IClassService
     void DeleteClass(Guid id);
     List<Type> GetTypes();
     List<Class> GetClasses();
+    ClassDTO GetClassId(Guid id);
 }

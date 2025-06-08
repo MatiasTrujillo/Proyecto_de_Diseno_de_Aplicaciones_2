@@ -1,0 +1,43 @@
+<div class="update-container">
+<div>
+  <label>Attribute:</label>
+  <select [(ngModel)]="attributeId">
+    <option value="">-- Select Attribute --</option>
+    <option *ngFor="let attr of attributes" [value]="attr.id">{{ attr.name }}</option>
+  </select>
+</div>
+
+<div class="form-group">
+    <label for="stereotype">Stereotype</label>
+    <select id="stereotype" formControlName="stereotype">
+      <option [ngValue]="'no change'">No change</option>
+      <option [ngValue]='null'>Void</option>
+      <option *ngFor="let kw of keyWords" [ngValue]="kw">{{ kw }}</option>
+    </select>
+  </div>
+
+  <div class="form-group">
+    <label for="accessibility">accessibilitys</label>
+    <select id="accessibility" formControlName="accessibility">
+      <option [ngValue]="'no change'">No change</option>
+      <option [ngValue]='null'>Void</option>
+      <option *ngFor="let kw of accessibilitys" [ngValue]="kw">{{ kw }}</option>
+    </select>
+  </div>
+
+  <form [formGroup]="updateForm" (ngSubmit)="onSubmit()">
+    <label>Name:</label>
+    <input type="text" formControlName="name" />
+
+    <label>Type:</label>
+    <select formControlName="idType">
+      <option [ngValue]="null">-- Select --</option>
+      <option *ngFor="let type of types" [value]="type.name">{{ type.name }}</option>
+    </select>
+
+    <button type="submit">Update</button>
+  </form>
+
+  <p class="success" *ngIf="message">{{ message }}</p>
+  <p class="error" *ngIf="error">{{ error }}</p>
+</div>

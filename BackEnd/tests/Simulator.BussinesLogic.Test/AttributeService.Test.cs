@@ -1064,4 +1064,43 @@ public class AttributeServiceTest
 
         Assert.AreEqual("Invalid reference type or instance type. If one is primitive, both should be primitive. If both are, then they must be the same.", ex.Message);
     }
+
+    [TestMethod]
+    public void GetAttributes_ShouldReturnListOfAttributeDto_WhenAttributesExist()
+    {
+        var attributes = new List<Attribute>
+        {
+            new Attribute
+            {
+                Id = Guid.NewGuid(),
+                Name = "attr1",
+                Accessibility = Accessibility.Public,
+                ReferenceType = new Class { Name = "TestClass" },
+                Stereotype = null
+            },
+            new Attribute
+            {
+                Id = Guid.NewGuid(),
+                Name = "attr2",
+                Accessibility = Accessibility.Private,
+                ReferenceType = null,
+                Stereotype = KeyWord.Static
+            }
+        };
+
+        _mockAttributeRepository.Setup(r => r.FindAll()).Returns(attributes);
+
+        var result = _attributeService.GetAttributes();
+
+        Assert.AreEqual(2, result.Count);
+        Assert.AreEqual("attr1", result[0].Name);
+        Assert.AreEqual(Accessibility.Public, result[0].Accessibility);
+        Assert.AreEqual("TestClass", result[0].ReferenceType.Name);
+        Assert.AreEqual(null, result[0].Stereotype);
+
+        Assert.AreEqual("attr2", result[1].Name);
+        Assert.AreEqual(Accessibility.Private, result[1].Accessibility);
+        Assert.IsNull(result[1].ReferenceType);
+        Assert.AreEqual(KeyWord.Static, result[1].Stereotype);
+    }
 }

@@ -58,4 +58,11 @@ public class MethodController(IMethodService methodService) : ControllerBase
         _amethodService.DeleteMethod(id);
         return NoContent();
     }
+
+    [HttpGet]
+    public IActionResult GetMethods()
+    {
+        var methods = _amethodService.GetMethods();
+        return Ok(methods);
+    }
 }

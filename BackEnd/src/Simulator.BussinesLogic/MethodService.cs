@@ -191,6 +191,19 @@ public class MethodService(
         _methodRepository.Delete(id);
     }
 
+    public List<MethodDTO> GetMethods()
+    {
+        return _methodRepository.FindAll()
+            .Select(m => new MethodDTO
+            {
+                Id = m.Id.ToString(),
+                Name = m.Name,
+                Accessibility = m.Accessibility,
+                Stereotype = m.Stereotype,
+                ReturnType = m.ReturnType?.ToDTO(),
+            }).ToList();
+    }
+
     private void ValidateMethodIsNotInInvokedMethod(Guid id)
     {
         var iVAll = _invokedMethodRepository.FindAll();

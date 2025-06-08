@@ -44,4 +44,11 @@ public class AttributeController(IAttributeService attributeService) : Controlle
         _attributeService.DeleteAttribute(id);
         return NoContent();
     }
+
+    [HttpGet]
+    public IActionResult GetAttributes()
+    {
+        var attributes = _attributeService.GetAttributes();
+        return Ok(attributes);
+    }
 }
