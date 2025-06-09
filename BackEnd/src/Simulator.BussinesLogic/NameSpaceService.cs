@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Simulator.BussinesLogic.Exception;
 using Simulator.Domain;
@@ -134,6 +135,16 @@ public class NameSpaceService(
 
         nameSpaceRepository.Update(parent);
         nameSpaceRepository.Update(child);
+    }
+
+    public List<NameSpaceDTO> GetAllNameSpace()
+    {
+        var nameSpaces = nameSpaceRepository.FindAll();
+        return nameSpaces.Select(ns => new NameSpaceDTO
+        {
+            Id = ns.Id.ToString(),
+            Name = ns.Name
+        }).ToList();
     }
 
     private void ValidateUniqueNameSpace(string name)

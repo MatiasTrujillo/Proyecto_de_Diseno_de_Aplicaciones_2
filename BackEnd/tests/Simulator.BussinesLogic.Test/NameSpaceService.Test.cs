@@ -285,4 +285,24 @@ public class NameSpaceService_Test
 
         _nameSpaceService.RemoveChildFromNameSpace(parent.Id, child.Id);
     }
+
+    [TestMethod]
+    public void GetAllNameSpace_ShouldReturnAllNameSpacesAsDTOs()
+    {
+        var nameSpace1 = new NameSpace { Id = Guid.NewGuid(), Name = "NS1" };
+        var nameSpace2 = new NameSpace { Id = Guid.NewGuid(), Name = "NS2" };
+        var nameSpaces = new List<NameSpace> { nameSpace1, nameSpace2 };
+
+        _mockNameSpaceRepository.Setup(r => r.FindAll()).Returns(nameSpaces);
+
+        var service = new NameSpaceService(_mockNameSpaceRepository.Object, _mockClassRepository.Object, _mockInterfaceRepository.Object);
+
+        var result = service.GetAllNameSpace();
+
+        Assert.AreEqual(2, result.Count);
+        Assert.AreEqual(nameSpace1.Id.ToString(), result[0].Id);
+        Assert.AreEqual(nameSpace1.Name, result[0].Name);
+        Assert.AreEqual(nameSpace2.Id.ToString(), result[1].Id);
+        Assert.AreEqual(nameSpace2.Name, result[1].Name);
+    }
 }

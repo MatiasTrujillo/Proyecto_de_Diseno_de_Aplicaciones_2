@@ -11,6 +11,7 @@
   <button (click)="goToClassMenu()">Manage Class</button>
   <button (click)="goToMethodMenu()">Manage Method</button>
   <button (click)="goToAttributeMenu()">Manage Attribute</button>
+  <button (click)="goToNameSpace()">Manage NameSpace</button>
   <button (click)="goToEsport()">Go To Export</button>
   <button (click)="openModal('localVariable')">Variable Local</button>
   <button (click)="openModal('interface')">Nueva Interfaz</button>
@@ -46,6 +47,15 @@
     </div>
   </div>
 
+    <!-- NameSpace -->
+  <div class="card">
+    <h3>NameSpace</h3>
+    <p>Add a new NameSpace to your simulation class.</p>
+    <div class="button-group">
+      <button class="primary" (click)="openModal('nameSpace')">Open</button>
+    </div>
+  </div>
+
   <!-- Local Variable -->
   <div class="card">
     <h3>Local Variable</h3>
@@ -59,6 +69,13 @@
     <p>Define a new interface for your simulation logic.</p>
     <button class="primary" (click)="openModal('interface')">Create</button>
     <button class="danger" (click)="openModal('deleteinterface')">Delete</button>
+  </div>
+
+  <!-- Method Signature -->
+  <div class="card">
+    <h3>Method Signature</h3>
+    <p>Define a new Method Signature for your simulation logic.</p>
+    <button class="primary" (click)="openModal('methodSignature')">Create</button>
   </div>
 </div>
 
@@ -75,6 +92,10 @@
   <div class="modal-content"><button class="close" (click)="closeModal()">×</button><app-createattribute></app-createattribute></div>
 </div>
 
+<div class="modal" *ngIf="activeModal === 'nameSpace'">
+  <div class="modal-content"><button class="close" (click)="closeModal()">×</button><app-createnamespace></app-createnamespace></div>
+</div>
+
 <div class="modal" *ngIf="activeModal === 'localVariable'">
   <div class="modal-content"><button class="close" (click)="closeModal()">×</button><app-createlocalvariable></app-createlocalvariable></div>
 </div>
@@ -85,4 +106,8 @@
 
 <div class="modal" *ngIf="activeModal === 'deleteinterface'">
   <div class="modal-content"><button class="close" (click)="closeModal()">×</button><app-deleteinterface></app-deleteinterface></div>
+</div>
+
+<div class="modal" *ngIf="activeModal === 'methodSignature'">
+  <div class="modal-content"><button class="close" (click)="closeModal()">×</button><app-createmethodsignatures></app-createmethodsignatures></div>
 </div>

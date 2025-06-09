@@ -126,4 +126,31 @@ public class NameSpaceControllerTest
         Assert.AreEqual(204, result.StatusCode);
         _mockNameSpaceService.Verify(service => service.RemoveChildFromNameSpace(parentId, childId), Times.Once);
     }
+
+    [TestMethod]
+    public void GetAllNameSpace_ShouldReturnOkWithAllNameSpaces()
+    {
+        var nameSpaces = new List<NameSpaceDTO>
+        {
+            new NameSpaceDTO { Id = Guid.NewGuid().ToString(), Name = "NS1" },
+            new NameSpaceDTO { Id = Guid.NewGuid().ToString(), Name = "NS2" }
+        };
+
+        var mockService = new Mock<INameSpaceService>(MockBehavior.Strict);
+        mockService.Setup(s => s.GetAllNameSpace()).Returns(nameSpaces);
+
+        var controller = new NameSpaceController(mockService.Object);
+
+        var result = controller.GetAllNameSpace() as OkObjectResult;
+
+        Assert.IsNotNull(result);
+        Assert.AreEqual(200, result.StatusCode);
+        var value = result.Value as List<NameSpaceDTO>;
+        Assert.IsNotNull(value);
+        Assert.AreEqual(2, value.Count);
+        Assert.AreEqual("NS1", value[0].Name);
+        Assert.AreEqual("NS2", value[1].Name);
+
+        mockService.Verify(s => s.GetAllNameSpace(), Times.Once);
+    }
 }

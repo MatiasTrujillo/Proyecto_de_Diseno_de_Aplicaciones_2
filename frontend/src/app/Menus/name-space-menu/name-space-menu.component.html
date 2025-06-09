@@ -1,0 +1,23 @@
+<nav class="navbar">
+  <div class="nav-left">
+    <a routerLink="/" class="logo">Simulator</a>
+  </div>
+  <div class="nav-right">
+    <button (click)="goToNavMenu()" class="logout-button">Go To Menu</button>
+  </div>
+</nav>
+
+<div class="sidebar">
+  <button (click)="goToClassMenu()">Manage Class</button>
+  <button (click)="goToMethodMenu()">Nuevo Método</button>
+  <button (click)="goToAttributeMenu()">Manage Attribute</button>
+  <button (click)="goToNameSpace()">Manage NameSpace</button>
+</div>
+
+ <div class="card-container">
+  <div class="card" *ngFor="let nameSpaceItem of nameSpaces">
+    <h3>{{ nameSpaceItem.name }}</h3>
+    <div class="button-group">
+    </div>
+  </div>
+</div>

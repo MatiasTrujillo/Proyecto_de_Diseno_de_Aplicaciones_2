@@ -8,6 +8,9 @@ import { CreateattributeComponent } from '../../Attributes/createattribute/creat
 import { CreatelocalvariableComponent } from '../../createlocalvariable/createlocalvariable.component';
 import { CreateinterfaceComponent } from '../../Interfaces/createinterface/createinterface.component';
 import { DeleteinterfaceComponent } from '../../Interfaces/deleteinterface/deleteinterface.component';
+import { CreatenamespaceComponent } from '../../NameSpace/createnamespace/createnamespace.component';
+import { CreateMethodSignaturesComponent } from '../../MethodSignatures/createSignature/createmethodsignatures.component';
+
 
 @Component({
   selector: 'app-nav-menu',
@@ -19,6 +22,8 @@ import { DeleteinterfaceComponent } from '../../Interfaces/deleteinterface/delet
     CreatelocalvariableComponent,
     CreateinterfaceComponent,
     DeleteinterfaceComponent,
+    CreatenamespaceComponent,
+    CreateMethodSignaturesComponent
 ],
   templateUrl: './nav-menu.component.html',
   styleUrls: ['./nav-menu.component.css']
@@ -68,6 +73,10 @@ goToMethodMenu() {
 
 goToAttributeMenu() {
   this.router.navigate(['/AttributeMenuComponent']);
+}
+
+goToNameSpace() {
+  this.router.navigate(['/NameSpaceMenuComponent']);
 }
 
 goToEsport() {
