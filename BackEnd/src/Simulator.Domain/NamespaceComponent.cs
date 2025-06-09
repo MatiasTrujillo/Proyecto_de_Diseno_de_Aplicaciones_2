@@ -3,6 +3,7 @@ using Simulator.Domain;
 public abstract class NamespaceComponent
 {
     public Guid Id { get; set; }
+    public virtual NameSpace? Father { get; set; }
 
     public Guid? NameSpaceId { get; set; }
     public virtual NameSpace? NameSpace { get; set; }

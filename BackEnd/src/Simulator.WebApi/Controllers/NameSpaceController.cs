@@ -38,13 +38,6 @@ public class NameSpaceController(INameSpaceService nameSpaceService) : Controlle
         return NoContent();
     }
 
-    [HttpDelete("{id}")]
-    public IActionResult RemoveNameSpace(Guid id)
-    {
-        _nameSpaceService.RemoveNameSpace(id);
-        return NoContent();
-    }
-
     [HttpPost("{parentId}/addchilds/{childId}")]
     public IActionResult AddChildToNameSpace(Guid parentId, Guid childId)
     {
