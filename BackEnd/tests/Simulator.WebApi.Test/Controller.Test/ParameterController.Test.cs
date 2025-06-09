@@ -9,8 +9,8 @@ namespace Simulator.WebApi.Test.Controller.Test;
 [TestClass]
 public class ParameterController_Test
 {
-    private static readonly Mock<IMethodService> _methodServiceMock = new Mock<IMethodService>();
-    private readonly ParameterController _controller = new ParameterController(_methodServiceMock.Object);
+    private static readonly Mock<IParameterService> _parameterServiceMock = new Mock<IParameterService>();
+    private readonly ParameterController _controller = new ParameterController(_parameterServiceMock.Object);
 
     [TestMethod]
     public void CreateParameter_ShouldReturnCreated_WhenParameterIsCreated()
@@ -22,7 +22,7 @@ public class ParameterController_Test
         };
         var expectedParameterId = Guid.NewGuid();
 
-        _methodServiceMock.Setup(service => service.CreateParameter(parameterDto))
+        _parameterServiceMock.Setup(service => service.CreateParameter(parameterDto))
             .Returns(expectedParameterId);
 
         var result = _controller.CreateParameter(parameterDto) as CreatedResult;
@@ -36,7 +36,7 @@ public class ParameterController_Test
         Assert.IsNotNull(createdValue, "The created value should contain an 'id'.");
         Assert.AreEqual(expectedParameterId, createdValue, "The returned id should match the expected id.");
 
-        _methodServiceMock.Verify(service => service.CreateParameter(parameterDto), Times.Once);
+        _parameterServiceMock.Verify(service => service.CreateParameter(parameterDto), Times.Once);
     }
 
     [TestMethod]
@@ -45,7 +45,7 @@ public class ParameterController_Test
         var parameterId = Guid.NewGuid();
         var invokedMethodId = Guid.NewGuid();
 
-        _methodServiceMock
+        _parameterServiceMock
             .Setup(service => service.SetInvokeMethodToParameter(parameterId, invokedMethodId))
             .Verifiable();
 
@@ -58,6 +58,6 @@ public class ParameterController_Test
         var message = result.Value?.GetType().GetProperty("message")?.GetValue(result.Value, null)?.ToString();
         Assert.AreEqual("Parameter associated with invoked method successfully", message, "The message should match the expected one.");
 
-        _methodServiceMock.Verify(service => service.SetInvokeMethodToParameter(parameterId, invokedMethodId), Times.Once);
+        _parameterServiceMock.Verify(service => service.SetInvokeMethodToParameter(parameterId, invokedMethodId), Times.Once);
     }
 }

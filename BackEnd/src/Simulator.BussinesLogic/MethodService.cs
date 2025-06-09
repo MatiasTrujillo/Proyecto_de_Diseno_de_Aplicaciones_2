@@ -96,38 +96,6 @@ public class MethodService(
         _classRepository.Update(classT);
     }
 
-    public Guid CreateLocalVariable(LocalVariableDTO localVariable)
-    {
-        ValidateLocalVariableIsNotNull(localVariable);
-        if(localVariable.Name == string.Empty)
-        {
-            throw new LocalVariableNotFoundException("Local Variable Name cannot be empty.");
-        }
-
-        var localVariableT = localVariable.ToEntity();
-        var referenceTypeName = localVariableT.ReferenceType.Name;
-        var referenceType = _classRepository.FindAllTypes().FirstOrDefault(c => c.Name == referenceTypeName);
-        var instanceTypeName = localVariableT.InstanceType.Name;
-        var instanceType = _classRepository.FindAllTypes().FirstOrDefault(c => c.Name == instanceTypeName);
-        ValidateTypesExists(referenceType, instanceType);
-        ValidateInstanceClass(referenceType, instanceType);
-        AssignTypes(localVariableT, referenceType, instanceType);
-
-        _localVariableRepository.Add(localVariableT);
-        return localVariableT.Id;
-    }
-
-    public void SetInvokeMethodToLocalVariable(Guid id, Guid idInvokeGuid)
-    {
-        var localVariable = _localVariableRepository.Find(id);
-        var invokedMethod = _invokedMethodRepository.Find(idInvokeGuid);
-        ValidateLocalVariableExist(localVariable);
-        ValidateInvokedMethodExist(invokedMethod);
-        ValidateTypeIsPrimitive(localVariable.ReferenceType);
-        localVariable.InvokedMethods.Add(invokedMethod);
-        _localVariableRepository.Update(localVariable);
-    }
-
     public void AddLocalVariableToMethod(Guid methodId, Guid localVariable)
     {
         var method = _methodRepository.Find(methodId);
@@ -137,37 +105,6 @@ public class MethodService(
         ValidateNameLocalVariable(localVariableT, method);
         method.LocalVariables.Add(localVariableT);
         _methodRepository.Update(method);
-    }
-
-    public Guid CreateParameter(ParameterDTO parameter)
-    {
-        ValidateParameterIsNotNull(parameter);
-        var parameterT = parameter.ToEntity();
-        var type = parameterT.ReferenceType.Name;
-        var returnType = _classRepository.FindAllTypes().FirstOrDefault(c => c.Name == type);
-        parameterT.ReferenceType = returnType;
-        parameterT.InstanceType = returnType;
-        _parameterRepository.Add(parameterT);
-        return parameterT.Id;
-    }
-
-    public void SetInvokeMethodToParameter(Guid id, Guid idInvokeGuid)
-    {
-        var parameter = _parameterRepository.Find(id);
-        var invokedMethod = _invokedMethodRepository.Find(idInvokeGuid);
-        ValidateParameterExist(parameter);
-        ValidateInvokedMethodExist(invokedMethod);
-        ValidateTypeIsPrimitive(parameter.ReferenceType);
-        parameter.InvokedMethods.Add(invokedMethod);
-        _parameterRepository.Update(parameter);
-    }
-
-    private void ValidateTypeIsPrimitive(Type? attributeTType)
-    {
-        if(attributeTType?.GetType() != typeof(Class) && attributeTType?.GetType() != typeof(Primitive))
-        {
-            throw new InvalidAttributeException("In v2 of this program only Class and Primitive types are accepted.");
-        }
     }
 
     public void AddParameterToMethod(Guid methodId, Guid parameterId)
@@ -734,22 +671,6 @@ public class MethodService(
         }
     }
 
-    private void ValidateParameterIsNotNull(ParameterDTO parameter)
-    {
-        if(parameter == null)
-        {
-            throw new ParameterNotFoundException("Parameter cannot be null.");
-        }
-    }
-
-    private void ValidateLocalVariableIsNotNull(LocalVariableDTO parameter)
-    {
-        if(parameter == null)
-        {
-            throw new LocalVariableNotFoundException("Local Variable cannot be null.");
-        }
-    }
-
     private void ValidateLocalVariableExist(LocalVariable localVariableT)
     {
         if(localVariableT == null)
@@ -1092,35 +1013,6 @@ public class MethodService(
     private bool BothPrimitiveButDifferent(Type? referenceType, Type? instanceType)
     {
         return instanceType is Primitive a && referenceType is Primitive b && a.PrimitiveType != b.PrimitiveType;
-    }
-
-    private void ValidateTypesExists(Type? referenceType, Type? instanceType)
-    {
-        if(referenceType is null || instanceType is null)
-        {
-            throw new TypeNotFoundException("Instance Type and Reference Type cannot be null.");
-        }
-    }
-
-    private void AssignTypes(LocalVariable localVariable, Type? typeT, Type? instanceTypeT)
-    {
-        if(typeT is Primitive p1)
-        {
-            localVariable.ReferenceType = p1;
-        }
-        else if(typeT is Class c1)
-        {
-            localVariable.ReferenceType = c1;
-        }
-
-        if(instanceTypeT is Primitive p2)
-        {
-            localVariable.InstanceType = p2;
-        }
-        else if(instanceTypeT is Class c2)
-        {
-            localVariable.InstanceType = c2;
-        }
     }
 
     private void ValidateParameterInstanceType(List<Parameter>? parameters, List<TypeDTO> types)
