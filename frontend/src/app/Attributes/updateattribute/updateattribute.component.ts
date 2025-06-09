@@ -1,5 +1,5 @@
-import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup } from '@angular/forms';
+import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { SimulatorService } from '../../services/simulator.service';
@@ -18,11 +18,13 @@ import { Accessibility } from '../../models/Accessibility';
 })
 export class UpdateattributeComponent implements OnInit {
   updateForm!: FormGroup;
+
+  @Input() attributeData!: Attribute;
+  @Output() close = new EventEmitter<void>();
+
   attributes: Attribute[] = [];
   attributeId: string = '';
   types: Type[] = [];
-  stereotype: KeyWord | null = null;
-  accesibility: Accessibility | null = null;
   message = '';
   error = '';
 
@@ -34,20 +36,20 @@ export class UpdateattributeComponent implements OnInit {
 
   constructor(private fb: FormBuilder, private simulatorService: SimulatorService) {}
 
-  getKeyValue(label: string): number {
-    return KeyWord[label as keyof typeof KeyWord];
-  }
-
-  getAcceValue(label: string): number {
-    return Accessibility[label as keyof typeof Accessibility];
-  }
-
   ngOnInit(): void {
     this.loadAttributes();
-    this.updateForm = this.fb.group({
-      name: [null],
-      idType: [null]
-    });
+
+    if (this.attributeData) {
+      this.attributeId = this.attributeData.id;
+
+      this.updateForm = this.fb.group({
+        name: [this.attributeData.name, Validators.required],
+        IdReferenceType: [this.attributeData.ReferenceType, Validators.required],
+        IdInstanceType: [this.attributeData.InstanceType, Validators.required],
+        stereotype: [this.attributeData.stereotype ?? null],
+        accessibility: [this.attributeData.accessibility ?? null]
+      });
+    }
 
     this.simulatorService.getTypes().subscribe({
       next: types => this.types = types,
@@ -62,14 +64,18 @@ export class UpdateattributeComponent implements OnInit {
     });
   }
 
+  getKeyValue(label: string): number {
+    return KeyWord[label as keyof typeof KeyWord];
+  }
+
+  getAcceValue(label: string): number {
+    return Accessibility[label as keyof typeof Accessibility];
+  }
+
   onSubmit(): void {
+     console.log('onSubmit called', this.updateForm.value); // <-- Agrega esto
     this.message = '';
     this.error = '';
-
-    if (!this.attributeId) {
-      this.error = 'Attribute ID is required.';
-      return;
-    }
 
     const updateData: Partial<UpdateAttribute> = this.updateForm.value;
 
@@ -81,5 +87,9 @@ export class UpdateattributeComponent implements OnInit {
         this.error = err?.error?.message ?? 'Update failed.';
       }
     });
+  }
+
+  closeForm(): void {
+    this.close.emit();
   }
 }

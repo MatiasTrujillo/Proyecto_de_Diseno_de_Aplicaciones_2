@@ -1,11 +1,11 @@
-import { Component, OnInit } from '@angular/core';
-import { SimulatorService } from '../../services/simulator.service'; // Ajustá el path según tu estructura
-import { Attribute } from '../../models/attribute'; // Asegurate de tenerlo definido
-import { catchError } from 'rxjs/operators';
-import { throwError } from 'rxjs';
+import { Component, Input, Output, EventEmitter, OnInit } from '@angular/core';
+import { SimulatorService } from '../../services/simulator.service';
+import { Attribute } from '../../models/attribute';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { ReactiveFormsModule, FormBuilder, FormGroup } from '@angular/forms';
+import { ReactiveFormsModule } from '@angular/forms';
+import { Method } from '../../models/method';
+import { InvokedMethod } from '../../models/InvokedMethod';
 
 @Component({
   selector: 'app-set-invoke-method',
@@ -15,9 +15,10 @@ import { ReactiveFormsModule, FormBuilder, FormGroup } from '@angular/forms';
   styleUrls: ['./setinvokedmethodtoattribute.component.css']
 })
 export class SetinvokedmethodtoattributeComponent implements OnInit {
-  attributes: Attribute[] = [];
-  methods: any[] = [];
-  selectedAttributeId: string = '';
+  @Input() attributeData!: Attribute;
+  @Output() close = new EventEmitter<void>();
+
+  methods: InvokedMethod[] = [];
   selectedMethodId: string = '';
   message: string = '';
   error: string = '';
@@ -25,29 +26,30 @@ export class SetinvokedmethodtoattributeComponent implements OnInit {
   constructor(private apiService: SimulatorService) {}
 
   ngOnInit() {
-    this.apiService.getAttribute().subscribe({
-      next: (res) => (this.attributes = res),
-      error: (err) => (this.error = 'Error loading attributes')
-    });
-
-    this.apiService.getInvokedMethods().subscribe({
-      next: (res) => (this.methods = res),
-      error: (err) => (this.error = 'Error loading methods')
-    });
-  }
+  this.apiService.getInvokedMethods().subscribe({
+    next: (res) => {
+      console.log('Métodos invocados:', res);
+      this.methods = res;
+    },
+    error: () => (this.error = 'Error loading methods')
+  });
+}
 
   associate() {
-    if (!this.selectedAttributeId || !this.selectedMethodId) {
-      this.error = 'Please select both an attribute and a method.';
+    this.message = '';
+    this.error = '';
+
+    if (!this.attributeData?.id || !this.selectedMethodId) {
+      this.error = 'Please select a method.';
       return;
     }
 
-    this.apiService.setInvokeMethodToAttribute(this.selectedAttributeId, this.selectedMethodId).subscribe({
+    this.apiService.setInvokeMethodToAttribute(this.attributeData.id, this.selectedMethodId).subscribe({
       next: (res) => {
-        this.message = res.message;
+        this.message = res.message ?? 'Method associated successfully.';
         this.error = '';
       },
-      error: (err) => {
+      error: () => {
         this.error = 'Failed to associate method to attribute.';
         this.message = '';
       }

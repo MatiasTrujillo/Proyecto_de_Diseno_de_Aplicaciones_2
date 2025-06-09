@@ -1,18 +1,9 @@
-<div class="delete-container">
-  <h2>Delete Attribute</h2>
+<h2>Delete Class</h2>
 
-  <form [formGroup]="deleteForm" (ngSubmit)="onDelete()">
-    <label for="attributeId">Select Attribute:</label>
-    <select id="attributeId" formControlName="attributeId">
-      <option value="">-- Select an attribute --</option>
-      <option *ngFor="let attr of attributes" [value]="attr.id">
-        {{ attr.name }}
-      </option>
-    </select>
+<p>Are you sure you want to delete the class "{{ attributeData.name }}"?</p>
 
-    <button type="submit">Delete</button>
-  </form>
+<div *ngIf="message" class="success-message">{{ message }}</div>
+<div *ngIf="error" class="error-message">{{ error }}</div>
 
-  <div class="message" *ngIf="message">{{ message }}</div>
-  <div class="error" *ngIf="error">{{ error }}</div>
-</div>
+<button (click)="onDelete()" class="danger">Confirm Delete</button>
+<button (click)="close.emit()">Cancel</button>

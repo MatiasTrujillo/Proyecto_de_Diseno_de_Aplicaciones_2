@@ -10,7 +10,8 @@
 <div class="sidebar">
   <button (click)="goToClassMenu()">Manage Class</button>
   <button (click)="goToMethodMenu()">Manage Method</button>
-  <button (click)="openModal('attribute')">Nuevo Atributo</button>
+  <button (click)="goToAttributeMenu()">Manage Attribute</button>
+  <button (click)="goToEsport()">Go To Export</button>
   <button (click)="openModal('localVariable')">Variable Local</button>
   <button (click)="openModal('interface')">Nueva Interfaz</button>
   <button (click)="openModal('deleteinterface')">Eliminar Interfaz</button>
@@ -41,11 +42,7 @@
     <h3>Attribute</h3>
     <p>Add a new attribute to your simulation class.</p>
     <div class="button-group">
-      <button class="primary" (click)="openModal('attribute')">Create</button>
-      <button class="secondary" (click)="openModal('associateattributewithclass')">Associate</button>
-      <button class="secondary" (click)="openModal('updateattribute')">Update</button>
-      <button class="secondary" (click)="openModal('setinvokedmethodtoattribute')">Invoked</button>
-      <button class="danger" (click)="openModal('deleteattribute')">Delete</button>
+      <button class="primary" (click)="openModal('attribute')">Open</button>
     </div>
   </div>
 
@@ -76,22 +73,6 @@
 
 <div class="modal" *ngIf="activeModal === 'attribute'">
   <div class="modal-content"><button class="close" (click)="closeModal()">×</button><app-createattribute></app-createattribute></div>
-</div>
-
-<div class="modal" *ngIf="activeModal === 'associateattributewithclass'">
-  <div class="modal-content"><button class="close" (click)="closeModal()">×</button><app-associateattributewithclass></app-associateattributewithclass></div>
-</div>
-
-<div class="modal" *ngIf="activeModal === 'updateattribute'">
-  <div class="modal-content"><button class="close" (click)="closeModal()">×</button><app-updateattribute></app-updateattribute></div>
-</div>
-
-<div class="modal" *ngIf="activeModal === 'setinvokedmethodtoattribute'">
-  <div class="modal-content"><button class="close" (click)="closeModal()">×</button><app-set-invoke-method></app-set-invoke-method></div>
-</div>
-
-<div class="modal" *ngIf="activeModal === 'deleteattribute'">
-  <div class="modal-content"><button class="close" (click)="closeModal()">×</button><app-deleteattribute></app-deleteattribute></div>
 </div>
 
 <div class="modal" *ngIf="activeModal === 'localVariable'">

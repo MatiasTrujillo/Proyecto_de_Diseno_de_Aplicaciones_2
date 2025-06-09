@@ -1,43 +1,61 @@
-<div class="update-container">
-<div>
-  <label>Attribute:</label>
-  <select [(ngModel)]="attributeId">
-    <option value="">-- Select Attribute --</option>
-    <option *ngFor="let attr of attributes" [value]="attr.id">{{ attr.name }}</option>
-  </select>
-</div>
+<form [formGroup]="updateForm" (ngSubmit)="onSubmit()">
+  <!-- Name -->
+  <div class="form-group">
+    <label for="name">Name:</label>
+    <input id="name" formControlName="name" type="text" class="form-control" />
+  </div>
 
-<div class="form-group">
-    <label for="stereotype">Stereotype</label>
-    <select id="stereotype" formControlName="stereotype">
-      <option [ngValue]="'no change'">No change</option>
-      <option [ngValue]='null'>Void</option>
-      <option *ngFor="let kw of keyWords" [ngValue]="kw">{{ kw }}</option>
+  <!-- Id Reference Type -->
+  <div class="form-group">
+    <label for="idRefType">Id Reference Type:</label>
+    <select id="idRefType" formControlName="IdReferenceType" class="form-control">
+      <option *ngFor="let t of types" [value]="t.id">
+        {{ t.name }}
+      </option>
+    </select>
+  </div>
+
+  <!-- Id Instance Type -->
+  <div class="form-group">
+    <label for="idInstType">Id Instance Type:</label>
+    <select id="idInstType" formControlName="IdInstanceType" class="form-control">
+      <option *ngFor="let t of types" [value]="t.id">
+        {{ t.name }}
+      </option>
+    </select>
+  </div>
+
+    <!-- Stereotype -->
+  <div class="form-group">
+    <label for="stereotype">Stereotype:</label>
+    <select id="stereotype" formControlName="stereotype" class="form-control">
+      <option *ngFor="let kw of keyWords" [value]="getKeyValue(kw)">
+        {{ kw }}
+      </option>
     </select>
   </div>
 
   <div class="form-group">
-    <label for="accessibility">accessibilitys</label>
-    <select id="accessibility" formControlName="accessibility">
-      <option [ngValue]="'no change'">No change</option>
-      <option [ngValue]='null'>Void</option>
-      <option *ngFor="let kw of accessibilitys" [ngValue]="kw">{{ kw }}</option>
-    </select>
+  <label for="accessibility">Accessibility:</label>
+  <select id="accessibility" formControlName="accessibility" class="form-control">
+    <option [ngValue]="null">Seleccione una opción</option>
+    <option *ngFor="let a of accessibilitys" [ngValue]="getAcceValue(a)">
+      {{ a }}
+    </option>
+  </select>
+</div>
+
+  <div class="form-group buttons">
+    <button type="submit" class="btn btn-primary">Actualizar</button>
+    <button type="button" (click)="close.emit()" class="btn btn-secondary">Cancelar</button>
   </div>
+</form>
 
-  <form [formGroup]="updateForm" (ngSubmit)="onSubmit()">
-    <label>Name:</label>
-    <input type="text" formControlName="name" />
+<!-- Mensajes -->
+<div *ngIf="message" class="alert alert-success mt-3">
+  {{ message }}
+</div>
 
-    <label>Type:</label>
-    <select formControlName="idType">
-      <option [ngValue]="null">-- Select --</option>
-      <option *ngFor="let type of types" [value]="type.name">{{ type.name }}</option>
-    </select>
-
-    <button type="submit">Update</button>
-  </form>
-
-  <p class="success" *ngIf="message">{{ message }}</p>
-  <p class="error" *ngIf="error">{{ error }}</p>
+<div *ngIf="error" class="alert alert-danger mt-3">
+  {{ error }}
 </div>
