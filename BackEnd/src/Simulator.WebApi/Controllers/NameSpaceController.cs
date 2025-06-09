@@ -58,4 +58,11 @@ public class NameSpaceController(INameSpaceService nameSpaceService) : Controlle
         _nameSpaceService.RemoveChildFromNameSpace(parentId, childId);
         return NoContent();
     }
+
+    [HttpGet]
+    public IActionResult GetAllNameSpace()
+    {
+        var nameSpaces = _nameSpaceService.GetAllNameSpace();
+        return Ok(nameSpaces);
+    }
 }
