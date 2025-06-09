@@ -6,22 +6,21 @@ namespace Simulator.WebApi.Controllers;
 
 [ApiController]
 [Route("api/v1/parameters")]
-public class ParameterController(IMethodService methodService) : ControllerBase
+public class ParameterController(IParameterService parameterService) : ControllerBase
 {
-    private readonly IMethodService _amethodService = methodService;
+    private readonly IParameterService _parameterService = parameterService;
 
-    // [AuthorizationFilter]
     [HttpPost]
     public IActionResult CreateParameter([FromBody] ParameterDTO parameter)
     {
-        var parameterId = _amethodService.CreateParameter(parameter);
+        var parameterId = _parameterService.CreateParameter(parameter);
         return Created(string.Empty, new { id = parameterId });
     }
 
     [HttpPost("{id}/invokedMethods/{invokedMethodId}")]
     public IActionResult SetInvokeMethodToParameter([FromRoute] Guid id, [FromRoute] Guid invokedMethodId)
     {
-        _amethodService.SetInvokeMethodToParameter(id, invokedMethodId);
+        _parameterService.SetInvokeMethodToParameter(id, invokedMethodId);
         return Created(string.Empty, new { message = "Parameter associated with invoked method successfully" });
     }
 }

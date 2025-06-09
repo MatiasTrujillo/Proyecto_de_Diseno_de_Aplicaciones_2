@@ -9,7 +9,7 @@ namespace Simulator.WebApi.Test.Controller.Test;
 [TestClass]
 public class LocalVariableTest
 {
-    private static readonly Mock<IMethodService> _methodServiceMock = new Mock<IMethodService>();
+    private static readonly Mock<ILocalVariableService> _methodServiceMock = new Mock<ILocalVariableService>();
     private readonly LocalVariableController _controller = new LocalVariableController(_methodServiceMock.Object);
 
     [TestMethod]
