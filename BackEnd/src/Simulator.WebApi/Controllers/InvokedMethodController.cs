@@ -15,4 +15,11 @@ public class InvokedMethodController(IMethodService methodService) : ControllerB
         var invokedMethodId = _amethodService.AssociateInvokeMethod(invokedMethod);
         return Created(string.Empty, new { id = invokedMethodId });
     }
+
+    [HttpGet]
+    public IActionResult GetInvokedMethodById()
+    {
+        var invokedMethods = _amethodService.GetInvokedMethodById();
+        return Ok(invokedMethods);
+    }
 }

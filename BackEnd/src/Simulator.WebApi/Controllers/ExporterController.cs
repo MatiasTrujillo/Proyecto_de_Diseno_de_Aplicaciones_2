@@ -5,7 +5,7 @@ using Simulator.IBussinesLogic;
 namespace Simulator.WebApi.Controllers;
 
 [ApiController]
-[Route("exporters")]
+[Route("api/v1/exporters")]
 public sealed class ExportersController(IExportService exporterService) : ControllerBase
 {
     [HttpGet]
@@ -17,7 +17,7 @@ public sealed class ExportersController(IExportService exporterService) : Contro
     [HttpPost("{exporterName}/export")]
     public IActionResult Export(string exporterName, [FromBody] TransformerForExporter data)
     {
-        var result = exporterService.ExportTransfer(exporterName, data);
-        return Ok(result);
+        var exporterTypes = exporterService.ExportTransfer(exporterName, data);
+        return Ok(new { exporterTypes });
     }
 }

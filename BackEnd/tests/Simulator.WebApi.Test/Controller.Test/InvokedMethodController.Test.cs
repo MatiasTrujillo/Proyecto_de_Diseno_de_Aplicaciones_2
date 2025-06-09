@@ -36,4 +36,26 @@ public class InvokedMethodController_Test
 
         _methodServiceMock.Verify(service => service.AssociateInvokeMethod(invokedMethodDto), Times.Once);
     }
+
+    [TestMethod]
+    public void GetInvokedMethodById_ReturnsOkWithInvokedMethods()
+    {
+        var expectedList = new List<InvokedMethodDTO>
+        {
+            new InvokedMethodDTO { MethodId = Guid.NewGuid() },
+            new InvokedMethodDTO { MethodId = Guid.NewGuid() }
+        };
+
+        var methodServiceMock = new Mock<IMethodService>();
+        methodServiceMock.Setup(s => s.GetInvokedMethodById()).Returns(expectedList);
+
+        var controller = new InvokedMethodController(methodServiceMock.Object);
+
+        var result = controller.GetInvokedMethodById();
+
+        Assert.IsInstanceOfType(result, typeof(OkObjectResult));
+        var okResult = result as OkObjectResult;
+        Assert.IsNotNull(okResult);
+        Assert.AreEqual(expectedList, okResult.Value);
+    }
 }

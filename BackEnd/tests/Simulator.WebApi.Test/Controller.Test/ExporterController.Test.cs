@@ -31,7 +31,7 @@ public class ExportersControllerTests
     }
 
     [TestMethod]
-    public void Export_ReturnsOk_WhenExporterSucceeds()
+    public void Export_ReturnsOkWithExporterTypes_WhenExporterSucceeds()
     {
         var exporterName = "ValidExporter";
         var input = new TransformerForExporter();
@@ -41,7 +41,14 @@ public class ExportersControllerTests
         var result = _controller.Export(exporterName, input);
 
         Assert.IsInstanceOfType(result, typeof(OkObjectResult));
-        var okResult = (OkObjectResult)result;
-        Assert.AreEqual(200, okResult.StatusCode);
+        var okResult = result as OkObjectResult;
+        Assert.IsNotNull(okResult);
+        Assert.IsNotNull(okResult.Value);
+
+        var valueType = okResult.Value.GetType();
+        var prop = valueType.GetProperty("exporterTypes");
+        Assert.IsNotNull(prop);
+        var exporterTypesValue = prop.GetValue(okResult.Value);
+        Assert.AreEqual(expectedResult, exporterTypesValue);
     }
 }

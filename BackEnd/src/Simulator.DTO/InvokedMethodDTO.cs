@@ -4,6 +4,7 @@ namespace Simulator.DTO;
 
 public class InvokedMethodDTO
 {
+    public string? Id { get; set; } = null;
     public Guid MethodId { get; set; } = Guid.Empty;
     public string ReferenceName { get; set; } = string.Empty;
 

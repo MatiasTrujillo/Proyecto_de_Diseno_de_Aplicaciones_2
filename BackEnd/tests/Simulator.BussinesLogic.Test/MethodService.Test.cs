@@ -2422,4 +2422,26 @@ public class MethodServiceTest
 
         Assert.AreEqual("MethodSignature name cannot be null.", exception.Message);
     }
+
+    [TestMethod]
+    public void GetInvokedMethodById_ShouldReturnAllInvokedMethodsAsDTOs()
+    {
+        var invokedMethods = new List<InvokedMethod>
+        {
+            new InvokedMethod { Id = Guid.NewGuid(), ReferenceName = "ref1", MethodId = Guid.NewGuid() },
+            new InvokedMethod { Id = Guid.NewGuid(), ReferenceName = "ref2", MethodId = Guid.NewGuid() }
+        };
+
+        _mockInvokedMethodRepository.Setup(r => r.FindAll()).Returns(invokedMethods);
+
+        var result = _methodService.GetInvokedMethodById();
+
+        Assert.AreEqual(invokedMethods.Count, result.Count);
+        for (var i = 0; i < invokedMethods.Count; i++)
+        {
+            Assert.AreEqual(invokedMethods[i].Id.ToString(), result[i].Id);
+            Assert.AreEqual(invokedMethods[i].ReferenceName, result[i].ReferenceName);
+            Assert.AreEqual(invokedMethods[i].MethodId, result[i].MethodId);
+        }
+    }
 }
