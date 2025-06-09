@@ -20,13 +20,14 @@
 <div class="sidebar">
   <button (click)="goToClassMenu()">Manage Class</button>
   <button (click)="goToMethodMenu()">Nuevo Método</button>
+  <button (click)="goToAttributeMenu()">Manage Attribute</button>
 </div>
 
 <div class="modal" *ngIf="activeModal === 'updateclass'">
   <div class="modal-content">
     <button class="close" (click)="closeModal()">×</button>
     <app-updateclass
-      [classData]="selectedClass"
+      [classData]="selectedClass!"
       (close)="closeModal()"
     ></app-updateclass>
   </div>
@@ -37,7 +38,7 @@
   <div class="modal-content">
     <button class="close" (click)="closeModal()">×</button>
     <app-deleteclass
-      [classData]="selectedClass"
+      [classData]="selectedClass!"
       (close)="closeModal()"
     ></app-deleteclass>
   </div>

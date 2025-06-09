@@ -1,0 +1,49 @@
+<div class="export-container">
+  <h2>Export Data</h2>
+
+  <label>
+    Exporter Name:
+    <input type="text" [(ngModel)]="exporterName" />
+  </label>
+
+  <label>
+    Reference Type:
+    <select [(ngModel)]="referenceId">
+      <option [ngValue]="null">-- Select --</option>
+      <option *ngFor="let type of types" [value]="type.id">{{ type.name }}</option>
+    </select>
+  </label>
+
+  <label>
+    Object to Create:
+    <select [(ngModel)]="objectToCreateId">
+      <option [ngValue]="null">-- Select --</option>
+      <option *ngFor="let type of types" [value]="type.id">{{ type.name }}</option>
+    </select>
+  </label>
+
+  <label>
+    Method:
+    <select [(ngModel)]="methodId">
+      <option [ngValue]="null">-- Select --</option>
+      <option *ngFor="let method of methods" [value]="method.id">{{ method.name }}</option>
+    </select>
+  </label>
+
+  <label>
+    Parameter Types:
+    <select multiple [(ngModel)]="selectedParameterTypes">
+      <option *ngFor="let type of types" [value]="type.id">{{ type.name }}</option>
+    </select>
+  </label>
+
+  <button (click)="exportData()">Export</button>
+
+  <div class="result" *ngIf="result">
+  <div [innerHTML]="result.exporterTypes"></div>
+</div>
+
+  <div class="error" *ngIf="error">
+    <p>{{ error }}</p>
+  </div>
+</div>

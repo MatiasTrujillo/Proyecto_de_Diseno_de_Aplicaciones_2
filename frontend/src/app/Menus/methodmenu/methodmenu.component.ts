@@ -1,11 +1,11 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
-import { CreateMethodComponent } from '../Methods/createmethod/createmethod.component';
-import { AssociatemethodwithclassComponent } from '../Methods/associatemethodwithclass/associatemethodwithclass.component';
-import { DeletemethodComponent } from '../Methods/deletemethod/deletemethod.component';
-import { SimulatorService } from '../services/simulator.service';
-import { Method } from '../models/method';
+import { CreateMethodComponent } from '../../Methods/createmethod/createmethod.component';
+import { AssociatemethodwithclassComponent } from '../../Methods/associatemethodwithclass/associatemethodwithclass.component';
+import { DeletemethodComponent } from '../../Methods/deletemethod/deletemethod.component';
+import { SimulatorService } from '../../services/simulator.service';
+import { Method } from '../../models/method';
 
 
 @Component({
@@ -23,7 +23,7 @@ constructor(private simulatorService: SimulatorService, private router: Router) 
 
   methods: Method[] = [];
   activeModal: string | null = null;
-  selectedMethod: any = null;
+  selectedMethod: Method | null = null;
 
  ngOnInit(): void {
     this.simulatorService.getMethods().subscribe({
@@ -32,7 +32,7 @@ constructor(private simulatorService: SimulatorService, private router: Router) 
     });
   }
 
-  openModal(modalName: string, selectedMethod: any): void {
+  openModal(modalName: string, selectedMethod: Method): void {
     this.activeModal = modalName;
     this.selectedMethod = selectedMethod;
   }
@@ -50,5 +50,9 @@ goToMethodMenu() {
 }
 goToNavMenu() {
   this.router.navigate(['/navMenu']);
+}
+
+goToAttributeMenu() {
+  this.router.navigate(['/AttributeMenuComponent']);
 }
 }

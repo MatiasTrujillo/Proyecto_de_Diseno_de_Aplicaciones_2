@@ -1,13 +1,15 @@
 import { Routes } from '@angular/router';
 import { SessionComponent } from './session/session.component';
-import { NavMenuComponent } from './nav-menu/nav-menu.component';
+import { NavMenuComponent } from './Menus/nav-menu/nav-menu.component';
 import { CreateclassComponent } from './Classes/createclass/createclass.component';
 import { CreateMethodComponent } from './Methods/createmethod/createmethod.component';
 import { CreateattributeComponent } from './Attributes/createattribute/createattribute.component';
 import { CreatelocalvariableComponent } from './createlocalvariable/createlocalvariable.component';
 import { CreateinterfaceComponent } from './Interfaces/createinterface/createinterface.component';
-import { ClassMenuComponent } from './class-menu/class-menu.component';
-import { MethodmenuComponent } from './methodmenu/methodmenu.component';
+import { ClassMenuComponent } from './Menus/class-menu/class-menu.component';
+import { MethodmenuComponent } from './Menus/methodmenu/methodmenu.component';
+import { AttributemenuComponent } from './Menus/attributemenu/attributemenu.component';
+import { ExportdataComponent } from './exportdata/exportdata.component';
 
 export const routes: Routes = [
   { path: '', component: SessionComponent },
@@ -19,5 +21,7 @@ export const routes: Routes = [
   { path: 'createLocalVariable', component: CreatelocalvariableComponent },
   { path: 'ClassMenuComponent', component: ClassMenuComponent },
   { path: 'MethodMenuComponent', component: MethodmenuComponent },
+  { path: 'AttributeMenuComponent', component: AttributemenuComponent },
+  { path: 'ExportdataComponent', component: ExportdataComponent },
   { path: '**', redirectTo: '' }
 ];

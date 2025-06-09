@@ -10,13 +10,14 @@
 <div class="sidebar">
   <button (click)="goToClassMenu()">Manage Class</button>
   <button (click)="goToMethodMenu()">Nuevo Método</button>
+  <button (click)="goToAttributeMenu()">Manage Attribute</button>
 </div>
 
   <div class="card-container">
   <div class="card" *ngFor="let methodItem of methods">
     <h3>{{ methodItem.name }}</h3>
     <div class="button-group">
-      <button class="secondary" (click)="openModal('associatewithclass', methodItem)">Asociate whit class</button>
+      <button class="secondary" (click)="openModal('associatewithclass', methodItem)">Asociate With class</button>
       <button class="danger" (click)="openModal('deletemethod', methodItem)">Delete</button>
     </div>
   </div>
@@ -26,7 +27,7 @@
   <div class="modal-content">
     <button class="close" (click)="closeModal()">×</button>
     <app-associatemethodwithclass
-      [methodData]="selectedMethod"
+      [methodData]="selectedMethod!"
       (close)="closeModal()"
     ></app-associatemethodwithclass>
   </div>
@@ -36,7 +37,7 @@
   <div class="modal-content">
     <button class="close" (click)="closeModal()">×</button>
     <app-deletemethod
-      [methodData]="selectedMethod"
+      [methodData]="selectedMethod!"
       (close)="closeModal()"
     ></app-deletemethod>
   </div>

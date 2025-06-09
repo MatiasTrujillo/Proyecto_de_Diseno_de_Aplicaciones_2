@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnInit } from '@angular/core';
 import { SimulatorService } from '../../services/simulator.service';
 import { Attribute } from '../../models/attribute';
 import { Class } from '../../models/class';
@@ -8,12 +8,14 @@ import { CommonModule } from '@angular/common';
 @Component({
   selector: 'app-associateattributewithclass',
   standalone: true,
-  imports: [FormsModule,CommonModule],
+  imports: [FormsModule, CommonModule],
   templateUrl: './associateattributewithclass.component.html',
   styleUrl: './associateattributewithclass.component.css'
 })
-export class AssociateattributewithclassComponent {
-  attributes: Attribute[] = [];
+export class AssociateattributewithclassComponent implements OnInit {
+  @Input() attributeData!: Attribute;
+  @Output() close = new EventEmitter<void>();
+
   classes: Class[] = [];
 
   selectedAttributeId = '';
@@ -25,15 +27,11 @@ export class AssociateattributewithclassComponent {
   constructor(private simulatorService: SimulatorService) {}
 
   ngOnInit(): void {
-    this.loadAttributes();
+    // Se asigna el ID del atributo directamente
+    if (this.attributeData) {
+      this.selectedAttributeId = this.attributeData.id;
+    }
     this.loadClasses();
-  }
-
-  loadAttributes(): void {
-    this.simulatorService.getAttribute().subscribe({
-      next: (data) => this.attributes = data,
-      error: () => this.error = 'Error loading attributes.'
-    });
   }
 
   loadClasses(): void {
@@ -48,7 +46,7 @@ export class AssociateattributewithclassComponent {
     this.error = '';
 
     if (!this.selectedAttributeId || !this.selectedClassId) {
-      this.error = 'Select both an attribute and a class.';
+      this.error = 'Select a class to associate with the attribute.';
       return;
     }
 

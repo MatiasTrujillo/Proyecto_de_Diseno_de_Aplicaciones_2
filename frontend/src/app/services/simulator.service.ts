@@ -13,6 +13,8 @@ import { LocalVariable } from '../models/localvariable';
 import { Interface } from '../models/Interface';
 import { UpdateClass } from '../models/updateClass';
 import { UpdateAttribute } from '../models/UpdateAttribute';
+import { InvokedMethod } from '../models/InvokedMethod';
+import { TransformerForExporter } from '../models/TransformerForExporter';
 
 @Injectable({
   providedIn: 'root'
@@ -91,8 +93,8 @@ export class SimulatorService {
     );
   }
 
-  getInvokedMethods(): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiUrl}/invokedMethods`).pipe(
+  getInvokedMethods(): Observable<InvokedMethod[]> {
+    return this.http.get<InvokedMethod[]>(`${this.apiUrl}/invokedMethods`).pipe(
       catchError((error) => throwError(() => error))
     );
   }
@@ -106,7 +108,7 @@ export class SimulatorService {
   }
 
   setInvokeMethodToAttribute(attributeId: string, methodId: string): Observable<{ message: string }> {
-    return this.http.post<{ message: string }>(`${this.apiUrl}/attributes/${attributeId}/invokeMethod/${methodId}`, null).pipe(
+    return this.http.post<{ message: string }>(`${this.apiUrl}/attributes/${attributeId}/invokedMethods/${methodId}`, null).pipe(
       catchError((error) => {
         return throwError(() => error);
       })
@@ -216,6 +218,18 @@ export class SimulatorService {
 
   deleteAttribute(attributeId: string): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/attributes/${attributeId}`).pipe(
+      catchError((error) => throwError(() => error))
+    );
+  }
+
+  getExporters(): Observable<string[]> {
+    return this.http.get<string[]>(`${this.apiUrl}/exporters`).pipe(
+      catchError((error) => throwError(() => error))
+    );
+  }
+
+  exportWithExporter(exporterName: string, data: TransformerForExporter): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}/exporters/${exporterName}/export`, data).pipe(
       catchError((error) => throwError(() => error))
     );
   }

@@ -1,12 +1,10 @@
-
+<!-- Atributo mostrado como texto -->
 <div>
   <label>Attribute:</label>
-  <select [(ngModel)]="selectedAttributeId">
-    <option value="">-- Select Attribute --</option>
-    <option *ngFor="let attr of attributes" [value]="attr.id">{{ attr.name }}</option>
-  </select>
+  <span>{{ attributeData.name }}</span>
 </div>
 
+<!-- Selector de clase -->
 <div>
   <label>Class:</label>
   <select [(ngModel)]="selectedClassId">
@@ -15,7 +13,9 @@
   </select>
 </div>
 
+<!-- Botón de asociación -->
 <button (click)="associate()">Associate</button>
 
+<!-- Mensajes -->
 <div *ngIf="message" style="color: green;">{{ message }}</div>
 <div *ngIf="error" style="color: red;">{{ error }}</div>

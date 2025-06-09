@@ -53,7 +53,8 @@ export class CreateattributeComponent implements OnInit {
     id: '',
     name: formValue.name,
     accessibility: Number(formValue.accessibility),
-    type: this.types.find(t => t.name === formValue.type)!,
+    InstanceType: this.types.find(t => t.name === formValue.type)!,
+    ReferenceType: this.types.find(t => t.name === formValue.type)!,
     stereotype: formValue.stereotype !== '' && formValue.stereotype !== null
       ? Number(formValue.stereotype)
       : null,

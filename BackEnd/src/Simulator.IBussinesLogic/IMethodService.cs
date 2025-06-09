@@ -18,4 +18,5 @@ public interface IMethodService
     string ExecuteMethod(Guid referenceId, Guid objectToCreateId, Guid methodId, List<TypeDTO> parameterTypes);
     Guid CreateMethodSignature(MethodSignatureDTO method);
     List<MethodDTO> GetMethods();
+    List<InvokedMethodDTO> GetInvokedMethodById();
 }

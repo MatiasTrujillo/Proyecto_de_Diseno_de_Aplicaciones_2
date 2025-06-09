@@ -219,6 +219,17 @@ public class MethodService(
             }).ToList();
     }
 
+    public List<InvokedMethodDTO> GetInvokedMethodById()
+    {
+        return _invokedMethodRepository.FindAll()
+            .Select(iV => new InvokedMethodDTO
+            {
+                Id = iV.Id.ToString(),
+                ReferenceName = iV.ReferenceName,
+                MethodId = iV.MethodId
+            }).ToList();
+    }
+
     private void ValidateMethodIsNotInInvokedMethod(Guid id)
     {
         var iVAll = _invokedMethodRepository.FindAll();

@@ -2,9 +2,14 @@
   <label for="name">Name:</label>
   <input id="name" formControlName="name" type="text" />
 
-  <label for="type">Return Type</label>
-    <select id="type" formControlName="type">
-      <option *ngFor="let type of types" [value]="type.name">{{ type.name }}</option>
+  <label for="returnType">Return Type</label>
+    <select id="returnType" formControlName="type">
+      <option *ngFor="let returnType of types" [value]="returnType.name">{{ returnType.name }}</option>
+    </select>
+
+    <label for="instanceType">Return Type</label>
+    <select id="instanceType" formControlName="instanceType">
+      <option *ngFor="let instanceType of types" [value]="instanceType.name">{{ instanceType.name }}</option>
     </select>
 
   <label for="accessibility">Accessibility</label>
