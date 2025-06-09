@@ -2437,7 +2437,7 @@ public class MethodServiceTest
         var result = _methodService.GetInvokedMethodById();
 
         Assert.AreEqual(invokedMethods.Count, result.Count);
-        for (var i = 0; i < invokedMethods.Count; i++)
+        for(var i = 0; i < invokedMethods.Count; i++)
         {
             Assert.AreEqual(invokedMethods[i].Id.ToString(), result[i].Id);
             Assert.AreEqual(invokedMethods[i].ReferenceName, result[i].ReferenceName);
