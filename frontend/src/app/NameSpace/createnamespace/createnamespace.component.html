@@ -1,0 +1,12 @@
+<form [formGroup]="namespaceForm" (ngSubmit)="onSubmit()">
+  <label for="name">Nombre del Namespace</label>
+  <input id="name" formControlName="name" type="text" />
+  <div *ngIf="namespaceForm.get('name')?.invalid && namespaceForm.get('name')?.touched" style="color: red;">
+    El nombre es obligatorio.
+  </div>
+
+  <button type="submit" [disabled]="namespaceForm.invalid">Crear Namespace</button>
+</form>
+
+<div *ngIf="successMessage" style="color: green;">{{ successMessage }}</div>
+<div *ngIf="errorMessage" style="color: red;">{{ errorMessage }}</div>

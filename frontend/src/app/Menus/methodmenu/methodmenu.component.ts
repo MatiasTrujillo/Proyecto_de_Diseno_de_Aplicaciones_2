@@ -55,4 +55,8 @@ goToNavMenu() {
 goToAttributeMenu() {
   this.router.navigate(['/AttributeMenuComponent']);
 }
+
+goToNameSpace() {
+  this.router.navigate(['/NameSpaceMenuComponent']);
+}
 }

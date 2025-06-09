@@ -10,6 +10,7 @@ import { ClassMenuComponent } from './Menus/class-menu/class-menu.component';
 import { MethodmenuComponent } from './Menus/methodmenu/methodmenu.component';
 import { AttributemenuComponent } from './Menus/attributemenu/attributemenu.component';
 import { ExportdataComponent } from './exportdata/exportdata.component';
+import { NameSpaceMenuComponent } from './Menus/name-space-menu/name-space-menu.component';
 
 export const routes: Routes = [
   { path: '', component: SessionComponent },
@@ -23,5 +24,6 @@ export const routes: Routes = [
   { path: 'MethodMenuComponent', component: MethodmenuComponent },
   { path: 'AttributeMenuComponent', component: AttributemenuComponent },
   { path: 'ExportdataComponent', component: ExportdataComponent },
+  { path: 'NameSpaceMenuComponent', component: NameSpaceMenuComponent },
   { path: '**', redirectTo: '' }
 ];

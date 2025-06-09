@@ -15,6 +15,7 @@ import { UpdateClass } from '../models/updateClass';
 import { UpdateAttribute } from '../models/UpdateAttribute';
 import { InvokedMethod } from '../models/InvokedMethod';
 import { TransformerForExporter } from '../models/TransformerForExporter';
+import { NameSpace } from '../models/NameSpace';
 
 @Injectable({
   providedIn: 'root'
@@ -230,6 +231,55 @@ export class SimulatorService {
 
   exportWithExporter(exporterName: string, data: TransformerForExporter): Observable<any> {
     return this.http.post<any>(`${this.apiUrl}/exporters/${exporterName}/export`, data).pipe(
+      catchError((error) => throwError(() => error))
+    );
+  }
+private nameSpaceApiUrl = `${this.apiUrl}/namespaces`;
+
+  createNameSpace(nameSpace: NameSpace): Observable<{ id: string }> {
+    return this.http.post<{ id: string }>(`${this.nameSpaceApiUrl}`, nameSpace).pipe(
+      catchError((error) => throwError(() => error))
+    );
+  }
+
+  associateNameSpaceToClass(nameSpaceId: string, classId: string): Observable<void> {
+    return this.http.post<void>(`${this.nameSpaceApiUrl}/${nameSpaceId}/associateclass/${classId}`, null).pipe(
+      catchError((error) => throwError(() => error))
+    );
+  }
+
+  associateNameSpaceToInterface(nameSpaceId: string, interfaceId: string): Observable<void> {
+    return this.http.post<void>(`${this.nameSpaceApiUrl}/${nameSpaceId}/associateinterfaces/${interfaceId}`, null).pipe(
+      catchError((error) => throwError(() => error))
+    );
+  }
+
+  addFatherToNameSpace(id: string, idFather: string): Observable<void> {
+    return this.http.post<void>(`${this.nameSpaceApiUrl}/${id}/addfathers/${idFather}`, null).pipe(
+      catchError((error) => throwError(() => error))
+    );
+  }
+
+  removeNameSpace(id: string): Observable<void> {
+    return this.http.delete<void>(`${this.nameSpaceApiUrl}/${id}`).pipe(
+      catchError((error) => throwError(() => error))
+    );
+  }
+
+  addChildToNameSpace(parentId: string, childId: string): Observable<void> {
+    return this.http.post<void>(`${this.nameSpaceApiUrl}/${parentId}/addchilds/${childId}`, null).pipe(
+      catchError((error) => throwError(() => error))
+    );
+  }
+
+  removeChildFromNameSpace(parentId: string, childId: string): Observable<void> {
+    return this.http.delete<void>(`${this.nameSpaceApiUrl}/${parentId}/removechilds/${childId}`).pipe(
+      catchError((error) => throwError(() => error))
+    );
+  }
+
+  getNameSpaces(): Observable<NameSpace[]> {
+    return this.http.get<NameSpace[]>(`${this.nameSpaceApiUrl}`).pipe(
       catchError((error) => throwError(() => error))
     );
   }
