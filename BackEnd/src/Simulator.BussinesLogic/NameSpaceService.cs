@@ -30,7 +30,6 @@ public class NameSpaceService(
             .FirstOrDefault(ns => ns.Id == id);
         ValidateNameSpaceComponentExistence(nameSpace2);
 
-        ValidateNameSpaceExistence(id);
         ValidateDiferentNameSpaces(id, idFather);
         ValidateNoCircularReference(id, idFather);
         ValidateNameSpaceExistence(idFather);
@@ -133,11 +132,12 @@ public class NameSpaceService(
 
     public List<NamespaceComponentDTO> GetAllNamespaceComponents()
     {
-        var nameSpaces = nameSpaceRepository.FindAllNamespaceComponents()
-            .OfType<Primitive>();
-        return nameSpaces.Select(ns => new NamespaceComponentDTO
+        var components = nameSpaceRepository.FindAllNamespaceComponents()
+            .Where(ns => !(ns is Primitive));
+        return components.Select(ns => new NamespaceComponentDTO
         {
             Id = ns.Id.ToString(),
+            Name = ns.Name
         }).ToList();
     }
 

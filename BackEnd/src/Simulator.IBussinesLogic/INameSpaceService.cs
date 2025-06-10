@@ -11,4 +11,5 @@ public interface INameSpaceService
     void AddChildToNameSpace(Guid parentId, Guid childId);
     void RemoveChildFromNameSpace(Guid parentId, Guid childId);
     List<NameSpaceDTO> GetAllNameSpace();
+    List<NamespaceComponentDTO> GetAllNamespaceComponents();
 }

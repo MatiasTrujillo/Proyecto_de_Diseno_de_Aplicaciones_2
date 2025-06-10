@@ -2,7 +2,6 @@ namespace Simulator.Domain;
 
 public abstract class Type : NamespaceComponent
 {
-    public string Name { get; set; }
     public virtual List<Method>? Methods { get; set; }
 
     public Type()
