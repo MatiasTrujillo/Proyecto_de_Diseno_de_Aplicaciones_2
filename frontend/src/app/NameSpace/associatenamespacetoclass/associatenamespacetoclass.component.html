@@ -1,0 +1,20 @@
+<div class="modal">
+  <h2>Associate Class to Namespace</h2>
+  <p><strong>Namespace:</strong> {{ nameSpaceData.name }}</p>
+
+  <label for="classSelect">Select Class:</label>
+  <select id="classSelect" [(ngModel)]="selectedClassId">
+    <option value="">-- Select a class --</option>
+    <option *ngFor="let cls of classes" [value]="cls.id">
+      {{ cls.name }}
+    </option>
+  </select>
+
+  <div class="button-group">
+    <button (click)="associate()">Associate</button>
+    <button class="cancel" (click)="closeModal()">Cancel</button>
+  </div>
+
+  <div *ngIf="message" class="success">{{ message }}</div>
+  <div *ngIf="error" class="error">{{ error }}</div>
+</div>

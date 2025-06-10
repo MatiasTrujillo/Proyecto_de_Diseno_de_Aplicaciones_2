@@ -25,18 +25,19 @@ public class NameSpaceService(
 
     public void AddFatherToNameSpace(Guid id, Guid idFather)
     {
-        ValidateNameSpaceExistence(id);
-        ValidateNameSpaceExistence(idFather);
+        var nc = nameSpaceRepository.FindAllNamespaceComponents();
+        var nameSpace2 = nc.Select(nct => nct)
+            .FirstOrDefault(ns => ns.Id == id);
+        ValidateNameSpaceComponentExistence(nameSpace2);
+
         ValidateDiferentNameSpaces(id, idFather);
         ValidateNoCircularReference(id, idFather);
-
-        var nameSpace = nameSpaceRepository.Find(id);
+        ValidateNameSpaceExistence(idFather);
         var father = nameSpaceRepository.Find(idFather);
 
-        nameSpace.Father = father;
-        father.AddChild(nameSpace); // Composite: Agrega como hijo también
+        nameSpace2.Father = father;
+        father.AddChild(nameSpace2);
         nameSpaceRepository.Update(father);
-        nameSpaceRepository.Update(nameSpace);
     }
 
     public void AssociateNameSpaceToClass(Guid nameSpaceId, Guid classId)
@@ -74,24 +75,6 @@ public class NameSpaceService(
         {
             throw new NameSpaceException("Interface does not exist");
         }
-    }
-
-    public void RemoveNameSpace(Guid id)
-    {
-        var nameSpace = nameSpaceRepository.Find(id);
-        if(nameSpace == null)
-        {
-            throw new NameSpaceException("NameSpace does not exist");
-        }
-
-        if(nameSpace.Father != null)
-        {
-            var father = nameSpace.Father;
-            father.RemoveChild(nameSpace);
-            nameSpaceRepository.Update(father);
-        }
-
-        nameSpaceRepository.Delete(nameSpace);
     }
 
     public void AddChildToNameSpace(Guid parentId, Guid childId)
@@ -141,6 +124,17 @@ public class NameSpaceService(
     {
         var nameSpaces = nameSpaceRepository.FindAll();
         return nameSpaces.Select(ns => new NameSpaceDTO
+        {
+            Id = ns.Id.ToString(),
+            Name = ns.Name
+        }).ToList();
+    }
+
+    public List<NamespaceComponentDTO> GetAllNamespaceComponents()
+    {
+        var components = nameSpaceRepository.FindAllNamespaceComponents()
+            .Where(ns => !(ns is Primitive));
+        return components.Select(ns => new NamespaceComponentDTO
         {
             Id = ns.Id.ToString(),
             Name = ns.Name

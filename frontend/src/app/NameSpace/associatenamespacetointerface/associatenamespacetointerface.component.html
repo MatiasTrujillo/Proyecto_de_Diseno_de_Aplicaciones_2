@@ -1,0 +1,20 @@
+<div class="modal">
+  <h2>Associate Interface to Namespace</h2>
+  <p><strong>Namespace:</strong> {{ nameSpaceData.name }}</p>
+
+  <label for="interfaceSelect">Select Interface:</label>
+  <select id="interfaceSelect" [(ngModel)]="selectedInterfaceId">
+    <option value="">-- Select an interface --</option>
+    <option *ngFor="let iface of interfaces" [value]="iface.id">
+      {{ iface.name }}
+    </option>
+  </select>
+
+  <div class="button-group">
+    <button (click)="associate()">Associate</button>
+    <button class="cancel" (click)="closeModal()">Cancel</button>
+  </div>
+
+  <div *ngIf="message" class="success">{{ message }}</div>
+  <div *ngIf="error" class="error">{{ error }}</div>
+</div>

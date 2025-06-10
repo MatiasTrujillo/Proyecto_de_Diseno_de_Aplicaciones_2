@@ -1,0 +1,19 @@
+<div class="modal">
+  <h2>Associate Child to Father Namespace</h2>
+
+  <div *ngIf="error" class="error">{{ error }}</div>
+  <div *ngIf="message" class="success">{{ message }}</div>
+
+  <label for="fatherSelect">Select Child Namespace to Associate:</label>
+  <select id="fatherSelect" [(ngModel)]="selectedFatherId">
+    <option [ngValue]="null">-- Select Namespace --</option>
+    <option *ngFor="let component of nameSpaceComponents" [value]="component.id">
+      {{ component.name }}
+    </option>
+  </select>
+
+  <div class="buttons">
+    <button (click)="associateFather()" [disabled]="!selectedFatherId">Associate</button>
+    <button class="close" (click)="closeModal()">Cancel</button>
+  </div>
+</div>

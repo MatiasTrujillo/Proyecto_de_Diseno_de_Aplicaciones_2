@@ -81,21 +81,6 @@ public class NameSpaceControllerTest
     }
 
     [TestMethod]
-    public void RemoveNameSpace_ShouldReturnNoContent()
-    {
-        var id = Guid.NewGuid();
-
-        _mockNameSpaceService
-            .Setup(service => service.RemoveNameSpace(id));
-
-        var result = _controller.RemoveNameSpace(id) as NoContentResult;
-
-        Assert.IsNotNull(result);
-        Assert.AreEqual(204, result.StatusCode);
-        _mockNameSpaceService.Verify(service => service.RemoveNameSpace(id), Times.Once);
-    }
-
-    [TestMethod]
     public void AddChildToNameSpace_ShouldReturnNoContent()
     {
         var parentId = Guid.NewGuid();

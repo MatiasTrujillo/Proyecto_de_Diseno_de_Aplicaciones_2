@@ -16,6 +16,7 @@ import { UpdateAttribute } from '../models/UpdateAttribute';
 import { InvokedMethod } from '../models/InvokedMethod';
 import { TransformerForExporter } from '../models/TransformerForExporter';
 import { NameSpace } from '../models/NameSpace';
+import { NameSpaceComponent } from '../models/NameSpaceComponent';
 
 @Injectable({
   providedIn: 'root'
@@ -280,6 +281,12 @@ private nameSpaceApiUrl = `${this.apiUrl}/namespaces`;
 
   getNameSpaces(): Observable<NameSpace[]> {
     return this.http.get<NameSpace[]>(`${this.nameSpaceApiUrl}`).pipe(
+      catchError((error) => throwError(() => error))
+    );
+  }
+
+  getNameSpaceComponents(): Observable<NameSpaceComponent[]> {
+    return this.http.get<NameSpaceComponent[]>(`${this.apiUrl}/namespaceComponents`).pipe(
       catchError((error) => throwError(() => error))
     );
   }

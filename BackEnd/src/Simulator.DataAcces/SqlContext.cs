@@ -29,7 +29,7 @@ public sealed class SqlContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<NameSpace>()
+        modelBuilder.Entity<NamespaceComponent>()
             .HasOne(n => n.Father)
             .WithMany()
             .HasForeignKey("FatherId")
@@ -233,47 +233,47 @@ public sealed class SqlContext : DbContext
             new
             {
                 Token = session1,
-                IsActive = true,
+                IsActive = false,
             },
             new
             {
                 Token = session2,
-                IsActive = true
+                IsActive = false,
             },
             new
             {
                 Token = session3,
-                IsActive = true
+                IsActive = false,
             },
             new
             {
                 Token = session4,
-                IsActive = true
+                IsActive = false,
             },
             new
             {
                 Token = session5,
-                IsActive = true
+                IsActive = false,
             },
             new
             {
                 Token = session6,
-                IsActive = true
+                IsActive = false,
             },
             new
             {
                 Token = session7,
-                IsActive = true
+                IsActive = false,
             },
             new
             {
                 Token = session9,
-                IsActive = true
+                IsActive = false,
             },
             new
             {
                 Token = session10,
-                IsActive = true
+                IsActive = false,
             });
 
         modelBuilder.Entity<Class>().HasData(new

@@ -18,6 +18,51 @@
   <div class="card" *ngFor="let nameSpaceItem of nameSpaces">
     <h3>{{ nameSpaceItem.name }}</h3>
     <div class="button-group">
+      <button class="secondary" (click)="openModal('associatewithclass', nameSpaceItem)">Asociate With class</button>
+      <button class="secondary" (click)="openModal('associatewithinterface', nameSpaceItem)">Asociate With class</button>
+      <button class="primary" (click)="openModal('addChill', nameSpaceItem)">Add Chill</button>
+      <button class="danger" (click)="openModal('addFatherToNameSpace', nameSpaceItem)">Add Father</button>
     </div>
+  </div>
+</div>
+
+<div class="modal" *ngIf="activeModal === 'associatewithclass'">
+  <div class="modal-content">
+    <button class="close" (click)="closeModal()">×</button>
+    <app-associatenamespacetoclass
+      [nameSpaceData]="selectedNameSpace!"
+      (close)="closeModal()"
+    ></app-associatenamespacetoclass>
+  </div>
+</div>
+
+<div class="modal" *ngIf="activeModal === 'associatewithinterface'">
+  <div class="modal-content">
+    <button class="close" (click)="closeModal()">×</button>
+    <app-associatenamespacetointerface
+      [nameSpaceData]="selectedNameSpace!"
+      (close)="closeModal()"
+    ></app-associatenamespacetointerface>
+  </div>
+</div>
+
+<div class="modal" *ngIf="activeModal === 'addChill'">
+  <div class="modal-content">
+    <button class="close" (click)="closeModal()">×</button>
+    <app-add-child-to-name-space
+      [nameSpaceData]="selectedNameSpace!"
+      (close)="closeModal()"
+    ></app-add-child-to-name-space>
+  </div>
+</div>
+
+
+<div class="modal" *ngIf="activeModal === 'addFatherToNameSpace'">
+  <div class="modal-content">
+    <button class="close" (click)="closeModal()">×</button>
+    <app-add-father-to-name-space
+      [nameSpaceData]="selectedNameSpace!"
+      (close)="closeModal()"
+    ></app-add-father-to-name-space>
   </div>
 </div>
