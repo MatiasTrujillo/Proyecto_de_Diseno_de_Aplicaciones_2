@@ -384,7 +384,7 @@ public class MethodService(
         var aParameter = method.Parameters!.FirstOrDefault(x => x.Name == invokedMethod.ReferenceName);
         if(aParameter != null)
         {
-            var aClass = _classRepository.FindAll().FirstOrDefault(x => x.Name == aParameter.ReferenceType.Name);
+            var aClass = _classRepository.FindAll().FirstOrDefault(x => x.Name == aParameter.InstanceType.Name);
             if(aClass != null)
             {
                 aClass = FindClassWithMethod(aClass, invokedMethodMethod);
@@ -456,14 +456,15 @@ public class MethodService(
     {
         var result = new List<string>();
 
-        var parenthesis = ParametersInParenthesis(method);
+        var firstParenthesis = FirstLineParametersReference(method);
+        var secondParenthesis = FirstLineParametersInstance(method);
         if(CheckClassHasMethod(oTC, method))
         {
-            result.Add($"{refe.Name}.{method.Name}({parenthesis}) -> {oTC.Name}.{method.Name}({parenthesis})");
+            result.Add($"{refe.Name}.{method.Name}({firstParenthesis}) -> {oTC.Name}.{method.Name}({secondParenthesis})");
         }
         else
         {
-            result.Add($"{refe.Name}.{method.Name}({parenthesis}) -> {refe.Name}.{method.Name}({parenthesis})");
+            result.Add($"{refe.Name}.{method.Name}({firstParenthesis}) -> {refe.Name}.{method.Name}({secondParenthesis})");
         }
 
         _identation++;
@@ -503,6 +504,46 @@ public class MethodService(
                 success = true;
             }
 
+            if(!success && method.Parameters[i].InstanceType is Primitive p)
+            {
+                if(i == method.Parameters.Count - 1)
+                {
+                    r += $"{p.PrimitiveType.ToString().ToLower()}";
+                }
+                else
+                {
+                    r += $"{p.PrimitiveType.ToString().ToLower()}, ";
+                }
+            }
+        }
+
+        return r;
+    }
+
+    private string FirstLineParametersReference(Method method)
+    {
+        var r = string.Empty;
+        var allTypes = _classRepository.FindAllTypes();
+        var allClasses = allTypes.OfType<Class>().ToList();
+        var success = false;
+
+        for(var i = 0; i < method.Parameters.Count; i++)
+        {
+            Class aClass = allClasses.FirstOrDefault(x => x.Name == method.Parameters[i].ReferenceType.Name);
+            if(aClass != null && aClass.Stereotype != KeyWord.Abstract)
+            {
+                if(i == method.Parameters.Count - 1)
+                {
+                    r += $"{method.Parameters[i].ReferenceType.Name}";
+                }
+                else
+                {
+                    r += $"{method.Parameters[i].ReferenceType.Name}, ";
+                }
+
+                success = true;
+            }
+
             if(!success && method.Parameters[i].ReferenceType is Primitive p)
             {
                 if(i == method.Parameters.Count - 1)
@@ -512,6 +553,72 @@ public class MethodService(
                 else
                 {
                     r += $"{p.PrimitiveType.ToString().ToLower()}, ";
+                }
+            }
+
+            Type anInterface = allTypes.FirstOrDefault(x => x.Name == method.Parameters[i].ReferenceType.Name);
+            if(!success && anInterface != null)
+            {
+                if(i == method.Parameters.Count - 1)
+                {
+                    r += $"{method.Parameters[i].ReferenceType.Name}";
+                }
+                else
+                {
+                    r += $"{method.Parameters[i].ReferenceType.Name}, ";
+                }
+            }
+        }
+
+        return r;
+    }
+
+    private string FirstLineParametersInstance(Method method)
+    {
+        var r = string.Empty;
+        var allTypes = _classRepository.FindAllTypes();
+        var allClasses = allTypes.OfType<Class>().ToList();
+        var success = false;
+
+        for(var i = 0; i < method.Parameters.Count; i++)
+        {
+            Class aClass = allClasses.FirstOrDefault(x => x.Name == method.Parameters[i].InstanceType.Name);
+            if(aClass != null && aClass.Stereotype != KeyWord.Abstract)
+            {
+                if(i == method.Parameters.Count - 1)
+                {
+                    r += $"{method.Parameters[i].InstanceType.Name}";
+                }
+                else
+                {
+                    r += $"{method.Parameters[i].InstanceType.Name}, ";
+                }
+
+                success = true;
+            }
+
+            if(!success && method.Parameters[i].InstanceType is Primitive p)
+            {
+                if(i == method.Parameters.Count - 1)
+                {
+                    r += $"{p.PrimitiveType.ToString().ToLower()}";
+                }
+                else
+                {
+                    r += $"{p.PrimitiveType.ToString().ToLower()}, ";
+                }
+            }
+
+            Type anInterface = allTypes.FirstOrDefault(x => x.Name == method.Parameters[i].InstanceType.Name);
+            if(!success && anInterface != null)
+            {
+                if(i == method.Parameters.Count - 1)
+                {
+                    r += $"{method.Parameters[i].InstanceType.Name}";
+                }
+                else
+                {
+                    r += $"{method.Parameters[i].InstanceType.Name}, ";
                 }
             }
         }
@@ -1027,6 +1134,7 @@ public class MethodService(
         {
             var type = allTypes.FirstOrDefault(x => x.Name == types[i].Name);
             ValidateInstanceClass(parameters[i].ReferenceType, type);
+            parameters[i].InstanceType = type;
         }
     }
 }

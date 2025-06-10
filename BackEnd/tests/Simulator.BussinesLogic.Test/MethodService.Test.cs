@@ -2030,4 +2030,250 @@ public class MethodServiceTest
             Assert.AreEqual(invokedMethods[i].MethodId, result[i].MethodId);
         }
     }
+
+    [TestMethod]
+    public void ExecuteMethodExample6_ShouldReturnMethodExecuted_WhenValidInputProvided()
+    {
+        var nombre = new Attribute
+        {
+            Id = Guid.NewGuid(),
+            Name = "Nombre",
+            Accessibility = Accessibility.Public,
+            ReferenceType = new Primitive(PrimitiveType.String),
+        };
+
+        var validar = new Method
+        {
+            Id = Guid.NewGuid(),
+            Name = "Validar",
+            Accessibility = Accessibility.Public,
+            Methods = [],
+            Parameters = [],
+            LocalVariables = [],
+            ReturnType = new Primitive(PrimitiveType.Bool),
+        };
+        var validarInvoked = new InvokedMethod
+        {
+            Id = Guid.NewGuid(),
+            MethodId = validar.Id,
+            ReferenceName = "usuario"
+        };
+
+        var mensaje = new Parameter
+        {
+            Id = Guid.NewGuid(),
+            Name = "Mensaje",
+            ReferenceType = new Primitive(PrimitiveType.String),
+        };
+
+        var registrar = new Method
+        {
+            Id = Guid.NewGuid(),
+            Name = "Registrar",
+            Accessibility = Accessibility.Public,
+            Methods = [],
+            Parameters = [mensaje],
+            LocalVariables = [],
+            ReturnType = null
+        };
+        var registrarInvoked = new InvokedMethod
+        {
+            Id = Guid.NewGuid(),
+            MethodId = registrar.Id,
+            ReferenceName = "loggerLocal"
+        };
+
+        var logger = new Class
+        {
+            Id = Guid.NewGuid(),
+            Name = "Logger",
+            Stereotype = null,
+            Parents = null,
+            Attributes = [],
+            Methods = [registrar],
+        };
+
+        var loggerLocal = new Attribute
+        {
+            Id = Guid.NewGuid(),
+            Name = "loggerLocal",
+            Accessibility = Accessibility.Private,
+            ReferenceType = logger
+        };
+
+        var preparar = new Method
+        {
+            Id = Guid.NewGuid(),
+            Name = "Preparar",
+            Accessibility = Accessibility.Private,
+            Methods = [],
+            Parameters = [],
+            LocalVariables = [],
+            ReturnType = null,
+        };
+        var prepararInvoked = new InvokedMethod
+        {
+            Id = Guid.NewGuid(),
+            MethodId = preparar.Id,
+            ReferenceName = "this"
+        };
+
+        var usuarioInterface = new Interface
+        {
+            Id = Guid.NewGuid(),
+            Name = "IUsuario",
+            MethodSignatures =
+            [
+                new MethodSignature("Validar", new Primitive(PrimitiveType.Bool))
+            ]
+        };
+
+        var usuario = new Class
+        {
+            Id = Guid.NewGuid(),
+            Name = "Usuario",
+            Stereotype = null,
+            Parents = [usuarioInterface],
+            Attributes = [nombre],
+            Methods = [validar],
+        };
+
+        var usuarioParam = new Parameter
+        {
+            Id = Guid.NewGuid(),
+            Name = "usuario",
+            ReferenceType = usuarioInterface
+        };
+
+        var validarCredencialesAutenticator = new Method
+        {
+            Id = Guid.NewGuid(),
+            Name = "ValidarCredenciales",
+            Accessibility = Accessibility.Protected,
+            Methods = [],
+            Parameters = [usuarioParam],
+            LocalVariables = [],
+            ReturnType = new Primitive(PrimitiveType.Bool),
+            Stereotype = KeyWord.Abstract
+        };
+        var validarCredencialesAutenticatorInvoked = new InvokedMethod
+        {
+            Id = Guid.NewGuid(),
+            MethodId = validarCredencialesAutenticator.Id,
+            ReferenceName = "this"
+        };
+
+        var logAcceso = new Method
+        {
+            Id = Guid.NewGuid(),
+            Name = "LogAcceso",
+            Accessibility = Accessibility.Protected,
+            Methods = [],
+            Parameters = [usuarioParam],
+            LocalVariables = [],
+            ReturnType = null,
+        };
+        var logAccesoInvoked = new InvokedMethod
+        {
+            Id = Guid.NewGuid(),
+            MethodId = logAcceso.Id,
+            ReferenceName = "this"
+        };
+
+        var autenticar = new Method
+        {
+            Id = Guid.NewGuid(),
+            Name = "Autenticar",
+            Accessibility = Accessibility.Public,
+            Methods = [prepararInvoked, validarCredencialesAutenticatorInvoked, logAccesoInvoked, registrarInvoked],
+            Parameters = [usuarioParam],
+            LocalVariables = [],
+            ReturnType = new Primitive(PrimitiveType.Bool),
+        };
+
+        var methodId4 = Guid.Parse("eeeeeeee-eeee-eeee-eeee-eeeeeeeeeeee");
+        var toString = new Method
+        {
+            Id = methodId4,
+            Name = "ToString",
+            Accessibility = Accessibility.Public,
+            Stereotype = null,
+        };
+        var toStringInvoked = new InvokedMethod
+        {
+            Id = Guid.NewGuid(),
+            MethodId = toString.Id,
+            ReferenceName = "this"
+        };
+
+        var clavePrivada = new Attribute
+        {
+            Id = Guid.NewGuid(),
+            Name = "clavePrivada",
+            Accessibility = Accessibility.Private,
+            ReferenceType = new Primitive(PrimitiveType.String),
+            InvokedMethods = [toStringInvoked]
+        };
+
+        var validarCredencialesAP = new Method
+        {
+            Id = Guid.NewGuid(),
+            Name = "ValidarCredenciales",
+            Accessibility = Accessibility.Protected,
+            Methods = [validarInvoked, toStringInvoked],
+            Parameters = [usuarioParam],
+            LocalVariables = [],
+            ReturnType = new Primitive(PrimitiveType.Bool),
+        };
+
+        var autenticador = new Class
+        {
+            Id = Guid.NewGuid(),
+            Name = "Autenticador",
+            Stereotype = KeyWord.Abstract,
+            Attributes = [loggerLocal],
+            Methods = [autenticar, preparar, logAcceso, validarCredencialesAutenticator],
+        };
+
+        var autenticadorPassword = new Class
+        {
+            Id = Guid.NewGuid(),
+            Name = "AutenticadorPassword",
+            Stereotype = KeyWord.Sealed,
+            Attributes = [clavePrivada],
+            Methods = [validarCredencialesAP],
+            Parents = [autenticador]
+        };
+
+        var usuarioType = new TypeDTO
+        {
+            Id = Guid.NewGuid(),
+            Name = "Usuario",
+        };
+
+        var stringPrimitive = new Primitive(PrimitiveType.String);
+
+        _mockClassRepository.Setup(repo => repo.FindAll()).Returns([usuario, logger, autenticador, autenticadorPassword]);
+        _mockClassRepository.Setup(repo => repo.FindAllTypes()).Returns([usuario, logger, autenticador, autenticadorPassword, stringPrimitive, usuarioInterface]);
+        _mockMethodRepository.Setup(repo => repo.FindAll()).Returns([autenticar]);
+        _mockMethodRepository.Setup(repo => repo.Find(prepararInvoked.MethodId)).Returns(preparar);
+        _mockMethodRepository.Setup(repo => repo.Find(validarInvoked.MethodId)).Returns(validar);
+        _mockMethodRepository.Setup(repo => repo.Find(registrarInvoked.MethodId)).Returns(registrar);
+        _mockMethodRepository.Setup(repo => repo.Find(validarCredencialesAutenticatorInvoked.MethodId)).Returns(validarCredencialesAutenticator);
+        _mockMethodRepository.Setup(repo => repo.Find(logAccesoInvoked.MethodId)).Returns(logAcceso);
+        _mockMethodRepository.Setup(repo => repo.Find(toStringInvoked.MethodId)).Returns(toString);
+
+        var result = _methodService.ExecuteMethod(autenticador.Id, autenticadorPassword.Id, autenticar.Id, [usuarioType]);
+
+        var res =
+            "Autenticador.Autenticar(IUsuario) -> Autenticador.Autenticar(Usuario)\n" +
+            "\tthis.Preparar() -> Autenticador.Preparar()\n" +
+            "\tthis.ValidarCredenciales(Usuario) -> AutenticadorPassword.ValidarCredenciales(Usuario)\n" +
+            "\t\tusuario.Validar() -> Usuario.Validar()\n" +
+            "\t\tthis.clavePrivada.ToString() -> String.ToString()\n" +
+            "\tthis.LogAcceso(Usuario) -> Autenticador.LogAcceso(Usuario)\n" +
+            "\tloggerLocal.Registrar(string) -> Logger.Registrar(string)";
+        Console.WriteLine(result);
+        Assert.AreEqual(res, result);
+    }
 }
