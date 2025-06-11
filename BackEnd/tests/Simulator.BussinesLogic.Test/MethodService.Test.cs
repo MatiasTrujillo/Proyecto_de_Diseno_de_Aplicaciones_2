@@ -2138,11 +2138,18 @@ public class MethodServiceTest
             Methods = [validar],
         };
 
-        var usuarioParam = new Parameter
+        var usuarioParamForFirst = new Parameter
         {
             Id = Guid.NewGuid(),
             Name = "usuario",
             ReferenceType = usuarioInterface
+        };
+
+        var usuarioParamForOthers = new Parameter
+        {
+            Id = Guid.NewGuid(),
+            Name = "usuario",
+            ReferenceType = usuario
         };
 
         var validarCredencialesAutenticator = new Method
@@ -2151,7 +2158,7 @@ public class MethodServiceTest
             Name = "ValidarCredenciales",
             Accessibility = Accessibility.Protected,
             Methods = [],
-            Parameters = [usuarioParam],
+            Parameters = [usuarioParamForOthers],
             LocalVariables = [],
             ReturnType = new Primitive(PrimitiveType.Bool),
             Stereotype = KeyWord.Abstract
@@ -2169,7 +2176,7 @@ public class MethodServiceTest
             Name = "LogAcceso",
             Accessibility = Accessibility.Protected,
             Methods = [],
-            Parameters = [usuarioParam],
+            Parameters = [usuarioParamForOthers],
             LocalVariables = [],
             ReturnType = null,
         };
@@ -2186,7 +2193,7 @@ public class MethodServiceTest
             Name = "Autenticar",
             Accessibility = Accessibility.Public,
             Methods = [prepararInvoked, validarCredencialesAutenticatorInvoked, logAccesoInvoked, registrarInvoked],
-            Parameters = [usuarioParam],
+            Parameters = [usuarioParamForFirst],
             LocalVariables = [],
             ReturnType = new Primitive(PrimitiveType.Bool),
         };
@@ -2221,7 +2228,7 @@ public class MethodServiceTest
             Name = "ValidarCredenciales",
             Accessibility = Accessibility.Protected,
             Methods = [validarInvoked, toStringInvoked],
-            Parameters = [usuarioParam],
+            Parameters = [usuarioParamForOthers],
             LocalVariables = [],
             ReturnType = new Primitive(PrimitiveType.Bool),
         };

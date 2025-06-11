@@ -384,7 +384,7 @@ public class MethodService(
         var aParameter = method.Parameters!.FirstOrDefault(x => x.Name == invokedMethod.ReferenceName);
         if(aParameter != null)
         {
-            var aClass = _classRepository.FindAll().FirstOrDefault(x => x.Name == aParameter.InstanceType.Name);
+            var aClass = _classRepository.FindAll().FirstOrDefault(x => x.Name == aParameter.ReferenceType.Name);
             if(aClass != null)
             {
                 aClass = FindClassWithMethod(aClass, invokedMethodMethod);
@@ -504,7 +504,7 @@ public class MethodService(
                 success = true;
             }
 
-            if(!success && method.Parameters[i].InstanceType is Primitive p)
+            if(!success && method.Parameters[i].ReferenceType is Primitive p)
             {
                 if(i == method.Parameters.Count - 1)
                 {
@@ -557,7 +557,7 @@ public class MethodService(
             }
 
             Type anInterface = allTypes.FirstOrDefault(x => x.Name == method.Parameters[i].ReferenceType.Name);
-            if(!success && anInterface != null)
+            if(!success && anInterface != null && anInterface is Interface)
             {
                 if(i == method.Parameters.Count - 1)
                 {
@@ -610,7 +610,7 @@ public class MethodService(
             }
 
             Type anInterface = allTypes.FirstOrDefault(x => x.Name == method.Parameters[i].InstanceType.Name);
-            if(!success && anInterface != null)
+            if(!success && anInterface != null && anInterface is Interface)
             {
                 if(i == method.Parameters.Count - 1)
                 {
