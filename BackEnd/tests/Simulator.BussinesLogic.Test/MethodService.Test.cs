@@ -906,6 +906,50 @@ public class MethodServiceTest
 
     [TestMethod]
     [ExpectedException(typeof(MethodException))]
+    public void AddAMethod_ShouldThrowException_WhenReferenceNameIsInvalid2()
+    {
+        var methodId = Guid.NewGuid();
+        var invokedMethodId = Guid.NewGuid();
+        var referenceName = "param1";
+        var classId = Guid.NewGuid();
+        var classAuxId = Guid.NewGuid();
+        var classAux = new Class { Id = classAuxId, Name = "classAux" };
+        var param = new Parameter("param1", classAux);
+        var method = new Method
+        {
+            Id = methodId,
+            Name = "TestMethod",
+            Methods = [],
+            Parameters = [param]
+        };
+        var invokedMethod = new InvokedMethod
+        {
+            Id = invokedMethodId,
+            ReferenceName = referenceName,
+            MethodId = methodId
+        };
+        var classWithMethod = new Class
+        {
+            Methods = [method],
+            Attributes =
+            [
+                new Attribute { Name = referenceName, ReferenceType = new Class { Id = classId } }
+            ]
+        };
+        var classWithAttr = new Class { Id = classId, Methods = [method] };
+        _mockMethodRepository.Setup(m => m.Find(methodId)).Returns(method);
+        _mockMethodRepository.Setup(m => m.Find(invokedMethod.MethodId)).Returns(method);
+        _mockInvokedMethodRepository.Setup(i => i.Find(invokedMethodId)).Returns(invokedMethod);
+        _mockClassRepository.Setup(c => c.FindAll()).Returns([classWithMethod, classAux]);
+        _mockClassRepository.Setup(c => c.Find(classId)).Returns(classWithAttr);
+        _mockClassRepository.Setup(c => c.Find(classAuxId)).Returns(classAux);
+        _mockMethodRepository.Setup(m => m.Update(method));
+
+        _methodService.AddAMethod(methodId, invokedMethodId);
+    }
+
+    [TestMethod]
+    [ExpectedException(typeof(MethodException))]
     public void AddAMethod_ShouldThrow_WhenAttributeClassDoesNotContainMethod()
     {
         var methodId = Guid.NewGuid();
