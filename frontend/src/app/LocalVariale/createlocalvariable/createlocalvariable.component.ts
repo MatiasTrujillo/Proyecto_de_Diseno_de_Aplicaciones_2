@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
-import { Type } from '../models/Type';
-import { LocalVariable } from '../models/localvariable';
-import { SimulatorService } from '../services/simulator.service';
+import { Type } from '../../models/Type';
+import { LocalVariable } from '../../models/localvariable';
+import { SimulatorService } from '../../services/simulator.service';
 import { CommonModule } from '@angular/common';
 
 @Component({
@@ -50,6 +50,7 @@ export class CreatelocalvariableComponent implements OnInit {
     }
 
     const localVariable: LocalVariable = {
+      id: '',
       name: formValue.name,
       ReferenceType: referenceType,
       InstanceType: instanceType

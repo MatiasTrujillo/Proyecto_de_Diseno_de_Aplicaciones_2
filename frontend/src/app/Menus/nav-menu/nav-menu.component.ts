@@ -5,7 +5,7 @@ import { SimulatorService } from '../../services/simulator.service';
 import { CreateclassComponent } from '../../Classes/createclass/createclass.component';
 import { CreateMethodComponent } from '../../Methods/createmethod/createmethod.component';
 import { CreateattributeComponent } from '../../Attributes/createattribute/createattribute.component';
-import { CreatelocalvariableComponent } from '../../createlocalvariable/createlocalvariable.component';
+import { CreatelocalvariableComponent } from '../../LocalVariale/createlocalvariable/createlocalvariable.component';
 import { CreateinterfaceComponent } from '../../Interfaces/createinterface/createinterface.component';
 import { DeleteinterfaceComponent } from '../../Interfaces/deleteinterface/deleteinterface.component';
 import { CreatenamespaceComponent } from '../../NameSpace/createnamespace/createnamespace.component';

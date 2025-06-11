@@ -4,4 +4,5 @@ export interface Parameter {
   name: string;
   ReferenceType: Type;
   InstanceType: Type;
+  id: string;
 }

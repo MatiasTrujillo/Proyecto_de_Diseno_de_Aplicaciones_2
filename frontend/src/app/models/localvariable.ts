@@ -4,4 +4,5 @@ export interface LocalVariable {
   name: string;
   ReferenceType: Type;
   InstanceType: Type;
+  id: string;
 }

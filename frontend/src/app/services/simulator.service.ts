@@ -149,7 +149,7 @@ export class SimulatorService {
   }
 
   createMethodSignature(methodSignature: MethodSignature): Observable<{ id: string }> {
-    return this.http.post<{ id: string }>(`${this.apiUrl}/methodSignature`, methodSignature).pipe(
+    return this.http.post<{ id: string }>(`${this.apiUrl}/methodSignatures`, methodSignature).pipe(
       catchError((error) => {
         return throwError(() => error);
       })
@@ -198,6 +198,12 @@ export class SimulatorService {
 
   getMethods(): Observable<Method[]> {
     return this.http.get<Method[]>(`${this.apiUrl}/methods`).pipe(
+      catchError((error) => throwError(() => error))
+    );
+  }
+
+  getMethodSignatures(): Observable<MethodSignature[]> {
+    return this.http.get<MethodSignature[]>(`${this.apiUrl}/methodSignatures`).pipe(
       catchError((error) => throwError(() => error))
     );
   }
@@ -308,11 +314,46 @@ private parameterApiUrl = `${this.apiUrl}/parameters`;
       catchError((error) => throwError(() => error))
     );
   }
+private localsApiUrl = `${this.apiUrl}/localVariables`;
+
+    setInvokeMethodToLocalVariable(localVariableId: string, invokedMethodId: string): Observable<{ message: string }> {
+    return this.http.post<{ message: string }>(
+      `${this.localsApiUrl}/${localVariableId}/invokedMethods/${invokedMethodId}`,
+      null
+    ).pipe(
+      catchError((error) => throwError(() => error))
+    );
+  }
 
   createInvokeMethod(invokedMethod: InvokedMethod): Observable<{ id: string }> {
     return this.http.post<{ id: string }>(
       `${this.apiUrl}/invokedMethods`,
       invokedMethod
+    ).pipe(
+      catchError((error) => throwError(() => error))
+    );
+  }
+
+  getParameters(): Observable<Parameter[]> {
+    return this.http.get<Parameter[]>(`${this.apiUrl}/parameters`).pipe(
+      catchError((error) => {
+        return throwError(() => error);
+      })
+    );
+  }
+
+   getLocalVariables(): Observable<LocalVariable[]> {
+    return this.http.get<LocalVariable[]>(`${this.apiUrl}/localVariables`).pipe(
+      catchError((error) => {
+        return throwError(() => error);
+      })
+    );
+  }
+
+  associateInterfaceSignature(interfaceId: string, methodSignatureId: string): Observable<{ message: string }> {
+    return this.http.post<{ message: string }>(
+      `${this.apiUrl}/interfaces/${interfaceId}/methodSignatures/${methodSignatureId}`,
+      null
     ).pipe(
       catchError((error) => throwError(() => error))
     );

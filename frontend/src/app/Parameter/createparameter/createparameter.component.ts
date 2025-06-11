@@ -48,6 +48,7 @@ export class CreateparameterComponent implements OnInit {
     }
 
     const parameter: Parameter = {
+      id: '',
       name: this.name,
       ReferenceType: referenceType,
       InstanceType: instanceType

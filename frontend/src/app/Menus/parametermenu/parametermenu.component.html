@@ -16,10 +16,25 @@
   <button (click)="goTo('/ParameterMenuComponent')">Parameter</button>
   <button (click)="goTo('/LocalVariableMenuComponent')">Local Variable</button>
   <button (click)="goTo('/InterfaceMenuComponent')">Interface</button>
-  <button (click)="goTo('/MethodMenuComponent')">Method Signature</button>
   <button (click)="goTo('/ExportdataComponent')">Go To Export</button>
   <div>
-    <button (click)="goTo('/database')">Data Base</button> <!-- Asegúrate de que esta ruta exista -->
+    <button (click)="goTo('/database')">Data Base</button>
   </div>
 </div>
 
+<div class="card-container">
+  <div class="card" *ngFor="let paramItem of parameters">
+    <h3>{{ paramItem.name }}</h3>
+    <button class="secondary" (click)="openModal('setToClass', paramItem)">Asociate With class</button>
+  </div>
+</div>
+
+<div class="modal" *ngIf="activeModal === 'setToClass'">
+  <div class="modal-content">
+    <button class="close" (click)="closeModal()">×</button>
+    <app-set-invoke-method-to-parameter
+      [parameterData]="selectedParameter!"
+      (close)="closeModal()"
+    ></app-set-invoke-method-to-parameter>
+  </div>
+</div>

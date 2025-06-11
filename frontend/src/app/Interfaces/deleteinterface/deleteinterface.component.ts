@@ -1,60 +1,46 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ReactiveFormsModule, FormBuilder, FormGroup } from '@angular/forms';
 import { SimulatorService } from '../../services/simulator.service';
 import { Interface } from '../../models/Interface';
 
 @Component({
   selector: 'app-deleteinterface',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule],
   templateUrl: './deleteinterface.component.html',
   styleUrls: ['./deleteinterface.component.css']
 })
 export class DeleteinterfaceComponent implements OnInit {
-  deleteForm!: FormGroup;
-  interfaces: Interface[] = [];
+  @Input() interfaceData!: Interface;
+  @Output() close = new EventEmitter<void>();
+
   message: string | null = null;
   error: string | null = null;
 
-  constructor(
-    private simulatorService: SimulatorService,
-    private fb: FormBuilder
-  ) {}
+  constructor(private simulatorService: SimulatorService) {}
 
-  ngOnInit(): void {
-    this.deleteForm = this.fb.group({
-      id: ['']
-    });
-
-    this.loadInterfaces();
-  }
-
-  loadInterfaces(): void {
-    this.simulatorService.getInterfaces().subscribe({
-      next: (res) => this.interfaces = res,
-      error: (err) => this.error = 'Error loading interfaces'
-    });
-  }
+  ngOnInit(): void {}
 
   onDelete(): void {
-    const id = this.deleteForm.value.id;
-
-    if (!id) {
-      this.error = 'Please select an interface to delete.';
+    if (!this.interfaceData?.id) {
+      this.error = 'No interface selected to delete.';
       return;
     }
 
-    this.simulatorService.deleteInterface(id).subscribe({
+    this.simulatorService.deleteInterface(this.interfaceData.id).subscribe({
       next: () => {
         this.message = 'Interface deleted successfully.';
         this.error = null;
-        this.loadInterfaces();
+        setTimeout(() => this.close.emit(), 1200); // Opcional: cerrar modal tras éxito
       },
       error: (err) => {
         this.error = 'Error deleting interface: ' + (err?.error?.message || err.message || 'Unknown error');
         this.message = null;
       }
     });
+  }
+
+  closeModal(): void {
+    this.close.emit();
   }
 }
