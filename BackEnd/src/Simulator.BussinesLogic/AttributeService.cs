@@ -115,7 +115,7 @@ public class AttributeService(IAttributeRepository attributeRepository, IClassRe
     private void ValidateAttributeType(Type? methodTReturnType)
     {
         var classes = _classRepository.FindAllTypes();
-        if(methodTReturnType != null && classes.All(c => c.Name != methodTReturnType.Name))
+        if(methodTReturnType != null && classes.All(c => c.Name.ToLower() != methodTReturnType.Name.ToLower()))
         {
             throw new TypeNotFoundException("Return type not found.");
         }

@@ -18,7 +18,8 @@ public class ParameterController_Test
         var parameterDto = new ParameterDTO
         {
             Name = "TestParameter",
-            ParameterType = new TypeDTO { Name = "TestType" }
+            ReferenceType = new TypeDTO { Name = "TestType" },
+            InstanceType = new TypeDTO { Name = "TestType" }
         };
         var expectedParameterId = Guid.NewGuid();
 

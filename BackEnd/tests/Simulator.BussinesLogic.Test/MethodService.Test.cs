@@ -43,7 +43,7 @@ public class MethodServiceTest
         _parameterDto = new ParameterDTO
         {
             Name = "TestParameter",
-            ParameterType = new TypeDTO
+            ReferenceType = new TypeDTO
             {
                 Name = "TestClass",
                 Kind = "class"
@@ -1043,9 +1043,9 @@ public class MethodServiceTest
     [TestMethod]
     public void ToEntity_ShouldThrowArgumentNullException_WhenParameterTypeIsNull()
     {
-        var dto = new ParameterDTO { Name = "myVar", ParameterType = null };
+        var dto = new ParameterDTO { Name = "myVar", ReferenceType = null };
         var exception = Assert.ThrowsException<ArgumentNullException>(dto.ToEntity);
-        Assert.AreEqual("The Type property cannot be null. (Parameter 'Type')", exception.Message);
+        Assert.AreEqual("The Type property cannot be null. (Parameter 'ReferenceType')", exception.Message);
     }
 
     [TestMethod]

@@ -41,7 +41,7 @@ public class ParameterService_Test
         _parameterDto = new ParameterDTO
         {
             Name = "TestParameter",
-            ParameterType = new TypeDTO
+            ReferenceType = new TypeDTO
             {
                 Name = "TestClass",
                 Kind = "class"
@@ -69,7 +69,7 @@ public class ParameterService_Test
     {
         var classT = new TypeDTO { Name = "TestClass", Kind = "class" };
 
-        var parameterDto = new ParameterDTO { Name = "TestParameter", ParameterType = classT };
+        var parameterDto = new ParameterDTO { Name = "TestParameter", ReferenceType = classT, InstanceType = classT};
 
         _mockParameterRepository
             .Setup(r => r.Add(It.Is<Parameter>(p =>
@@ -98,7 +98,7 @@ public class ParameterService_Test
     {
         var classT = new TypeDTO { Name = "TestClass", Kind = "class" };
 
-        var parameterDto = new ParameterDTO { Name = string.Empty, ParameterType = classT };
+        var parameterDto = new ParameterDTO { Name = string.Empty, ReferenceType = classT, InstanceType = classT };
 
         _mockClassRepository
             .Setup(repo => repo.FindAllTypes())
@@ -116,7 +116,7 @@ public class ParameterService_Test
     [DataRow("Object")]
     public void CreateParameter_ShouldThrowException_WhenNameIsReservedKeyword(string reservedName)
     {
-        var dto = new ParameterDTO { Name = reservedName, ParameterType = new TypeDTO { Name = "SomeType", Kind = "class" }, };
+        var dto = new ParameterDTO { Name = reservedName, ReferenceType = new TypeDTO { Name = "SomeType", Kind = "class" }, InstanceType = new TypeDTO { Name = "SomeType", Kind = "class" } };
 
         _mockClassRepository
             .Setup(repo => repo.FindAllTypes())

@@ -141,7 +141,8 @@ public class MethodService(
             "CompareTo",
             "IsNullOrEmpty",
             "IsNullOrWhiteSpace",
-            "ToLowerCase"
+            "ToLowerCase",
+            "ToUpperCase"
         };
 
         return _methodRepository.FindAll()

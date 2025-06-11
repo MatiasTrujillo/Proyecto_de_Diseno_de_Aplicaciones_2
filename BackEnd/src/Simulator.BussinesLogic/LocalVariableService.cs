@@ -26,9 +26,9 @@ public class LocalVariableService(ILocalVariableRepository localVariableReposito
 
         var localVariableT = localVariable.ToEntity();
         var referenceTypeName = localVariableT.ReferenceType.Name;
-        var referenceType = _classRepository.FindAllTypes().FirstOrDefault(c => c.Name == referenceTypeName);
+        var referenceType = _classRepository.FindAllTypes().FirstOrDefault(c => c.Name.ToLower() == referenceTypeName.ToLower());
         var instanceTypeName = localVariableT.InstanceType.Name;
-        var instanceType = _classRepository.FindAllTypes().FirstOrDefault(c => c.Name == instanceTypeName);
+        var instanceType = _classRepository.FindAllTypes().FirstOrDefault(c => c.Name.ToLower() == instanceTypeName.ToLower());
         ValidateTypesExists(referenceType, instanceType);
         ValidateInstanceClass(referenceType, instanceType);
         AssignTypes(localVariableT, referenceType, instanceType);

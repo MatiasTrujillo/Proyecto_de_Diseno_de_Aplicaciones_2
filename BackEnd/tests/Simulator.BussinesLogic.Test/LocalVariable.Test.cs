@@ -41,7 +41,7 @@ public class LocalVariable_Test
         _parameterDto = new ParameterDTO
         {
             Name = "TestParameter",
-            ParameterType = new TypeDTO
+            ReferenceType = new TypeDTO
             {
                 Name = "TestClass",
                 Kind = "class"
