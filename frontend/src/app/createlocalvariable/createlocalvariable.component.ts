@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Type } from '../models/Type';
 import { LocalVariable } from '../models/localvariable';
@@ -15,8 +15,8 @@ import { CommonModule } from '@angular/common';
   templateUrl: './createlocalvariable.component.html',
   styleUrl: './createlocalvariable.component.css'
 })
-export class CreatelocalvariableComponent {
-localVariableFrom!: FormGroup;
+export class CreatelocalvariableComponent implements OnInit {
+  localVariableFrom!: FormGroup;
   localVariableTypes: Type[] = [];
 
   constructor(
@@ -27,7 +27,8 @@ localVariableFrom!: FormGroup;
   ngOnInit(): void {
     this.localVariableFrom = this.fb.group({
       name: ['', Validators.required],
-      localVariableType: ['', Validators.required],
+      ReferenceType: ['', Validators.required],
+      InstanceType: ['', Validators.required]
     });
 
     this.simulatorService.getTypes().subscribe({
@@ -37,20 +38,28 @@ localVariableFrom!: FormGroup;
   }
 
   onSubmit(): void {
-  if (this.localVariableFrom.invalid) return;
+    if (this.localVariableFrom.invalid) return;
 
-  const formValue = this.localVariableFrom.value;
-  const localVariable: LocalVariable = {
-    name: formValue.name,
-    LocalVariableType: this.localVariableTypes.find(t => t.name === formValue.localVariableType)!
-  };
+    const formValue = this.localVariableFrom.value;
+    const referenceType = this.localVariableTypes.find(t => t.id === formValue.ReferenceType);
+    const instanceType = this.localVariableTypes.find(t => t.id === formValue.InstanceType);
 
-  console.log('Attribute enviado al backend:', localVariable);
+    if (!referenceType || !instanceType) {
+      console.error('ReferenceType or InstanceType not found');
+      return;
+    }
 
-  this.simulatorService.createLocalVariable(localVariable).subscribe({
-    next: (res) => alert(`Attribute created with ID: ${res.id}`),
-    error: (err) => console.error('Error creating attribute', err)
-  });
-} 
+    const localVariable: LocalVariable = {
+      name: formValue.name,
+      ReferenceType: referenceType,
+      InstanceType: instanceType
+    };
+
+    console.log('Attribute enviado al backend:', localVariable);
+
+    this.simulatorService.createLocalVariable(localVariable).subscribe({
+      next: (res) => alert(`Attribute created with ID: ${res.id}`),
+      error: (err) => console.error('Error creating attribute', err)
+    });
+  }
 }
-

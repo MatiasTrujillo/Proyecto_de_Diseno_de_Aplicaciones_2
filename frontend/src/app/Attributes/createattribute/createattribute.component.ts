@@ -35,6 +35,7 @@ export class CreateattributeComponent implements OnInit {
     this.attributeForm = this.fb.group({
       name: ['', Validators.required],
       type: ['', Validators.required],
+      instanceType: ['', Validators.required],
       accessibility: [null, Validators.required],
       stereotype: [null],
     });
@@ -53,7 +54,7 @@ export class CreateattributeComponent implements OnInit {
     id: '',
     name: formValue.name,
     accessibility: Number(formValue.accessibility),
-    InstanceType: this.types.find(t => t.name === formValue.type)!,
+    InstanceType: this.types.find(t => t.name === formValue.instanceType)!,
     ReferenceType: this.types.find(t => t.name === formValue.type)!,
     stereotype: formValue.stereotype !== '' && formValue.stereotype !== null
       ? Number(formValue.stereotype)

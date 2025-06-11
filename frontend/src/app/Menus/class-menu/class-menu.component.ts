@@ -39,27 +39,10 @@ export class ClassMenuComponent implements OnInit {
     this.selectedClass = null; 
   }
 
-  goToHome(): void {
+  goTo(path: string): void {
+    window.location.href = path;
+  }
+  goToNavMenu() {
     this.router.navigate(['/navMenu']);
   }
-
-goToClassMenu() {
-  this.router.navigate(['/ClassMenuComponent']);
-}
-
-goToMethodMenu() {
-  this.router.navigate(['/MethodMenuComponent']);
-}
-
-goToNavMenu() {
-  this.router.navigate(['/navMenu']);
-}
-
-goToAttributeMenu() {
-  this.router.navigate(['/AttributeMenuComponent']);
-}
-
-goToNameSpace() {
-  this.router.navigate(['/NameSpaceMenuComponent']);
-}
 }

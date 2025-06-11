@@ -1,33 +1,24 @@
-<div class="form-container">
-  <h2>Create Local Variable</h2>
+<form [formGroup]="localVariableFrom" (ngSubmit)="onSubmit()">
+  <div class="form-group">
+    <label for="name">Name:</label>
+    <input id="name" formControlName="name" type="text" class="form-control" required />
+  </div>
 
-  <form [formGroup]="localVariableFrom" (ngSubmit)="onSubmit()">
-    <div class="form-group">
-      <label for="name">Variable Name</label>
-      <input
-        id="name"
-        type="text"
-        formControlName="name"
-        placeholder="Enter variable name"
-      />
-      <div class="error" *ngIf="localVariableFrom.get('name')?.invalid && localVariableFrom.get('name')?.touched">
-        Name is required.
-      </div>
-    </div>
+  <div class="form-group">
+    <label for="referenceType">Reference Type:</label>
+    <select id="referenceType" formControlName="ReferenceType" class="form-control" required>
+      <option [ngValue]="null">-- Select Reference Type --</option>
+      <option *ngFor="let type of localVariableTypes" [value]="type.id">{{ type.name }}</option>
+    </select>
+  </div>
 
-    <div class="form-group">
-      <label for="localVariableType">Variable Type</label>
-      <select id="localVariableType" formControlName="localVariableType">
-        <option value="" disabled selected>Select a type</option>
-        <option *ngFor="let type of localVariableTypes" [value]="type.name">
-          {{ type.name }} ({{ type.kind }})
-        </option>
-      </select>
-      <div class="error" *ngIf="localVariableFrom.get('localVariableType')?.invalid && localVariableFrom.get('localVariableType')?.touched">
-        Type is required.
-      </div>
-    </div>
+  <div class="form-group">
+    <label for="instanceType">Instance Type:</label>
+    <select id="instanceType" formControlName="InstanceType" class="form-control" required>
+      <option [ngValue]="null">-- Select Instance Type --</option>
+      <option *ngFor="let type of localVariableTypes" [value]="type.id">{{ type.name }}</option>
+    </select>
+  </div>
 
-    <button type="submit" [disabled]="localVariableFrom.invalid">Create</button>
-  </form>
-</div>
+  <button type="submit" class="btn btn-primary" [disabled]="localVariableFrom.invalid">Create Local Variable</button>
+</form>

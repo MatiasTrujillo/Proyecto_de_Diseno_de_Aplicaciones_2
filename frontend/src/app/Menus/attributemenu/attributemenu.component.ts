@@ -46,27 +46,10 @@ export class AttributemenuComponent {
     this.selectedAttribute = null; 
   }
 
-  goToHome(): void {
-    this.router.navigate(['/navMenu']);
+  goTo(path: string): void {
+    window.location.href = path;
   }
-
-  goToClassMenu() {
-    this.router.navigate(['/ClassMenuComponent']);
-  }
-
-  goToMethodMenu() {
-    this.router.navigate(['/MethodMenuComponent']);
-  }
-
   goToNavMenu() {
     this.router.navigate(['/navMenu']);
   }
-
-  goToAttributeMenu() {
-    this.router.navigate(['/AttributeMenuComponent']);
-  }
-
-  goToNameSpace() {
-  this.router.navigate(['/NameSpaceMenuComponent']);
-}
 }

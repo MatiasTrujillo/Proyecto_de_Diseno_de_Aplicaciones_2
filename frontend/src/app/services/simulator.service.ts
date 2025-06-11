@@ -17,6 +17,7 @@ import { InvokedMethod } from '../models/InvokedMethod';
 import { TransformerForExporter } from '../models/TransformerForExporter';
 import { NameSpace } from '../models/NameSpace';
 import { NameSpaceComponent } from '../models/NameSpaceComponent';
+import { Parameter } from '../models/Parameter';
 
 @Injectable({
   providedIn: 'root'
@@ -287,6 +288,32 @@ private nameSpaceApiUrl = `${this.apiUrl}/namespaces`;
 
   getNameSpaceComponents(): Observable<NameSpaceComponent[]> {
     return this.http.get<NameSpaceComponent[]>(`${this.apiUrl}/namespaceComponents`).pipe(
+      catchError((error) => throwError(() => error))
+    );
+  }
+
+private parameterApiUrl = `${this.apiUrl}/parameters`;
+
+  createParameter(parameter: Parameter): Observable<{ id: string }> {
+    return this.http.post<{ id: string }>(`${this.parameterApiUrl}`, parameter).pipe(
+      catchError((error) => throwError(() => error))
+    );
+  }
+
+  setInvokeMethodToParameter(parameterId: string, invokedMethodId: string): Observable<{ message: string }> {
+    return this.http.post<{ message: string }>(
+      `${this.parameterApiUrl}/${parameterId}/invokedMethods/${invokedMethodId}`,
+      null
+    ).pipe(
+      catchError((error) => throwError(() => error))
+    );
+  }
+
+  createInvokeMethod(invokedMethod: InvokedMethod): Observable<{ id: string }> {
+    return this.http.post<{ id: string }>(
+      `${this.apiUrl}/invokedMethods`,
+      invokedMethod
+    ).pipe(
       catchError((error) => throwError(() => error))
     );
   }

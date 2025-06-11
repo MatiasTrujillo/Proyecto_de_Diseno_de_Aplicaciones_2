@@ -2,5 +2,6 @@ import { Type } from './Type';
 
 export interface LocalVariable {
   name: string;
-  LocalVariableType: Type;
+  ReferenceType: Type;
+  InstanceType: Type;
 }

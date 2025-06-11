@@ -1,0 +1,19 @@
+<div class="invoked-method-form">
+  <h2>Create Invoked Method</h2>
+  <form (ngSubmit)="createInvokedMethod()">
+    <label>
+      Name:
+      <input type="text" [(ngModel)]="name" name="name" required />
+    </label>
+    <label>
+      Base Method:
+      <select [(ngModel)]="selectedMethodId" name="methodId" required>
+        <option [ngValue]="null">-- Select Method --</option>
+        <option *ngFor="let method of methods" [value]="method.id">{{ method.name }}</option>
+      </select>
+    </label>
+    <button type="submit">Create</button>
+  </form>
+  <div *ngIf="message" class="success">{{ message }}</div>
+  <div *ngIf="error" class="error">{{ error }}</div>
+</div>

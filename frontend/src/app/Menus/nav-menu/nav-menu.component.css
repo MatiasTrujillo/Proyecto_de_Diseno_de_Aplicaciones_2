@@ -1,11 +1,17 @@
 /* NAVBAR */
 .navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 1rem 2rem;
-  background-color: #1f2937; /* Gris oscuro azuloso */
+  background-color: #1f2937;
   color: white;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
 }
 
 .logo {
@@ -38,6 +44,7 @@
   gap: 2rem;
   padding: 2rem;
   margin-left: 250px;
+  margin-top: 80px; /* Ajusta según el alto de tu navbar */
 }
 
 /* CARD INDIVIDUAL */
@@ -232,4 +239,25 @@ button {
 
 .sidebar button:active {
   transform: scale(0.98);
+}
+
+/* Responsive: navbar y cards */
+@media (max-width: 900px) {
+  .card-container {
+    margin-left: 0;
+    margin-top: 100px;
+    flex-direction: column;
+    align-items: center;
+    padding: 1rem;
+  }
+  .sidebar {
+    position: static;
+    width: 100%;
+    height: auto;
+    flex-direction: row;
+    gap: 0.5rem;
+    box-shadow: none;
+    padding: 0.5rem;
+    top: unset;
+  }
 }

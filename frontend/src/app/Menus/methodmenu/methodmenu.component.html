@@ -8,10 +8,19 @@
 </nav>
 
 <div class="sidebar">
-  <button (click)="goToClassMenu()">Manage Class</button>
-  <button (click)="goToMethodMenu()">Nuevo Método</button>
-  <button (click)="goToAttributeMenu()">Manage Attribute</button>
-  <button (click)="goToNameSpace()">Manage NameSpace</button>
+  <h2>Manage your entities</h2>
+  <button (click)="goTo('/ClassMenuComponent')">Class</button>
+  <button (click)="goTo('/MethodMenuComponent')">Method</button>
+  <button (click)="goTo('/AttributeMenuComponent')">Attribute</button>
+  <button (click)="goTo('/NameSpaceMenuComponent')">NameSpace</button>
+  <button (click)="goTo('/ParameterMenuComponent')">Parameter</button>
+  <button (click)="goTo('/LocalVariableMenuComponent')">Local Variable</button>
+  <button (click)="goTo('/InterfaceMenuComponent')">Interface</button>
+  <button (click)="goTo('/MethodMenuComponent')">Method Signature</button>
+  <button (click)="goTo('/ExportdataComponent')">Go To Export</button>
+  <div>
+    <button (click)="goTo('/database')">Data Base</button> <!-- Asegúrate de que esta ruta exista -->
+  </div>
 </div>
 
   <div class="card-container">

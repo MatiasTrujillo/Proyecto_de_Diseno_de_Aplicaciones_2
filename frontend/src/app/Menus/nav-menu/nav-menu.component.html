@@ -8,12 +8,21 @@
 </nav>
 
 <div class="sidebar">
-  <button (click)="goToClassMenu()">Manage Class</button>
-  <button (click)="goToMethodMenu()">Manage Method</button>
-  <button (click)="goToAttributeMenu()">Manage Attribute</button>
-  <button (click)="goToNameSpace()">Manage NameSpace</button>
-  <button (click)="goToEsport()">Go To Export</button>n>
+  <h2>Manage your entities</h2>
+  <button (click)="goTo('/ClassMenuComponent')">Class</button>
+  <button (click)="goTo('/MethodMenuComponent')">Method</button>
+  <button (click)="goTo('/AttributeMenuComponent')">Attribute</button>
+  <button (click)="goTo('/NameSpaceMenuComponent')">NameSpace</button>
+  <button (click)="goTo('/ParameterMenuComponent')">Parameter</button>
+  <button (click)="goTo('/LocalVariableMenuComponent')">Local Variable</button>
+  <button (click)="goTo('/InterfaceMenuComponent')">Interface</button>
+  <button (click)="goTo('/MethodMenuComponent')">Method Signature modificar</button>
+  <button (click)="goTo('/ExportdataComponent')">Go To Export</button>
+  <div>
+    <button (click)="goTo('/database')">Data Base</button> <!-- Asegúrate de que esta ruta exista -->
+  </div>
 </div>
+
 
 <div class="card-container">
   <!-- Class -->
@@ -59,6 +68,15 @@
     <button class="primary" (click)="openModal('localVariable')">Open</button>
   </div>
 
+  <!-- Parameter -->
+  <div class="card">
+    <h3>Create Parameter</h3>
+    <p>Define a new class for your simulation logic.</p>
+    <div class="button-group">
+      <button class="primary" (click)="openModal('parameter')">Open</button>
+    </div>
+  </div>
+
   <!-- Interface -->
   <div class="card">
     <h3>Interface</h3>
@@ -72,6 +90,13 @@
     <h3>Method Signature</h3>
     <p>Define a new Method Signature for your simulation logic.</p>
     <button class="primary" (click)="openModal('methodSignature')">Create</button>
+  </div>
+
+  <!-- Invoked Method -->
+    <div class="card">
+    <h3>Invoked Method</h3>
+    <p>Define a new Method Signature for your simulation logic.</p>
+    <button class="primary" (click)="openModal('invokedmethod')">Create</button>
   </div>
 </div>
 
@@ -96,6 +121,10 @@
   <div class="modal-content"><button class="close" (click)="closeModal()">×</button><app-createlocalvariable></app-createlocalvariable></div>
 </div>
 
+<div class="modal" *ngIf="activeModal === 'parameter'">
+  <div class="modal-content"><button class="close" (click)="closeModal()">×</button><app-createparameter></app-createparameter></div>
+</div>
+
 <div class="modal" *ngIf="activeModal === 'interface'">
   <div class="modal-content"><button class="close" (click)="closeModal()">×</button><app-createinterface></app-createinterface></div>
 </div>
@@ -106,4 +135,8 @@
 
 <div class="modal" *ngIf="activeModal === 'methodSignature'">
   <div class="modal-content"><button class="close" (click)="closeModal()">×</button><app-createmethodsignatures></app-createmethodsignatures></div>
+</div>
+
+<div class="modal" *ngIf="activeModal === 'invokedmethod'">
+  <div class="modal-content"><button class="close" (click)="closeModal()">×</button><app-createinvokedmethod></app-createinvokedmethod></div>
 </div>
