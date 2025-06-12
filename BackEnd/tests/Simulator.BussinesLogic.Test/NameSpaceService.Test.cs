@@ -300,4 +300,40 @@ public class NameSpaceService_Test
 
         _nameSpaceService.AddFatherToNameSpace(ns1.Id, ns2.Id);
     }
+
+    [TestMethod]
+    public void AssociateNameSpaceToClass_ShouldAssociate_WhenClassExistsInNamespaceChilds_ByName()
+    {
+        var ns = new NameSpace("TestNS", null);
+        var classEntity = new Class { Id = Guid.NewGuid(), Name = "MyClass" };
+
+        ns.AddChild(classEntity);
+
+        _mockNameSpaceRepository.Setup(r => r.Find(ns.Id)).Returns(ns);
+        _mockClassRepository.Setup(r => r.Find(classEntity.Id)).Returns(classEntity);
+        _mockClassRepository.Setup(r => r.Update(classEntity));
+
+        _nameSpaceService.AssociateNameSpaceToClass(ns.Id, classEntity.Id);
+
+        Assert.AreEqual(ns, classEntity.NameSpace);
+        _mockClassRepository.Verify(r => r.Update(classEntity), Times.Once);
+    }
+
+    [TestMethod]
+    public void AssociateNameSpaceToInterface_ShouldAssociate_WhenInterfaceExistsInNamespaceChilds_ByName()
+    {
+        var ns = new NameSpace("TestNS", null);
+        var iface = new Interface { Id = Guid.NewGuid(), Name = "IMyInterface" };
+
+        ns.AddChild(iface);
+
+        _mockNameSpaceRepository.Setup(r => r.Find(ns.Id)).Returns(ns);
+        _mockInterfaceRepository.Setup(r => r.Find(iface.Id)).Returns(iface);
+        _mockInterfaceRepository.Setup(r => r.Update(iface));
+
+        _nameSpaceService.AssociateNameSpaceToInterface(ns.Id, iface.Id);
+
+        Assert.AreEqual(ns, iface.NameSpace);
+        _mockInterfaceRepository.Verify(r => r.Update(iface), Times.Once);
+    }
 }
