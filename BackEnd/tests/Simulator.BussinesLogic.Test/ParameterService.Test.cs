@@ -5,7 +5,6 @@ using Simulator.Domain;
 using Simulator.Domain.Exception;
 using Simulator.DTO;
 using Simulator.IDataAcces;
-using Type = Simulator.Domain.Type;
 
 namespace Simulator.BussinesLogic.Test;
 
@@ -69,9 +68,18 @@ public class ParameterService_Test
     [TestMethod]
     public void CreateParameter_ShouldAddParameter_WhenParameterIsValid()
     {
-        var classT = new TypeDTO { Name = "TestClass", Kind = "class" };
+        var classT = new TypeDTO
+        {
+            Name = "TestClass",
+            Kind = "class"
+        };
 
-        var parameterDto = new ParameterDTO { Name = "TestParameter", ReferenceType = classT, InstanceType = classT};
+        var parameterDto = new ParameterDTO
+        {
+            Name = "TestParameter",
+            ReferenceType = classT,
+            InstanceType = classT
+        };
 
         _mockParameterRepository
             .Setup(r => r.Add(It.Is<Parameter>(p =>
@@ -227,7 +235,7 @@ public class ParameterService_Test
     [ExpectedException(typeof(InvokedMethodNotFoundException))]
     public void SetInvokeMethodToParameter_ShouldThrowException_WhenInvokedMethodNotFound()
     {
-        var dummyParameter = new Parameter { InvokedMethods = new List<InvokedMethod>() };
+        var dummyParameter = new Parameter { InvokedMethods = [] };
         _mockParameterRepository.Setup(r => r.Find(It.IsAny<Guid>())).Returns(dummyParameter);
         _mockInvokedMethodRepository.Setup(r => r.Find(It.IsAny<Guid>())).Returns((InvokedMethod)null!);
 
@@ -366,7 +374,7 @@ public class ParameterService_Test
         var instance = new Class
         {
             Name = "C1",
-            Parents = new List<Type> { reference }
+            Parents = [reference]
         };
 
         var result = (bool)typeof(ParameterService)
@@ -384,12 +392,12 @@ public class ParameterService_Test
         var parentClass = new Class
         {
             Name = "Parent",
-            Parents = new List<Type> { reference }
+            Parents = [reference]
         };
         var instance = new Class
         {
             Name = "C1",
-            Parents = new List<Type> { parentClass }
+            Parents = [parentClass]
         };
 
         var result = (bool)typeof(ParameterService)
@@ -408,12 +416,12 @@ public class ParameterService_Test
         var parentClass = new Class
         {
             Name = "Parent",
-            Parents = new List<Type> { otherInterface }
+            Parents = [otherInterface]
         };
         var instance = new Class
         {
             Name = "C1",
-            Parents = new List<Type> { parentClass }
+            Parents = [parentClass]
         };
 
         var result = (bool)typeof(ParameterService)

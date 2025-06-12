@@ -1,5 +1,4 @@
 using Simulator.Domain;
-using Type = Simulator.Domain.Type;
 
 namespace Simulator.DTO;
 

@@ -183,7 +183,6 @@ public class ExporterServiceTests
         var dllCopy = Path.Combine(exportersDir, "mscorlib.dll");
         File.Copy(systemDll, dllCopy);
 
-        var originalBase = AppDomain.CurrentDomain.BaseDirectory;
         AppDomain.CurrentDomain.SetData("APPBASE", exportersDir);
 
         try
