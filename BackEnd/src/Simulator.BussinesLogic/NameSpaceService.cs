@@ -54,13 +54,18 @@ public class NameSpaceService(
 
         var existsInChilds = nameSpace.Childs.Any(child => child.Name == classEntity.Name);
 
+        ValidateChilds(existsInChilds, classEntity);
+
+        classEntity.NameSpace = nameSpace;
+        classRepository.Update(classEntity);
+    }
+
+    private static void ValidateChilds(bool existsInChilds, Class classEntity)
+    {
         if (!existsInChilds)
         {
             throw new NameSpaceException($"The namespace does not contain a child with the name '{classEntity.Name}'");
         }
-
-        classEntity.NameSpace = nameSpace;
-        classRepository.Update(classEntity);
     }
 
     public void AssociateNameSpaceToInterface(Guid nameSpaceId, Guid interfaceId)
@@ -74,13 +79,18 @@ public class NameSpaceService(
 
         var existsInChilds = nameSpace.Childs.Any(child => child.Name == interfaceEntity.Name);
 
+        ValidateChildsInterface(existsInChilds, interfaceEntity);
+
+        interfaceEntity.NameSpace = nameSpace;
+        interfaceRepository.Update(interfaceEntity);
+    }
+
+    private static void ValidateChildsInterface(bool existsInChilds, Interface interfaceEntity)
+    {
         if (!existsInChilds)
         {
             throw new NameSpaceException($"The namespace does not contain a child with the name '{interfaceEntity.Name}'");
         }
-
-        interfaceEntity.NameSpace = nameSpace;
-        interfaceRepository.Update(interfaceEntity);
     }
 
     private static void ValidateInterface(Interface interfaceEntity)
