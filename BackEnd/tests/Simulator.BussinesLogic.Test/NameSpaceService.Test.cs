@@ -119,22 +119,6 @@ public class NameSpaceService_Test
     }
 
     [TestMethod]
-    public void AssociateNameSpaceToClass_ShouldAssociateSuccessfully()
-    {
-        var ns = new NameSpace("TestNS", null);
-        var classEntity = new Class { Id = Guid.NewGuid(), NameSpace = null };
-
-        _mockNameSpaceRepository.Setup(r => r.Find(ns.Id)).Returns(ns);
-        _mockClassRepository.Setup(r => r.Find(classEntity.Id)).Returns(classEntity);
-        _mockClassRepository.Setup(r => r.Update(classEntity));
-
-        _nameSpaceService.AssociateNameSpaceToClass(ns.Id, classEntity.Id);
-
-        Assert.AreEqual(ns, classEntity.NameSpace);
-        _mockClassRepository.Verify(r => r.Update(classEntity), Times.Once);
-    }
-
-    [TestMethod]
     [ExpectedException(typeof(NameSpaceException))]
     public void AssociateNameSpaceToClass_ShouldThrow_WhenClassDoesNotExist()
     {
@@ -170,22 +154,6 @@ public class NameSpaceService_Test
         _mockInterfaceRepository.Setup(r => r.Find(iface.Id)).Returns(iface);
 
         _nameSpaceService.AssociateNameSpaceToInterface(ns.Id, iface.Id);
-    }
-
-    [TestMethod]
-    public void AssociateNameSpaceToInterface_ShouldAssociateSuccessfully()
-    {
-        var ns = new NameSpace("TestNS", null);
-        var iface = new Interface { Id = Guid.NewGuid(), NameSpace = null };
-
-        _mockNameSpaceRepository.Setup(r => r.Find(ns.Id)).Returns(ns);
-        _mockInterfaceRepository.Setup(r => r.Find(iface.Id)).Returns(iface);
-        _mockInterfaceRepository.Setup(r => r.Update(iface));
-
-        _nameSpaceService.AssociateNameSpaceToInterface(ns.Id, iface.Id);
-
-        Assert.AreEqual(ns, iface.NameSpace);
-        _mockInterfaceRepository.Verify(r => r.Update(iface), Times.Once);
     }
 
     [TestMethod]

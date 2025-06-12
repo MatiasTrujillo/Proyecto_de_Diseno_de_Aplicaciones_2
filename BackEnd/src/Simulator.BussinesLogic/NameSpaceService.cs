@@ -47,9 +47,16 @@ public class NameSpaceService(
         var nameSpace = nameSpaceRepository.Find(nameSpaceId);
         var classEntity = classRepository.Find(classId);
 
-        if(classEntity == null)
+        if (classEntity == null)
         {
             throw new NameSpaceException("Class does not exist");
+        }
+
+        var existsInChilds = nameSpace.Childs.Any(child => child.Name == classEntity.Name);
+
+        if (!existsInChilds)
+        {
+            throw new NameSpaceException($"The namespace does not contain a child with the name '{classEntity.Name}'");
         }
 
         classEntity.NameSpace = nameSpace;
@@ -64,6 +71,13 @@ public class NameSpaceService(
         var interfaceEntity = interfaceRepository.Find(interfaceId);
 
         ValidateInterface(interfaceEntity);
+
+        var existsInChilds = nameSpace.Childs.Any(child => child.Name == interfaceEntity.Name);
+
+        if (!existsInChilds)
+        {
+            throw new NameSpaceException($"The namespace does not contain a child with the name '{interfaceEntity.Name}'");
+        }
 
         interfaceEntity.NameSpace = nameSpace;
         interfaceRepository.Update(interfaceEntity);
