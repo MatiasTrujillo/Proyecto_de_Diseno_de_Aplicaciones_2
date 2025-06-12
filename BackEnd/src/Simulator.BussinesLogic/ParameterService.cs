@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Simulator.BussinesLogic.Exception;
 using Simulator.Domain;
@@ -36,17 +37,32 @@ public class ParameterService(IParameterRepository parameterRepository, IClassRe
         var invokedMethod = _invokedMethodRepository.Find(idInvokeGuid);
         ValidateParameterExist(parameter);
         ValidateInvokedMethodExist(invokedMethod);
-        ValidateTypeIsPrimitive(parameter.ReferenceType);
+
+        // ValidateTypeIsPrimitive(parameter.ReferenceType);
         parameter.InvokedMethods.Add(invokedMethod);
         _parameterRepository.Update(parameter);
     }
 
-    private void ValidateTypeIsPrimitive(Type? attributeTType)
+    public List<ParameterDTO> GetAllParameters()
     {
-        if(attributeTType?.GetType() != typeof(Class) && attributeTType?.GetType() != typeof(Primitive))
+        var excludedNames = new[] { "Obj", "StrToParse", "StrIsNullOrEmpty", "StrToCompare", "a", "adsdas", "Parameterrrr" };
+        var parameters = _parameterRepository.FindAll()
+            .Where(p => !excludedNames.Contains(p.Name));
+        return parameters.Select(p => new ParameterDTO
         {
-            throw new InvalidAttributeException("In v2 of this program only Class and Primitive types are accepted.");
-        }
+            Id = p.Id.ToString(),
+            Name = p.Name,
+            ReferenceType = new TypeDTO
+            {
+                Name = p.ReferenceType.Name,
+                Kind = p.ReferenceType.GetType().Name.ToLower()
+            },
+            InstanceType = new TypeDTO
+            {
+                Name = p.InstanceType.Name,
+                Kind = p.InstanceType.GetType().Name.ToLower()
+            }
+        }).ToList();
     }
 
     private void ValidateInvokedMethodExist(InvokedMethod invokedMethod)

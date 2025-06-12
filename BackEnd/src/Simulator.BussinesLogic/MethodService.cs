@@ -904,6 +904,17 @@ public class MethodService(
         return methodSignatureT.Id;
     }
 
+    public List<MethodSignatureDTO> GetMethodSignatures()
+    {
+        return _methodSignatureRepository.FindAll()
+            .Select(ms => new MethodSignatureDTO
+            {
+                Id = ms.Id.ToString(),
+                Name = ms.Name,
+                ReturnType = ms.ReturnType?.ToDTO(),
+            }).ToList();
+    }
+
     private static void ValidateMethodSignatureNameIsNotNull(MethodSignatureDTO methodSignatureDto)
     {
         if(string.IsNullOrEmpty(methodSignatureDto.Name))

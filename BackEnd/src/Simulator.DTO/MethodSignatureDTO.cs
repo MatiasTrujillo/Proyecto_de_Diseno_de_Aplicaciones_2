@@ -4,6 +4,7 @@ namespace Simulator.DTO;
 
 public class MethodSignatureDTO
 {
+    public string Id { get; set; } = string.Empty;
     public string Name { get; set; } = string.Empty;
     public TypeDTO? ReturnType { get; set; } = null!;
 

@@ -1,4 +1,5 @@
 using System.Net;
+using System.Reflection;
 using Moq;
 using Simulator.Exporters.Abstractions;
 using Simulator.IBussinesLogic;
@@ -120,6 +121,82 @@ public class ExporterServiceTests
         if(Directory.Exists(_exportersPath) && !Directory.EnumerateFileSystemEntries(_exportersPath).Any())
         {
             Directory.Delete(_exportersPath);
+        }
+    }
+
+    [TestMethod]
+    public void TransformerForExporter_SetReferenceId_ShouldUpdateValue()
+    {
+        var transformer = new TransformerForExporter();
+        var newId = Guid.NewGuid();
+
+        transformer.ReferenceId = newId;
+
+        Assert.AreEqual(newId, transformer.ReferenceId);
+    }
+
+    [TestMethod]
+    public void TransformerForExporter_SetObjectToCreateId_ShouldUpdateValue()
+    {
+        var transformer = new TransformerForExporter();
+        var newId = Guid.NewGuid();
+
+        transformer.ObjectToCreateId = newId;
+
+        Assert.AreEqual(newId, transformer.ObjectToCreateId);
+    }
+
+    [TestMethod]
+    public void TransformerForExporter_SetMethodId_ShouldUpdateValue()
+    {
+        var transformer = new TransformerForExporter();
+        var newId = Guid.NewGuid();
+
+        transformer.MethodId = newId;
+
+        Assert.AreEqual(newId, transformer.MethodId);
+    }
+
+    [TestMethod]
+    public void TransformerForExporter_SetParameterTypes_ShouldUpdateValue()
+    {
+        var transformer = new TransformerForExporter();
+        var types = new List<TypeDTO>
+        {
+            new TypeDTO(),
+            new TypeDTO()
+        };
+
+        transformer.ParameterTypes = types;
+
+        Assert.AreEqual(types, transformer.ParameterTypes);
+    }
+
+    [TestMethod]
+    public void LoadAssemblies_ShouldReturnAssemblies_WhenDllsAreValid()
+    {
+        var tempRoot = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString(), "BackEnd");
+        var exportersDir = Path.Combine(tempRoot, "src", "Simulator.WebApi", "Exporters");
+        Directory.CreateDirectory(exportersDir);
+
+        var systemDll = typeof(object).Assembly.Location;
+        var dllCopy = Path.Combine(exportersDir, "mscorlib.dll");
+        File.Copy(systemDll, dllCopy);
+
+        var originalBase = AppDomain.CurrentDomain.BaseDirectory;
+        AppDomain.CurrentDomain.SetData("APPBASE", exportersDir);
+
+        try
+        {
+            var result = (IEnumerable<Assembly>)typeof(ExporterService)
+                .GetMethod("LoadAssemblies", BindingFlags.NonPublic | BindingFlags.Static)!
+                .Invoke(null, null)!;
+
+            Assert.IsTrue(result.Any());
+        }
+        finally
+        {
+            Directory.Delete(tempRoot, true);
         }
     }
 }

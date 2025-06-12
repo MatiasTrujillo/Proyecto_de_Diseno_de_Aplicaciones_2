@@ -60,4 +60,34 @@ public class LocalVariableTest
 
         _methodServiceMock.Verify(service => service.SetInvokeMethodToLocalVariable(localVariableId, invokedMethodId), Times.Once);
     }
+
+    [TestMethod]
+    public void GetAllLocalVariables_ShouldReturnOkWithAllLocalVariables()
+    {
+        // Arrange
+        var expectedLocalVariables = new List<LocalVariableDTO>
+        {
+            new LocalVariableDTO { Id = "1", Name = "var1" },
+            new LocalVariableDTO { Id = "2", Name = "var2" }
+        };
+
+        var mockService = new Mock<ILocalVariableService>();
+        mockService.Setup(s => s.GetAllLocalVariables()).Returns(expectedLocalVariables);
+
+        var controller = new LocalVariableController(mockService.Object);
+
+        // Act
+        var result = controller.GetAllLocalVariables() as OkObjectResult;
+
+        // Assert
+        Assert.IsNotNull(result);
+        Assert.AreEqual(200, result.StatusCode);
+        var value = result.Value as List<LocalVariableDTO>;
+        Assert.IsNotNull(value);
+        Assert.AreEqual(2, value.Count);
+        Assert.AreEqual("var1", value[0].Name);
+        Assert.AreEqual("var2", value[1].Name);
+
+        mockService.Verify(s => s.GetAllLocalVariables(), Times.Once);
+    }
 }

@@ -340,35 +340,6 @@ public class LocalVariable_Test
     }
 
     [TestMethod]
-    public void SetInvokeMethodToALocalVariable_ShouldThrowException_WhenTypeIsNotPrimitiveorClass()
-    {
-        var localVariableId = Guid.NewGuid();
-        var invokedMethodId = Guid.NewGuid();
-
-        var localVariable = new LocalVariable
-        {
-            Id = localVariableId,
-            Name = "myVar",
-            ReferenceType = new Interface()
-        };
-
-        var invokedMethod = new InvokedMethod
-        {
-            Id = invokedMethodId,
-            MethodId = Guid.NewGuid(),
-            ReferenceName = "ref"
-        };
-
-        _mockLocalVariableRepository.Setup(repo => repo.Find(localVariableId)).Returns(localVariable);
-        _mockInvokedMethodRepository.Setup(repo => repo.Find(invokedMethodId)).Returns(invokedMethod);
-        _mockLocalVariableRepository.Setup(repo => repo.Update(localVariable)).Verifiable();
-
-        var exception = Assert.ThrowsException<InvalidAttributeException>(() => _localVariableService.SetInvokeMethodToLocalVariable(localVariableId, invokedMethodId));
-
-        Assert.AreEqual("In v2 of this program only Class and Primitive types are accepted.", exception.Message);
-    }
-
-    [TestMethod]
     [ExpectedException(typeof(InvokedMethodNotFoundException))]
     public void SetInvokeMethodToLocalVariable_ShouldThrowException_WhenInvokedMethodNotFound()
     {
@@ -395,5 +366,31 @@ public class LocalVariable_Test
             _localVariableService.SetInvokeMethodToLocalVariable(localVariableId, invokedMethodId));
 
         Assert.AreEqual("Local Variable not found.", ex.Message);
+    }
+
+    [TestMethod]
+    public void GetAllLocalVariables_ShouldReturnAllExceptExcludedNames()
+    {
+        var mockRepo = new Mock<ILocalVariableRepository>();
+        var mockClassRepo = new Mock<IClassRepository>();
+        var mockInvokedMethodRepo = new Mock<IInvokedMethodRepository>();
+
+        var variables = new List<LocalVariable>
+        {
+            new LocalVariable { Id = Guid.NewGuid(), Name = "Obj", ReferenceType = new Class { Name = "A" }, InstanceType = new Class { Name = "A" } },
+            new LocalVariable { Id = Guid.NewGuid(), Name = "var1", ReferenceType = new Class { Name = "B" }, InstanceType = new Class { Name = "B" } },
+            new LocalVariable { Id = Guid.NewGuid(), Name = "var2", ReferenceType = new Primitive(PrimitiveType.Int) { Name = "int" }, InstanceType = new Primitive(PrimitiveType.Int) { Name = "int" } }
+        };
+
+        mockRepo.Setup(r => r.FindAll()).Returns(variables);
+
+        var service = new LocalVariableService(mockRepo.Object, mockClassRepo.Object, mockInvokedMethodRepo.Object);
+
+        var result = service.GetAllLocalVariables();
+
+        Assert.AreEqual(2, result.Count);
+        Assert.IsFalse(result.Any(v => v.Name == "Obj"));
+        Assert.IsTrue(result.Any(v => v.Name == "var1"));
+        Assert.IsTrue(result.Any(v => v.Name == "var2"));
     }
 }

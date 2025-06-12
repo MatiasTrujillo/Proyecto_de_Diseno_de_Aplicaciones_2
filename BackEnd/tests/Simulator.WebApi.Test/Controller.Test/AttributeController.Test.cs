@@ -103,4 +103,34 @@ public class AttributeControllerTest
 
         AttributeServiceMock.Verify(service => service.SetInvokeMethodToAttribute(attributeId, methodInvokeId), Times.Once);
     }
+
+    [TestMethod]
+    public void GetAttributes_ShouldReturnOkWithAllAttributes()
+    {
+        // Arrange
+        var expectedAttributes = new List<AttributeDto>
+        {
+            new AttributeDto { Name = "Atributo1" },
+            new AttributeDto { Name = "Atributo2" }
+        };
+
+        var mockService = new Mock<IAttributeService>();
+        mockService.Setup(s => s.GetAttributes()).Returns(expectedAttributes);
+
+        var controller = new AttributeController(mockService.Object);
+
+        // Act
+        var result = controller.GetAttributes() as OkObjectResult;
+
+        // Assert
+        Assert.IsNotNull(result);
+        Assert.AreEqual(200, result.StatusCode);
+        var value = result.Value as List<AttributeDto>;
+        Assert.IsNotNull(value);
+        Assert.AreEqual(2, value.Count);
+        Assert.AreEqual("Atributo1", value[0].Name);
+        Assert.AreEqual("Atributo2", value[1].Name);
+
+        mockService.Verify(s => s.GetAttributes(), Times.Once);
+    }
 }

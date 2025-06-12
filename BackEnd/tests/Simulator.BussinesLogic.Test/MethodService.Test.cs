@@ -2030,4 +2030,37 @@ public class MethodServiceTest
             Assert.AreEqual(invokedMethods[i].MethodId, result[i].MethodId);
         }
     }
+
+    [TestMethod]
+    public void GetMethodSignatures_ShouldReturnListOfMethodSignatureDTOs_WhenSignaturesExist()
+    {
+        var methodSignatures = new List<MethodSignature>
+        {
+            new MethodSignature
+            {
+                Id = Guid.NewGuid(),
+                Name = "Signature1",
+                ReturnType = new Primitive(PrimitiveType.Int)
+            },
+            new MethodSignature
+            {
+                Id = Guid.NewGuid(),
+                Name = "Signature2",
+                ReturnType = new Primitive(PrimitiveType.String)
+            }
+        };
+
+        _mockMethodSignatureRepository.Setup(r => r.FindAll()).Returns(methodSignatures);
+
+        var result = _methodService.GetMethodSignatures();
+
+        Assert.AreEqual(methodSignatures.Count, result.Count);
+        for(var i = 0; i < methodSignatures.Count; i++)
+        {
+            Assert.AreEqual(methodSignatures[i].Id.ToString(), result[i].Id);
+            Assert.AreEqual(methodSignatures[i].Name, result[i].Name);
+            Assert.IsNotNull(result[i].ReturnType);
+            Assert.AreEqual(methodSignatures[i].ReturnType.Name, result[i].ReturnType.Name);
+        }
+    }
 }

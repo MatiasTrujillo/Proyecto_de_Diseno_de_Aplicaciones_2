@@ -61,4 +61,31 @@ public class ParameterController_Test
 
         _parameterServiceMock.Verify(service => service.SetInvokeMethodToParameter(parameterId, invokedMethodId), Times.Once);
     }
+
+    [TestMethod]
+    public void GetAllParameters_ShouldReturnOkWithAllParameters()
+    {
+        var expectedParameters = new List<ParameterDTO>
+        {
+            new ParameterDTO { Name = "param1" },
+            new ParameterDTO { Name = "param2" }
+        };
+
+        var mockService = new Mock<IParameterService>();
+        mockService.Setup(s => s.GetAllParameters()).Returns(expectedParameters);
+
+        var controller = new ParameterController(mockService.Object);
+
+        var result = controller.GetAllParameters() as OkObjectResult;
+
+        Assert.IsNotNull(result);
+        Assert.AreEqual(200, result.StatusCode);
+        var value = result.Value as List<ParameterDTO>;
+        Assert.IsNotNull(value);
+        Assert.AreEqual(2, value.Count);
+        Assert.AreEqual("param1", value[0].Name);
+        Assert.AreEqual("param2", value[1].Name);
+
+        mockService.Verify(s => s.GetAllParameters(), Times.Once);
+    }
 }

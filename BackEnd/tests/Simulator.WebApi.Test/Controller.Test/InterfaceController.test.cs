@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Moq;
+using Simulator.Domain;
 using Simulator.DTO;
 using Simulator.IBussinesLogic;
 using Simulator.WebApi.Controllers;
@@ -67,5 +68,30 @@ public class InterfaceControllertest
                     It.IsAny<Guid>(),
                     It.Is<UpdateInterfaceDTO>(d => d.IdMethodSignature == signatureId)),
             Times.Once);
+    }
+
+    [TestMethod]
+    public void GetInterfaces_ShouldReturnOkWithAllInterfaces()
+    {
+        // Arrange
+        var expectedInterfaces = new List<Interface>
+        {
+            new Interface { Name = "Interfaz1" },
+            new Interface { Name = "Interfaz2" }
+        };
+
+        var mockService = new Mock<IInterfaceService>();
+        mockService.Setup(s => s.GetInterfaces()).Returns(expectedInterfaces);
+
+        var controller = new InterfaceController(mockService.Object);
+
+        // Act
+        var result = controller.GetInterfaces() as OkObjectResult;
+
+        // Assert
+        Assert.IsNotNull(result);
+        Assert.AreEqual(200, result.StatusCode);
+
+        mockService.Verify(s => s.GetInterfaces(), Times.Once);
     }
 }

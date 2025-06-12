@@ -6,4 +6,5 @@ public interface ILocalVariableService
 {
     Guid CreateLocalVariable(LocalVariableDTO localVariable);
     void SetInvokeMethodToLocalVariable(Guid id, Guid idInvokeGuid);
+    List<LocalVariableDTO> GetAllLocalVariables();
 }
