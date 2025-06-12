@@ -147,6 +147,32 @@ public class NameSpaceService_Test
     }
 
     [TestMethod]
+    [ExpectedException(typeof(NameSpaceException))]
+    public void AssociateNameSpaceToClass_ShouldThrowException_WhenClassNotInNamespaceChilds()
+    {
+        var ns = new NameSpace("TestNS", null);
+        var classEntity = new Class { Id = Guid.NewGuid(), Name = "MyClass", NameSpace = null };
+
+        _mockNameSpaceRepository.Setup(r => r.Find(ns.Id)).Returns(ns);
+        _mockClassRepository.Setup(r => r.Find(classEntity.Id)).Returns(classEntity);
+
+        _nameSpaceService.AssociateNameSpaceToClass(ns.Id, classEntity.Id);
+    }
+
+    [TestMethod]
+    [ExpectedException(typeof(NameSpaceException))]
+    public void AssociateNameSpaceToInterface_ShouldThrowException_WhenInterfaceNotInNamespaceChilds()
+    {
+        var ns = new NameSpace("TestNS", null);
+        var iface = new Interface { Id = Guid.NewGuid(), Name = "IMyInterface", NameSpace = null };
+
+        _mockNameSpaceRepository.Setup(r => r.Find(ns.Id)).Returns(ns);
+        _mockInterfaceRepository.Setup(r => r.Find(iface.Id)).Returns(iface);
+
+        _nameSpaceService.AssociateNameSpaceToInterface(ns.Id, iface.Id);
+    }
+
+    [TestMethod]
     public void AssociateNameSpaceToInterface_ShouldAssociateSuccessfully()
     {
         var ns = new NameSpace("TestNS", null);
