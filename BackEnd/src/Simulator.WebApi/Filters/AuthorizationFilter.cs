@@ -22,9 +22,21 @@ public class AuthorizationFilter : Attribute, IAuthorizationFilter
     public void OnAuthorization(AuthorizationFilterContext context)
     {
         var hasHeader = context.HttpContext.Request.Headers.TryGetValue("Authorization", out var tokenString);
-        if(!hasHeader || !Guid.TryParse(tokenString, out var token) || !ValidSessions.Contains(token))
+        if (!hasHeader)
         {
-            context.Result = new UnauthorizedObjectResult("Invalid or missing session token.");
+            context.Result = new UnauthorizedObjectResult("Missing session token.");
+            return;
+        }
+
+        var token = tokenString.ToString();
+        if (token.StartsWith("Bearer ", StringComparison.OrdinalIgnoreCase))
+        {
+            token = token.Substring("Bearer ".Length);
+        }
+
+        if (!Guid.TryParse(token, out var tokenGuid) || !ValidSessions.Contains(tokenGuid))
+        {
+            context.Result = new UnauthorizedObjectResult("API Key inválida o ausente");
         }
     }
 }
