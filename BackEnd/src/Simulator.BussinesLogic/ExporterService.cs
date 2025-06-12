@@ -71,11 +71,6 @@ public class ExporterService() : IExportService
 
         var path1 = Path.Combine(projectRoot.FullName, "src", "Simulator.WebApi", "Exporters");
 
-        if(!Directory.Exists(path1))
-        {
-            yield break;
-        }
-
         var dllFiles = Directory.GetFiles(path1, "*.dll", SearchOption.TopDirectoryOnly);
 
         foreach(var dllPath in dllFiles)
@@ -85,7 +80,6 @@ public class ExporterService() : IExportService
             try
             {
                 assembly = Assembly.LoadFrom(dllPath);
-                Console.WriteLine($"Assembly cargado: {dllPath}");
             }
             catch(System.Exception ex)
             {

@@ -5,12 +5,13 @@ import { SimulatorService } from '../../services/simulator.service';
 import { CreateclassComponent } from '../../Classes/createclass/createclass.component';
 import { CreateMethodComponent } from '../../Methods/createmethod/createmethod.component';
 import { CreateattributeComponent } from '../../Attributes/createattribute/createattribute.component';
-import { CreatelocalvariableComponent } from '../../createlocalvariable/createlocalvariable.component';
+import { CreatelocalvariableComponent } from '../../LocalVariale/createlocalvariable/createlocalvariable.component';
 import { CreateinterfaceComponent } from '../../Interfaces/createinterface/createinterface.component';
 import { DeleteinterfaceComponent } from '../../Interfaces/deleteinterface/deleteinterface.component';
 import { CreatenamespaceComponent } from '../../NameSpace/createnamespace/createnamespace.component';
 import { CreateMethodSignaturesComponent } from '../../MethodSignatures/createSignature/createmethodsignatures.component';
-
+import { CreateparameterComponent } from '../../Parameter/createparameter/createparameter.component';
+import { CreateinvokedmethodComponent } from '../../createinvokedmethod/createinvokedmethod.component';
 
 @Component({
   selector: 'app-nav-menu',
@@ -23,7 +24,9 @@ import { CreateMethodSignaturesComponent } from '../../MethodSignatures/createSi
     CreateinterfaceComponent,
     DeleteinterfaceComponent,
     CreatenamespaceComponent,
-    CreateMethodSignaturesComponent
+    CreateMethodSignaturesComponent,
+    CreateparameterComponent,
+    CreateinvokedmethodComponent
 ],
   templateUrl: './nav-menu.component.html',
   styleUrls: ['./nav-menu.component.css']
@@ -62,24 +65,7 @@ openModal(modalName: string): void {
 closeModal(): void {
   this.activeModal = null;
 }
-
-goToClassMenu() {
-  this.router.navigate(['/ClassMenuComponent']);
-}
-
-goToMethodMenu() {
-  this.router.navigate(['/MethodMenuComponent']);
-}
-
-goToAttributeMenu() {
-  this.router.navigate(['/AttributeMenuComponent']);
-}
-
-goToNameSpace() {
-  this.router.navigate(['/NameSpaceMenuComponent']);
-}
-
-goToEsport() {
-  this.router.navigate(['/ExportdataComponent']);
-}
+  goTo(path: string): void {
+    window.location.href = path;
+  }
 }

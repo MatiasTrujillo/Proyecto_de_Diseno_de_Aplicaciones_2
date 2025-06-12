@@ -38,23 +38,11 @@ export class NameSpaceMenuComponent {
     this.activeModal = null;
   }
 
-  goToClassMenu() {
-    this.router.navigate(['/ClassMenuComponent']);
+  goTo(path: string): void {
+    window.location.href = path;
   }
-
-  goToMethodMenu() {
-    this.router.navigate(['/MethodMenuComponent']);
-  }
-
   goToNavMenu() {
     this.router.navigate(['/navMenu']);
   }
 
-  goToAttributeMenu() {
-    this.router.navigate(['/AttributeMenuComponent']);
-  }
-
-  goToNameSpace() {
-    this.router.navigate(['/NameSpaceMenuComponent']);
-  }
 }

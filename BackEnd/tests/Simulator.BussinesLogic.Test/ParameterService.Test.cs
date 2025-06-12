@@ -1,3 +1,4 @@
+using System.Reflection;
 using Moq;
 using Simulator.BussinesLogic.Exception;
 using Simulator.Domain;
@@ -41,7 +42,7 @@ public class ParameterService_Test
         _parameterDto = new ParameterDTO
         {
             Name = "TestParameter",
-            ParameterType = new TypeDTO
+            ReferenceType = new TypeDTO
             {
                 Name = "TestClass",
                 Kind = "class"
@@ -67,9 +68,18 @@ public class ParameterService_Test
     [TestMethod]
     public void CreateParameter_ShouldAddParameter_WhenParameterIsValid()
     {
-        var classT = new TypeDTO { Name = "TestClass", Kind = "class" };
+        var classT = new TypeDTO
+        {
+            Name = "TestClass",
+            Kind = "class"
+        };
 
-        var parameterDto = new ParameterDTO { Name = "TestParameter", ParameterType = classT };
+        var parameterDto = new ParameterDTO
+        {
+            Name = "TestParameter",
+            ReferenceType = classT,
+            InstanceType = classT
+        };
 
         _mockParameterRepository
             .Setup(r => r.Add(It.Is<Parameter>(p =>
@@ -98,7 +108,7 @@ public class ParameterService_Test
     {
         var classT = new TypeDTO { Name = "TestClass", Kind = "class" };
 
-        var parameterDto = new ParameterDTO { Name = string.Empty, ParameterType = classT };
+        var parameterDto = new ParameterDTO { Name = string.Empty, ReferenceType = classT, InstanceType = classT };
 
         _mockClassRepository
             .Setup(repo => repo.FindAllTypes())
@@ -116,7 +126,7 @@ public class ParameterService_Test
     [DataRow("Object")]
     public void CreateParameter_ShouldThrowException_WhenNameIsReservedKeyword(string reservedName)
     {
-        var dto = new ParameterDTO { Name = reservedName, ParameterType = new TypeDTO { Name = "SomeType", Kind = "class" }, };
+        var dto = new ParameterDTO { Name = reservedName, ReferenceType = new TypeDTO { Name = "SomeType", Kind = "class" }, InstanceType = new TypeDTO { Name = "SomeType", Kind = "class" } };
 
         _mockClassRepository
             .Setup(repo => repo.FindAllTypes())
@@ -215,31 +225,209 @@ public class ParameterService_Test
     }
 
     [TestMethod]
-    public void SetInvokeMethodToAParameter_ShouldThrowException_WhenTypeIsNotPrimitiveorClass()
+    [ExpectedException(typeof(ParameterNotFoundException))]
+    public void CreateParameter_ShouldThrowException_WhenParameterIsNull()
     {
-        var id = Guid.NewGuid();
-        var invokedMethodId = Guid.NewGuid();
+        _parameterService.CreateParameter(null!);
+    }
 
-        var parameter = new Parameter
+    [TestMethod]
+    [ExpectedException(typeof(InvokedMethodNotFoundException))]
+    public void SetInvokeMethodToParameter_ShouldThrowException_WhenInvokedMethodNotFound()
+    {
+        var dummyParameter = new Parameter { InvokedMethods = [] };
+        _mockParameterRepository.Setup(r => r.Find(It.IsAny<Guid>())).Returns(dummyParameter);
+        _mockInvokedMethodRepository.Setup(r => r.Find(It.IsAny<Guid>())).Returns((InvokedMethod)null!);
+
+        _parameterService.SetInvokeMethodToParameter(Guid.NewGuid(), Guid.NewGuid());
+    }
+
+    [TestMethod]
+    public void GetAllParameters_ReturnsFilteredAndMappedParameters()
+    {
+        var allowedParameter = new Parameter
         {
-            Id = id,
-            Name = "myVar",
-            ReferenceType = new Interface()
+            Id = Guid.NewGuid(),
+            Name = "ValidParam",
+            ReferenceType = new Class { Name = "ClassA" },
+            InstanceType = new Class { Name = "ClassB" }
         };
 
-        var invokedMethod = new InvokedMethod
+        var excludedParameter = new Parameter
         {
-            Id = invokedMethodId,
-            MethodId = Guid.NewGuid(),
-            ReferenceName = "ref"
+            Id = Guid.NewGuid(),
+            Name = "Obj",
+            ReferenceType = new Primitive { Name = "int", PrimitiveType = PrimitiveType.Int },
+            InstanceType = new Primitive { Name = "int", PrimitiveType = PrimitiveType.Int }
         };
 
-        _mockParameterRepository.Setup(repo => repo.Find(id)).Returns(parameter);
-        _mockInvokedMethodRepository.Setup(repo => repo.Find(invokedMethodId)).Returns(invokedMethod);
-        _mockParameterRepository.Setup(repo => repo.Update(parameter)).Verifiable();
+        _mockParameterRepository.Setup(repo => repo.FindAll())
+            .Returns([allowedParameter, excludedParameter]);
 
-        var exception = Assert.ThrowsException<InvalidAttributeException>(() => _parameterService.SetInvokeMethodToParameter(id, invokedMethodId));
+        var result = _parameterService.GetAllParameters();
 
-        Assert.AreEqual("In v2 of this program only Class and Primitive types are accepted.", exception.Message);
+        Assert.AreEqual(1, result.Count);
+        var param = result.First();
+        Assert.AreEqual(allowedParameter.Id.ToString(), param.Id);
+        Assert.AreEqual("ValidParam", param.Name);
+        Assert.AreEqual("ClassA", param.ReferenceType.Name);
+        Assert.AreEqual("class", param.ReferenceType.Kind);
+        Assert.AreEqual("ClassB", param.InstanceType.Name);
+        Assert.AreEqual("class", param.InstanceType.Kind);
+    }
+
+    [TestMethod]
+    [ExpectedException(typeof(InvalidAttributeException))]
+    public void CreateParameter_ShouldThrowException_WhenClassIsNotSubclassOfReference()
+    {
+        var parent = new Class { Name = "Parent" };
+        var child = new Class { Name = "Child", Parents = [] };
+
+        var parameter = new ParameterDTO
+        {
+            Name = "Param",
+            ReferenceType = new TypeDTO { Name = "Parent", Kind = "class" },
+            InstanceType = new TypeDTO { Name = "Child", Kind = "class" }
+        };
+
+        _mockClassRepository.Setup(r => r.FindAllTypes()).Returns([parent, child]);
+
+        _parameterService.CreateParameter(parameter);
+    }
+
+    [TestMethod]
+    [ExpectedException(typeof(InvalidAttributeException))]
+    public void CreateParameter_ShouldThrowException_WhenInterfaceReferenceIsNotImplementedByInstance()
+    {
+        var iface = new Interface { Name = "IMyInterface" };
+        var cls = new Class { Name = "MyClass", Parents = [] };
+
+        var parameter = new ParameterDTO
+        {
+            Name = "Param",
+            ReferenceType = new TypeDTO { Name = "IMyInterface", Kind = "interface" },
+            InstanceType = new TypeDTO { Name = "MyClass", Kind = "class" }
+        };
+
+        _mockClassRepository.Setup(r => r.FindAllTypes()).Returns([iface, cls]);
+
+        _parameterService.CreateParameter(parameter);
+    }
+
+    [TestMethod]
+    [ExpectedException(typeof(InvalidAttributeException))]
+    public void CreateParameter_ShouldThrowException_WhenInstanceIsInterfaceButReferenceIsClass()
+    {
+        var referenceClass = new Class { Name = "MyClass" };
+        var instanceInterface = new Interface { Name = "IMyInterface" };
+
+        var parameter = new ParameterDTO
+        {
+            Name = "Param",
+            ReferenceType = new TypeDTO { Name = "MyClass", Kind = "class" },
+            InstanceType = new TypeDTO { Name = "IMyInterface", Kind = "interface" }
+        };
+
+        _mockClassRepository.Setup(r => r.FindAllTypes()).Returns([referenceClass, instanceInterface]);
+
+        _parameterService.CreateParameter(parameter);
+    }
+
+    [TestMethod]
+    [ExpectedException(typeof(InvalidAttributeException))]
+    public void CreateParameter_ShouldThrowException_WhenBothAreDifferentInterfaces()
+    {
+        var i1 = new Interface { Name = "IA" };
+        var i2 = new Interface { Name = "IB" };
+
+        var parameter = new ParameterDTO
+        {
+            Name = "Param",
+            ReferenceType = new TypeDTO { Name = "IA", Kind = "interface" },
+            InstanceType = new TypeDTO { Name = "IB", Kind = "interface" }
+        };
+
+        _mockClassRepository.Setup(r => r.FindAllTypes()).Returns([i1, i2]);
+
+        _parameterService.CreateParameter(parameter);
+    }
+
+    [TestMethod]
+    public void CaseReferenceInterfaceRecursive_ReturnsFalse_WhenParentsIsNull()
+    {
+        var service = new ParameterService(null!, null!, null!);
+        var reference = new Interface { Name = "IRef" };
+        var instance = new Class { Name = "C1", Parents = null };
+
+        var result = (bool)typeof(ParameterService)
+            .GetMethod("CaseReferenceInterfaceRecursive", BindingFlags.NonPublic | BindingFlags.Instance)!
+            .Invoke(service, [reference, instance])!;
+
+        Assert.IsFalse(result);
+    }
+
+    [TestMethod]
+    public void CaseReferenceInterfaceRecursive_ReturnsTrue_WhenParentIsMatchingInterface()
+    {
+        var service = new ParameterService(null!, null!, null!);
+        var reference = new Interface { Name = "IRef" };
+        var instance = new Class
+        {
+            Name = "C1",
+            Parents = [reference]
+        };
+
+        var result = (bool)typeof(ParameterService)
+            .GetMethod("CaseReferenceInterfaceRecursive", BindingFlags.NonPublic | BindingFlags.Instance)!
+            .Invoke(service, [reference, instance])!;
+
+        Assert.IsTrue(result);
+    }
+
+    [TestMethod]
+    public void CaseReferenceInterfaceRecursive_ReturnsTrue_WhenParentIsClassWithMatchingInterfaceInHierarchy()
+    {
+        var service = new ParameterService(null!, null!, null!);
+        var reference = new Interface { Name = "IRef" };
+        var parentClass = new Class
+        {
+            Name = "Parent",
+            Parents = [reference]
+        };
+        var instance = new Class
+        {
+            Name = "C1",
+            Parents = [parentClass]
+        };
+
+        var result = (bool)typeof(ParameterService)
+            .GetMethod("CaseReferenceInterfaceRecursive", BindingFlags.NonPublic | BindingFlags.Instance)!
+            .Invoke(service, [reference, instance])!;
+
+        Assert.IsTrue(result);
+    }
+
+    [TestMethod]
+    public void CaseReferenceInterfaceRecursive_ReturnsFalse_WhenNoParentMatches()
+    {
+        var service = new ParameterService(null!, null!, null!);
+        var reference = new Interface { Name = "IRef" };
+        var otherInterface = new Interface { Name = "Other" };
+        var parentClass = new Class
+        {
+            Name = "Parent",
+            Parents = [otherInterface]
+        };
+        var instance = new Class
+        {
+            Name = "C1",
+            Parents = [parentClass]
+        };
+
+        var result = (bool)typeof(ParameterService)
+            .GetMethod("CaseReferenceInterfaceRecursive", BindingFlags.NonPublic | BindingFlags.Instance)!
+            .Invoke(service, [reference, instance])!;
+
+        Assert.IsFalse(result);
     }
 }

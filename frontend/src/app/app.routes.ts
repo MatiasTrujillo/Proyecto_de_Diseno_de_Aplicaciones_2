@@ -4,13 +4,16 @@ import { NavMenuComponent } from './Menus/nav-menu/nav-menu.component';
 import { CreateclassComponent } from './Classes/createclass/createclass.component';
 import { CreateMethodComponent } from './Methods/createmethod/createmethod.component';
 import { CreateattributeComponent } from './Attributes/createattribute/createattribute.component';
-import { CreatelocalvariableComponent } from './createlocalvariable/createlocalvariable.component';
+import { CreatelocalvariableComponent } from './LocalVariale/createlocalvariable/createlocalvariable.component';
 import { CreateinterfaceComponent } from './Interfaces/createinterface/createinterface.component';
 import { ClassMenuComponent } from './Menus/class-menu/class-menu.component';
 import { MethodmenuComponent } from './Menus/methodmenu/methodmenu.component';
 import { AttributemenuComponent } from './Menus/attributemenu/attributemenu.component';
 import { ExportdataComponent } from './exportdata/exportdata.component';
 import { NameSpaceMenuComponent } from './Menus/name-space-menu/name-space-menu.component';
+import { ParametermenuComponent } from './Menus/parametermenu/parametermenu.component';
+import { LocalvariablemenuComponent } from './Menus/localvariablemenu/localvariablemenu.component';
+import { InterfacemenuComponent } from './Menus/interfacemenu/interfacemenu.component';
 
 export const routes: Routes = [
   { path: '', component: SessionComponent },
@@ -25,5 +28,8 @@ export const routes: Routes = [
   { path: 'AttributeMenuComponent', component: AttributemenuComponent },
   { path: 'ExportdataComponent', component: ExportdataComponent },
   { path: 'NameSpaceMenuComponent', component: NameSpaceMenuComponent },
+  { path: 'ParameterMenuComponent', component: ParametermenuComponent },
+  { path: 'LocalVariableMenuComponent', component: LocalvariablemenuComponent },
+  { path: 'InterfaceMenuComponent', component: InterfacemenuComponent },
   { path: '**', redirectTo: '' }
 ];

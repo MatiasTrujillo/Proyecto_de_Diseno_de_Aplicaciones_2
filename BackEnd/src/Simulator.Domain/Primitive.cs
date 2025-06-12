@@ -13,6 +13,7 @@ public class Primitive : Type
     public Primitive(PrimitiveType primitiveType)
         : base(string.Empty)
     {
+        Name = primitiveType.ToString();
         PrimitiveType = primitiveType;
     }
 }

@@ -5,6 +5,7 @@ namespace Simulator.DTO;
 
 public class LocalVariableDTO
 {
+    public string Id { get; set; } = string.Empty;
     public string Name { get; set; } = string.Empty;
     public TypeDTO? ReferenceType { get; set; } = null;
     public TypeDTO? InstanceType { get; set; } = null;

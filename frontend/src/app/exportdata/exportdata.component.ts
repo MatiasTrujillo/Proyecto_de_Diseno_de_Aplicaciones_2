@@ -5,6 +5,7 @@ import { SimulatorService } from '../services/simulator.service';
 import { TransformerForExporter } from '../models/TransformerForExporter';
 import { Type } from '../models/Type';
 import { Method } from '../models/method';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-exportdata',
@@ -26,7 +27,7 @@ export class ExportdataComponent implements OnInit {
   result: any = null;
   error: string = '';
 
-  constructor(private simulatorService: SimulatorService) {}
+  constructor(private simulatorService: SimulatorService, private router: Router) {}
 
   ngOnInit() {
     this.simulatorService.getTypes().subscribe({
@@ -63,4 +64,11 @@ exportData() {
     }
   });
 }
+
+  goTo(path: string): void {
+    window.location.href = path;
+  }
+  goToNavMenu() {
+    this.router.navigate(['/navMenu']);
+  }
 }

@@ -23,4 +23,11 @@ public class ParameterController(IParameterService parameterService) : Controlle
         _parameterService.SetInvokeMethodToParameter(id, invokedMethodId);
         return Created(string.Empty, new { message = "Parameter associated with invoked method successfully" });
     }
+
+    [HttpGet]
+    public IActionResult GetAllParameters()
+    {
+        var parameters = _parameterService.GetAllParameters();
+        return Ok(parameters);
+    }
 }

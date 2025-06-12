@@ -7,12 +7,20 @@
   </div>
 </nav>
 
+
 <div class="sidebar">
-  <button (click)="goToClassMenu()">Manage Class</button>
-  <button (click)="goToMethodMenu()">Nuevo Método</button>
-  <button (click)="goToAttributeMenu()">Manage Attribute</button>
-  <button (click)="goToNameSpace()">Manage NameSpace</button>
+  <h2>Manage your entities</h2>
+  <button (click)="goTo('/ClassMenuComponent')">Class</button>
+  <button (click)="goTo('/MethodMenuComponent')">Method</button>
+  <button (click)="goTo('/AttributeMenuComponent')">Attribute</button>
+  <button (click)="goTo('/NameSpaceMenuComponent')">NameSpace</button>
+  <button (click)="goTo('/ParameterMenuComponent')">Parameter</button>
+  <button (click)="goTo('/LocalVariableMenuComponent')">Local Variable</button>
+  <button (click)="goTo('/InterfaceMenuComponent')">Interface</button>
+  <button (click)="goTo('/ExportdataComponent')">Go To Export</button>
+  <button (click)="goTo('/database')">Data Base</button>
 </div>
+
 
  <div class="card-container">
   <div class="card" *ngFor="let nameSpaceItem of nameSpaces">
@@ -20,8 +28,8 @@
     <div class="button-group">
       <button class="secondary" (click)="openModal('associatewithclass', nameSpaceItem)">Asociate With class</button>
       <button class="secondary" (click)="openModal('associatewithinterface', nameSpaceItem)">Asociate With class</button>
-      <button class="primary" (click)="openModal('addChill', nameSpaceItem)">Add Chill</button>
-      <button class="danger" (click)="openModal('addFatherToNameSpace', nameSpaceItem)">Add Father</button>
+      <button class="secondary" (click)="openModal('addChill', nameSpaceItem)">Add Chilld</button>
+      <button class="secondary" (click)="openModal('addFatherToNameSpace', nameSpaceItem)">Add Father</button>
     </div>
   </div>
 </div>
