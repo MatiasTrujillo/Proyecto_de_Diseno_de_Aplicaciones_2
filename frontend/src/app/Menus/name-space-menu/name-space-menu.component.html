@@ -18,9 +18,7 @@
   <button (click)="goTo('/LocalVariableMenuComponent')">Local Variable</button>
   <button (click)="goTo('/InterfaceMenuComponent')">Interface</button>
   <button (click)="goTo('/ExportdataComponent')">Go To Export</button>
-  <div>
-    <button (click)="goTo('/database')">Data Base</button> <!-- Asegúrate de que esta ruta exista -->
-  </div>
+  <button (click)="goTo('/database')">Data Base</button>
 </div>
 
 
@@ -30,8 +28,8 @@
     <div class="button-group">
       <button class="secondary" (click)="openModal('associatewithclass', nameSpaceItem)">Asociate With class</button>
       <button class="secondary" (click)="openModal('associatewithinterface', nameSpaceItem)">Asociate With class</button>
-      <button class="primary" (click)="openModal('addChill', nameSpaceItem)">Add Chill</button>
-      <button class="danger" (click)="openModal('addFatherToNameSpace', nameSpaceItem)">Add Father</button>
+      <button class="secondary" (click)="openModal('addChill', nameSpaceItem)">Add Chilld</button>
+      <button class="secondary" (click)="openModal('addFatherToNameSpace', nameSpaceItem)">Add Father</button>
     </div>
   </div>
 </div>

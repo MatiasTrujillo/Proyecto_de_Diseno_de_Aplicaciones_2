@@ -3,7 +3,7 @@
     <a routerLink="/" class="logo">Simulator</a>
   </div>
   <div class="nav-right">
-    <button (click)="logout()" class="logout-button">Cerrar sesión</button>
+    <button (click)="logout()" class="logout-button">log out</button>
   </div>
 </nav>
 
@@ -17,9 +17,7 @@
   <button (click)="goTo('/LocalVariableMenuComponent')">Local Variable</button>
   <button (click)="goTo('/InterfaceMenuComponent')">Interface</button>
   <button (click)="goTo('/ExportdataComponent')">Go To Export</button>
-  <div>
-    <button (click)="goTo('/database')">Data Base</button> <!-- Asegúrate de que esta ruta exista -->
-  </div>
+  <button (click)="goTo('/database')">Data Base</button>
 </div>
 
 

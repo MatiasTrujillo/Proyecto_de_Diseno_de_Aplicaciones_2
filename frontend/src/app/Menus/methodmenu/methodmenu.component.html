@@ -17,16 +17,14 @@
   <button (click)="goTo('/LocalVariableMenuComponent')">Local Variable</button>
   <button (click)="goTo('/InterfaceMenuComponent')">Interface</button>
   <button (click)="goTo('/ExportdataComponent')">Go To Export</button>
-  <div>
-    <button (click)="goTo('/database')">Data Base</button> <!-- Asegúrate de que esta ruta exista -->
-  </div>
+  <button (click)="goTo('/database')">Data Base</button>
 </div>
 
-  <div class="card-container">
+<div class="card-container">
   <div class="card" *ngFor="let methodItem of methods">
     <h3>{{ methodItem.name }}</h3>
     <div class="button-group">
-      <button class="secondary" (click)="openModal('associatewithclass', methodItem)">Asociate With class</button>
+      <button class="secondary" (click)="openModal('associatewithclass', methodItem)">Associate With Class</button>
       <button class="danger" (click)="openModal('deletemethod', methodItem)">Delete</button>
     </div>
   </div>
@@ -37,7 +35,7 @@
     <button class="close" (click)="closeModal()">×</button>
     <app-associatemethodwithclass
       [methodData]="selectedMethod!"
-      (close)="closeModal()"
+      (close)="onMethodChanged()"
     ></app-associatemethodwithclass>
   </div>
 </div>
@@ -47,7 +45,7 @@
     <button class="close" (click)="closeModal()">×</button>
     <app-deletemethod
       [methodData]="selectedMethod!"
-      (close)="closeModal()"
+      (close)="onMethodChanged()"
     ></app-deletemethod>
   </div>
 </div>

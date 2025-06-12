@@ -19,7 +19,6 @@ import { SetinvokedmethodtoattributeComponent } from '../../Attributes/setinvoke
   styleUrls: ['./attributemenu.component.css']
 })
 export class AttributemenuComponent {
-
   attributes: Attribute[] = [];
   activeModal: string | null = null;
   selectedAttribute: Attribute | null = null;
@@ -28,6 +27,10 @@ export class AttributemenuComponent {
   constructor(private simulatorService: SimulatorService, private router: Router) {}
 
   ngOnInit(): void {
+    this.loadAttributes();
+  }
+
+  loadAttributes(): void {
     this.simulatorService.getAttribute().subscribe(
       (res: Attribute[]) => {
         this.attributes = res;
@@ -43,12 +46,18 @@ export class AttributemenuComponent {
 
   closeModal(): void {
     this.activeModal = null;
-    this.selectedAttribute = null; 
+    this.selectedAttribute = null;
+  }
+
+  onAttributeChanged(): void {
+    this.closeModal();
+    this.loadAttributes();
   }
 
   goTo(path: string): void {
     window.location.href = path;
   }
+
   goToNavMenu() {
     this.router.navigate(['/navMenu']);
   }

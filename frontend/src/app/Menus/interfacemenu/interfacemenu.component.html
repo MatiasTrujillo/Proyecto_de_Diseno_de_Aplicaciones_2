@@ -17,40 +17,37 @@
   <button (click)="goTo('/LocalVariableMenuComponent')">Local Variable</button>
   <button (click)="goTo('/InterfaceMenuComponent')">Interface</button>
   <button (click)="goTo('/ExportdataComponent')">Go To Export</button>
-  <div>
-    <button (click)="goTo('/database')">Data Base</button> <!-- Asegúrate de que esta ruta exista -->
-  </div>
+  <button (click)="goTo('/database')">Data Base</button>
 </div>
 
-  <!-- Interface -->
+<!-- Interface -->
 
-  <div class="card-container">
+<div class="card-container">
   <div class="card" *ngFor="let interfaceItem of interfaces">
     <h3>{{ interfaceItem.name }}</h3>
     <div class="button-group">
-      <button class="danger" (click)="openModal('deleteclass', interfaceItem)">Delete</button>
-      <button class="secondary" (click)="openModal('AsociatetoSignatur', interfaceItem)">Asociate to Signatur</button>
+      <button class="danger" (click)="openModal('deleteinterface', interfaceItem)">Delete</button>
+      <button class="secondary" (click)="openModal('associatetosignature', interfaceItem)">Associate to Signature</button>
     </div>
   </div>
 </div>
 
-
-<div class="modal" *ngIf="activeModal === 'deleteclass'">
+<div class="modal" *ngIf="activeModal === 'deleteinterface'">
   <div class="modal-content">
     <button class="close" (click)="closeModal()">×</button>
     <app-deleteinterface
       [interfaceData]="selectedInterface!"
-      (close)="closeModal()"
+      (close)="onInterfaceChanged()"
     ></app-deleteinterface>
   </div>
 </div>
 
-<div class="modal" *ngIf="activeModal === 'AsociatetoSignatur'">
+<div class="modal" *ngIf="activeModal === 'associatetosignature'">
   <div class="modal-content">
     <button class="close" (click)="closeModal()">×</button>
     <app-associate-interface-signature
       [interfaceData]="selectedInterface!"
-      (close)="closeModal()"
+      (close)="onInterfaceChanged()"
     ></app-associate-interface-signature>
   </div>
 </div>

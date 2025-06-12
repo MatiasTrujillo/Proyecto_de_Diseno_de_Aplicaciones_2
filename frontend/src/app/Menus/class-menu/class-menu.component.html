@@ -27,17 +27,16 @@
   <button (click)="goTo('/LocalVariableMenuComponent')">Local Variable</button>
   <button (click)="goTo('/InterfaceMenuComponent')">Interface</button>
   <button (click)="goTo('/ExportdataComponent')">Go To Export</button>
-  <div>
-    <button (click)="goTo('/database')">Data Base</button> <!-- Asegúrate de que esta ruta exista -->
-  </div>
+  <button (click)="goTo('/database')">Data Base</button>
 </div>
 
+<!-- Modal para actualizar -->
 <div class="modal" *ngIf="activeModal === 'updateclass'">
   <div class="modal-content">
     <button class="close" (click)="closeModal()">×</button>
     <app-updateclass
       [classData]="selectedClass!"
-      (close)="closeModal()"
+      (close)="onClassChanged()"
     ></app-updateclass>
   </div>
 </div>
@@ -48,7 +47,7 @@
     <button class="close" (click)="closeModal()">×</button>
     <app-deleteclass
       [classData]="selectedClass!"
-      (close)="closeModal()"
+      (close)="onClassChanged()"
     ></app-deleteclass>
   </div>
 </div>

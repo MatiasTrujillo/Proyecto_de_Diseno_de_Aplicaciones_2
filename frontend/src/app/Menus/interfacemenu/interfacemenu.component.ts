@@ -23,9 +23,13 @@ export class InterfacemenuComponent implements OnInit {
   constructor(private simulatorService: SimulatorService, private router: Router) {}
 
   ngOnInit(): void {
+    this.loadInterfaces();
+  }
+
+  loadInterfaces(): void {
     this.simulatorService.getInterfaces().subscribe({
       next: (data) => this.interfaces = data,
-      error: (err) => this.error = 'Error loading interfaces'
+      error: () => this.error = 'Error loading interfaces'
     });
   }
 
@@ -44,5 +48,11 @@ export class InterfacemenuComponent implements OnInit {
 
   closeModal(): void {
     this.activeModal = null;
+    this.selectedInterface = null;
+  }
+
+  onInterfaceChanged(): void {
+    this.closeModal();
+    this.loadInterfaces();
   }
 }
