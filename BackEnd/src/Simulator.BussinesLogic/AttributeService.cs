@@ -238,8 +238,8 @@ public class AttributeService(IAttributeRepository attributeRepository, IClassRe
         }
         else
         {
-            ValidateTypesExists(attribute.ReferenceType, attribute.InstanceType);
-            ValidateInstanceClass(attribute.ReferenceType, attribute.InstanceType);
+            ValidateTypesExists(referenceType, instanceType);
+            ValidateInstanceClass(referenceType, instanceType);
         }
     }
 

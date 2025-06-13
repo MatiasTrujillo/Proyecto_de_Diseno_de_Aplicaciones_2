@@ -244,6 +244,35 @@ public class InterfaceService_Test
     }
 
     [TestMethod]
+    public void UpdateInterface_ShouldThrowInterfaceNotFoundException_WhenMethodSignatureAlreadyExists()
+    {
+        var entity = dto.ToEntity();
+        var id = entity.Id;
+
+        var parameter = new Parameter();
+        var type = new Primitive(PrimitiveType.String);
+        var signature = new MethodSignature("ASignature", type, [parameter]);
+        entity.MethodSignatures = [signature];
+
+        var updateInterfaceDto = new UpdateInterfaceDTO { IdMethodSignature = signature.Id };
+
+        _mockMethodSignatureRepository.Setup(r => r.Find(signature.Id)).Returns(signature);
+        _mockClassRepository.Setup(r => r.FindAllTypes()).Returns([]);
+        _mockInterfaceRepository.Setup(r => r.Find(id)).Returns(entity);
+        _mockInterfaceRepository.Setup(r => r.Exist(id)).Returns(true);
+        _mockInterfaceRepository.Setup(r => r.Update(It.IsAny<Interface>()));
+
+        _interfaceService.CreateInterface(dto);
+
+        var exception = Assert.ThrowsException<InterfaceNotFoundException>(() =>
+        {
+            _interfaceService.UpdateInterface(id, updateInterfaceDto);
+        });
+
+        Assert.AreEqual("Interface already have this methodsignature.", exception.Message);
+    }
+
+    [TestMethod]
     public void GetInterfaces_ShouldReturnListOfInterfaces()
     {
         _mockClassRepository.Setup(r => r.FindAllTypes())
