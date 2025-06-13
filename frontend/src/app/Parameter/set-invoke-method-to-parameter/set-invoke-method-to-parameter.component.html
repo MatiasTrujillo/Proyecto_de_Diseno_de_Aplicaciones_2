@@ -1,0 +1,15 @@
+<div class="form-container">
+  <div *ngIf="error" class="error">{{ error }}</div>
+  <div *ngIf="message" class="message">{{ message }}</div>
+
+  <div>
+    <label for="invokedMethod">Invoked Method:</label>
+    <select id="invokedMethod" [(ngModel)]="selectedInvokedMethodId">
+      <option [ngValue]="''">-- Select Invoked Method --</option>
+      <option *ngFor="let method of invokedMethods" [value]="method.id">{{ method.referenceName }}</option>
+    </select>
+  </div>
+
+  <button class="primary" (click)="associate()">Associate</button>
+  <button class="close" (click)="closeModal()" type="button">Cancel</button>
+</div>

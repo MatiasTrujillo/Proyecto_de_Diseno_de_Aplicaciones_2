@@ -43,7 +43,7 @@ public class MethodServiceTest
         _parameterDto = new ParameterDTO
         {
             Name = "TestParameter",
-            ParameterType = new TypeDTO
+            ReferenceType = new TypeDTO
             {
                 Name = "TestClass",
                 Kind = "class"
@@ -1131,9 +1131,9 @@ public class MethodServiceTest
     [TestMethod]
     public void ToEntity_ShouldThrowArgumentNullException_WhenParameterTypeIsNull()
     {
-        var dto = new ParameterDTO { Name = "myVar", ParameterType = null };
+        var dto = new ParameterDTO { Name = "myVar", ReferenceType = null };
         var exception = Assert.ThrowsException<ArgumentNullException>(dto.ToEntity);
-        Assert.AreEqual("The Type property cannot be null. (Parameter 'Type')", exception.Message);
+        Assert.AreEqual("The Type property cannot be null. (Parameter 'ReferenceType')", exception.Message);
     }
 
     [TestMethod]
@@ -2116,6 +2116,39 @@ public class MethodServiceTest
             Assert.AreEqual(invokedMethods[i].Id.ToString(), result[i].Id);
             Assert.AreEqual(invokedMethods[i].ReferenceName, result[i].ReferenceName);
             Assert.AreEqual(invokedMethods[i].MethodId, result[i].MethodId);
+        }
+    }
+
+    [TestMethod]
+    public void GetMethodSignatures_ShouldReturnListOfMethodSignatureDTOs_WhenSignaturesExist()
+    {
+        var methodSignatures = new List<MethodSignature>
+        {
+            new MethodSignature
+            {
+                Id = Guid.NewGuid(),
+                Name = "Signature1",
+                ReturnType = new Primitive(PrimitiveType.Int)
+            },
+            new MethodSignature
+            {
+                Id = Guid.NewGuid(),
+                Name = "Signature2",
+                ReturnType = new Primitive(PrimitiveType.String)
+            }
+        };
+
+        _mockMethodSignatureRepository.Setup(r => r.FindAll()).Returns(methodSignatures);
+
+        var result = _methodService.GetMethodSignatures();
+
+        Assert.AreEqual(methodSignatures.Count, result.Count);
+        for(var i = 0; i < methodSignatures.Count; i++)
+        {
+            Assert.AreEqual(methodSignatures[i].Id.ToString(), result[i].Id);
+            Assert.AreEqual(methodSignatures[i].Name, result[i].Name);
+            Assert.IsNotNull(result[i].ReturnType);
+            Assert.AreEqual(methodSignatures[i].ReturnType.Name, result[i].ReturnType.Name);
         }
     }
 

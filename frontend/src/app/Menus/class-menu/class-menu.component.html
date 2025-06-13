@@ -7,8 +7,16 @@
   </div>
 </nav>
 
+
+<div class="manage-interface-header">
+  <h1>Manage Classes</h1>
+  <div class="header-underline"></div>
+</div>
+
+
 <div class="card-container">
   <div class="card" *ngFor="let classItem of classes">
+    <button class="info-btn" (click)="openModal('infoclass', classItem)" title="Info">ℹ️</button>
     <h3>{{ classItem.name }}</h3>
     <div class="button-group">
       <button class="secondary" (click)="openModal('updateclass', classItem)">Update</button>
@@ -18,18 +26,38 @@
 </div>
 
 <div class="sidebar">
-  <button (click)="goToClassMenu()">Manage Class</button>
-  <button (click)="goToMethodMenu()">Nuevo Método</button>
-  <button (click)="goToAttributeMenu()">Manage Attribute</button>
-  <button (click)="goToNameSpace()">Manage NameSpace</button>
+  <h2>Manage your entities</h2>
+  <button (click)="goTo('/ClassMenuComponent')">Class</button>
+  <button (click)="goTo('/MethodMenuComponent')">Method</button>
+  <button (click)="goTo('/AttributeMenuComponent')">Attribute</button>
+  <button (click)="goTo('/NameSpaceMenuComponent')">NameSpace</button>
+  <button (click)="goTo('/ParameterMenuComponent')">Parameter</button>
+  <button (click)="goTo('/LocalVariableMenuComponent')">Local Variable</button>
+  <button (click)="goTo('/InterfaceMenuComponent')">Interface</button>
+  <button (click)="goTo('/ExportdataComponent')">Go To Export</button>
+  <button (click)="goTo('/database')">Data Base</button>
 </div>
 
+<!-- Modal para info -->
+<div class="modal" *ngIf="activeModal === 'infoclass'">
+  <div class="modal-content">
+    <button class="close" (click)="closeModal()">×</button>
+    <h2>Class Info</h2>
+    <div *ngIf="selectedClass">
+  <p><strong>ID:</strong> {{ selectedClass.id }}</p>
+  <p><strong>Name:</strong> {{ selectedClass.name }}</p>
+  <p><strong>Stereotype:</strong> {{ getStereotypeName(selectedClass.stereotype) }}</p>
+</div>
+  </div>
+</div>
+
+<!-- Modal para actualizar -->
 <div class="modal" *ngIf="activeModal === 'updateclass'">
   <div class="modal-content">
     <button class="close" (click)="closeModal()">×</button>
     <app-updateclass
       [classData]="selectedClass!"
-      (close)="closeModal()"
+      (close)="onClassChanged()"
     ></app-updateclass>
   </div>
 </div>
@@ -40,7 +68,23 @@
     <button class="close" (click)="closeModal()">×</button>
     <app-deleteclass
       [classData]="selectedClass!"
-      (close)="closeModal()"
+      (close)="onClassChanged()"
     ></app-deleteclass>
   </div>
 </div>
+
+<!-- Agrega este CSS en tu archivo de estilos para posicionar el botón info -->
+<style>
+.info-btn {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: transparent;
+  border: none;
+  font-size: 1.2em;
+  cursor: pointer;
+}
+.card {
+  position: relative;
+}
+</style>

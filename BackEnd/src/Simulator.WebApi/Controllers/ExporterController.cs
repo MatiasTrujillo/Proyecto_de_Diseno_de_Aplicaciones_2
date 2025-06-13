@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Simulator.Exporters.Abstractions;
 using Simulator.IBussinesLogic;
+using Simulator.WebApi.Filters;
 
 namespace Simulator.WebApi.Controllers;
 
@@ -14,6 +15,7 @@ public sealed class ExportersController(IExportService exporterService) : Contro
         return exporterService.GetAvailableExporters();
     }
 
+    [AuthorizationFilter]
     [HttpPost("{exporterName}/export")]
     public IActionResult Export(string exporterName, [FromBody] TransformerForExporter data)
     {

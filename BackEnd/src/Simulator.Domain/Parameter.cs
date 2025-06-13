@@ -27,6 +27,16 @@ public class Parameter
         InvokedMethods = [];
     }
 
+    public Parameter(string name, Type referenceType, Type instanceType)
+    {
+        ValidateParameter(name);
+        Id = Guid.NewGuid();
+        Name = name;
+        ReferenceType = referenceType;
+        InstanceType = instanceType;
+        InvokedMethods = [];
+    }
+
     private static readonly HashSet<string> ReservedKeywords =
     [
         "base",

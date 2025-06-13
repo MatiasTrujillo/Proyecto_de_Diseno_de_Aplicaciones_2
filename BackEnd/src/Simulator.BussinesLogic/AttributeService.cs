@@ -53,13 +53,12 @@ public class AttributeService(IAttributeRepository attributeRepository, IClassRe
         ValidateAttributeExist(attribute);
         ValidateAttributeIsNotInClass(attribute);
         ValidateName(uAttribute.Name, attribute);
-        ValidateAccessibility(uAttribute.Accessibility, attribute);
+        ValidateAccessibilityUpdate(uAttribute.Accessibility, attribute);
         ManageStereotype(uAttribute.Stereotype, attribute);
-        var typeT = _classRepository.FindAllTypes().FirstOrDefault(x => x.Id == uAttribute.IdReferenceType);
-        var instanceTypeT = _classRepository.FindAllTypes().FirstOrDefault(x => x.Id == uAttribute.IdInstanceType);
-        ValidateTypesExists(typeT, instanceTypeT);
-        ValidateInstanceClass(typeT, instanceTypeT);
-        AssignTypes(attribute, typeT, instanceTypeT);
+        var typeT = _classRepository.FindAllTypes().FirstOrDefault(x => x.Id.ToString() == uAttribute.IdReferenceType);
+        var instanceTypeT = _classRepository.FindAllTypes().FirstOrDefault(x => x.Id.ToString() == uAttribute.IdInstanceType);
+        ValidateInstanceClassUpdate(typeT, instanceTypeT, attribute);
+        AssignTypesUpdate(attribute, typeT, instanceTypeT);
 
         _attributeRepository.Update(attribute);
     }
@@ -92,6 +91,7 @@ public class AttributeService(IAttributeRepository attributeRepository, IClassRe
                 Name = a.Name,
                 Accessibility = a.Accessibility,
                 ReferenceType = a.ReferenceType?.ToDTO(),
+                InstanceType = a.InstanceType?.ToDTO(),
                 Stereotype = a.Stereotype
             }).ToList();
     }
@@ -115,7 +115,7 @@ public class AttributeService(IAttributeRepository attributeRepository, IClassRe
     private void ValidateAttributeType(Type? methodTReturnType)
     {
         var classes = _classRepository.FindAllTypes();
-        if(methodTReturnType != null && classes.All(c => c.Name != methodTReturnType.Name))
+        if(methodTReturnType != null && classes.All(c => c.Name.ToLower() != methodTReturnType.Name.ToLower()))
         {
             throw new TypeNotFoundException("Return type not found.");
         }
@@ -187,26 +187,6 @@ public class AttributeService(IAttributeRepository attributeRepository, IClassRe
         }
     }
 
-    private void ValidateAccessibility(string? newAccessibility, Attribute attribute)
-    {
-        if(newAccessibility != null && newAccessibility.ToLower() == "public")
-        {
-            attribute.Accessibility = Accessibility.Public;
-        }
-        else if(newAccessibility != null && newAccessibility.ToLower() == "private")
-        {
-            attribute.Accessibility = Accessibility.Private;
-        }
-        else if(newAccessibility != null && newAccessibility.ToLower() == "protected")
-        {
-            attribute.Accessibility = Accessibility.Protected;
-        }
-        else if(newAccessibility != null)
-        {
-            throw new InvalidAttributeException("Invalid accessibility type");
-        }
-    }
-
     private void ManageStereotype(string? newStereotype, Attribute attribute)
     {
         if(newStereotype == null)
@@ -236,6 +216,30 @@ public class AttributeService(IAttributeRepository attributeRepository, IClassRe
         if(stereotype != null && stereotype != KeyWord.Static)
         {
             throw new InvalidAttributeException("Invalid stereotype value. Attribute stereotype can only be null or static.");
+        }
+    }
+
+    private void ValidateInstanceClassUpdate(Type? referenceType, Type? instanceType, Attribute attribute)
+    {
+        if(referenceType == null && instanceType == null)
+        {
+            return;
+        }
+
+        if(referenceType == null)
+        {
+            ValidateTypesExists(attribute.ReferenceType, instanceType);
+            ValidateInstanceClass(attribute.ReferenceType, instanceType);
+        }
+        else if(instanceType == null)
+        {
+            ValidateTypesExists(referenceType, attribute.InstanceType);
+            ValidateInstanceClass(referenceType, attribute.InstanceType);
+        }
+        else
+        {
+            ValidateTypesExists(referenceType, instanceType);
+            ValidateInstanceClass(referenceType, instanceType);
         }
     }
 
@@ -361,6 +365,53 @@ public class AttributeService(IAttributeRepository attributeRepository, IClassRe
         else if(instanceTypeT is Class c2)
         {
             attribute.InstanceType = c2;
+        }
+    }
+
+    private void AssignTypesUpdate(Attribute attribute, Type? typeT, Type? instanceTypeT)
+    {
+        if(typeT != null)
+        {
+            if(typeT is Primitive p1)
+            {
+                attribute.ReferenceType = p1;
+            }
+            else if(typeT is Class c1)
+            {
+                attribute.ReferenceType = c1;
+            }
+        }
+
+        if(instanceTypeT != null)
+        {
+            if(instanceTypeT is Primitive p2)
+            {
+                attribute.InstanceType = p2;
+            }
+            else if(instanceTypeT is Class c2)
+            {
+                attribute.InstanceType = c2;
+            }
+        }
+    }
+
+    private void ValidateAccessibilityUpdate(string? newAccessibility, Attribute attribute)
+    {
+        if(newAccessibility != null && newAccessibility.ToLower() == "public")
+        {
+            attribute.Accessibility = Accessibility.Public;
+        }
+        else if(newAccessibility != null && newAccessibility.ToLower() == "private")
+        {
+            attribute.Accessibility = Accessibility.Private;
+        }
+        else if(newAccessibility != null && newAccessibility.ToLower() == "protected")
+        {
+            attribute.Accessibility = Accessibility.Protected;
+        }
+        else if(newAccessibility != null)
+        {
+            return;
         }
     }
 }

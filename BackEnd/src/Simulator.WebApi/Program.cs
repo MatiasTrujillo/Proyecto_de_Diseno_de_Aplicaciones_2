@@ -40,6 +40,8 @@ builder.Services.AddScoped<INameSpaceService, NameSpaceService>();
 builder.Services.AddScoped<IInterfaceService, InterfaceService>();
 builder.Services.AddScoped<ISessionService, SessionService>();
 builder.Services.AddScoped<IExportService, ExporterService>();
+builder.Services.AddScoped<IParameterService, ParameterService>();
+builder.Services.AddScoped<ILocalVariableService, LocalVariableService>();
 
 builder.Services.AddControllers();
 

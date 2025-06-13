@@ -25,4 +25,31 @@ public class MethodSignatureController_Test
         Assert.AreEqual(201, result.StatusCode);
         _methodServiceMock.Verify(service => service.CreateMethodSignature(signatureDto), Times.Once);
     }
+
+    [TestMethod]
+    public void GetMethodSignatures_ShouldReturnOkWithAllSignatures()
+    {
+        var expectedSignatures = new List<MethodSignatureDTO>
+        {
+            new MethodSignatureDTO { Id = "1", Name = "Signature1" },
+            new MethodSignatureDTO { Id = "2", Name = "Signature2" }
+        };
+
+        var mockService = new Mock<IMethodService>();
+        mockService.Setup(s => s.GetMethodSignatures()).Returns(expectedSignatures);
+
+        var controller = new MethodSignatureController(mockService.Object);
+
+        var result = controller.GetMethodSignatures() as OkObjectResult;
+
+        Assert.IsNotNull(result);
+        Assert.AreEqual(200, result.StatusCode);
+        var value = result.Value as List<MethodSignatureDTO>;
+        Assert.IsNotNull(value);
+        Assert.AreEqual(2, value.Count);
+        Assert.AreEqual("Signature1", value[0].Name);
+        Assert.AreEqual("Signature2", value[1].Name);
+
+        mockService.Verify(s => s.GetMethodSignatures(), Times.Once);
+    }
 }

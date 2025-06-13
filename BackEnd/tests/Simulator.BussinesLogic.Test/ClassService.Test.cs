@@ -777,6 +777,6 @@ public class ClassServiceTest
         Assert.IsNotNull(result);
         Assert.AreEqual("TestClass", result.Name);
         Assert.AreEqual(KeyWord.Sealed, result.Stereotype);
-        Assert.AreEqual(parentId.ToString(), result.IdClass);
+        Assert.AreEqual(parentId.ToString(), result.Id);
     }
 }

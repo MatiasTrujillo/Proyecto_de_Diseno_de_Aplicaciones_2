@@ -141,7 +141,8 @@ public class MethodService(
             "CompareTo",
             "IsNullOrEmpty",
             "IsNullOrWhiteSpace",
-            "ToLowerCase"
+            "ToLowerCase",
+            "ToUpperCase"
         };
 
         return _methodRepository.FindAll()
@@ -988,6 +989,17 @@ public class MethodService(
         methodSignatureT.ReturnType = returnType;
         _methodSignatureRepository.Add(methodSignatureT);
         return methodSignatureT.Id;
+    }
+
+    public List<MethodSignatureDTO> GetMethodSignatures()
+    {
+        return _methodSignatureRepository.FindAll()
+            .Select(ms => new MethodSignatureDTO
+            {
+                Id = ms.Id.ToString(),
+                Name = ms.Name,
+                ReturnType = ms.ReturnType?.ToDTO(),
+            }).ToList();
     }
 
     private static void ValidateMethodSignatureNameIsNotNull(MethodSignatureDTO methodSignatureDto)

@@ -123,4 +123,31 @@ public class MethodControllerTest
         Assert.IsNotNull(result);
         _methodServiceMock.Verify(service => service.ExecuteMethod(referenceId, oTCId, methodId, parameterTypes), Times.Once);
     }
+
+    [TestMethod]
+    public void GetMethods_ShouldReturnOkWithAllMethods()
+    {
+        var expectedMethods = new List<MethodDTO>
+        {
+            new MethodDTO { Name = "Metodo1" },
+            new MethodDTO { Name = "Metodo2" }
+        };
+
+        var mockService = new Mock<IMethodService>();
+        mockService.Setup(s => s.GetMethods()).Returns(expectedMethods);
+
+        var controller = new MethodController(mockService.Object);
+
+        var result = controller.GetMethods() as OkObjectResult;
+
+        Assert.IsNotNull(result);
+        Assert.AreEqual(200, result.StatusCode);
+        var value = result.Value as List<MethodDTO>;
+        Assert.IsNotNull(value);
+        Assert.AreEqual(2, value.Count);
+        Assert.AreEqual("Metodo1", value[0].Name);
+        Assert.AreEqual("Metodo2", value[1].Name);
+
+        mockService.Verify(s => s.GetMethods(), Times.Once);
+    }
 }

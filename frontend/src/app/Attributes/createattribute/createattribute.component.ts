@@ -22,7 +22,7 @@ export class CreateattributeComponent implements OnInit {
   types: Type[] = [];
   keyWords = Object.values(KeyWord).filter(v => isNaN(Number(v)));
   accessibilities = Object.values(Accessibility).filter(v => isNaN(Number(v)));
-
+error: string | null = null;
   KeyWord = KeyWord;
   Accessibility = Accessibility;
 
@@ -35,6 +35,7 @@ export class CreateattributeComponent implements OnInit {
     this.attributeForm = this.fb.group({
       name: ['', Validators.required],
       type: ['', Validators.required],
+      instanceType: ['', Validators.required],
       accessibility: [null, Validators.required],
       stereotype: [null],
     });
@@ -45,7 +46,7 @@ export class CreateattributeComponent implements OnInit {
     });
   }
 
-  onSubmit(): void {
+onSubmit(): void {
   if (this.attributeForm.invalid) return;
 
   const formValue = this.attributeForm.value;
@@ -53,18 +54,20 @@ export class CreateattributeComponent implements OnInit {
     id: '',
     name: formValue.name,
     accessibility: Number(formValue.accessibility),
-    InstanceType: this.types.find(t => t.name === formValue.type)!,
-    ReferenceType: this.types.find(t => t.name === formValue.type)!,
+    instanceType: this.types.find(t => t.name === formValue.instanceType)!,
+    referenceType: this.types.find(t => t.name === formValue.type)!,
     stereotype: formValue.stereotype !== '' && formValue.stereotype !== null
       ? Number(formValue.stereotype)
       : null,
   };
 
-  console.log('Attribute enviado al backend:', attribute);
+  this.error = null; // limpia error anterior
 
   this.simulatorService.createAttribute(attribute).subscribe({
     next: (res) => alert(`Attribute created with ID: ${res.id}`),
-    error: (err) => console.error('Error creating attribute', err)
+    error: (err) => {
+      this.error = err?.error?.message || err.message || 'Error creating attribute';
+    }
   });
 }
 }

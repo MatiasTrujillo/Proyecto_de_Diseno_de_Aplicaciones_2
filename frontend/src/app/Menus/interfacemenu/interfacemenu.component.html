@@ -1,0 +1,60 @@
+<nav class="navbar">
+  <div class="nav-left">
+    <a routerLink="/" class="logo">Simulator</a>
+  </div>
+  <div class="nav-right">
+    <button (click)="goToNavMenu()" class="logout-button">Go To Menu</button>
+  </div>
+</nav>
+
+
+<div class="manage-interface-header">
+  <h1>Manage Interfaces</h1>
+  <div class="header-underline"></div>
+</div>
+
+
+<div class="sidebar">
+  <h2>Manage your entities</h2>
+  <button (click)="goTo('/ClassMenuComponent')">Class</button>
+  <button (click)="goTo('/MethodMenuComponent')">Method</button>
+  <button (click)="goTo('/AttributeMenuComponent')">Attribute</button>
+  <button (click)="goTo('/NameSpaceMenuComponent')">NameSpace</button>
+  <button (click)="goTo('/ParameterMenuComponent')">Parameter</button>
+  <button (click)="goTo('/LocalVariableMenuComponent')">Local Variable</button>
+  <button (click)="goTo('/InterfaceMenuComponent')">Interface</button>
+  <button (click)="goTo('/ExportdataComponent')">Go To Export</button>
+  <button (click)="goTo('/database')">Data Base</button>
+</div>
+
+<!-- Interface -->
+
+<div class="card-container">
+  <div class="card" *ngFor="let interfaceItem of interfaces">
+    <h3>{{ interfaceItem.name }}</h3>
+    <div class="button-group">
+      <button class="danger" (click)="openModal('deleteinterface', interfaceItem)">Delete</button>
+      <button class="secondary" (click)="openModal('associatetosignature', interfaceItem)">Associate to Signature</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal" *ngIf="activeModal === 'deleteinterface'">
+  <div class="modal-content">
+    <button class="close" (click)="closeModal()">×</button>
+    <app-deleteinterface
+      [interfaceData]="selectedInterface!"
+      (close)="onInterfaceChanged()"
+    ></app-deleteinterface>
+  </div>
+</div>
+
+<div class="modal" *ngIf="activeModal === 'associatetosignature'">
+  <div class="modal-content">
+    <button class="close" (click)="closeModal()">×</button>
+    <app-associate-interface-signature
+      [interfaceData]="selectedInterface!"
+      (close)="onInterfaceChanged()"
+    ></app-associate-interface-signature>
+  </div>
+</div>

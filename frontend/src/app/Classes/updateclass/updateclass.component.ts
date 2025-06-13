@@ -37,10 +37,13 @@ export class UpdateclassComponent implements OnInit {
       stereotype: ['no change']
     });
 
-    // Cargar lista de clases para el select de idClass
     this.simulatorService.getClasses().subscribe({
       next: (res) => {
-        this.classes = res.filter(c => c.id !== this.classData?.id); // opcional: excluir clase actual
+        this.classes = res.filter(c => c.id !== this.classData?.id);
+        const objectClass = this.classes.find(c => c.name === 'Object');
+        if (objectClass) {
+          this.updateForm.patchValue({ idClass: objectClass.id });
+        }
       },
       error: (err) => {
         this.error = 'Error loading classes: ' + (err.message || 'Unknown error');

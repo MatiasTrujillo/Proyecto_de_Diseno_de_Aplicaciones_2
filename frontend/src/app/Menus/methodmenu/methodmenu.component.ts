@@ -1,31 +1,38 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
-import { CreateMethodComponent } from '../../Methods/createmethod/createmethod.component';
 import { AssociatemethodwithclassComponent } from '../../Methods/associatemethodwithclass/associatemethodwithclass.component';
 import { DeletemethodComponent } from '../../Methods/deletemethod/deletemethod.component';
 import { SimulatorService } from '../../services/simulator.service';
 import { Method } from '../../models/method';
-
+import { KeyWord } from '../../models/KeyWord';
+import { Accessibility } from '../../models/Accessibility';
 
 @Component({
   selector: 'app-methodmenu',
   standalone: true,
-  imports: [CommonModule, RouterModule,
+  imports: [
+    CommonModule,
+    RouterModule,
     AssociatemethodwithclassComponent,
-    DeletemethodComponent],
+    DeletemethodComponent
+  ],
   templateUrl: './methodmenu.component.html',
   styleUrl: './methodmenu.component.css'
 })
-export class MethodmenuComponent {
-
-constructor(private simulatorService: SimulatorService, private router: Router) {}
+export class MethodmenuComponent implements OnInit {
 
   methods: Method[] = [];
   activeModal: string | null = null;
   selectedMethod: Method | null = null;
 
- ngOnInit(): void {
+  constructor(private simulatorService: SimulatorService, private router: Router) {}
+
+  ngOnInit(): void {
+    this.loadMethods();
+  }
+
+  loadMethods(): void {
     this.simulatorService.getMethods().subscribe({
       next: (data) => this.methods = data,
       error: (err) => console.error('Error loading methods:', err)
@@ -37,26 +44,31 @@ constructor(private simulatorService: SimulatorService, private router: Router) 
     this.selectedMethod = selectedMethod;
   }
 
-closeModal(): void {
-  this.activeModal = null;
-}
+  closeModal(): void {
+    this.activeModal = null;
+    this.selectedMethod = null;
+  }
 
-goToClassMenu() {
-  this.router.navigate(['/ClassMenuComponent']);
-}
+  onMethodChanged(): void {
+    this.closeModal();
+    this.loadMethods(); // Recargar métodos después de una acción
+  }
 
-goToMethodMenu() {
-  this.router.navigate(['/MethodMenuComponent']);
-}
-goToNavMenu() {
-  this.router.navigate(['/navMenu']);
-}
+  goTo(path: string): void {
+    window.location.href = path;
+  }
 
-goToAttributeMenu() {
-  this.router.navigate(['/AttributeMenuComponent']);
-}
+  goToNavMenu() {
+    this.router.navigate(['/navMenu']);
+  }
 
-goToNameSpace() {
-  this.router.navigate(['/NameSpaceMenuComponent']);
-}
+  getStereotypeName(value: number | null | undefined): string {
+    if (value === null || value === undefined) return '';
+    return KeyWord[value] ?? '';
+  }
+
+    getAccesibilityName(value: number | null | undefined): string {
+    if (value === null || value === undefined) return '';
+    return Accessibility[value] ?? '';
+  }
 }

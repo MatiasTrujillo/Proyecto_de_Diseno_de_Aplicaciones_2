@@ -9,7 +9,13 @@ public class TypeDTO
 
     public Type ToEntity()
     {
-        return Kind.ToLower() switch
+        var kind = Kind.ToLower();
+        if(kind.EndsWith("proxy"))
+        {
+            kind = kind.Replace("proxy", string.Empty);
+        }
+
+        return kind switch
         {
             "class" => new Class(null, null, null!, null!, Name),
             "interface" => new Interface(Name),

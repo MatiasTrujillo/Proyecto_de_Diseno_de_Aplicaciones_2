@@ -2,8 +2,6 @@ namespace Simulator.Domain;
 
 public class NameSpace : NamespaceComponent
 {
-    public string Name { get; set; }
-    public virtual NameSpace? Father { get; set; }
     public virtual List<NamespaceComponent> Childs { get; set; }
 
     public NameSpace()

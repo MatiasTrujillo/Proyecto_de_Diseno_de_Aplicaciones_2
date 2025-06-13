@@ -5,6 +5,7 @@ import { SimulatorService } from '../services/simulator.service';
 import { TransformerForExporter } from '../models/TransformerForExporter';
 import { Type } from '../models/Type';
 import { Method } from '../models/method';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-exportdata',
@@ -15,6 +16,7 @@ import { Method } from '../models/method';
 })
 export class ExportdataComponent implements OnInit {
   exporterName: string = '';
+  availableExporters: string[] = [];
   referenceId: string | null = null;
   objectToCreateId: string | null = null;
   methodId: string | null = null;
@@ -24,43 +26,64 @@ export class ExportdataComponent implements OnInit {
   methods: Method[] = [];
 
   result: any = null;
+  exportMessage: string = '';
   error: string = '';
 
-  constructor(private simulatorService: SimulatorService) {}
+  constructor(private simulatorService: SimulatorService, private router: Router) {}
 
-  ngOnInit() {
-    this.simulatorService.getTypes().subscribe({
-      next: (res) => this.types = res,
-      error: () => this.error = 'Failed to load types'
-    });
+ngOnInit() {
+  this.simulatorService.getTypes().subscribe({
+    next: (res) => this.types = res,
+    error: () => this.error = 'Failed to load types'
+  });
 
-    this.simulatorService.getMethods().subscribe({
-      next: (res) => this.methods = res,
-      error: () => this.error = 'Failed to load methods'
+  this.simulatorService.getMethods().subscribe({
+    next: (res) => this.methods = res,
+    error: () => this.error = 'Failed to load methods'
+  });
+
+  this.simulatorService.getAvailableExporters().subscribe({
+    next: (res) => {
+      this.availableExporters = res;
+      if (res.length > 0) {
+        this.exporterName = res[0];
+      }
+    },
+    error: () => this.error = 'Failed to load exporters'
+  });
+}
+
+  exportData() {
+    this.error = '';
+    this.result = null;
+    this.exportMessage = '';
+
+    const parameterTypes: Type[] = this.types.filter(t => this.selectedParameterTypes.includes(t.id));
+
+    const data: TransformerForExporter = {
+      ReferenceId: this.referenceId,
+      ObjectToCreateId: this.objectToCreateId,
+      MethodId: this.methodId,
+      ParameterTypes: parameterTypes
+    };
+
+    this.simulatorService.exportWithExporter(this.exporterName, data).subscribe({
+      next: (res) => {
+        this.result = res;
+        this.exportMessage = res.message || '';
+      },
+      error: (err) => {
+        this.error = typeof err.error === 'string'
+          ? err.error
+          : err?.error?.message || 'Error desconocido al exportar datos';
+      }
     });
   }
 
-exportData() {
-  this.error = '';
-  this.result = null;
-
-  const parameterTypes: Type[] = this.types.filter(t => this.selectedParameterTypes.includes(t.id));
-
-  const data: TransformerForExporter = {
-    ReferenceId: this.referenceId,
-    ObjectToCreateId: this.objectToCreateId,
-    MethodId: this.methodId,
-    ParameterTypes: parameterTypes
-  };
-
-  this.simulatorService.exportWithExporter(this.exporterName, data).subscribe({
-    next: (res) => {
-      console.log('Respuesta exportWithExporter:', res); // <-- Aquí ves la respuesta en consola
-      this.result = res;
-    },
-    error: (err) => {
-      this.error = err?.error?.message || 'Error desconocido al exportar datos';
-    }
-  });
-}
+  goTo(path: string): void {
+    window.location.href = path;
+  }
+  goToNavMenu() {
+    this.router.navigate(['/navMenu']);
+  }
 }

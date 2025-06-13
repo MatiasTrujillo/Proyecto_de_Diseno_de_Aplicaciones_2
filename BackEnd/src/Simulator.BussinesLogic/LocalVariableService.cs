@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Simulator.BussinesLogic.Exception;
 using Simulator.Domain;
@@ -26,9 +27,9 @@ public class LocalVariableService(ILocalVariableRepository localVariableReposito
 
         var localVariableT = localVariable.ToEntity();
         var referenceTypeName = localVariableT.ReferenceType.Name;
-        var referenceType = _classRepository.FindAllTypes().FirstOrDefault(c => c.Name == referenceTypeName);
+        var referenceType = _classRepository.FindAllTypes().FirstOrDefault(c => c.Name.ToLower() == referenceTypeName.ToLower());
         var instanceTypeName = localVariableT.InstanceType.Name;
-        var instanceType = _classRepository.FindAllTypes().FirstOrDefault(c => c.Name == instanceTypeName);
+        var instanceType = _classRepository.FindAllTypes().FirstOrDefault(c => c.Name.ToLower() == instanceTypeName.ToLower());
         ValidateTypesExists(referenceType, instanceType);
         ValidateInstanceClass(referenceType, instanceType);
         AssignTypes(localVariableT, referenceType, instanceType);
@@ -43,9 +44,30 @@ public class LocalVariableService(ILocalVariableRepository localVariableReposito
         var invokedMethod = _invokedMethodRepository.Find(idInvokeGuid);
         ValidateLocalVariableExist(localVariable);
         ValidateInvokedMethodExist(invokedMethod);
-        ValidateTypeIsPrimitive(localVariable.ReferenceType);
         localVariable.InvokedMethods.Add(invokedMethod);
         _localVariableRepository.Update(localVariable);
+    }
+
+    public List<LocalVariableDTO> GetAllLocalVariables()
+    {
+        var excludedNames = new[] { "Obj" };
+        var localVariables = _localVariableRepository.FindAll()
+            .Where(p => !excludedNames.Contains(p.Name));
+        return localVariables.Select(p => new LocalVariableDTO
+        {
+            Id = p.Id.ToString(),
+            Name = p.Name,
+            ReferenceType = new TypeDTO
+            {
+                Name = p.ReferenceType.Name,
+                Kind = p.ReferenceType.GetType().Name.ToLower()
+            },
+            InstanceType = new TypeDTO
+            {
+                Name = p.InstanceType.Name,
+                Kind = p.InstanceType.GetType().Name.ToLower()
+            }
+        }).ToList();
     }
 
     private void ValidateLocalVariableIsNotNull(LocalVariableDTO parameter)
@@ -194,14 +216,6 @@ public class LocalVariableService(ILocalVariableRepository localVariableReposito
         if(invokedMethod == null)
         {
             throw new InvokedMethodNotFoundException("Invoked Method not found.");
-        }
-    }
-
-    private void ValidateTypeIsPrimitive(Type? attributeTType)
-    {
-        if(attributeTType?.GetType() != typeof(Class) && attributeTType?.GetType() != typeof(Primitive))
-        {
-            throw new InvalidAttributeException("In v2 of this program only Class and Primitive types are accepted.");
         }
     }
 }

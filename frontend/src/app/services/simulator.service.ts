@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable, throwError } from 'rxjs';
 import { tap, catchError } from 'rxjs/operators';
@@ -16,6 +16,8 @@ import { UpdateAttribute } from '../models/UpdateAttribute';
 import { InvokedMethod } from '../models/InvokedMethod';
 import { TransformerForExporter } from '../models/TransformerForExporter';
 import { NameSpace } from '../models/NameSpace';
+import { NameSpaceComponent } from '../models/NameSpaceComponent';
+import { Parameter } from '../models/Parameter';
 
 @Injectable({
   providedIn: 'root'
@@ -147,7 +149,7 @@ export class SimulatorService {
   }
 
   createMethodSignature(methodSignature: MethodSignature): Observable<{ id: string }> {
-    return this.http.post<{ id: string }>(`${this.apiUrl}/methodSignature`, methodSignature).pipe(
+    return this.http.post<{ id: string }>(`${this.apiUrl}/methodSignatures`, methodSignature).pipe(
       catchError((error) => {
         return throwError(() => error);
       })
@@ -200,6 +202,12 @@ export class SimulatorService {
     );
   }
 
+  getMethodSignatures(): Observable<MethodSignature[]> {
+    return this.http.get<MethodSignature[]>(`${this.apiUrl}/methodSignatures`).pipe(
+      catchError((error) => throwError(() => error))
+    );
+  }
+
   updateAttribute(id: string, updatedAttribute: Partial<UpdateAttribute>): Observable<{ message: string }> {
     return this.http.put<{ message: string }>(`${this.apiUrl}/attributes/${id}`, updatedAttribute).pipe(
       catchError((error) => {
@@ -229,11 +237,30 @@ export class SimulatorService {
     );
   }
 
-  exportWithExporter(exporterName: string, data: TransformerForExporter): Observable<any> {
-    return this.http.post<any>(`${this.apiUrl}/exporters/${exporterName}/export`, data).pipe(
-      catchError((error) => throwError(() => error))
-    );
-  }
+exportWithExporter(exporterName: string, data: TransformerForExporter): Observable<any> {
+  const token = localStorage.getItem('authToken');
+
+  const headers = new HttpHeaders({
+    'Content-Type': 'application/json',
+    'Authorization': `Bearer ${token}`
+  });
+
+  return this.http.post<any>(
+    `${this.apiUrl}/exporters/${exporterName}/export`,
+    data,
+    { headers }
+  ).pipe(
+    catchError((error) => throwError(() => error))
+  );
+}
+
+getAvailableExporters(): Observable<string[]> {
+  return this.http.get<string[]>(`${this.apiUrl}/exporters`).pipe(
+    catchError((error) => throwError(() => error))
+  );
+}
+
+
 private nameSpaceApiUrl = `${this.apiUrl}/namespaces`;
 
   createNameSpace(nameSpace: NameSpace): Observable<{ id: string }> {
@@ -280,6 +307,73 @@ private nameSpaceApiUrl = `${this.apiUrl}/namespaces`;
 
   getNameSpaces(): Observable<NameSpace[]> {
     return this.http.get<NameSpace[]>(`${this.nameSpaceApiUrl}`).pipe(
+      catchError((error) => throwError(() => error))
+    );
+  }
+
+  getNameSpaceComponents(): Observable<NameSpaceComponent[]> {
+    return this.http.get<NameSpaceComponent[]>(`${this.apiUrl}/namespaceComponents`).pipe(
+      catchError((error) => throwError(() => error))
+    );
+  }
+
+private parameterApiUrl = `${this.apiUrl}/parameters`;
+
+  createParameter(parameter: Parameter): Observable<{ id: string }> {
+    return this.http.post<{ id: string }>(`${this.parameterApiUrl}`, parameter).pipe(
+      catchError((error) => throwError(() => error))
+    );
+  }
+
+  setInvokeMethodToParameter(parameterId: string, invokedMethodId: string): Observable<{ message: string }> {
+    return this.http.post<{ message: string }>(
+      `${this.parameterApiUrl}/${parameterId}/invokedMethods/${invokedMethodId}`,
+      null
+    ).pipe(
+      catchError((error) => throwError(() => error))
+    );
+  }
+private localsApiUrl = `${this.apiUrl}/localVariables`;
+
+    setInvokeMethodToLocalVariable(localVariableId: string, invokedMethodId: string): Observable<{ message: string }> {
+    return this.http.post<{ message: string }>(
+      `${this.localsApiUrl}/${localVariableId}/invokedMethods/${invokedMethodId}`,
+      null
+    ).pipe(
+      catchError((error) => throwError(() => error))
+    );
+  }
+
+  createInvokeMethod(invokedMethod: InvokedMethod): Observable<{ id: string }> {
+    return this.http.post<{ id: string }>(
+      `${this.apiUrl}/invokedMethods`,
+      invokedMethod
+    ).pipe(
+      catchError((error) => throwError(() => error))
+    );
+  }
+
+  getParameters(): Observable<Parameter[]> {
+    return this.http.get<Parameter[]>(`${this.apiUrl}/parameters`).pipe(
+      catchError((error) => {
+        return throwError(() => error);
+      })
+    );
+  }
+
+   getLocalVariables(): Observable<LocalVariable[]> {
+    return this.http.get<LocalVariable[]>(`${this.apiUrl}/localVariables`).pipe(
+      catchError((error) => {
+        return throwError(() => error);
+      })
+    );
+  }
+
+  associateInterfaceSignature(interfaceId: string, methodSignatureId: string): Observable<{ message: string }> {
+    return this.http.post<{ message: string }>(
+      `${this.apiUrl}/interfaces/${interfaceId}/methodSignatures/${methodSignatureId}`,
+      null
+    ).pipe(
       catchError((error) => throwError(() => error))
     );
   }

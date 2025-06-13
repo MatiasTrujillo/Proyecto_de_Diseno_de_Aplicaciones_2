@@ -105,6 +105,10 @@ public class InterfaceService(
             interfaceToUpdate.MethodSignatures = updatedSignatures;
             _interfaceRepository.Update(interfaceToUpdate);
         }
+        else
+        {
+            throw new InterfaceNotFoundException("Interface already have this methodsignature.");
+        }
     }
 
     private void VerifyInterfaceInUse(Guid id)
