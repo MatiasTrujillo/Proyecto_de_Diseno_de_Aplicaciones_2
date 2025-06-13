@@ -6,7 +6,7 @@ export interface Attribute {
   id: string;
   name: string;
   accessibility: Accessibility;
-  ReferenceType: Type;
-  InstanceType: Type;
+  referenceType: Type;
+  instanceType: Type | null;
   stereotype: KeyWord | null;
 }

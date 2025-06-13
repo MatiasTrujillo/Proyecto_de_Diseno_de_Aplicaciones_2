@@ -23,6 +23,7 @@ export class AttributemenuComponent {
   activeModal: string | null = null;
   selectedAttribute: Attribute | null = null;
   result: string = '';
+  error: string | null = null;
 
   constructor(private simulatorService: SimulatorService, private router: Router) {}
 
@@ -34,8 +35,11 @@ export class AttributemenuComponent {
     this.simulatorService.getAttribute().subscribe(
       (res: Attribute[]) => {
         this.attributes = res;
+        this.error = null;
       },
-      (err) => console.error('Error loading attributes:', err)
+      (err) => {
+        this.error = 'Error loading attributes: ' + (err?.error?.message || err.message || 'Unknown error');
+      }
     );
   }
 

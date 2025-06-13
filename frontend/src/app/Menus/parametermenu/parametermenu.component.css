@@ -223,6 +223,33 @@ button {
   padding-top: 1rem;
 }
 
+.manage-interface-header {
+  margin-left: 320px; /* Ajusta según tu layout */
+  margin-top: 60px;
+  margin-bottom: 32px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.manage-interface-header h1 {
+  font-size: 2.2rem;
+  font-weight: 700;
+  color: #1e293b;
+  margin: 0 0 6px 0;
+  letter-spacing: 1px;
+  font-family: 'Segoe UI', 'Roboto', Arial, sans-serif;
+}
+
+.header-underline {
+  width: 48px;
+  height: 3px;
+  background: #1e293b;
+  border-radius: 2px;
+  margin-left: 2px;
+}
+
+
 /* Responsive para móviles */
 @media (max-width: 900px) {
   .sidebar {

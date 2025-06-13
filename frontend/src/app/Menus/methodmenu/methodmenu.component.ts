@@ -5,6 +5,8 @@ import { AssociatemethodwithclassComponent } from '../../Methods/associatemethod
 import { DeletemethodComponent } from '../../Methods/deletemethod/deletemethod.component';
 import { SimulatorService } from '../../services/simulator.service';
 import { Method } from '../../models/method';
+import { KeyWord } from '../../models/KeyWord';
+import { Accessibility } from '../../models/Accessibility';
 
 @Component({
   selector: 'app-methodmenu',
@@ -58,5 +60,15 @@ export class MethodmenuComponent implements OnInit {
 
   goToNavMenu() {
     this.router.navigate(['/navMenu']);
+  }
+
+  getStereotypeName(value: number | null | undefined): string {
+    if (value === null || value === undefined) return '';
+    return KeyWord[value] ?? '';
+  }
+
+    getAccesibilityName(value: number | null | undefined): string {
+    if (value === null || value === undefined) return '';
+    return Accessibility[value] ?? '';
   }
 }

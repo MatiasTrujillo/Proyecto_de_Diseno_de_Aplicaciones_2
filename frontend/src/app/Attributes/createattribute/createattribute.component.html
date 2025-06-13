@@ -25,3 +25,7 @@
 
   <button type="submit" [disabled]="attributeForm.invalid">Create Attribute</button>
 </form>
+
+<div *ngIf="error" class="error-message">
+  {{ error }}
+</div>
