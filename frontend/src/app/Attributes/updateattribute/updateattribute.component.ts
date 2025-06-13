@@ -28,11 +28,8 @@ export class UpdateattributeComponent implements OnInit {
   message = '';
   error = '';
 
-  AccessibilityWordLabels = Object.keys(Accessibility);
-  accessibilitys = Object.keys(Accessibility).filter(k => isNaN(Number(k)));
-
-  keyWordLabels = Object.keys(KeyWord);
-  keyWords = Object.keys(KeyWord).filter(k => isNaN(Number(k)));
+AccessibilityWordLabels = Object.keys(Accessibility).filter(k => !isNaN(Number(k)));
+keyWordLabels = Object.keys(KeyWord).filter(k => !isNaN(Number(k)));
 
   constructor(private fb: FormBuilder, private simulatorService: SimulatorService) {}
 
@@ -44,8 +41,8 @@ export class UpdateattributeComponent implements OnInit {
 
       this.updateForm = this.fb.group({
         name: [this.attributeData.name, Validators.required],
-        IdReferenceType: [this.attributeData.ReferenceType, Validators.required],
-        IdInstanceType: [this.attributeData.InstanceType, Validators.required],
+        IdReferenceType: [this.attributeData.referenceType?.id ?? '', Validators.required],
+        IdInstanceType: [this.attributeData.instanceType?.id ?? '', Validators.required],
         stereotype: [this.attributeData.stereotype ?? null],
         accessibility: [this.attributeData.accessibility ?? null]
       });
@@ -72,22 +69,21 @@ export class UpdateattributeComponent implements OnInit {
     return Accessibility[label as keyof typeof Accessibility];
   }
 
-  onSubmit(): void {
-     console.log('onSubmit called', this.updateForm.value); // <-- Agrega esto
-    this.message = '';
-    this.error = '';
+onSubmit(): void {
+  const updateData: Partial<UpdateAttribute> = this.updateForm.value;
+  this.message = '';
+  this.error = '';
 
-    const updateData: Partial<UpdateAttribute> = this.updateForm.value;
-
-    this.simulatorService.updateAttribute(this.attributeId, updateData).subscribe({
-      next: res => {
-        this.message = res?.message ?? 'Attribute updated successfully.';
-      },
-      error: err => {
-        this.error = err?.error?.message ?? 'Update failed.';
-      }
-    });
-  }
+  this.simulatorService.updateAttribute(this.attributeId, updateData).subscribe({
+    next: res => {
+      this.message = res?.message ?? 'Attribute updated successfully.';
+    },
+    error: err => {
+      console.error('Error completo del backend:', err);
+      this.error = err?.error?.message ?? 'Update failed.';
+    }
+  });
+}
 
   closeForm(): void {
     this.close.emit();

@@ -24,7 +24,7 @@ public class AuthorizationFilterTests
 
         _filter.OnAuthorization(context);
 
-        Assert.IsNull(context.Result); // No resultado significa acceso permitido
+        Assert.IsNull(context.Result);
     }
 
     [TestMethod]
@@ -37,7 +37,7 @@ public class AuthorizationFilterTests
 
         Assert.IsInstanceOfType(context.Result, typeof(UnauthorizedObjectResult));
         var result = context.Result as UnauthorizedObjectResult;
-        Assert.AreEqual("Invalid or missing session token.", result.Value);
+        Assert.AreEqual("API Key inválida o ausente", result.Value);
     }
 
     [TestMethod]
@@ -49,7 +49,7 @@ public class AuthorizationFilterTests
 
         Assert.IsInstanceOfType(context.Result, typeof(UnauthorizedObjectResult));
         var result = context.Result as UnauthorizedObjectResult;
-        Assert.AreEqual("Invalid or missing session token.", result.Value);
+        Assert.AreEqual("Missing session token.", result.Value);
     }
 
     [TestMethod]
@@ -61,7 +61,7 @@ public class AuthorizationFilterTests
 
         Assert.IsInstanceOfType(context.Result, typeof(UnauthorizedObjectResult));
         var result = context.Result as UnauthorizedObjectResult;
-        Assert.AreEqual("Invalid or missing session token.", result.Value);
+        Assert.AreEqual("API Key inválida o ausente", result.Value);
     }
 
     private AuthorizationFilterContext CreateAuthContextWithHeader(string headerKey, string headerValue)

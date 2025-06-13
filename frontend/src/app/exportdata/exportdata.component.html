@@ -25,7 +25,9 @@
 
   <label>
     Exporter Name:
-    <input type="text" [(ngModel)]="exporterName" />
+    <select [(ngModel)]="exporterName">
+      <option *ngFor="let exporter of availableExporters" [value]="exporter">{{ exporter }}</option>
+    </select>
   </label>
 
   <label>
@@ -61,9 +63,13 @@
 
   <button (click)="exportData()">Export</button>
 
-  <div class="result" *ngIf="result">
-  <div [innerHTML]="result.exporterTypes"></div>
-</div>
+  <div class="result" *ngIf="exportMessage">
+    <p>{{ exportMessage }}</p>
+  </div>
+
+  <div class="result" *ngIf="result && result.exporterTypes">
+    <div [innerHTML]="result.exporterTypes"></div>
+  </div>
 
   <div class="error" *ngIf="error">
     <p>{{ error }}</p>

@@ -45,14 +45,15 @@ export class AssociateInterfaceSignatureComponent implements OnInit {
     }
 
     this.simulatorService.associateInterfaceSignature(this.interfaceData.id, this.selectedMethodSignatureId).subscribe({
-      next: (res) => {
-        this.message = res.message || 'Successfully associated method signature to interface.';
-        this.selectedMethodSignatureId = '';
-      },
-      error: (err) => {
-        this.error = 'Error associating method signature: ' + (err?.message || err);
-      }
-    });
+  next: (res) => {
+    this.message = res.message || 'Successfully associated method signature to interface.';
+    this.selectedMethodSignatureId = '';
+  },
+  error: (err) => {
+    // Intenta mostrar el mensaje del backend si existe
+    this.error = err?.error?.message || err?.error?.detail || err?.message || 'Error associating method signature.';
+  }
+});
   }
 
   closeModal(): void {

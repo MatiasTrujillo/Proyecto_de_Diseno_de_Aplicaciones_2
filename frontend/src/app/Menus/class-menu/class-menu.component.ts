@@ -5,6 +5,7 @@ import { SimulatorService } from '../../services/simulator.service';
 import { UpdateclassComponent } from '../../Classes/updateclass/updateclass.component';
 import { DeleteclassComponent } from '../../Classes/deleteclass/deleteclass.component';
 import { Class } from '../../models/class';
+import { KeyWord } from '../../models/KeyWord';
 
 @Component({
   selector: 'app-class-menu',
@@ -54,4 +55,9 @@ export class ClassMenuComponent implements OnInit {
   goToNavMenu() {
     this.router.navigate(['/navMenu']);
   }
+
+getStereotypeName(value: number | null | undefined): string {
+  if (value === null || value === undefined) return '';
+  return KeyWord[value] ?? '';
+}
 }

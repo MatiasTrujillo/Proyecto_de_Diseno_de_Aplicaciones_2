@@ -65,15 +65,15 @@ public class ClassControllerTest
     {
         var expectedClasses = new List<ClassDTO>
         {
-            new ClassDTO { IdClass = "7f6aa6cc-506e-4773-bd8f-d4872430c15e", Name = "Class1" },
-            new ClassDTO { IdClass = "7f6aa6cc-506e-4773-bd8f-d4872430c12e", Name = "Class2" }
+            new ClassDTO { Id = "7f6aa6cc-506e-4773-bd8f-d4872430c15e", Name = "Class1" },
+            new ClassDTO { Id = "7f6aa6cc-506e-4773-bd8f-d4872430c12e", Name = "Class2" }
         };
         _classServiceMock.Setup(service => service.GetClasses())
             .Returns(expectedClasses.Select(c =>
             {
-                if(c.IdClass != null)
+                if(c.Id != null)
                 {
-                    return new Simulator.Domain.Class { Id = Guid.Parse(c.IdClass), Name = c.Name };
+                    return new Simulator.Domain.Class { Id = Guid.Parse(c.Id), Name = c.Name };
                 }
 
                 return null;
@@ -91,7 +91,7 @@ public class ClassControllerTest
     public void GetClassById_WhenClassExists_ReturnsOkWithClassDto()
     {
         var classId = Guid.NewGuid();
-        var expectedDto = new ClassDTO { Name = "TestClass", IdClass = "parentId" };
+        var expectedDto = new ClassDTO { Name = "TestClass", Id = "parentId" };
 
         var mockService = new Mock<IClassService>();
         mockService.Setup(s => s.GetClassId(classId)).Returns(expectedDto);

@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable, throwError } from 'rxjs';
 import { tap, catchError } from 'rxjs/operators';
@@ -237,11 +237,30 @@ export class SimulatorService {
     );
   }
 
-  exportWithExporter(exporterName: string, data: TransformerForExporter): Observable<any> {
-    return this.http.post<any>(`${this.apiUrl}/exporters/${exporterName}/export`, data).pipe(
-      catchError((error) => throwError(() => error))
-    );
-  }
+exportWithExporter(exporterName: string, data: TransformerForExporter): Observable<any> {
+  const token = localStorage.getItem('authToken');
+
+  const headers = new HttpHeaders({
+    'Content-Type': 'application/json',
+    'Authorization': `Bearer ${token}`
+  });
+
+  return this.http.post<any>(
+    `${this.apiUrl}/exporters/${exporterName}/export`,
+    data,
+    { headers }
+  ).pipe(
+    catchError((error) => throwError(() => error))
+  );
+}
+
+getAvailableExporters(): Observable<string[]> {
+  return this.http.get<string[]>(`${this.apiUrl}/exporters`).pipe(
+    catchError((error) => throwError(() => error))
+  );
+}
+
+
 private nameSpaceApiUrl = `${this.apiUrl}/namespaces`;
 
   createNameSpace(nameSpace: NameSpace): Observable<{ id: string }> {

@@ -78,7 +78,7 @@ public class ClassService(
         {
             Name = classT.Name,
             Stereotype = classT.Stereotype,
-            IdClass = classT.Parents?.FirstOrDefault()?.Id.ToString()
+            Id = classT.Parents?.FirstOrDefault()?.Id.ToString()
         };
         return clasDto;
     }

@@ -9,9 +9,7 @@
   <div class="form-group">
     <label for="idRefType">Id Reference Type:</label>
     <select id="idRefType" formControlName="IdReferenceType" class="form-control">
-      <option *ngFor="let t of types" [value]="t.id">
-        {{ t.name }}
-      </option>
+      <option *ngFor="let t of types" [value]="t.id">{{ t.name }}</option>
     </select>
   </div>
 
@@ -19,32 +17,29 @@
   <div class="form-group">
     <label for="idInstType">Id Instance Type:</label>
     <select id="idInstType" formControlName="IdInstanceType" class="form-control">
-      <option *ngFor="let t of types" [value]="t.id">
-        {{ t.name }}
-      </option>
+      <option *ngFor="let t of types" [value]="t.id">{{ t.name }}</option>
     </select>
   </div>
 
-    <!-- Stereotype -->
+  <!-- Stereotype -->
   <div class="form-group">
     <label for="stereotype">Stereotype:</label>
     <select id="stereotype" formControlName="stereotype" class="form-control">
-      <option *ngFor="let kw of keyWords" [value]="getKeyValue(kw)">
-        {{ kw }}
-      </option>
+      <option [ngValue]="null">Seleccione una opción</option>
+      <option *ngFor="let kw of keyWordLabels" [ngValue]="kw">{{ kw }}</option>
     </select>
   </div>
 
+  <!-- Accessibility -->
   <div class="form-group">
-  <label for="accessibility">Accessibility:</label>
-  <select id="accessibility" formControlName="accessibility" class="form-control">
-    <option [ngValue]="null">Seleccione una opción</option>
-    <option *ngFor="let a of accessibilitys" [ngValue]="getAcceValue(a)">
-      {{ a }}
-    </option>
-  </select>
-</div>
+    <label for="accessibility">Accessibility:</label>
+    <select id="accessibility" formControlName="accessibility" class="form-control">
+      <option [ngValue]="null">Seleccione una opción</option>
+      <option *ngFor="let a of AccessibilityWordLabels" [ngValue]="a">{{ a }}</option>
+    </select>
+  </div>
 
+  <!-- Botones -->
   <div class="form-group buttons">
     <button type="submit" class="btn btn-primary">Actualizar</button>
     <button type="button" (click)="close.emit()" class="btn btn-secondary">Cancelar</button>

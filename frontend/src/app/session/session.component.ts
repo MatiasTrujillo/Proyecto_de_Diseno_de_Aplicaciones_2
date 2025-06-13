@@ -4,6 +4,11 @@ import { Session } from '../models/Session';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 
+interface ErrorResponse {
+  error?: { message?: string } | string;
+  message?: string;
+}
+
 @Component({
   selector: 'app-session',
   standalone: true,
@@ -40,7 +45,7 @@ export class SessionComponent {
         this.message = 'Signed in. Token saved.';
         this.isError = false;
       },
-      error: (err) => {
+      error: (err: ErrorResponse) => {
         this.message = this.getErrorMessage(err);
         this.isError = true;
       },
@@ -55,27 +60,27 @@ export class SessionComponent {
     }
 
     this.sessionService.logIn(this.token).subscribe({
-      next: (res) => {
+      next: (res: { message?: string }) => {
         localStorage.setItem('authToken', this.token);
-        this.message = res.message ?? res;
+        this.message = res.message ?? (res as unknown as string);
         this.isError = false;
-        this.router.navigate(['/navMenu']); // Redirigir al componente nav-menu
+        this.router.navigate(['/navMenu']);
       },
-      error: (err) => {
+      error: (err: ErrorResponse) => {
         this.message = this.getErrorMessage(err);
         this.isError = true;
       },
     });
   }
 
-  private getErrorMessage(error: any): string {
+  private getErrorMessage(error: ErrorResponse): string {
     console.log('Full error object:', error);
 
     if (error.error) {
       if (typeof error.error === 'string') {
         return error.error;
-      } else if (error.error.message) {
-        return error.error.message;
+      } else if ((error.error as { message?: string }).message) {
+        return (error.error as { message?: string }).message!;
       }
     }
     if (error.message) {
