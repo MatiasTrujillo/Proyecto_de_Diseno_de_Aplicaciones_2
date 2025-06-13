@@ -6,7 +6,7 @@ public class ClassDTO
 {
     public string Name { get; set; } = string.Empty;
     public KeyWord? Stereotype { get; set; } = null;
-    public string? IdClass { get; set; } = null;
+    public string? Id { get; set; } = null;
 
     public Class ToEntity()
     {

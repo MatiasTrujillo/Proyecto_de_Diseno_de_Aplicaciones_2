@@ -35,7 +35,12 @@ public class ClassController(IClassService classService) : ControllerBase
     public IActionResult GetClasses()
     {
         var classes = _classService.GetClasses()
-            .Select(c => c.ToDTO())
+            .Select(c => new ClassDTO
+            {
+                Name = c.Name,
+                Stereotype = c.Stereotype,
+                Id = c.Id.ToString()
+            })
             .ToList();
         return Ok(classes);
     }
