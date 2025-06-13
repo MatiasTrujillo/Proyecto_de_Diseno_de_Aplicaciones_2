@@ -297,13 +297,6 @@ public class MethodService(
             return result;
         }
 
-        if(anAttribute.ReferenceType is Primitive attributePrimitive && invokedMethodMethod.Name == "ToString")
-        {
-            var primitiveTypeName = attributePrimitive.PrimitiveType.ToString();
-            result.Add(AddToResult($"this.{anAttribute.Name}", primitiveTypeName, invokedMethodMethod));
-            return result;
-        }
-
         var allPrimitives = _classRepository.FindAllTypes().OfType<Primitive>().ToList();
         if(anAttribute.ReferenceType is Primitive attributePrimitive2)
         {
@@ -606,19 +599,6 @@ public class MethodService(
                 else
                 {
                     r += $"{p.PrimitiveType.ToString().ToLower()}, ";
-                }
-            }
-
-            Type anInterface = allTypes.FirstOrDefault(x => x.Name == method.Parameters[i].InstanceType.Name);
-            if(!success && anInterface != null && anInterface is Interface)
-            {
-                if(i == method.Parameters.Count - 1)
-                {
-                    r += $"{method.Parameters[i].InstanceType.Name}";
-                }
-                else
-                {
-                    r += $"{method.Parameters[i].InstanceType.Name}, ";
                 }
             }
         }
