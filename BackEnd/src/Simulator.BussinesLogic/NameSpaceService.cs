@@ -47,7 +47,7 @@ public class NameSpaceService(
         var nameSpace = nameSpaceRepository.Find(nameSpaceId);
         var classEntity = classRepository.Find(classId);
 
-        if (classEntity == null)
+        if(classEntity == null)
         {
             throw new NameSpaceException("Class does not exist");
         }
@@ -62,7 +62,7 @@ public class NameSpaceService(
 
     private static void ValidateChilds(bool existsInChilds, Class classEntity)
     {
-        if (!existsInChilds)
+        if(!existsInChilds)
         {
             throw new NameSpaceException($"The namespace does not contain a child with the name '{classEntity.Name}'");
         }
@@ -87,7 +87,7 @@ public class NameSpaceService(
 
     private static void ValidateChildsInterface(bool existsInChilds, Interface interfaceEntity)
     {
-        if (!existsInChilds)
+        if(!existsInChilds)
         {
             throw new NameSpaceException($"The namespace does not contain a child with the name '{interfaceEntity.Name}'");
         }

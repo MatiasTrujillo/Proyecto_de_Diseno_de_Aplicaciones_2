@@ -10,7 +10,7 @@ public class TypeDTO
     public Type ToEntity()
     {
         var kind = Kind.ToLower();
-        if (kind.EndsWith("proxy"))
+        if(kind.EndsWith("proxy"))
         {
             kind = kind.Replace("proxy", string.Empty);
         }

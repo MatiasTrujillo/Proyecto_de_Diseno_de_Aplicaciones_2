@@ -5,7 +5,6 @@ using Simulator.Domain.Exception;
 using Simulator.DTO;
 using Simulator.IDataAcces;
 using Attribute = Simulator.Domain.Attribute;
-using Type = Simulator.Domain.Type;
 
 namespace Simulator.BussinesLogic.Test;
 
@@ -117,14 +116,18 @@ public class AttributeServiceTest
         var classId = Guid.NewGuid();
         var existingAttribute = new Attribute
         {
-            Id = Guid.NewGuid(), Name = "Agility", Accessibility = Accessibility.Public
+            Id = Guid.NewGuid(),
+            Name = "Agility",
+            Accessibility = Accessibility.Public
         };
 
         var classEntity = new Class { Id = classId, Name = "Mage", Attributes = [existingAttribute] };
 
         var newAttribute = new Attribute
         {
-            Id = Guid.NewGuid(), Name = "Agility", Accessibility = Accessibility.Public
+            Id = Guid.NewGuid(),
+            Name = "Agility",
+            Accessibility = Accessibility.Public
         };
 
         _mockClassRepository
@@ -147,12 +150,16 @@ public class AttributeServiceTest
         var classId = Guid.NewGuid();
         var existingAttribute = new Attribute
         {
-            Id = Guid.NewGuid(), Name = "Agility", Accessibility = Accessibility.Public
+            Id = Guid.NewGuid(),
+            Name = "Agility",
+            Accessibility = Accessibility.Public
         };
 
         var newAttribute = new Attribute
         {
-            Id = Guid.NewGuid(), Name = "Agility", Accessibility = Accessibility.Public
+            Id = Guid.NewGuid(),
+            Name = "Agility",
+            Accessibility = Accessibility.Public
         };
 
         _mockClassRepository
@@ -618,9 +625,18 @@ public class AttributeServiceTest
 
         var attribute = new Attribute
         {
-            Id = attributeId, Name = "attr1", ReferenceType = new Class { Name = "TestClass" }
+            Id = attributeId,
+            Name = "attr1",
+            ReferenceType = new Class
+            {
+                Name = "TestClass"
+            }
         };
-        var invoked = new InvokedMethod { Id = invokeId, ReferenceName = "refName" };
+        var invoked = new InvokedMethod
+        {
+            Id = invokeId,
+            ReferenceName = "refName"
+        };
 
         _mockAttributeRepository.Setup(r => r.Find(attributeId)).Returns(attribute);
         _mockInvokeMethodRepository.Setup(r => r.Find(invokeId)).Returns(invoked);
@@ -640,9 +656,13 @@ public class AttributeServiceTest
 
         var attribute = new Attribute
         {
-            Id = attributeId, Name = "attr1", ReferenceType = new Class { Name = "TestClass" }
+            Id = attributeId,
+            Name = "attr1",
+            ReferenceType = new Class
+            {
+                Name = "TestClass"
+            }
         };
-        var invoked = new InvokedMethod { Id = invokeId, ReferenceName = "refName" };
 
         _mockAttributeRepository.Setup(r => r.Find(attributeId)).Returns(attribute);
         _mockInvokeMethodRepository.Setup(r => r.Find(invokeId)).Returns((InvokedMethod)null!);
@@ -899,10 +919,18 @@ public class AttributeServiceTest
     {
         var attributeId = Guid.NewGuid();
         var typeId = Guid.NewGuid();
-        var attribute = new Attribute { Id = attributeId, Name = "OldName", Accessibility = Accessibility.Private };
+        var attribute = new Attribute
+        {
+            Id = attributeId,
+            Name = "OldName",
+            Accessibility = Accessibility.Private
+        };
         var dto = new UpdateAttributeDTO
         {
-            Name = "NewName", Accessibility = "public", IdReferenceType = typeId.ToString(), Stereotype = "abstract"
+            Name = "NewName",
+            Accessibility = "public",
+            IdReferenceType = typeId.ToString(),
+            Stereotype = "abstract"
         };
 
         _mockAttributeRepository.Setup(r => r.Find(attributeId)).Returns(attribute);
