@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Simulator.DTO;
 using Simulator.IBussinesLogic;
+using Simulator.UpdateDTO;
 
 namespace Simulator.WebApi.Controllers;
 
@@ -13,7 +14,7 @@ public class AttributeController(IAttributeService attributeService) : Controlle
     [HttpPost]
     public IActionResult CreateAttribute([FromBody] AttributeDto attribute)
     {
-        var createdAttributeId = _attributeService.CreateAttribute(attribute);
+        var createdAttributeId = _attributeService.CreateAttribute(attribute.ToEntity());
         return Created(string.Empty, new { id = createdAttributeId });
     }
 
@@ -48,7 +49,15 @@ public class AttributeController(IAttributeService attributeService) : Controlle
     [HttpGet]
     public IActionResult GetAttributes()
     {
-        var attributes = _attributeService.GetAttributes();
+        var attributes = _attributeService.GetAttributes().Select(a => new AttributeDto
+        {
+            Id = a.Id.ToString(),
+            Name = a.Name,
+            Accessibility = a.Accessibility,
+            ReferenceType = a.ReferenceType?.ToDTO(),
+            InstanceType = a.InstanceType?.ToDTO(),
+            Stereotype = a.Stereotype
+        }).ToList();
         return Ok(attributes);
     }
 }

@@ -13,7 +13,7 @@ public class LocalVariableController(ILocalVariableService methodService) : Cont
     [HttpPost]
     public IActionResult CreateLocalVariable([FromBody] LocalVariableDTO localVariable)
     {
-        var localVariableId = _amethodService.CreateLocalVariable(localVariable);
+        var localVariableId = _amethodService.CreateLocalVariable(localVariable.ToEntity());
         return Created(string.Empty, new { id = localVariableId });
     }
 
@@ -27,7 +27,21 @@ public class LocalVariableController(ILocalVariableService methodService) : Cont
     [HttpGet]
     public IActionResult GetAllLocalVariables()
     {
-        var localVariables = _amethodService.GetAllLocalVariables();
+        var localVariables = _amethodService.GetAllLocalVariables().Select(p => new LocalVariableDTO
+        {
+            Id = p.Id.ToString(),
+            Name = p.Name,
+            ReferenceType = new TypeDTO
+            {
+                Name = p.ReferenceType.Name,
+                Kind = p.ReferenceType.GetType().Name.ToLower()
+            },
+            InstanceType = new TypeDTO
+            {
+                Name = p.InstanceType.Name,
+                Kind = p.InstanceType.GetType().Name.ToLower()
+            }
+        }).ToList();
         return Ok(localVariables);
     }
 }

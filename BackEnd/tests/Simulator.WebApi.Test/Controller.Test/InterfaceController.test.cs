@@ -3,6 +3,7 @@ using Moq;
 using Simulator.Domain;
 using Simulator.DTO;
 using Simulator.IBussinesLogic;
+using Simulator.UpdateDTO;
 using Simulator.WebApi.Controllers;
 
 namespace Simulator.WebApi.Test.Controller.Test;
@@ -25,7 +26,7 @@ public class InterfaceControllertest
     [TestMethod]
     public void CreateInterface_ShouldReturnCreated_WhenInterfaceIsCreated()
     {
-        _interfaceServiceMock.Setup(service => service.CreateInterface(interfaceDto))
+        _interfaceServiceMock.Setup(service => service.CreateInterface(interfaceDto.ToEntity()))
             .Verifiable();
         var result = _interfaceController.CreateInterface(interfaceDto) as CreatedResult;
 

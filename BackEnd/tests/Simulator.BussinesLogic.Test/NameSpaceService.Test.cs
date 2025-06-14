@@ -36,7 +36,7 @@ public class NameSpaceService_Test
         _mockNameSpaceRepository.Setup(repo => repo.Add(It.IsAny<NameSpace>()))
             .Callback<NameSpace>(ns => entity = ns);
 
-        var resultId = _nameSpaceService.CreateNameSpace(_dto);
+        var resultId = _nameSpaceService.CreateNameSpace(entity);
 
         _mockNameSpaceRepository.Verify(repo => repo.Add(It.Is<NameSpace>(ns => ns.Name == _dto.Name)), Times.Once);
         Assert.AreEqual(entity.Id, resultId);
@@ -48,7 +48,7 @@ public class NameSpaceService_Test
     {
         _mockNameSpaceRepository.Setup(repo => repo.FindAll()).Returns([new NameSpace { Name = "MyNamespace" }]);
 
-        _nameSpaceService.CreateNameSpace(_dto);
+        _nameSpaceService.CreateNameSpace(_dto.ToEntity());
     }
 
     [TestMethod]
@@ -260,9 +260,9 @@ public class NameSpaceService_Test
         var result = service.GetAllNameSpace();
 
         Assert.AreEqual(2, result.Count);
-        Assert.AreEqual(nameSpace1.Id.ToString(), result[0].Id);
+        Assert.AreEqual(nameSpace1.Id, result[0].Id);
         Assert.AreEqual(nameSpace1.Name, result[0].Name);
-        Assert.AreEqual(nameSpace2.Id.ToString(), result[1].Id);
+        Assert.AreEqual(nameSpace2.Id, result[1].Id);
         Assert.AreEqual(nameSpace2.Name, result[1].Name);
     }
 

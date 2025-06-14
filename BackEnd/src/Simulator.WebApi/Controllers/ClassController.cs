@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Simulator.DTO;
 using Simulator.IBussinesLogic;
+using Simulator.UpdateDTO;
 
 namespace Simulator.WebApi.Controllers;
 
@@ -13,7 +14,7 @@ public class ClassController(IClassService classService) : ControllerBase
     [HttpPost]
     public IActionResult CreateClass([FromBody] ClassDTO classT)
     {
-        var classId = _classService.CreateClass(classT);
+        var classId = _classService.CreateClass(classT.ToEntity());
         return Created(string.Empty, new { id = classId });
     }
 
@@ -43,12 +44,5 @@ public class ClassController(IClassService classService) : ControllerBase
             })
             .ToList();
         return Ok(classes);
-    }
-
-    [HttpGet("{id}")]
-    public IActionResult GetClassById([FromRoute] Guid id)
-    {
-        var classDto = _classService.GetClassId(id);
-        return Ok(classDto);
     }
 }

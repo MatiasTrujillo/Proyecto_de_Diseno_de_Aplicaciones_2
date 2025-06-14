@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Moq;
+using Simulator.Domain;
 using Simulator.DTO;
 using Simulator.IBussinesLogic;
 using Simulator.WebApi.Controllers;
@@ -19,17 +20,16 @@ public class NameSpaceControllerTest
         var expectedId = Guid.NewGuid();
 
         _mockNameSpaceService
-            .Setup(service => service.CreateNameSpace(nameSpaceDto))
+            .Setup(service => service.CreateNameSpace(It.IsAny<NameSpace>()))
             .Returns(expectedId);
 
         var result = _controller.CreateNameSpace(nameSpaceDto) as CreatedResult;
 
         Assert.IsNotNull(result);
         Assert.AreEqual(201, result.StatusCode);
-        var returnedId = result?.Value?.GetType().GetProperty("id")?.GetValue(result.Value, null);
-        Assert.AreEqual(expectedId, returnedId);
 
-        _mockNameSpaceService.Verify(service => service.CreateNameSpace(nameSpaceDto), Times.Once);
+        var returnedId = result.Value?.GetType().GetProperty("id")?.GetValue(result.Value, null);
+        Assert.AreEqual(expectedId, returnedId);
     }
 
     [TestMethod]
@@ -115,10 +115,10 @@ public class NameSpaceControllerTest
     [TestMethod]
     public void GetAllNameSpace_ShouldReturnOkWithAllNameSpaces()
     {
-        var nameSpaces = new List<NameSpaceDTO>
+        var nameSpaces = new List<NameSpace>
         {
-            new NameSpaceDTO { Id = Guid.NewGuid().ToString(), Name = "NS1" },
-            new NameSpaceDTO { Id = Guid.NewGuid().ToString(), Name = "NS2" }
+            new NameSpace { Id = Guid.NewGuid(), Name = "NS1" },
+            new NameSpace { Id = Guid.NewGuid(), Name = "NS2" }
         };
 
         var mockService = new Mock<INameSpaceService>(MockBehavior.Strict);

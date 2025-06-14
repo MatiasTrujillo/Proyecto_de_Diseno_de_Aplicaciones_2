@@ -12,14 +12,19 @@ public class InvokedMethodController(IMethodService methodService) : ControllerB
     [HttpPost]
     public IActionResult AssociateInvokeMethod([FromBody] InvokedMethodDTO invokedMethod)
     {
-        var invokedMethodId = _amethodService.AssociateInvokeMethod(invokedMethod);
+        var invokedMethodId = _amethodService.AssociateInvokeMethod(invokedMethod.ToEntity());
         return Created(string.Empty, new { id = invokedMethodId });
     }
 
     [HttpGet]
     public IActionResult GetInvokedMethodById()
     {
-        var invokedMethods = _amethodService.GetInvokedMethodById();
+        var invokedMethods = _amethodService.GetInvokedMethodById().Select(iV => new InvokedMethodDTO
+        {
+            Id = iV.Id.ToString(),
+            ReferenceName = iV.ReferenceName,
+            MethodId = iV.MethodId
+        }).ToList();
         return Ok(invokedMethods);
     }
 }

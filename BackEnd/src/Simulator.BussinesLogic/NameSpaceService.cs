@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Simulator.BussinesLogic.Exception;
 using Simulator.Domain;
-using Simulator.DTO;
 using Simulator.IBussinesLogic;
 using Simulator.IDataAcces;
 
@@ -15,9 +14,8 @@ public class NameSpaceService(
     IInterfaceRepository interfaceRepository
 ) : INameSpaceService
 {
-    public Guid CreateNameSpace(NameSpaceDTO nameSpaceDto)
+    public Guid CreateNameSpace(NameSpace nameSpace)
     {
-        var nameSpace = nameSpaceDto.ToEntity();
         ValidateUniqueNameSpace(nameSpace.Name);
         nameSpaceRepository.Add(nameSpace);
         return nameSpace.Id;
@@ -144,25 +142,17 @@ public class NameSpaceService(
         nameSpaceRepository.Update(child);
     }
 
-    public List<NameSpaceDTO> GetAllNameSpace()
+    public List<NameSpace> GetAllNameSpace()
     {
         var nameSpaces = nameSpaceRepository.FindAll();
-        return nameSpaces.Select(ns => new NameSpaceDTO
-        {
-            Id = ns.Id.ToString(),
-            Name = ns.Name
-        }).ToList();
+        return nameSpaces.ToList();
     }
 
-    public List<NamespaceComponentDTO> GetAllNamespaceComponents()
+    public List<NamespaceComponent> GetAllNamespaceComponents()
     {
         var components = nameSpaceRepository.FindAllNamespaceComponents()
             .Where(ns => !(ns is Primitive));
-        return components.Select(ns => new NamespaceComponentDTO
-        {
-            Id = ns.Id.ToString(),
-            Name = ns.Name
-        }).ToList();
+        return components.ToList();
     }
 
     private void ValidateUniqueNameSpace(string name)

@@ -3,6 +3,7 @@ using Simulator.BussinesLogic.Exception;
 using Simulator.Domain;
 using Simulator.DTO;
 using Simulator.IDataAcces;
+using Simulator.UpdateDTO;
 using Type = Simulator.Domain.Type;
 
 namespace Simulator.BussinesLogic.Test;
@@ -48,7 +49,7 @@ public class InterfaceService_Test
         _mockClassRepository.Setup(r => r.FindAllTypes())
             .Returns([]);
 
-        _interfaceService.CreateInterface(dto);
+        _interfaceService.CreateInterface(dto.ToEntity());
 
         _mockInterfaceRepository.Verify(repo => repo.Add(
             It.Is<Interface>(a =>
@@ -65,7 +66,7 @@ public class InterfaceService_Test
 
         var exception = Assert.ThrowsException<InvalidInterfaceException>(() =>
         {
-            _interfaceService.CreateInterface(dto);
+            _interfaceService.CreateInterface(dto.ToEntity());
         });
 
         Assert.AreEqual("There is already a type with this name", exception.Message);
@@ -79,7 +80,7 @@ public class InterfaceService_Test
 
         var exception = Assert.ThrowsException<InterfaceException>(() =>
         {
-            _interfaceService.CreateInterface(emptyNameDto);
+            _interfaceService.CreateInterface(emptyNameDto.ToEntity());
         });
 
         Assert.AreEqual("The interface name cannot be empty.", exception.Message);
@@ -90,7 +91,7 @@ public class InterfaceService_Test
     {
         var exception = Assert.ThrowsException<InterfaceException>(() =>
         {
-            _interfaceService.CreateInterface(lowerCaseNameDto);
+            _interfaceService.CreateInterface(lowerCaseNameDto.ToEntity());
         });
 
         Assert.AreEqual("The interface name must start with an uppercase letter.", exception.Message);
@@ -104,7 +105,7 @@ public class InterfaceService_Test
 
         var exception = Assert.ThrowsException<InterfaceException>(() =>
         {
-            _interfaceService.CreateInterface(nameWithSpacesDto);
+            _interfaceService.CreateInterface(nameWithSpacesDto.ToEntity());
         });
 
         Assert.AreEqual("The interface name must not contain spaces.", exception.Message);
@@ -118,7 +119,7 @@ public class InterfaceService_Test
         _mockInterfaceRepository.Setup(r => r.FindAll()).Returns([entity]);
         _mockClassRepository.Setup(r => r.FindAll()).Returns([]);
 
-        _interfaceService.CreateInterface(dto);
+        _interfaceService.CreateInterface(dto.ToEntity());
 
         _mockInterfaceRepository.Setup(r => r.Delete(It.IsAny<Guid>()));
         _interfaceService.DeleteInterface(id);
@@ -180,7 +181,7 @@ public class InterfaceService_Test
         _mockInterfaceRepository.Setup(r => r.Exist(id)).Returns(true);
         _mockInterfaceRepository.Setup(r => r.Update(It.IsAny<Interface>()));
 
-        _interfaceService.CreateInterface(dto);
+        _interfaceService.CreateInterface(dto.ToEntity());
         _interfaceService.UpdateInterface(id, updateInterfaceDto);
 
         _mockInterfaceRepository.Verify(repo => repo.Update(
@@ -208,7 +209,7 @@ public class InterfaceService_Test
         _mockInterfaceRepository.Setup(r => r.Exist(id)).Returns(false);
         _mockInterfaceRepository.Setup(r => r.Update(It.IsAny<Interface>()));
 
-        _interfaceService.CreateInterface(dto);
+        _interfaceService.CreateInterface(dto.ToEntity());
 
         var exception = Assert.ThrowsException<InterfaceNotFoundException>(() =>
         {
@@ -234,7 +235,7 @@ public class InterfaceService_Test
         _mockInterfaceRepository.Setup(r => r.Exist(id)).Returns(true);
         _mockInterfaceRepository.Setup(r => r.Update(It.IsAny<Interface>()));
 
-        _interfaceService.CreateInterface(dto);
+        _interfaceService.CreateInterface(dto.ToEntity());
         var exception = Assert.ThrowsException<MethodSignatureNotFoundException>(() =>
         {
             _interfaceService.UpdateInterface(id, updateInterfaceDto);
@@ -262,7 +263,7 @@ public class InterfaceService_Test
         _mockInterfaceRepository.Setup(r => r.Exist(id)).Returns(true);
         _mockInterfaceRepository.Setup(r => r.Update(It.IsAny<Interface>()));
 
-        _interfaceService.CreateInterface(dto);
+        _interfaceService.CreateInterface(dto.ToEntity());
 
         var exception = Assert.ThrowsException<InterfaceNotFoundException>(() =>
         {
@@ -280,7 +281,7 @@ public class InterfaceService_Test
         _mockInterfaceRepository.Setup(r => r.FindAll())
             .Returns([dto.ToEntity()]);
 
-        _interfaceService.CreateInterface(dto);
+        _interfaceService.CreateInterface(dto.ToEntity());
         var result = _interfaceService.GetInterfaces();
 
         Assert.IsNotNull(result);

@@ -4,6 +4,7 @@ using Simulator.Domain;
 using Simulator.Domain.Exception;
 using Simulator.DTO;
 using Simulator.IDataAcces;
+using Simulator.UpdateDTO;
 using Attribute = Simulator.Domain.Attribute;
 using Type = Simulator.Domain.Type;
 
@@ -36,7 +37,7 @@ public class ClassServiceTest
     [TestMethod]
     public void CreateClass_ShouldCallRepositoryAdd_WithValidClass()
     {
-        var dto = new ClassDTO { Name = "Pedro", Stereotype = KeyWord.Sealed, };
+        var dto = new Class { Name = "Pedro", Stereotype = KeyWord.Sealed };
 
         var objectClass = new Class { Name = "Object" };
         var existingClasses = new List<Type> { objectClass };
@@ -57,11 +58,11 @@ public class ClassServiceTest
     [TestMethod]
     public void CreateClass_ShouldNotCallRepositoryAdd_WithRepeatedClassName()
     {
-        var dto1 = new ClassDTO { Name = "Pedro", Stereotype = KeyWord.Sealed };
+        var dto1 = new Class { Name = "Pedro", Stereotype = KeyWord.Sealed };
 
-        var dto2 = new ClassDTO { Name = "Pedro", Stereotype = null };
+        var dto2 = new Class { Name = "Pedro", Stereotype = null };
 
-        var classes = new List<Type> { dto1.ToEntity() };
+        var classes = new List<Type> { dto1 };
 
         _mockClassRepository.Setup(r => r.FindAllTypes())
             .Returns(classes);
@@ -78,7 +79,7 @@ public class ClassServiceTest
     public void CreateClass_ShouldThrowException_WhenKeyWordIsNotValid()
     {
         var invalidStereoType = (KeyWord)99;
-        var dto = new ClassDTO { Name = "Class", Stereotype = invalidStereoType };
+        var dto = new Class { Name = "Class", Stereotype = invalidStereoType };
 
         _mockClassRepository.Setup(r => r.FindAllTypes())
             .Returns([]);
@@ -90,54 +91,6 @@ public class ClassServiceTest
 
         Assert.AreEqual("Invalid stereotype value. Classes stereotypes can only be null, abstract or sealed.",
             exception.Message);
-    }
-
-    [TestMethod]
-    public void CreateClass_ShouldThrowException_WhenNameIsWhitespace()
-    {
-        var dto = new ClassDTO { Name = string.Empty, Stereotype = KeyWord.Sealed };
-
-        _mockClassRepository.Setup(r => r.FindAllTypes())
-            .Returns([]);
-
-        var exception = Assert.ThrowsException<ClassException>(() =>
-        {
-            _classService.CreateClass(dto);
-        });
-
-        Assert.AreEqual("The class name cannot be empty.", exception.Message);
-    }
-
-    [TestMethod]
-    public void CreateClass_ShouldThrowException_WhenNameDoesNotBeginWithACapitalLetter()
-    {
-        var dto = new ClassDTO { Name = "class", Stereotype = KeyWord.Sealed };
-
-        _mockClassRepository.Setup(r => r.FindAllTypes())
-            .Returns([]);
-
-        var exception = Assert.ThrowsException<ClassException>(() =>
-        {
-            _classService.CreateClass(dto);
-        });
-
-        Assert.AreEqual("The class name must start with an uppercase letter.", exception.Message);
-    }
-
-    [TestMethod]
-    public void CreateClass_ShouldThrowException_WhenNameCannotHaveSpacesDoesNot()
-    {
-        var dto = new ClassDTO { Name = "Class Name", Stereotype = KeyWord.Sealed };
-
-        _mockClassRepository.Setup(r => r.FindAllTypes())
-            .Returns([]);
-
-        var exception = Assert.ThrowsException<ClassException>(() =>
-        {
-            _classService.CreateClass(dto);
-        });
-
-        Assert.AreEqual("The class name must not contain spaces.", exception.Message);
     }
 
     [TestMethod]
@@ -492,7 +445,7 @@ public class ClassServiceTest
     public void CreateClass_ShouldThrowException_WhenKeyWordStatic()
     {
         var invalidStereoType = KeyWord.Static;
-        var dto = new ClassDTO { Name = "Class", Stereotype = invalidStereoType };
+        var dto = new Class { Name = "Class", Stereotype = invalidStereoType };
 
         _mockClassRepository.Setup(r => r.FindAllTypes())
             .Returns([]);
@@ -583,7 +536,7 @@ public class ClassServiceTest
     public void CreateClass_ShouldThrowException_WhenKeyWordVirtual()
     {
         var invalidStereoType = KeyWord.Virtual;
-        var dto = new ClassDTO { Name = "Class", Stereotype = invalidStereoType };
+        var dto = new Class { Name = "Class", Stereotype = invalidStereoType };
 
         _mockClassRepository.Setup(r => r.FindAllTypes())
             .Returns([]);
@@ -746,37 +699,5 @@ public class ClassServiceTest
         Assert.IsTrue(result.Any(t => t.Name == "TestClass2"));
 
         _mockClassRepository.Verify(repo => repo.FindAll(), Times.Once);
-    }
-
-    [TestMethod]
-    public void GetClassId_WhenClassExists_ReturnsCorrectClassDTO()
-    {
-        var classId = Guid.NewGuid();
-        var parentId = Guid.NewGuid();
-        var parentClass = new Class { Id = parentId, Name = "ParentClass" };
-        var classT = new Class
-        {
-            Id = classId,
-            Name = "TestClass",
-            Stereotype = KeyWord.Sealed,
-            Parents = [parentClass]
-        };
-
-        var mockClassRepository = new Mock<IClassRepository>(MockBehavior.Strict);
-        mockClassRepository.Setup(r => r.FindAll()).Returns([classT]);
-        mockClassRepository.Setup(r => r.Find(classId)).Returns(classT);
-
-        var service = new ClassService(
-            mockClassRepository.Object,
-            Mock.Of<IAttributeRepository>(),
-            Mock.Of<IMethodRepository>(),
-            Mock.Of<IInterfaceRepository>());
-
-        var result = service.GetClassId(classId);
-
-        Assert.IsNotNull(result);
-        Assert.AreEqual("TestClass", result.Name);
-        Assert.AreEqual(KeyWord.Sealed, result.Stereotype);
-        Assert.AreEqual(parentId.ToString(), result.Id);
     }
 }

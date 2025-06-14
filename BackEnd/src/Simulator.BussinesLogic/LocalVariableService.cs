@@ -4,7 +4,6 @@ using System.Linq;
 using Simulator.BussinesLogic.Exception;
 using Simulator.Domain;
 using Simulator.Domain.Exception;
-using Simulator.DTO;
 using Simulator.IBussinesLogic;
 using Simulator.IDataAcces;
 using Type = Simulator.Domain.Type;
@@ -17,15 +16,14 @@ public class LocalVariableService(ILocalVariableRepository localVariableReposito
     private readonly IClassRepository _classRepository = classRepository;
     private readonly IInvokedMethodRepository _invokedMethodRepository = invokedMethodRepository;
 
-    public Guid CreateLocalVariable(LocalVariableDTO localVariable)
+    public Guid CreateLocalVariable(LocalVariable localVariableT)
     {
-        ValidateLocalVariableIsNotNull(localVariable);
-        if(localVariable.Name == string.Empty)
+        ValidateLocalVariableIsNotNull(localVariableT);
+        if(localVariableT.Name == string.Empty)
         {
             throw new LocalVariableNotFoundException("Local Variable Name cannot be empty.");
         }
 
-        var localVariableT = localVariable.ToEntity();
         var referenceTypeName = localVariableT.ReferenceType.Name;
         var referenceType = _classRepository.FindAllTypes().FirstOrDefault(c => c.Name.ToLower() == referenceTypeName.ToLower());
         var instanceTypeName = localVariableT.InstanceType.Name;
@@ -48,29 +46,15 @@ public class LocalVariableService(ILocalVariableRepository localVariableReposito
         _localVariableRepository.Update(localVariable);
     }
 
-    public List<LocalVariableDTO> GetAllLocalVariables()
+    public List<LocalVariable> GetAllLocalVariables()
     {
         var excludedNames = new[] { "Obj" };
         var localVariables = _localVariableRepository.FindAll()
             .Where(p => !excludedNames.Contains(p.Name));
-        return localVariables.Select(p => new LocalVariableDTO
-        {
-            Id = p.Id.ToString(),
-            Name = p.Name,
-            ReferenceType = new TypeDTO
-            {
-                Name = p.ReferenceType.Name,
-                Kind = p.ReferenceType.GetType().Name.ToLower()
-            },
-            InstanceType = new TypeDTO
-            {
-                Name = p.InstanceType.Name,
-                Kind = p.InstanceType.GetType().Name.ToLower()
-            }
-        }).ToList();
+        return localVariables.ToList();
     }
 
-    private void ValidateLocalVariableIsNotNull(LocalVariableDTO parameter)
+    private void ValidateLocalVariableIsNotNull(LocalVariable parameter)
     {
         if(parameter == null)
         {

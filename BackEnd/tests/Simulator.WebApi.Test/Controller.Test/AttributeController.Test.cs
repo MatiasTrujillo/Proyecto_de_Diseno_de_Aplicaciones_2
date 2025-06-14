@@ -3,6 +3,7 @@ using Moq;
 using Simulator.Domain;
 using Simulator.DTO;
 using Simulator.IBussinesLogic;
+using Simulator.UpdateDTO;
 using Simulator.WebApi.Controllers;
 using Attribute = Simulator.Domain.Attribute;
 
@@ -17,15 +18,22 @@ public class AttributeControllerTest
     [TestMethod]
     public void CreateAttribute_ShouldReturnCreated_WhenAttributeIsCreated()
     {
-        var attribute = new AttributeDto();
-        AttributeServiceMock.Setup(service => service.CreateAttribute(attribute))
+        var attribute = new AttributeDto
+        {
+            Name = "Attr1",
+            ReferenceType = new TypeDTO { Name = "RefType", Kind = "class" },
+            InstanceType = new TypeDTO { Name = "InstType", Kind = "interface" }
+        };
+
+        AttributeServiceMock.Setup(service => service.CreateAttribute(It.IsAny<Attribute>()))
+            .Returns(Guid.NewGuid())
             .Verifiable();
 
         var result = _controller.CreateAttribute(attribute) as CreatedResult;
 
         Assert.IsNotNull(result);
         Assert.AreEqual(201, result.StatusCode);
-        AttributeServiceMock.Verify(service => service.CreateAttribute(attribute), Times.Once);
+        AttributeServiceMock.Verify();
     }
 
     [TestMethod]
@@ -108,10 +116,10 @@ public class AttributeControllerTest
     public void GetAttributes_ShouldReturnOkWithAllAttributes()
     {
         // Arrange
-        var expectedAttributes = new List<AttributeDto>
+        var expectedAttributes = new List<Attribute>
         {
-            new AttributeDto { Name = "Atributo1" },
-            new AttributeDto { Name = "Atributo2" }
+            new Attribute { Name = "Atributo1" },
+            new Attribute { Name = "Atributo2" }
         };
 
         var mockService = new Mock<IAttributeService>();

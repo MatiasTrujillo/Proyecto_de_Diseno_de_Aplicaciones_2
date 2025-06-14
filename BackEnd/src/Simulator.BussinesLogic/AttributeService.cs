@@ -4,9 +4,9 @@ using System.Linq;
 using Simulator.BussinesLogic.Exception;
 using Simulator.Domain;
 using Simulator.Domain.Exception;
-using Simulator.DTO;
 using Simulator.IBussinesLogic;
 using Simulator.IDataAcces;
+using Simulator.UpdateDTO;
 using Attribute = Simulator.Domain.Attribute;
 using Type = Simulator.Domain.Type;
 
@@ -19,11 +19,11 @@ public class AttributeService(IAttributeRepository attributeRepository, IClassRe
     private readonly IClassRepository _classRepository = classRepository;
     private readonly IInvokedMethodRepository _invokeMethodRepository = invokeMethodRepository;
 
-    public Guid CreateAttribute(AttributeDto aDTO)
+    public Guid CreateAttribute(Attribute attribute)
     {
-        var attribute = aDTO.ToEntity();
-        var type = aDTO.ReferenceType.Name;
-        var instanceType = aDTO.InstanceType.Name;
+        ValidateName(attribute.Name, attribute);
+        var type = attribute.ReferenceType.Name;
+        var instanceType = attribute.InstanceType.Name;
         var typeT = _classRepository.FindAllTypes().FirstOrDefault(c => c.Name == type);
         var instanceTypeT = _classRepository.FindAllTypes().FirstOrDefault(c => c.Name == instanceType);
         ValidateAccesibility(attribute.Accessibility);
@@ -82,18 +82,9 @@ public class AttributeService(IAttributeRepository attributeRepository, IClassRe
         _attributeRepository.Update(attributeT);
     }
 
-    public List<AttributeDto> GetAttributes()
+    public List<Attribute> GetAttributes()
     {
-        return _attributeRepository.FindAll()
-            .Select(a => new AttributeDto
-            {
-                Id = a.Id.ToString(),
-                Name = a.Name,
-                Accessibility = a.Accessibility,
-                ReferenceType = a.ReferenceType?.ToDTO(),
-                InstanceType = a.InstanceType?.ToDTO(),
-                Stereotype = a.Stereotype
-            }).ToList();
+        return _attributeRepository.FindAll();
     }
 
     private void ValidateTypeIsPrimitive(Type? attributeTType)

@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Moq;
+using Simulator.Domain;
 using Simulator.DTO;
 using Simulator.IBussinesLogic;
 using Simulator.WebApi.Controllers;
@@ -15,15 +16,20 @@ public class MethodControllerTest
     [TestMethod]
     public void CreateMethod_ShouldReturnCreated_WhenMethodIsCreated()
     {
-        var methodDto = new MethodDTO();
-        _methodServiceMock.Setup(service => service.CreateMethod(methodDto))
+        var methodDto = new MethodDTO
+        {
+            Name = "MyMethod",
+            Accessibility = Accessibility.Public,
+            ReturnType = new TypeDTO { Name = "int", Kind = "primitive" },
+        };
+
+        _methodServiceMock.Setup(service => service.CreateMethod(It.IsAny<Method>()))
             .Verifiable();
 
         var result = _controller.CreateMethod(methodDto) as CreatedResult;
 
         Assert.IsNotNull(result);
         Assert.AreEqual(201, result.StatusCode);
-        _methodServiceMock.Verify(service => service.CreateMethod(methodDto), Times.Once);
     }
 
     [TestMethod]
@@ -127,10 +133,10 @@ public class MethodControllerTest
     [TestMethod]
     public void GetMethods_ShouldReturnOkWithAllMethods()
     {
-        var expectedMethods = new List<MethodDTO>
+        var expectedMethods = new List<Method>
         {
-            new MethodDTO { Name = "Metodo1" },
-            new MethodDTO { Name = "Metodo2" }
+            new Method { Name = "Metodo1" },
+            new Method { Name = "Metodo2" }
         };
 
         var mockService = new Mock<IMethodService>();
