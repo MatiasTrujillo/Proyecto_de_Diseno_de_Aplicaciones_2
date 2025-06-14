@@ -1,8 +1,6 @@
 using Moq;
 using Simulator.BussinesLogic.Exception;
 using Simulator.Domain;
-using Simulator.Domain.Exception;
-using Simulator.DTO;
 using Simulator.IDataAcces;
 using Simulator.UpdateDTO;
 using Attribute = Simulator.Domain.Attribute;
