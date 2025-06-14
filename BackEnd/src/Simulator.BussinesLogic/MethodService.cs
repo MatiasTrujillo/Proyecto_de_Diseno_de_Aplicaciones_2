@@ -4,7 +4,6 @@ using System.Linq;
 using Simulator.BussinesLogic.Exception;
 using Simulator.Domain;
 using Simulator.Domain.Exception;
-using Simulator.DTO;
 using Simulator.IBussinesLogic;
 using Simulator.IDataAcces;
 using Attribute = Simulator.Domain.Attribute;
@@ -27,10 +26,9 @@ public class MethodService(
     private readonly IMethodSignatureRepository _methodSignatureRepository = methodSignatureRepository;
     private int _identation = 0;
 
-    public Guid CreateMethod(MethodDTO method)
+    public Guid CreateMethod(Method methodT)
     {
-        ValidateMethodDTOExist(method);
-        var methodT = method.ToEntity();
+        ValidateMethodDTOExist(methodT);
         Type? returnType = null;
         ValidateAccesibility(methodT.Accessibility);
         ValidateKeyWord(methodT.Stereotype);
@@ -55,18 +53,17 @@ public class MethodService(
         return methodT.Id;
     }
 
-    public Guid AssociateInvokeMethod(InvokedMethodDTO invokedMethod)
+    public Guid AssociateInvokeMethod(InvokedMethod invokedMethodT)
     {
-        ValidateInvokedMethodDTOExist(invokedMethod);
-        var method = _methodRepository.Find(invokedMethod.MethodId);
+        ValidateInvokedMethodDTOExist(invokedMethodT);
+        var method = _methodRepository.Find(invokedMethodT.MethodId);
         ValidateMethodExist(method);
-        if(invokedMethod.ReferenceName == string.Empty)
+        if(invokedMethodT.ReferenceName == string.Empty)
         {
             throw new InvokedMethodNotFoundException("Invoked Method Reference Name cannot be empty.");
         }
 
-        ValidateInvokedMethodReferenceNameIsNotNull(invokedMethod.ReferenceName);
-        var invokedMethodT = invokedMethod.ToEntity();
+        ValidateInvokedMethodReferenceNameIsNotNull(invokedMethodT.ReferenceName);
         _invokedMethodRepository.Add(invokedMethodT);
         return invokedMethodT.Id;
     }
@@ -128,7 +125,7 @@ public class MethodService(
         _methodRepository.Delete(id);
     }
 
-    public List<MethodDTO> GetMethods()
+    public List<Method> GetMethods()
     {
         var excludedNames = new List<string>
         {
@@ -147,25 +144,13 @@ public class MethodService(
 
         return _methodRepository.FindAll()
             .Where(m => !excludedNames.Contains(m.Name))
-            .Select(m => new MethodDTO
-            {
-                Id = m.Id.ToString(),
-                Name = m.Name,
-                Accessibility = m.Accessibility,
-                Stereotype = m.Stereotype,
-                ReturnType = m.ReturnType?.ToDTO(),
-            }).ToList();
+            .ToList();
     }
 
-    public List<InvokedMethodDTO> GetInvokedMethodById()
+    public List<InvokedMethod> GetInvokedMethodById()
     {
         return _invokedMethodRepository.FindAll()
-            .Select(iV => new InvokedMethodDTO
-            {
-                Id = iV.Id.ToString(),
-                ReferenceName = iV.ReferenceName,
-                MethodId = iV.MethodId
-            }).ToList();
+            .ToList();
     }
 
     private void ValidateMethodIsNotInInvokedMethod(Guid id)
@@ -751,7 +736,7 @@ public class MethodService(
         }
     }
 
-    private void ValidateMethodDTOExist(MethodDTO method)
+    private void ValidateMethodDTOExist(Method method)
     {
         if(method == null)
         {
@@ -783,7 +768,7 @@ public class MethodService(
         }
     }
 
-    private void ValidateInvokedMethodDTOExist(InvokedMethodDTO invokedMethod)
+    private void ValidateInvokedMethodDTOExist(InvokedMethod invokedMethod)
     {
         if(invokedMethod == null || invokedMethod.MethodId == Guid.Empty)
         {
@@ -979,11 +964,10 @@ public class MethodService(
         }
     }
 
-    public Guid CreateMethodSignature(MethodSignatureDTO methodSignatureDto)
+    public Guid CreateMethodSignature(MethodSignature methodSignatureT)
     {
-        ValidateMethodDtoIsNotNull(methodSignatureDto);
-        ValidateMethodSignatureNameIsNotNull(methodSignatureDto);
-        var methodSignatureT = methodSignatureDto.ToEntity();
+        ValidateMethodDtoIsNotNull(methodSignatureT);
+        ValidateMethodSignatureNameIsNotNull(methodSignatureT);
         var type = methodSignatureT!.ReturnType?.Name;
         var returnType = _classRepository.FindAllTypes().FirstOrDefault(t => t.Name == type);
         methodSignatureT.ReturnType = returnType;
@@ -991,18 +975,13 @@ public class MethodService(
         return methodSignatureT.Id;
     }
 
-    public List<MethodSignatureDTO> GetMethodSignatures()
+    public List<MethodSignature> GetMethodSignatures()
     {
         return _methodSignatureRepository.FindAll()
-            .Select(ms => new MethodSignatureDTO
-            {
-                Id = ms.Id.ToString(),
-                Name = ms.Name,
-                ReturnType = ms.ReturnType?.ToDTO(),
-            }).ToList();
+           .ToList();
     }
 
-    private static void ValidateMethodSignatureNameIsNotNull(MethodSignatureDTO methodSignatureDto)
+    private static void ValidateMethodSignatureNameIsNotNull(MethodSignature methodSignatureDto)
     {
         if(string.IsNullOrEmpty(methodSignatureDto.Name))
         {
@@ -1010,7 +989,7 @@ public class MethodService(
         }
     }
 
-    private static void ValidateMethodDtoIsNotNull(MethodSignatureDTO methodSignatureDto)
+    private static void ValidateMethodDtoIsNotNull(MethodSignature methodSignatureDto)
     {
         if(methodSignatureDto == null)
         {

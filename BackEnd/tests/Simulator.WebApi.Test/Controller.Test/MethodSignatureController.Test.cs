@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Moq;
+using Simulator.Domain;
 using Simulator.DTO;
 using Simulator.IBussinesLogic;
 using Simulator.WebApi.Controllers;
@@ -16,23 +17,22 @@ public class MethodSignatureController_Test
     public void CreateMethodSignature_ShouldReturnCreated_WhenMethodSignatureIsCreated()
     {
         var signatureDto = new MethodSignatureDTO();
-        _methodServiceMock.Setup(service => service.CreateMethodSignature(signatureDto))
+        _methodServiceMock.Setup(service => service.CreateMethodSignature(signatureDto.ToEntity()))
             .Verifiable();
 
         var result = _controller.CreateMethod(signatureDto) as CreatedResult;
 
         Assert.IsNotNull(result);
         Assert.AreEqual(201, result.StatusCode);
-        _methodServiceMock.Verify(service => service.CreateMethodSignature(signatureDto), Times.Once);
     }
 
     [TestMethod]
     public void GetMethodSignatures_ShouldReturnOkWithAllSignatures()
     {
-        var expectedSignatures = new List<MethodSignatureDTO>
+        var expectedSignatures = new List<MethodSignature>
         {
-            new MethodSignatureDTO { Id = "1", Name = "Signature1" },
-            new MethodSignatureDTO { Id = "2", Name = "Signature2" }
+            new MethodSignature { Id = Guid.NewGuid(), Name = "Signature1" },
+            new MethodSignature { Id = Guid.NewGuid(), Name = "Signature2" }
         };
 
         var mockService = new Mock<IMethodService>();

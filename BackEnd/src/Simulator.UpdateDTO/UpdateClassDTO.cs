@@ -1,4 +1,4 @@
-namespace Simulator.DTO;
+namespace Simulator.UpdateDTO;
 
 public class UpdateClassDTO
 {

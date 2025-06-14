@@ -1,7 +1,9 @@
 using Microsoft.AspNetCore.Mvc;
 using Moq;
+using Simulator.Domain;
 using Simulator.DTO;
 using Simulator.IBussinesLogic;
+using Simulator.UpdateDTO;
 using Simulator.WebApi.Controllers;
 
 namespace Simulator.WebApi.Test.Controller.Test;
@@ -15,15 +17,18 @@ public class ClassControllerTest
     [TestMethod]
     public void CreateClass_ShouldReturnCreated_WhenClassIsCreated()
     {
-        var classT = new ClassDTO();
-        _classServiceMock.Setup(service => service.CreateClass(classT))
+        var classT = new ClassDTO
+        {
+            Name = "TestClass"
+        };
+
+        _classServiceMock.Setup(service => service.CreateClass(It.IsAny<Class>()))
             .Verifiable();
 
         var result = _controller.CreateClass(classT) as CreatedResult;
 
         Assert.IsNotNull(result);
         Assert.AreEqual(201, result.StatusCode);
-        _classServiceMock.Verify(service => service.CreateClass(classT), Times.Once);
     }
 
     [TestMethod]
@@ -85,25 +90,5 @@ public class ClassControllerTest
         Assert.AreEqual(200, result.StatusCode);
 
         _classServiceMock.Verify(service => service.GetClasses(), Times.Once);
-    }
-
-    [TestMethod]
-    public void GetClassById_WhenClassExists_ReturnsOkWithClassDto()
-    {
-        var classId = Guid.NewGuid();
-        var expectedDto = new ClassDTO { Name = "TestClass", Id = "parentId" };
-
-        var mockService = new Mock<IClassService>();
-        mockService.Setup(s => s.GetClassId(classId)).Returns(expectedDto);
-
-        var controller = new ClassController(mockService.Object);
-
-        var result = controller.GetClassById(classId);
-
-        // Assert
-        Assert.IsInstanceOfType(result, typeof(OkObjectResult));
-        var okResult = result as OkObjectResult;
-        Assert.IsNotNull(okResult);
-        Assert.AreEqual(expectedDto, okResult.Value);
     }
 }

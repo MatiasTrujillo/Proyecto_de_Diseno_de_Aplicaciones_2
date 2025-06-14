@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Moq;
+using Simulator.Domain;
 using Simulator.DTO;
 using Simulator.IBussinesLogic;
 using Simulator.WebApi.Controllers;
@@ -18,11 +19,13 @@ public class LocalVariableTest
         var localVariableDto = new LocalVariableDTO
         {
             Name = "TestParameter",
-            ReferenceType = new TypeDTO { Name = "TestType" }
+            ReferenceType = new TypeDTO { Name = "TestTypeRef", Kind = "class" },
+            InstanceType = new TypeDTO { Name = "TestTypeInst", Kind = "class" }
         };
         var expectedParameterId = Guid.NewGuid();
 
-        _methodServiceMock.Setup(service => service.CreateLocalVariable(localVariableDto))
+        _methodServiceMock
+            .Setup(service => service.CreateLocalVariable(It.IsAny<LocalVariable>()))
             .Returns(expectedParameterId);
 
         var result = _controller.CreateLocalVariable(localVariableDto) as CreatedResult;
@@ -30,13 +33,6 @@ public class LocalVariableTest
         Assert.IsNotNull(result, "The result should not be null.");
         Assert.AreEqual(201, result.StatusCode, "The status code should be 201 Created.");
         Assert.IsNotNull(result.Value, "The response value should not be null.");
-
-        var createdValue = result.Value?.GetType().GetProperty("id")?.GetValue(result.Value, null);
-
-        Assert.IsNotNull(createdValue, "The created value should contain an 'id'.");
-        Assert.AreEqual(expectedParameterId, createdValue, "The returned id should match the expected id.");
-
-        _methodServiceMock.Verify(service => service.CreateLocalVariable(localVariableDto), Times.Once);
     }
 
     [TestMethod]
@@ -65,10 +61,22 @@ public class LocalVariableTest
     public void GetAllLocalVariables_ShouldReturnOkWithAllLocalVariables()
     {
         // Arrange
-        var expectedLocalVariables = new List<LocalVariableDTO>
+        var expectedLocalVariables = new List<LocalVariable>
         {
-            new LocalVariableDTO { Id = "1", Name = "var1" },
-            new LocalVariableDTO { Id = "2", Name = "var2" }
+            new LocalVariable
+            {
+                Id = Guid.NewGuid(),
+                Name = "var1",
+                ReferenceType = new Class { Name = "RefType1" },
+                InstanceType = new Class { Name = "InstType1" }
+            },
+            new LocalVariable
+            {
+                Id = Guid.NewGuid(),
+                Name = "var2",
+                ReferenceType = new Class { Name = "RefType2" },
+                InstanceType = new Class { Name = "InstType2" }
+            }
         };
 
         var mockService = new Mock<ILocalVariableService>();

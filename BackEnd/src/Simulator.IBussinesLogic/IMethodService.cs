@@ -1,19 +1,19 @@
-using Simulator.DTO;
+using Simulator.Domain;
 
 namespace Simulator.IBussinesLogic;
 
 public interface IMethodService
 {
-    Guid CreateMethod(MethodDTO method);
+    Guid CreateMethod(Method method);
     void AssociateMethodWithClass(Guid methodId, Guid classId);
     void DeleteMethod(Guid id);
-    Guid AssociateInvokeMethod(InvokedMethodDTO invokedMethod);
+    Guid AssociateInvokeMethod(InvokedMethod invokedMethod);
     void AddAMethod(Guid id, Guid invokedMethodId);
     void AddLocalVariableToMethod(Guid methodId, Guid localVariableId);
     void AddParameterToMethod(Guid methodId, Guid parameterId);
     string ExecuteMethod(Guid referenceId, Guid objectToCreateId, Guid methodId, List<TypeDTO> parameterTypes);
-    Guid CreateMethodSignature(MethodSignatureDTO method);
-    List<MethodDTO> GetMethods();
-    List<InvokedMethodDTO> GetInvokedMethodById();
-    List<MethodSignatureDTO> GetMethodSignatures();
+    Guid CreateMethodSignature(MethodSignature method);
+    List<Method> GetMethods();
+    List<InvokedMethod> GetInvokedMethodById();
+    List<MethodSignature> GetMethodSignatures();
 }

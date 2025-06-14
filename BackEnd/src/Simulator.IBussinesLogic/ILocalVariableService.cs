@@ -1,10 +1,10 @@
-using Simulator.DTO;
+using Simulator.Domain;
 
 namespace Simulator.IBussinesLogic;
 
 public interface ILocalVariableService
 {
-    Guid CreateLocalVariable(LocalVariableDTO localVariable);
+    Guid CreateLocalVariable(LocalVariable localVariable);
     void SetInvokeMethodToLocalVariable(Guid id, Guid idInvokeGuid);
-    List<LocalVariableDTO> GetAllLocalVariables();
+    List<LocalVariable> GetAllLocalVariables();
 }

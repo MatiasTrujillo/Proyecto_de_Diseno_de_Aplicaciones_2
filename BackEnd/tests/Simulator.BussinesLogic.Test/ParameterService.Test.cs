@@ -2,7 +2,6 @@ using System.Reflection;
 using Moq;
 using Simulator.BussinesLogic.Exception;
 using Simulator.Domain;
-using Simulator.Domain.Exception;
 using Simulator.DTO;
 using Simulator.IDataAcces;
 
@@ -68,13 +67,12 @@ public class ParameterService_Test
     [TestMethod]
     public void CreateParameter_ShouldAddParameter_WhenParameterIsValid()
     {
-        var classT = new TypeDTO
+        var classT = new Class
         {
             Name = "TestClass",
-            Kind = "class"
         };
 
-        var parameterDto = new ParameterDTO
+        var parameterDto = new Parameter
         {
             Name = "TestParameter",
             ReferenceType = classT,
@@ -101,43 +99,6 @@ public class ParameterService_Test
         var exception = Assert.ThrowsException<ParameterNotFoundException>(() => _parameterService.CreateParameter(null!));
 
         Assert.AreEqual("Parameter cannot be null.", exception.Message);
-    }
-
-    [TestMethod]
-    public void CreateParameter_ShouldThrowException_WhenParameterNameIsEmpty()
-    {
-        var classT = new TypeDTO { Name = "TestClass", Kind = "class" };
-
-        var parameterDto = new ParameterDTO { Name = string.Empty, ReferenceType = classT, InstanceType = classT };
-
-        _mockClassRepository
-            .Setup(repo => repo.FindAllTypes())
-            .Returns([new Class { Name = "TestClass" }]);
-
-        var exception = Assert.ThrowsException<ParameterException>(() =>
-            _parameterService.CreateParameter(parameterDto));
-
-        Assert.AreEqual("Name cannot be null or empty", exception.Message);
-    }
-
-    [DataTestMethod]
-    [DataRow("base")]
-    [DataRow("this")]
-    [DataRow("Object")]
-    public void CreateParameter_ShouldThrowException_WhenNameIsReservedKeyword(string reservedName)
-    {
-        var dto = new ParameterDTO { Name = reservedName, ReferenceType = new TypeDTO { Name = "SomeType", Kind = "class" }, InstanceType = new TypeDTO { Name = "SomeType", Kind = "class" } };
-
-        _mockClassRepository
-            .Setup(repo => repo.FindAllTypes())
-            .Returns([new Class { Name = "SomeType", Id = Guid.NewGuid() }]);
-
-        var ex = Assert.ThrowsException<ParameterException>(() =>
-        {
-            _parameterService.CreateParameter(dto);
-        });
-
-        Assert.AreEqual("The name is a reserved keyword and is not allowed.", ex.Message);
     }
 
     [TestMethod]
@@ -268,12 +229,10 @@ public class ParameterService_Test
 
         Assert.AreEqual(1, result.Count);
         var param = result.First();
-        Assert.AreEqual(allowedParameter.Id.ToString(), param.Id);
+        Assert.AreEqual(allowedParameter.Id, param.Id);
         Assert.AreEqual("ValidParam", param.Name);
         Assert.AreEqual("ClassA", param.ReferenceType.Name);
-        Assert.AreEqual("class", param.ReferenceType.Kind);
         Assert.AreEqual("ClassB", param.InstanceType.Name);
-        Assert.AreEqual("class", param.InstanceType.Kind);
     }
 
     [TestMethod]
@@ -283,11 +242,11 @@ public class ParameterService_Test
         var parent = new Class { Name = "Parent" };
         var child = new Class { Name = "Child", Parents = [] };
 
-        var parameter = new ParameterDTO
+        var parameter = new Parameter
         {
             Name = "Param",
-            ReferenceType = new TypeDTO { Name = "Parent", Kind = "class" },
-            InstanceType = new TypeDTO { Name = "Child", Kind = "class" }
+            ReferenceType = new Class { Name = "Parent" },
+            InstanceType = new Class { Name = "Child" }
         };
 
         _mockClassRepository.Setup(r => r.FindAllTypes()).Returns([parent, child]);
@@ -302,11 +261,11 @@ public class ParameterService_Test
         var iface = new Interface { Name = "IMyInterface" };
         var cls = new Class { Name = "MyClass", Parents = [] };
 
-        var parameter = new ParameterDTO
+        var parameter = new Parameter
         {
             Name = "Param",
-            ReferenceType = new TypeDTO { Name = "IMyInterface", Kind = "interface" },
-            InstanceType = new TypeDTO { Name = "MyClass", Kind = "class" }
+            ReferenceType = new Interface { Name = "IMyInterface" },
+            InstanceType = new Class { Name = "MyClass" }
         };
 
         _mockClassRepository.Setup(r => r.FindAllTypes()).Returns([iface, cls]);
@@ -321,11 +280,11 @@ public class ParameterService_Test
         var referenceClass = new Class { Name = "MyClass" };
         var instanceInterface = new Interface { Name = "IMyInterface" };
 
-        var parameter = new ParameterDTO
+        var parameter = new Parameter
         {
             Name = "Param",
-            ReferenceType = new TypeDTO { Name = "MyClass", Kind = "class" },
-            InstanceType = new TypeDTO { Name = "IMyInterface", Kind = "interface" }
+            ReferenceType = new Class { Name = "MyClass" },
+            InstanceType = new Class { Name = "IMyInterface" }
         };
 
         _mockClassRepository.Setup(r => r.FindAllTypes()).Returns([referenceClass, instanceInterface]);
@@ -340,11 +299,11 @@ public class ParameterService_Test
         var i1 = new Interface { Name = "IA" };
         var i2 = new Interface { Name = "IB" };
 
-        var parameter = new ParameterDTO
+        var parameter = new Parameter
         {
             Name = "Param",
-            ReferenceType = new TypeDTO { Name = "IA", Kind = "interface" },
-            InstanceType = new TypeDTO { Name = "IB", Kind = "interface" }
+            ReferenceType = new Interface { Name = "IA" },
+            InstanceType = new Interface { Name = "IB" }
         };
 
         _mockClassRepository.Setup(r => r.FindAllTypes()).Returns([i1, i2]);

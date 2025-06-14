@@ -13,7 +13,7 @@ public class SessionController(ISessionService sessionService) : ControllerBase
     [HttpPost]
     public IActionResult SignIn([FromBody] SessionDTO sessionDto)
     {
-        var token = _amethodService.SignIn(sessionDto);
+        var token = _amethodService.SignIn(sessionDto.ToEntity());
         return Ok(new { Token = token });
     }
 

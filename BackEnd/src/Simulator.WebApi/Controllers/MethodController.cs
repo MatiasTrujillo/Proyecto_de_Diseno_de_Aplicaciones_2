@@ -13,7 +13,7 @@ public class MethodController(IMethodService methodService) : ControllerBase
     [HttpPost]
     public IActionResult CreateMethod([FromBody] MethodDTO method)
     {
-        var methodId = _amethodService.CreateMethod(method);
+        var methodId = _amethodService.CreateMethod(method.ToEntity());
         return Created(string.Empty, new { id = methodId });
     }
 
@@ -62,7 +62,14 @@ public class MethodController(IMethodService methodService) : ControllerBase
     [HttpGet]
     public IActionResult GetMethods()
     {
-        var methods = _amethodService.GetMethods();
+        var methods = _amethodService.GetMethods().Select(m => new MethodDTO
+        {
+            Id = m.Id.ToString(),
+            Name = m.Name,
+            Accessibility = m.Accessibility,
+            Stereotype = m.Stereotype,
+            ReturnType = m.ReturnType?.ToDTO(),
+        }).ToList();
         return Ok(methods);
     }
 }
