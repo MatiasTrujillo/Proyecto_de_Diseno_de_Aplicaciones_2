@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using Simulator.Domain;
+using Simulator.Domain.Exception;
 using Simulator.DTO;
 using Simulator.IBussinesLogic;
 using Simulator.UpdateDTO;
@@ -90,5 +91,41 @@ public class ClassControllerTest
         Assert.AreEqual(200, result.StatusCode);
 
         _classServiceMock.Verify(service => service.GetClasses(), Times.Once);
+    }
+
+    [TestMethod]
+    [ExpectedException(typeof(ClassException))]
+    public void CreateClass_ShouldReturnBadRequest_WhenNameIsEmpty()
+    {
+        var dto = new ClassDTO
+        {
+            Name = string.Empty
+        };
+
+        dto.ToEntity();
+    }
+
+    [TestMethod]
+    [ExpectedException(typeof(ClassException))]
+    public void CreateClass_ShouldReturnBadRequest_WhenNameStartsWithLowercase()
+    {
+        var dto = new ClassDTO
+        {
+            Name = "invalidName"
+        };
+
+        dto.ToEntity();
+    }
+
+    [TestMethod]
+    [ExpectedException(typeof(ClassException))]
+    public void ToEntity_ShouldThrowException_WhenNameContainsSpaces()
+    {
+        var dto = new ClassDTO
+        {
+            Name = "Invalid Name"
+        };
+
+        dto.ToEntity();
     }
 }
