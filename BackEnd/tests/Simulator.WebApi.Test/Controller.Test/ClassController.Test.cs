@@ -102,7 +102,7 @@ public class ClassControllerTest
             Name = string.Empty
         };
 
-        var entity = dto.ToEntity();
+        dto.ToEntity();
     }
 
     [TestMethod]
@@ -114,7 +114,7 @@ public class ClassControllerTest
             Name = "invalidName"
         };
 
-        var entity = dto.ToEntity();
+        dto.ToEntity();
     }
 
     [TestMethod]
@@ -126,6 +126,6 @@ public class ClassControllerTest
             Name = "Invalid Name"
         };
 
-        var entity = dto.ToEntity();
+        dto.ToEntity();
     }
 }

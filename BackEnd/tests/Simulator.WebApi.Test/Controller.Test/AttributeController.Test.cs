@@ -154,7 +154,7 @@ public class AttributeControllerTest
     [ExpectedException(typeof(AttributeException))]
     public void Constructor_ThrowsException_WhenNameIsEmpty()
     {
-        _ = new Attribute(String.Empty, Accessibility.Public, new Primitive(PrimitiveType.Int));
+        _ = new Attribute(string.Empty, Accessibility.Public, new Primitive(PrimitiveType.Int));
     }
 
     [TestMethod]

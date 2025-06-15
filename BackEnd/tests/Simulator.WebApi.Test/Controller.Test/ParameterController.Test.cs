@@ -109,9 +109,9 @@ public class ParameterController_Test
 
         try
         {
-            method!.Invoke(parameter, new object[] { "base" });
+            method!.Invoke(parameter, ["base"]);
         }
-        catch (TargetInvocationException ex)
+        catch(TargetInvocationException ex)
         {
             throw ex.InnerException ?? ex;
         }
@@ -125,11 +125,28 @@ public class ParameterController_Test
 
         try
         {
-            method!.Invoke(parameter, new object[] { "ValidName" });
+            method!.Invoke(parameter, ["ValidName"]);
         }
-        catch (TargetInvocationException ex)
+        catch(TargetInvocationException ex)
         {
             Assert.Fail("No exception should be thrown, but got: " + ex.InnerException?.Message);
+        }
+    }
+
+    [TestMethod]
+    [ExpectedException(typeof(ParameterException))]
+    public void ValidateParameter_ShouldThrow_WhenNameIsNullOrEmpty()
+    {
+        var parameter = new Parameter();
+        var method = typeof(Parameter).GetMethod("ValidateParameter", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+
+        try
+        {
+            method!.Invoke(parameter, [string.Empty]);
+        }
+        catch(TargetInvocationException ex)
+        {
+            throw ex.InnerException ?? ex;
         }
     }
 }
