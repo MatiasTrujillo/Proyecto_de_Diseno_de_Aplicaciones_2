@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using Simulator.Domain;
+using Simulator.Domain.Exception;
 using Simulator.DTO;
 using Simulator.IBussinesLogic;
 using Simulator.UpdateDTO;
@@ -140,5 +141,37 @@ public class AttributeControllerTest
         Assert.AreEqual("Atributo2", value[1].Name);
 
         mockService.Verify(s => s.GetAttributes(), Times.Once);
+    }
+
+    [TestMethod]
+    [ExpectedException(typeof(AttributeException))]
+    public void Constructor_ThrowsException_WhenNameIsNull()
+    {
+        _ = new Attribute(null!, Accessibility.Public, new Primitive(PrimitiveType.Int));
+    }
+
+    [TestMethod]
+    [ExpectedException(typeof(AttributeException))]
+    public void Constructor_ThrowsException_WhenNameIsEmpty()
+    {
+        _ = new Attribute(String.Empty, Accessibility.Public, new Primitive(PrimitiveType.Int));
+    }
+
+    [TestMethod]
+    [ExpectedException(typeof(AttributeException))]
+    public void Constructor_ThrowsException_WhenNameIsTooLong()
+    {
+        var longName = new string('a', 51);
+        _ = new Attribute(longName, Accessibility.Public, new Primitive(PrimitiveType.Int));
+    }
+
+    [DataTestMethod]
+    [DataRow("base")]
+    [DataRow("this")]
+    [DataRow("Object")]
+    [ExpectedException(typeof(AttributeException))]
+    public void Constructor_ThrowsException_WhenNameIsReservedKeyword(string reservedKeyword)
+    {
+        _ = new Attribute(reservedKeyword, Accessibility.Public, new Primitive(PrimitiveType.Int));
     }
 }

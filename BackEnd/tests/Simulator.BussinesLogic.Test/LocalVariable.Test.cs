@@ -120,6 +120,30 @@ public class LocalVariable_Test
     }
 
     [TestMethod]
+    public void CreateLocalVariable_ShouldThrowException_WhenInstanceTypeNotSubclassOfReferenceType6()
+    {
+        var classT = new Class { Name = "TestClass" };
+        var classChild = new Class { Name = "Child" };
+
+        var localVariableDto = new LocalVariableDTO { Name = "TestParameter", ReferenceType = new TypeDTO { Name = classT.Name, Kind = "classproxy" }, InstanceType = new TypeDTO { Name = classChild.Name, Kind = "class" } };
+
+        _mockLocalVariableRepository
+            .Setup(r => r.Add(It.Is<LocalVariable>(p =>
+                p.Name == localVariableDto.Name && p.ReferenceType.Name == classT.Name && p.InstanceType.Name == classChild.Name)));
+
+        _mockClassRepository
+            .Setup(repo => repo.FindAllTypes())
+            .Returns([classT, classChild]);
+
+        var ex = Assert.ThrowsException<LocalVariableException>(() =>
+        {
+            _localVariableService.CreateLocalVariable(localVariableDto.ToEntity());
+        });
+
+        Assert.AreEqual("Instance Type is not a subclass of Reference Type", ex.Message);
+    }
+
+    [TestMethod]
     public void CreateLocalVariable_ShouldThrowException_WhenInstanceClassIsNotSubclassOfReferenceClass()
     {
         var classT = new Class { Name = "BaseClass" };

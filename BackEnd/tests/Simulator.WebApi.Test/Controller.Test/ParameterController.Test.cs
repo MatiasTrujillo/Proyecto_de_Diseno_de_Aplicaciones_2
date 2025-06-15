@@ -1,9 +1,11 @@
+using System.Reflection;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using Simulator.Domain;
 using Simulator.DTO;
 using Simulator.IBussinesLogic;
 using Simulator.WebApi.Controllers;
+using ParameterException = Simulator.Domain.Exception.ParameterException;
 
 namespace Simulator.WebApi.Test.Controller.Test;
 
@@ -96,5 +98,38 @@ public class ParameterController_Test
         Assert.AreEqual("Ref2", value[1].ReferenceType.Name);
 
         mockService.Verify(s => s.GetAllParameters(), Times.Once);
+    }
+
+    [TestMethod]
+    [ExpectedException(typeof(ParameterException))]
+    public void ValidateParameter_ShouldThrow_WhenNameIsReservedKeyword()
+    {
+        var parameter = new Parameter();
+        var method = typeof(Parameter).GetMethod("ValidateParameter", BindingFlags.NonPublic | BindingFlags.Instance);
+
+        try
+        {
+            method!.Invoke(parameter, new object[] { "base" });
+        }
+        catch (TargetInvocationException ex)
+        {
+            throw ex.InnerException ?? ex;
+        }
+    }
+
+    [TestMethod]
+    public void ValidateParameter_ShouldNotThrow_WhenNameIsValid()
+    {
+        var parameter = new Parameter();
+        var method = typeof(Parameter).GetMethod("ValidateParameter", BindingFlags.NonPublic | BindingFlags.Instance);
+
+        try
+        {
+            method!.Invoke(parameter, new object[] { "ValidName" });
+        }
+        catch (TargetInvocationException ex)
+        {
+            Assert.Fail("No exception should be thrown, but got: " + ex.InnerException?.Message);
+        }
     }
 }
