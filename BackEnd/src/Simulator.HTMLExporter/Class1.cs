@@ -2,7 +2,7 @@
 using Simulator.Exporters.Abstractions;
 namespace Simulator.HTMLExporter;
 
-public class Class1 : ITransformerExporter
+public class Class1
 {
     public string GetFormat() => "html";
     public string Export(string data)

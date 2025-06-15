@@ -65,6 +65,9 @@ public class NameSpaceService_Test
         _mockNameSpaceRepository.Setup(repo => repo.Update(It.IsAny<NameSpace>()));
         _mockNameSpaceRepository.Setup(repo => repo.FindAllNamespaceComponents()).Returns([child]);
 
+        _mockClassRepository.Setup(r => r.FindAll()).Returns([]);
+        _mockInterfaceRepository.Setup(r => r.FindAll()).Returns([]);
+
         _nameSpaceService.AddFatherToNameSpace(childId, fatherId);
 
         Assert.AreEqual(father, child.Father);
@@ -182,7 +185,8 @@ public class NameSpaceService_Test
         _mockNameSpaceRepository
             .Setup(r => r.FindAllNamespaceComponents())
             .Returns([parent, child]);
-
+        _mockClassRepository.Setup(r => r.FindAll()).Returns([]);
+        _mockInterfaceRepository.Setup(r => r.FindAll()).Returns([]);
         _nameSpaceService.AddChildToNameSpace(parent.Id, child.Id);
 
         Assert.AreEqual(parent, child.Father);
@@ -214,11 +218,12 @@ public class NameSpaceService_Test
         _mockNameSpaceRepository
             .Setup(r => r.FindAllNamespaceComponents())
             .Returns([child]);
-
         _mockNameSpaceRepository.Setup(r => r.Find(parent.Id)).Returns(parent);
         _mockNameSpaceRepository.Setup(r => r.Find(child.Id)).Returns(child);
-
         _mockNameSpaceRepository.Setup(r => r.Update(It.IsAny<NameSpace>()));
+
+        _mockClassRepository.Setup(r => r.FindAll()).Returns(new List<Class>());
+        _mockInterfaceRepository.Setup(r => r.FindAll()).Returns(new List<Interface>());
 
         _nameSpaceService.RemoveChildFromNameSpace(parent.Id, child.Id);
 
@@ -230,18 +235,41 @@ public class NameSpaceService_Test
     }
 
     [TestMethod]
-    [ExpectedException(typeof(NameSpaceException))]
-    public void RemoveChildFromNameSpace_ShouldThrowIfChildIsNotInParent()
+    [ExpectedException(typeof(NameSpaceException), "No modifications allowed: the namespace is associated with a class.")]
+    public void RemoveChildFromNameSpace_ShouldThrow_WhenNamespaceAssociatedToClass()
     {
         var parent = new NameSpace("Parent", null);
         var child = new NameSpace("Child", null);
+        parent.AddChild(child);
 
         _mockNameSpaceRepository
             .Setup(r => r.FindAllNamespaceComponents())
             .Returns([child]);
-
         _mockNameSpaceRepository.Setup(r => r.Find(parent.Id)).Returns(parent);
         _mockNameSpaceRepository.Setup(r => r.Find(child.Id)).Returns(child);
+
+        _mockClassRepository.Setup(r => r.FindAll()).Returns(new List<Class> { new Class { NameSpace = parent } });
+        _mockInterfaceRepository.Setup(r => r.FindAll()).Returns(new List<Interface>());
+
+        _nameSpaceService.RemoveChildFromNameSpace(parent.Id, child.Id);
+    }
+
+    [TestMethod]
+    [ExpectedException(typeof(NameSpaceException), "No modifications allowed: the namespace is associated with a interface.")]
+    public void RemoveChildFromNameSpace_ShouldThrow_WhenNamespaceAssociatedToInterface()
+    {
+        var parent = new NameSpace("Parent", null);
+        var child = new NameSpace("Child", null);
+        parent.AddChild(child);
+
+        _mockNameSpaceRepository
+            .Setup(r => r.FindAllNamespaceComponents())
+            .Returns([child]);
+        _mockNameSpaceRepository.Setup(r => r.Find(parent.Id)).Returns(parent);
+        _mockNameSpaceRepository.Setup(r => r.Find(child.Id)).Returns(child);
+
+        _mockClassRepository.Setup(r => r.FindAll()).Returns(new List<Class>());
+        _mockInterfaceRepository.Setup(r => r.FindAll()).Returns(new List<Interface> { new Interface { NameSpace = parent } });
 
         _nameSpaceService.RemoveChildFromNameSpace(parent.Id, child.Id);
     }

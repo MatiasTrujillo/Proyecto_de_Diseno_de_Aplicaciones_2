@@ -32,6 +32,7 @@ public class NameSpaceService(
         ValidateNoCircularReference(id, idFather);
         ValidateNameSpaceExistence(idFather);
         var father = nameSpaceRepository.Find(idFather);
+        ValidateAsociateNameSapce(id);
 
         nameSpace2.Father = father;
         father.AddChild(nameSpace2);
@@ -111,6 +112,7 @@ public class NameSpaceService(
 
         var parent = nameSpaceRepository.Find(parentId);
         var child = nameSpaceRepository.Find(childId);
+        ValidateAsociateNameSapce(parentId);
 
         parent.AddChild(child);
         child.Father = parent;
@@ -129,6 +131,8 @@ public class NameSpaceService(
         var parent = nameSpaceRepository.Find(parentId);
 
         var child = nameSpaceRepository.Find(childId);
+
+        ValidateAsociateNameSapce(parentId);
 
         if(!parent.Childs.Contains(child))
         {
