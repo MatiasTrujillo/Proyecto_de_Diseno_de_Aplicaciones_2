@@ -149,13 +149,13 @@ public class NameSpaceService(
     private void ValidateAsociateNameSapce(Guid parentId)
     {
         var clasesAsociadas = classRepository.FindAll().Any(c => c.NameSpace != null && c.NameSpace.Id == parentId);
-        if (clasesAsociadas)
+        if(clasesAsociadas)
         {
             throw new NameSpaceException("No modifications allowed: the namespace is associated with a class.");
         }
 
         var interfacesAsociadas = interfaceRepository.FindAll().Any(i => i.NameSpace != null && i.NameSpace.Id == parentId);
-        if (interfacesAsociadas)
+        if(interfacesAsociadas)
         {
             throw new NameSpaceException("No modifications allowed: the namespace is associated with a class.");
         }

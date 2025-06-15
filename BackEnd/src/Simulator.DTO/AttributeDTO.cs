@@ -3,7 +3,7 @@ using Attribute = Simulator.Domain.Attribute;
 
 namespace Simulator.DTO;
 
-public class  AttributeDto
+public class AttributeDto
 {
     public string? Id { get; set; } = null;
     public string Name { get; set; } = string.Empty;

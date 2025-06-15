@@ -81,7 +81,7 @@ public class NameSpaceService_Test
         var childId = Guid.NewGuid();
         var fatherId = Guid.NewGuid();
 
-        _mockNameSpaceRepository.Setup(repo => repo.Find(childId)).Returns((NameSpace?)null);
+        _mockNameSpaceRepository.Setup(repo => repo.Find(childId)).Returns(((NameSpace?)null)!);
         _mockNameSpaceRepository.Setup(repo => repo.FindAllNamespaceComponents()).Returns([]);
 
         _nameSpaceService.AddFatherToNameSpace(childId, fatherId);
@@ -115,7 +115,7 @@ public class NameSpaceService_Test
         var child = new NameSpace { Id = childId, Name = "ChildNamespace" };
 
         _mockNameSpaceRepository.Setup(repo => repo.Find(childId)).Returns(child);
-        _mockNameSpaceRepository.Setup(repo => repo.Find(fatherId)).Returns((NameSpace?)null);
+        _mockNameSpaceRepository.Setup(repo => repo.Find(fatherId)).Returns(((NameSpace?)null)!);
         _mockNameSpaceRepository.Setup(repo => repo.FindAllNamespaceComponents()).Returns([child]);
 
         _nameSpaceService.AddFatherToNameSpace(childId, fatherId);
@@ -155,7 +155,6 @@ public class NameSpaceService_Test
 
         _mockNameSpaceRepository.Setup(r => r.Find(ns.Id)).Returns(ns);
         _mockInterfaceRepository.Setup(r => r.Find(iface.Id)).Returns(iface);
-
         _nameSpaceService.AssociateNameSpaceToInterface(ns.Id, iface.Id);
     }
 
@@ -222,8 +221,8 @@ public class NameSpaceService_Test
         _mockNameSpaceRepository.Setup(r => r.Find(child.Id)).Returns(child);
         _mockNameSpaceRepository.Setup(r => r.Update(It.IsAny<NameSpace>()));
 
-        _mockClassRepository.Setup(r => r.FindAll()).Returns(new List<Class>());
-        _mockInterfaceRepository.Setup(r => r.FindAll()).Returns(new List<Interface>());
+        _mockClassRepository.Setup(r => r.FindAll()).Returns([]);
+        _mockInterfaceRepository.Setup(r => r.FindAll()).Returns([]);
 
         _nameSpaceService.RemoveChildFromNameSpace(parent.Id, child.Id);
 
@@ -248,8 +247,8 @@ public class NameSpaceService_Test
         _mockNameSpaceRepository.Setup(r => r.Find(parent.Id)).Returns(parent);
         _mockNameSpaceRepository.Setup(r => r.Find(child.Id)).Returns(child);
 
-        _mockClassRepository.Setup(r => r.FindAll()).Returns(new List<Class> { new Class { NameSpace = parent } });
-        _mockInterfaceRepository.Setup(r => r.FindAll()).Returns(new List<Interface>());
+        _mockClassRepository.Setup(r => r.FindAll()).Returns([new Class { NameSpace = parent }]);
+        _mockInterfaceRepository.Setup(r => r.FindAll()).Returns([]);
 
         _nameSpaceService.RemoveChildFromNameSpace(parent.Id, child.Id);
     }
@@ -268,8 +267,8 @@ public class NameSpaceService_Test
         _mockNameSpaceRepository.Setup(r => r.Find(parent.Id)).Returns(parent);
         _mockNameSpaceRepository.Setup(r => r.Find(child.Id)).Returns(child);
 
-        _mockClassRepository.Setup(r => r.FindAll()).Returns(new List<Class>());
-        _mockInterfaceRepository.Setup(r => r.FindAll()).Returns(new List<Interface> { new Interface { NameSpace = parent } });
+        _mockClassRepository.Setup(r => r.FindAll()).Returns([]);
+        _mockInterfaceRepository.Setup(r => r.FindAll()).Returns([new Interface { NameSpace = parent }]);
 
         _nameSpaceService.RemoveChildFromNameSpace(parent.Id, child.Id);
     }
