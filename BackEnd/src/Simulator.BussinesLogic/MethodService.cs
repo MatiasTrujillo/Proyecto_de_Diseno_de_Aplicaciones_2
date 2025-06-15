@@ -188,11 +188,10 @@ public class MethodService(
         ValidateClassExist(reference!);
         ValidateClassExist(objectToCreate!);
         ValidateMethodExist(method!);
-        ValidateMethodIsInClass(reference.Methods!, methodId);
-        method = FindMethod(reference.Methods!, methodId);
+
         ValidateParameterInstanceType(method.Parameters, parameterInstanceTypes);
 
-        result = result.Concat(FirstLine(reference, objectToCreate!, method)).ToList();
+        result = result.Concat(FirstLine(reference!, objectToCreate!, method)).ToList();
         result = result.Concat(WriteOtherLines(reference, objectToCreate!, method, method)).ToList();
 
         return string.Join("\n", result);
@@ -219,7 +218,7 @@ public class MethodService(
 
             if(!success && invokedMethod.ReferenceName == "base")
             {
-                result = result.Concat(CaseBase(invokedMethod, refe, originalMethod)).ToList();
+                result = result.Concat(CaseBase(invokedMethod, oTC, originalMethod)).ToList();
                 if(result.Count > lines)
                 {
                     success = true;
@@ -227,9 +226,9 @@ public class MethodService(
                 }
             }
 
-            if(!success && refe.Attributes != null)
+            if(!success && oTC.Attributes != null && oTC.Attributes.Count > 0)
             {
-                result = result.Concat(CaseAttribute(refe, invokedMethod, originalMethod)).ToList();
+                result = result.Concat(CaseAttribute(oTC, invokedMethod, originalMethod)).ToList();
                 if(result.Count > lines)
                 {
                     success = true;
@@ -237,7 +236,7 @@ public class MethodService(
                 }
             }
 
-            if(!success && method.Parameters != null)
+            if(!success && method.Parameters != null && method.Parameters.Count > 0)
             {
                 result = result.Concat(CaseParameter(invokedMethod, method, originalMethod)).ToList();
                 if(result.Count > lines)
@@ -246,7 +245,7 @@ public class MethodService(
                 }
             }
 
-            if(!success && method.LocalVariables != null)
+            if(!success && method.LocalVariables != null && method.LocalVariables.Count > 0)
             {
                 result = result.Concat(CaseLocal(invokedMethod, method, originalMethod)).ToList();
             }
@@ -289,7 +288,6 @@ public class MethodService(
     {
         var result = new List<string>();
         var invokedMethodMethod = _methodRepository.Find(invokedMethod.MethodId);
-        Console.WriteLine("CaseThisAttribute- " + oTC.Attributes[0].InvokedMethods + " el invokedMethod");
         var anAttribute = oTC.Attributes!.FirstOrDefault(x =>
             x.InvokedMethods != null && x.InvokedMethods!.Exists(i => i.MethodId == invokedMethod.MethodId));
 
@@ -339,6 +337,8 @@ public class MethodService(
     {
         var result = new List<string>();
         var invokedMethodMethod = _methodRepository.Find(invokedMethod.MethodId);
+        Console.WriteLine(invokedMethod.ReferenceName);
+        Console.WriteLine(refe.Attributes.Count);
 
         var anAttribute = refe.Attributes!.FirstOrDefault(x => x.Name == invokedMethod.ReferenceName);
         if(anAttribute == null)
@@ -348,7 +348,12 @@ public class MethodService(
 
         if(anAttribute != null)
         {
-            var aClass = _classRepository.FindAll().FirstOrDefault(x => x.Name == anAttribute.ReferenceType.Name);
+            var aClass = _classRepository.FindAll().FirstOrDefault(x => x.Name == anAttribute.InstanceType.Name);
+            if(aClass == null)
+            {
+                aClass = _classRepository.FindAll().FirstOrDefault(x => x.Name == anAttribute.ReferenceType.Name);
+            }
+
             if(aClass != null)
             {
                 aClass = FindClassWithMethod(aClass, invokedMethodMethod);
@@ -378,7 +383,17 @@ public class MethodService(
         var aParameter = method.Parameters!.FirstOrDefault(x => x.Name == invokedMethod.ReferenceName);
         if(aParameter != null)
         {
-            var aClass = _classRepository.FindAll().FirstOrDefault(x => x.Name == aParameter.ReferenceType.Name);
+            Class aClass = null;
+            if(aParameter.InstanceType != null)
+            {
+                aClass = _classRepository.FindAll().FirstOrDefault(x => x.Name == aParameter.InstanceType.Name);
+            }
+
+            if(aClass == null)
+            {
+                aClass = _classRepository.FindAll().FirstOrDefault(x => x.Name == aParameter.ReferenceType.Name);
+            }
+
             if(aClass != null)
             {
                 aClass = FindClassWithMethod(aClass, invokedMethodMethod);
@@ -429,27 +444,11 @@ public class MethodService(
         return result;
     }
 
-    private Method FindMethod(List<Method> referenceMethods, Guid methodId)
-    {
-        var success = false;
-        Method method = null;
-
-        for(var i = 0; i < referenceMethods.Count && !success; i++)
-        {
-            method = referenceMethods.FirstOrDefault(x => x.Id == methodId);
-            if(method != null)
-            {
-                success = true;
-            }
-        }
-
-        return method;
-    }
-
     private List<string> FirstLine(Class refe, Class oTC, Method method)
     {
         var result = new List<string>();
 
+        oTC = FindClassWithMethod(oTC, method);
         var firstParenthesis = FirstLineParametersReference(method);
         var secondParenthesis = FirstLineParametersInstance(method);
         if(CheckClassHasMethod(oTC, method))
@@ -922,26 +921,6 @@ public class MethodService(
         if(!Enum.IsDefined(typeof(Accessibility), methodTAccessibility))
         {
             throw new InvalidMethodException("Invalid accessibility value.");
-        }
-    }
-
-    private void ValidateMethodIsInClass(List<Method> classMethods, Guid methodId)
-    {
-        var success = false;
-        Method method = null;
-
-        for(var i = 0; i < classMethods.Count && !success; i++)
-        {
-            method = classMethods.FirstOrDefault(x => x.Id == methodId);
-            if(method != null)
-            {
-                success = true;
-            }
-        }
-
-        if(method == null)
-        {
-            throw new MethodNotFoundException("Method is not in this class.");
         }
     }
 

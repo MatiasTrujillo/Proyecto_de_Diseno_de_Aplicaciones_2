@@ -1232,7 +1232,8 @@ public class MethodServiceTest
             Id = Guid.NewGuid(), // 4c52a563-8a5b-474f-9652-8a52a45d0b44
             Name = "motorAuto",
             Accessibility = Accessibility.Private,
-            ReferenceType = motor
+            ReferenceType = motor,
+            InstanceType = motor
         };
 
         var auto = new Class
@@ -1372,7 +1373,8 @@ public class MethodServiceTest
         {
             Id = Guid.NewGuid(),
             Name = "otroAviso",
-            ReferenceType = email
+            ReferenceType = email,
+            InstanceType = email
         };
 
         var notificar = new Method
@@ -1671,7 +1673,8 @@ public class MethodServiceTest
             Id = Guid.NewGuid(),
             Name = "loggerLocal",
             Accessibility = Accessibility.Private,
-            ReferenceType = logger
+            ReferenceType = logger,
+            InstanceType = logger
         };
 
         var preparar = new Method
@@ -1916,6 +1919,7 @@ public class MethodServiceTest
             Id = Guid.NewGuid(),
             Name = "notificador",
             ReferenceType = comunicacion,
+            InstanceType = comunicacion,
             Accessibility = Accessibility.Protected,
         };
 
@@ -1984,6 +1988,7 @@ public class MethodServiceTest
             Id = Guid.NewGuid(),
             Name = "inventarioDisponible",
             ReferenceType = new Primitive(PrimitiveType.Bool),
+            InstanceType = new Primitive(PrimitiveType.Bool),
             Accessibility = Accessibility.Private
         };
 
@@ -2219,7 +2224,8 @@ public class MethodServiceTest
             Id = Guid.NewGuid(),
             Name = "loggerLocal",
             Accessibility = Accessibility.Private,
-            ReferenceType = logger
+            ReferenceType = logger,
+            InstanceType = logger
         };
 
         var preparar = new Method
@@ -2472,7 +2478,8 @@ public class MethodServiceTest
             Id = Guid.NewGuid(),
             Name = "loggerLocal",
             Accessibility = Accessibility.Private,
-            ReferenceType = logger
+            ReferenceType = logger,
+            InstanceType = logger
         };
 
         var preparar = new Method
@@ -2655,126 +2662,6 @@ public class MethodServiceTest
     }
 
     [TestMethod]
-    public void ExecuteMethodExample9_ShouldReturnMethodExecuted_WhenValidInputProvided()
-    {
-        var metodo2Clase3 = new Method
-        {
-            Id = Guid.NewGuid(),
-            Name = "Metodo2",
-            Accessibility = Accessibility.Public,
-            Methods = [],
-            Parameters = [],
-            LocalVariables = [],
-            ReturnType = null,
-            Stereotype = KeyWord.Virtual
-        };
-
-        var clase3 = new Class
-        {
-            Id = Guid.NewGuid(),
-            Name = "Clase3",
-            Stereotype = null,
-            Parents = [],
-            Attributes = [],
-            Methods = [metodo2Clase3],
-        };
-
-        var metodo2Clase4 = new Method
-        {
-            Id = Guid.NewGuid(),
-            Name = "Metodo2",
-            Accessibility = Accessibility.Public,
-            Methods = [],
-            Parameters = [],
-            LocalVariables = [],
-            ReturnType = null,
-            IsOverride = true
-        };
-        var metodo2Clase4Invoked = new InvokedMethod
-        {
-            Id = Guid.NewGuid(),
-            MethodId = metodo2Clase4.Id,
-            ReferenceName = "att1"
-        };
-
-        var clase4 = new Class
-        {
-            Id = Guid.NewGuid(),
-            Name = "Clase4",
-            Stereotype = null,
-            Parents = [clase3],
-            Attributes = [],
-            Methods = [metodo2Clase4],
-        };
-
-        var metodo1Clase1 = new Method
-        {
-            Id = Guid.NewGuid(),
-            Name = "Metodo1",
-            Accessibility = Accessibility.Public,
-            Methods = [],
-            Parameters = [],
-            LocalVariables = [],
-            ReturnType = null,
-            Stereotype = KeyWord.Virtual
-        };
-
-        var clase1 = new Class
-        {
-            Id = Guid.NewGuid(),
-            Name = "Clase1",
-            Stereotype = null,
-            Parents = null,
-            Attributes = [],
-            Methods = [metodo1Clase1],
-        };
-
-        var att1 = new Attribute
-        {
-            Id = Guid.NewGuid(),
-            Name = "att1",
-            Accessibility = Accessibility.Private,
-            ReferenceType = clase3,
-            InstanceType = clase4
-        };
-
-        var metodo1Clase2 = new Method
-        {
-            Id = Guid.NewGuid(),
-            Name = "Metodo1",
-            Accessibility = Accessibility.Public,
-            Methods = [metodo2Clase4Invoked],
-            Parameters = [],
-            LocalVariables = [],
-            ReturnType = null,
-            IsOverride = true
-        };
-
-        var clase2 = new Class
-        {
-            Id = Guid.NewGuid(),
-            Name = "Clase2",
-            Stereotype = null,
-            Parents = [clase1],
-            Attributes = [att1],
-            Methods = [metodo1Clase2],
-        };
-
-        _mockClassRepository.Setup(repo => repo.FindAll()).Returns([clase1, clase2, clase3, clase4]);
-        _mockClassRepository.Setup(repo => repo.FindAllTypes()).Returns([clase1, clase2, clase3, clase4]);
-        _mockMethodRepository.Setup(repo => repo.FindAll()).Returns([metodo1Clase1, metodo1Clase2, metodo2Clase3, metodo2Clase4]);
-        _mockMethodRepository.Setup(repo => repo.Find(metodo2Clase4Invoked.MethodId)).Returns(metodo2Clase4);
-
-        var result = _methodService.ExecuteMethod(clase1.Id, clase2.Id, metodo1Clase2.Id, []); // QUE DEBERIA PASAR SI LLAMO A metodo1Clase1 ???     ...Creo que deberia imprimir nada, porque no encuentra al metodo
-
-        var res =
-            "Clase2.Metodo1() -> Clase2.Metodo1()\n" +
-            "\tatt1.Metodo2() -> Clase4.Metodo2()\n";
-        Console.WriteLine(result);
-        Assert.AreEqual(res, result);
-    }
-
-    [TestMethod]
     public void ExecuteMethodExample8_ShouldReturnMethodExecuted_WhenValidInputProvided()
     {
         var nombre = new Attribute
@@ -2841,7 +2728,8 @@ public class MethodServiceTest
             Id = Guid.NewGuid(),
             Name = "loggerLocal",
             Accessibility = Accessibility.Private,
-            ReferenceType = logger
+            ReferenceType = logger,
+            InstanceType = logger
         };
 
         var preparar = new Method
@@ -3010,6 +2898,126 @@ public class MethodServiceTest
             "\t\tthis.clavePrivada.ToString() -> String.ToString()\n" +
             "\tthis.LogAcceso(bool) -> Autenticador.LogAcceso(bool)\n" +
             "\tloggerLocal.Registrar(string) -> Logger.Registrar(string)";
+        Console.WriteLine(result);
+        Assert.AreEqual(res, result);
+    }
+
+    [TestMethod]
+    public void ExecuteMethodExample9_ShouldReturnMethodExecuted_WhenValidInputProvided()
+    {
+        var metodo2Clase3 = new Method
+        {
+            Id = Guid.NewGuid(),
+            Name = "Metodo2",
+            Accessibility = Accessibility.Public,
+            Methods = [],
+            Parameters = [],
+            LocalVariables = [],
+            ReturnType = null,
+            Stereotype = KeyWord.Virtual
+        };
+
+        var clase3 = new Class
+        {
+            Id = Guid.NewGuid(),
+            Name = "Clase3",
+            Stereotype = null,
+            Parents = [],
+            Attributes = [],
+            Methods = [metodo2Clase3],
+        };
+
+        var metodo2Clase4 = new Method
+        {
+            Id = Guid.NewGuid(),
+            Name = "Metodo2",
+            Accessibility = Accessibility.Public,
+            Methods = [],
+            Parameters = [],
+            LocalVariables = [],
+            ReturnType = null,
+            IsOverride = true
+        };
+        var metodo2Clase4Invoked = new InvokedMethod
+        {
+            Id = Guid.NewGuid(),
+            MethodId = metodo2Clase4.Id,
+            ReferenceName = "att1"
+        };
+
+        var clase4 = new Class
+        {
+            Id = Guid.NewGuid(),
+            Name = "Clase4",
+            Stereotype = null,
+            Parents = [clase3],
+            Attributes = [],
+            Methods = [metodo2Clase4],
+        };
+
+        var metodo1Clase1 = new Method
+        {
+            Id = Guid.NewGuid(),
+            Name = "Metodo1",
+            Accessibility = Accessibility.Public,
+            Methods = [],
+            Parameters = [],
+            LocalVariables = [],
+            ReturnType = null,
+            Stereotype = KeyWord.Virtual
+        };
+
+        var clase1 = new Class
+        {
+            Id = Guid.NewGuid(),
+            Name = "Clase1",
+            Stereotype = null,
+            Parents = null,
+            Attributes = [],
+            Methods = [metodo1Clase1],
+        };
+
+        var att1 = new Attribute
+        {
+            Id = Guid.NewGuid(),
+            Name = "att1",
+            Accessibility = Accessibility.Private,
+            ReferenceType = clase3,
+            InstanceType = clase4
+        };
+
+        var metodo1Clase2 = new Method
+        {
+            Id = Guid.NewGuid(),
+            Name = "Metodo1",
+            Accessibility = Accessibility.Public,
+            Methods = [metodo2Clase4Invoked],
+            Parameters = [],
+            LocalVariables = [],
+            ReturnType = null,
+            IsOverride = true
+        };
+
+        var clase2 = new Class
+        {
+            Id = Guid.NewGuid(),
+            Name = "Clase2",
+            Stereotype = null,
+            Parents = [clase1],
+            Attributes = [att1],
+            Methods = [metodo1Clase2],
+        };
+
+        _mockClassRepository.Setup(repo => repo.FindAll()).Returns([clase1, clase2, clase3, clase4]);
+        _mockClassRepository.Setup(repo => repo.FindAllTypes()).Returns([clase1, clase2, clase3, clase4]);
+        _mockMethodRepository.Setup(repo => repo.FindAll()).Returns([metodo1Clase1, metodo1Clase2, metodo2Clase3, metodo2Clase4]);
+        _mockMethodRepository.Setup(repo => repo.Find(metodo2Clase4Invoked.MethodId)).Returns(metodo2Clase4);
+
+        var result = _methodService.ExecuteMethod(clase1.Id, clase2.Id, metodo1Clase2.Id, []);
+
+        var res =
+            "Clase1.Metodo1() -> Clase2.Metodo1()\n" +
+            "\tatt1.Metodo2() -> Clase4.Metodo2()";
         Console.WriteLine(result);
         Assert.AreEqual(res, result);
     }
