@@ -7,7 +7,6 @@ public interface INameSpaceService
     Guid CreateNameSpace(NameSpace nameSpaceDto);
     void AssociateNameSpaceToClass(Guid nameSpaceId, Guid classId);
     void AssociateNameSpaceToInterface(Guid nameSpaceId, Guid interfaceId);
-    void AddFatherToNameSpace(Guid id, Guid idFather);
     void AddChildToNameSpace(Guid parentId, Guid childId);
     void RemoveChildFromNameSpace(Guid parentId, Guid childId);
     List<NameSpace> GetAllNameSpace();

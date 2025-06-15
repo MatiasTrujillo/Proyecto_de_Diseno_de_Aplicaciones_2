@@ -52,76 +52,6 @@ public class NameSpaceService_Test
     }
 
     [TestMethod]
-    public void AddFatherToNameSpace_ShouldSetFatherAndUpdate()
-    {
-        var childId = Guid.NewGuid();
-        var fatherId = Guid.NewGuid();
-
-        var child = new NameSpace { Id = childId, Name = "Child" };
-        var father = new NameSpace { Id = fatherId, Name = "Father" };
-
-        _mockNameSpaceRepository.Setup(repo => repo.Find(childId)).Returns(child);
-        _mockNameSpaceRepository.Setup(repo => repo.Find(fatherId)).Returns(father);
-        _mockNameSpaceRepository.Setup(repo => repo.Update(It.IsAny<NameSpace>()));
-        _mockNameSpaceRepository.Setup(repo => repo.FindAllNamespaceComponents()).Returns([child]);
-
-        _mockClassRepository.Setup(r => r.FindAll()).Returns([]);
-        _mockInterfaceRepository.Setup(r => r.FindAll()).Returns([]);
-
-        _nameSpaceService.AddFatherToNameSpace(childId, fatherId);
-
-        Assert.AreEqual(father, child.Father);
-        _mockNameSpaceRepository.Verify(repo => repo.Update(father), Times.Once);
-    }
-
-    [TestMethod]
-    [ExpectedException(typeof(NameSpaceException), "NameSpace does not exist")]
-    public void AddFatherToNameSpace_ShouldThrowException_WhenChildDoesNotExist()
-    {
-        var childId = Guid.NewGuid();
-        var fatherId = Guid.NewGuid();
-
-        _mockNameSpaceRepository.Setup(repo => repo.Find(childId)).Returns(((NameSpace?)null)!);
-        _mockNameSpaceRepository.Setup(repo => repo.FindAllNamespaceComponents()).Returns([]);
-
-        _nameSpaceService.AddFatherToNameSpace(childId, fatherId);
-    }
-
-    [TestMethod]
-    [ExpectedException(typeof(NameSpaceException), "Cannot add the same NameSpace as a father")]
-    public void AddFatherToNameSpace_ShouldThrowException_WhenChildIsFather()
-    {
-        var childId = Guid.NewGuid();
-        var fatherId = childId;
-
-        var child = new NameSpace { Id = childId, Name = "Child" };
-        var father = new NameSpace { Id = fatherId, Name = "Father" };
-
-        _mockNameSpaceRepository.Setup(repo => repo.Find(childId)).Returns(child);
-        _mockNameSpaceRepository.Setup(repo => repo.Find(fatherId)).Returns(father);
-        _mockNameSpaceRepository.Setup(repo => repo.Update(It.IsAny<NameSpace>()));
-        _mockNameSpaceRepository.Setup(repo => repo.FindAllNamespaceComponents()).Returns([child]);
-
-        _nameSpaceService.AddFatherToNameSpace(childId, fatherId);
-    }
-
-    [TestMethod]
-    [ExpectedException(typeof(NameSpaceException), "NameSpace does not exist")]
-    public void AddFatherToNameSpace_ShouldThrowException_WhenFatherDoesNotExist()
-    {
-        var childId = Guid.NewGuid();
-        var fatherId = Guid.NewGuid();
-
-        var child = new NameSpace { Id = childId, Name = "ChildNamespace" };
-
-        _mockNameSpaceRepository.Setup(repo => repo.Find(childId)).Returns(child);
-        _mockNameSpaceRepository.Setup(repo => repo.Find(fatherId)).Returns(((NameSpace?)null)!);
-        _mockNameSpaceRepository.Setup(repo => repo.FindAllNamespaceComponents()).Returns([child]);
-
-        _nameSpaceService.AddFatherToNameSpace(childId, fatherId);
-    }
-
-    [TestMethod]
     [ExpectedException(typeof(NameSpaceException))]
     public void AssociateNameSpaceToClass_ShouldThrow_WhenClassDoesNotExist()
     {
@@ -180,6 +110,62 @@ public class NameSpaceService_Test
         _mockNameSpaceRepository.Setup(r => r.Find(child.Id)).Returns(child);
         _mockNameSpaceRepository.Setup(r => r.Update(parent));
         _mockNameSpaceRepository.Setup(r => r.Update(child));
+
+        _mockNameSpaceRepository
+            .Setup(r => r.FindAllNamespaceComponents())
+            .Returns([parent, child]);
+        _mockClassRepository.Setup(r => r.FindAll()).Returns([]);
+        _mockInterfaceRepository.Setup(r => r.FindAll()).Returns([]);
+        _nameSpaceService.AddChildToNameSpace(parent.Id, child.Id);
+
+        Assert.AreEqual(parent, child.Father);
+        Assert.IsTrue(parent.Childs.Contains(child));
+    }
+
+    [TestMethod]
+    public void AddChildToNameSpaceClass_ShouldAddSuccessfully()
+    {
+        var parent = new NameSpace("Parent", null);
+        var child = new Class()
+        {
+            Id = Guid.NewGuid(),
+            Name = "ChildClass",
+            NameSpace = null
+        };
+
+        _mockNameSpaceRepository.Setup(r => r.Find(parent.Id)).Returns(parent);
+        _mockNameSpaceRepository.Setup(r => r.Find(child.Id)).Returns((NameSpace)null!);
+        _mockClassRepository.Setup(r => r.Find(child.Id)).Returns(child);
+        _mockNameSpaceRepository.Setup(r => r.Update(parent));
+        _mockClassRepository.Setup(r => r.Update(child));
+
+        _mockNameSpaceRepository
+            .Setup(r => r.FindAllNamespaceComponents())
+            .Returns([parent, child]);
+        _mockClassRepository.Setup(r => r.FindAll()).Returns([]);
+        _mockInterfaceRepository.Setup(r => r.FindAll()).Returns([]);
+        _nameSpaceService.AddChildToNameSpace(parent.Id, child.Id);
+
+        Assert.AreEqual(parent, child.Father);
+        Assert.IsTrue(parent.Childs.Contains(child));
+    }
+
+    [TestMethod]
+    public void AddChildToNameSpaceInterface_ShouldAddSuccessfully()
+    {
+        var parent = new NameSpace("Parent", null);
+        var child = new Interface()
+        {
+            Id = Guid.NewGuid(),
+            Name = "ChildClass",
+            NameSpace = null
+        };
+
+        _mockNameSpaceRepository.Setup(r => r.Find(parent.Id)).Returns(parent);
+        _mockNameSpaceRepository.Setup(r => r.Find(child.Id)).Returns((NameSpace)null!);
+        _mockInterfaceRepository.Setup(r => r.Find(child.Id)).Returns(child);
+        _mockNameSpaceRepository.Setup(r => r.Update(parent));
+        _mockInterfaceRepository.Setup(r => r.Update(child));
 
         _mockNameSpaceRepository
             .Setup(r => r.FindAllNamespaceComponents())
@@ -312,23 +298,6 @@ public class NameSpaceService_Test
     }
 
     [TestMethod]
-    [ExpectedException(typeof(NameSpaceException), "Circular reference detected")]
-    public void AddFatherToNameSpace_ShouldThrowException_WhenCircularReference()
-    {
-        var ns1 = new NameSpace { Id = Guid.NewGuid(), Name = "NS1" };
-        var ns2 = new NameSpace { Id = Guid.NewGuid(), Name = "NS2" };
-
-        ns1.Father = ns2;
-        ns2.Father = ns1;
-
-        _mockNameSpaceRepository.Setup(r => r.Find(ns1.Id)).Returns(ns1);
-        _mockNameSpaceRepository.Setup(r => r.Find(ns2.Id)).Returns(ns2);
-        _mockNameSpaceRepository.Setup(r => r.FindAllNamespaceComponents()).Returns([ns1, ns2]);
-
-        _nameSpaceService.AddFatherToNameSpace(ns1.Id, ns2.Id);
-    }
-
-    [TestMethod]
     public void AssociateNameSpaceToClass_ShouldAssociate_WhenClassExistsInNamespaceChilds_ByName()
     {
         var ns = new NameSpace("TestNS", null);
@@ -362,5 +331,26 @@ public class NameSpaceService_Test
 
         Assert.AreEqual(ns, iface.NameSpace);
         _mockInterfaceRepository.Verify(r => r.Update(iface), Times.Once);
+    }
+
+    [TestMethod]
+    public void AddChildToNameSpace_ShouldThrow_WhenCircularReferenceDetected()
+    {
+        // Arrange
+        var a = new NameSpace("A", null) { Id = Guid.NewGuid() };
+        var b = new NameSpace("B", null) { Id = Guid.NewGuid() };
+        a.Father = b;
+        b.Father = a; // Crea el ciclo
+
+        _mockNameSpaceRepository.Setup(r => r.Find(a.Id)).Returns(a);
+        _mockNameSpaceRepository.Setup(r => r.Find(b.Id)).Returns(b);
+        _mockNameSpaceRepository.Setup(r => r.FindAllNamespaceComponents()).Returns([a, b]);
+        _mockClassRepository.Setup(r => r.FindAll()).Returns([]);
+        _mockInterfaceRepository.Setup(r => r.FindAll()).Returns([]);
+
+        // Act & Assert
+        Assert.ThrowsException<NameSpaceException>(() =>
+            _nameSpaceService.AddChildToNameSpace(a.Id, b.Id)
+        );
     }
 }

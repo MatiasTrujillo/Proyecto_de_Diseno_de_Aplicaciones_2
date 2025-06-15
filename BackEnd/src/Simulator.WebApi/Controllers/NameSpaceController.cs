@@ -31,13 +31,6 @@ public class NameSpaceController(INameSpaceService nameSpaceService) : Controlle
         return NoContent();
     }
 
-    [HttpPost("{id}/addfathers/{idFather}")]
-    public IActionResult AddFatherToNameSpace(Guid id, Guid idFather)
-    {
-        _nameSpaceService.AddFatherToNameSpace(id, idFather);
-        return NoContent();
-    }
-
     [HttpPost("{parentId}/addchilds/{childId}")]
     public IActionResult AddChildToNameSpace(Guid parentId, Guid childId)
     {

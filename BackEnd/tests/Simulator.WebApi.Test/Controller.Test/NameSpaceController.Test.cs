@@ -65,22 +65,6 @@ public class NameSpaceControllerTest
     }
 
     [TestMethod]
-    public void AddFatherToNameSpace_ShouldReturnNoContent()
-    {
-        var id = Guid.NewGuid();
-        var idFather = Guid.NewGuid();
-
-        _mockNameSpaceService
-            .Setup(service => service.AddFatherToNameSpace(id, idFather));
-
-        var result = _controller.AddFatherToNameSpace(id, idFather) as NoContentResult;
-
-        Assert.IsNotNull(result);
-        Assert.AreEqual(204, result.StatusCode);
-        _mockNameSpaceService.Verify(service => service.AddFatherToNameSpace(id, idFather), Times.Once);
-    }
-
-    [TestMethod]
     public void AddChildToNameSpace_ShouldReturnNoContent()
     {
         var parentId = Guid.NewGuid();
