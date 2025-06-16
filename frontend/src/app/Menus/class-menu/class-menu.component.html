@@ -35,7 +35,6 @@
   <button (click)="goTo('/LocalVariableMenuComponent')">Local Variable</button>
   <button (click)="goTo('/InterfaceMenuComponent')">Interface</button>
   <button (click)="goTo('/ExportdataComponent')">Go To Export</button>
-  <button (click)="goTo('/database')">Data Base</button>
 </div>
 
 <!-- Modal para info -->
@@ -44,14 +43,12 @@
     <button class="close" (click)="closeModal()">×</button>
     <h2>Class Info</h2>
     <div *ngIf="selectedClass">
-  <p><strong>ID:</strong> {{ selectedClass.id }}</p>
   <p><strong>Name:</strong> {{ selectedClass.name }}</p>
   <p><strong>Stereotype:</strong> {{ getStereotypeName(selectedClass.stereotype) }}</p>
 </div>
   </div>
 </div>
 
-<!-- Modal para actualizar -->
 <div class="modal" *ngIf="activeModal === 'updateclass'">
   <div class="modal-content">
     <button class="close" (click)="closeModal()">×</button>
@@ -62,7 +59,6 @@
   </div>
 </div>
 
-<!-- Modal para eliminar -->
 <div class="modal" *ngIf="activeModal === 'deleteclass'">
   <div class="modal-content">
     <button class="close" (click)="closeModal()">×</button>
@@ -73,7 +69,6 @@
   </div>
 </div>
 
-<!-- Agrega este CSS en tu archivo de estilos para posicionar el botón info -->
 <style>
 .info-btn {
   position: absolute;

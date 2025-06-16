@@ -23,12 +23,10 @@
   <button (click)="goTo('/LocalVariableMenuComponent')">Local Variable</button>
   <button (click)="goTo('/InterfaceMenuComponent')">Interface</button>
   <button (click)="goTo('/ExportdataComponent')">Go To Export</button>
-  <button (click)="goTo('/database')">Data Base</button>
 </div>
 
 <div class="card-container">
   <div class="card" *ngFor="let methodItem of methods">
-    <!-- Botón info en la esquina superior derecha -->
     <button class="info-btn" (click)="openModal('infomethod', methodItem)" title="Info">ℹ️</button>
     <h3>{{ methodItem.name }}</h3>
     <div class="button-group">
@@ -38,7 +36,6 @@
   </div>
 </div>
 
-<!-- Modal para info de método -->
 <div class="modal" *ngIf="activeModal === 'infomethod'">
   <div class="modal-content">
     <button class="close" (click)="closeModal()">×</button>

@@ -29,27 +29,45 @@ export class UpdateclassComponent implements OnInit {
     private simulatorService: SimulatorService
   ) {}
 
-  ngOnInit(): void {
-    this.updateForm = this.fb.group({
-      classToUpdate: [this.classData?.id || ''],
-      idClass: [this.classData?.id || null],
-      name: [this.classData?.name || ''],
-      stereotype: ['no change']
-    });
+ngOnInit(): void {
+  this.updateForm = this.fb.group({
+    classToUpdate: [this.classData?.id || ''],
+    idClass: [this.classData?.id || null],
+    name: [this.classData?.name || ''],
+    stereotype: ['no change']
+  });
 
-    this.simulatorService.getClasses().subscribe({
-      next: (res) => {
-        this.classes = res.filter(c => c.id !== this.classData?.id);
-        const objectClass = this.classes.find(c => c.name === 'Object');
-        if (objectClass) {
-          this.updateForm.patchValue({ idClass: objectClass.id });
+  // Llama a ambos servicios y combina los resultados
+  this.simulatorService.getClasses().subscribe({
+    next: (classRes) => {
+      this.simulatorService.getInterfaces().subscribe({
+        next: (interfaceRes) => {
+          // Combina clases e interfaces en un solo array, mapeando interfaces a objetos Class válidos
+          this.classes = [
+            ...classRes.filter(c => c.id !== this.classData?.id),
+            ...interfaceRes
+              .filter(i => i.id !== this.classData?.id)
+              .map(i => ({
+                name: i.name,
+                id: i.id,
+                stereotype: null // o asigna un valor adecuado si corresponde
+              }))
+          ];
+          const objectClass = this.classes.find(c => c.name === 'Object');
+          if (objectClass) {
+            this.updateForm.patchValue({ idClass: objectClass.id });
+          }
+        },
+        error: (err) => {
+          this.error = 'Error loading interfaces: ' + (err.message || 'Unknown error');
         }
-      },
-      error: (err) => {
-        this.error = 'Error loading classes: ' + (err.message || 'Unknown error');
-      }
-    });
-  }
+      });
+    },
+    error: (err) => {
+      this.error = 'Error loading classes: ' + (err.message || 'Unknown error');
+    }
+  });
+}
 
   onSubmit(): void {
     const form = this.updateForm.value;
