@@ -44,8 +44,7 @@ export class AddChildToNameSpaceComponent implements OnInit {
   associateChild(): void {
     if (!this.selectedChildId) return;
 
-    // Padre es nameSpaceData.id, hijo es selectedChildId
-    this.simulatorService.addFatherToNameSpace(this.selectedChildId, this.nameSpaceData.id).subscribe({
+    this.simulatorService.addChildToNameSpace(this.nameSpaceData.id, this.selectedChildId).subscribe({
       next: () => {
         this.message = 'Child associated successfully.';
         this.error = null;

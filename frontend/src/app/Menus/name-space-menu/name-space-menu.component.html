@@ -31,11 +31,9 @@
  <div class="card-container">
   <div class="card" *ngFor="let nameSpaceItem of nameSpaces">
     <h3>{{ nameSpaceItem.name }}</h3>
-    <div class="button-group">
-      <button class="secondary" (click)="openModal('associatewithclass', nameSpaceItem)">Asociate With class</button>
-      <button class="secondary" (click)="openModal('associatewithinterface', nameSpaceItem)">Asociate With class</button>
+    <div class="button-group"> 
       <button class="secondary" (click)="openModal('addChill', nameSpaceItem)">Add Chilld</button>
-      <button class="secondary" (click)="openModal('addFatherToNameSpace', nameSpaceItem)">Add Father</button>
+      <button class="secondary" (click)="openModal('removeChild', nameSpaceItem)">Remove Child</button>
     </div>
   </div>
 </div>
@@ -70,13 +68,11 @@
   </div>
 </div>
 
-
-<div class="modal" *ngIf="activeModal === 'addFatherToNameSpace'">
+<div class="modal" *ngIf="activeModal === 'removeChild'">
   <div class="modal-content">
     <button class="close" (click)="closeModal()">×</button>
-    <app-add-father-to-name-space
+    <app-removechild
       [nameSpaceData]="selectedNameSpace!"
       (close)="closeModal()"
-    ></app-add-father-to-name-space>
+    ></app-removechild>
   </div>
-</div>
