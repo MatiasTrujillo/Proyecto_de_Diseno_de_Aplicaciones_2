@@ -1,3 +1,4 @@
+using Microsoft.OpenApi.Services;
 using Moq;
 using Simulator.BussinesLogic.Exception;
 using Simulator.Domain;
@@ -3441,6 +3442,137 @@ public class MethodServiceTest
         var res =
             "Contexto.EjecutarEstrategia() -> Contexto.EjecutarEstrategia()\n" +
             "\testrategia.Ejecutar() -> EstrategiaA.Ejecutar()";
+        Console.WriteLine(result);
+        Assert.AreEqual(res, result);
+    }
+
+    [TestMethod]
+    public void ExecuteMethodExample14_ShouldReturnMethodExecuted_WhenValidInputProvided()
+    {
+        var elementA = new Class
+        {
+            Id = Guid.NewGuid(),
+            Name = "ElementA",
+            Stereotype = null,
+            Parents = [],
+            Attributes = [],
+            Methods = []
+        };
+
+        var paramE = new Parameter
+        {
+            Id = Guid.NewGuid(),
+            Name = "e",
+            ReferenceType = elementA
+        };
+
+        var visitASignature = new MethodSignature
+        {
+            Id = Guid.NewGuid(),
+            Name = "visitA",
+            ReturnType = null,
+            Parameters = [paramE]
+        };
+
+        var iVisitor = new Interface
+        {
+            Id = Guid.NewGuid(),
+            Name = "IVisitor",
+            MethodSignatures = [visitASignature]
+        };
+
+        var paramV = new Parameter
+        {
+            Id = Guid.NewGuid(),
+            Name = "v",
+            ReferenceType = iVisitor
+        };
+
+        var acceptSignature = new MethodSignature
+        {
+            Id = Guid.NewGuid(),
+            Name = "accept",
+            ReturnType = null,
+            Parameters = [paramV]
+        };
+
+        var iElement = new Interface
+        {
+            Id = Guid.NewGuid(),
+            Name = "IElement",
+            MethodSignatures = [acceptSignature]
+        };
+
+        var featureA = new Method
+        {
+            Id = Guid.NewGuid(),
+            Name = "featureA",
+            Accessibility = Accessibility.Public,
+            Methods = [],
+            Parameters = [],
+            LocalVariables = [],
+            ReturnType = null
+        };
+
+        var featureAInvoked = new InvokedMethod
+        {
+            Id = Guid.NewGuid(),
+            MethodId = featureA.Id,
+            ReferenceName = "e"
+        };
+
+        var visitA = new Method
+        {
+            Id = Guid.NewGuid(),
+            Name = "visitA",
+            Accessibility = Accessibility.Public,
+            Methods = [featureAInvoked],
+            Parameters = [paramE],
+            LocalVariables = [],
+            ReturnType = null
+        };
+
+        var visitorA = new Class
+        {
+            Id = Guid.NewGuid(),
+            Name = "VisitorA",
+            Stereotype = null,
+            Parents = [iVisitor],
+            Attributes = [],
+            Methods = [visitA]
+        };
+
+        var acceptA = new Method
+        {
+            Id = Guid.NewGuid(),
+            Name = "accept",
+            Accessibility = Accessibility.Public,
+            Methods = [],
+            Parameters = [paramV],
+            LocalVariables = [],
+            ReturnType = null
+        };
+
+        var elementAType = new TypeDTO
+        {
+            Id = Guid.NewGuid(),
+            Name = "ElementA",
+            Kind = "Clase"
+        };
+
+        elementA.Parents = [iElement];
+        elementA.Methods = [featureA, acceptA];
+
+        _mockClassRepository.Setup(repo => repo.FindAll()).Returns([visitorA, elementA]);
+        _mockClassRepository.Setup(repo => repo.FindAllTypes()).Returns([visitorA, elementA, iElement, iVisitor]);
+        _mockMethodRepository.Setup(repo => repo.FindAll()).Returns([acceptA, featureA, visitA]);
+        _mockMethodRepository.Setup(repo => repo.Find(featureAInvoked.MethodId)).Returns(featureA);
+
+        var result = _methodService.ExecuteMethod(visitorA.Id, visitorA.Id, visitA.Id, [elementAType]);
+
+        var res =
+            "VisitorA.visitA(ElementA) -> VisitorA.visitA(ElementA)\n" +
+            "\te.featureA() -> ElementA.featureA()";
         Console.WriteLine(result);
         Assert.AreEqual(res, result);
     }
