@@ -281,18 +281,6 @@ private nameSpaceApiUrl = `${this.apiUrl}/namespaces`;
     );
   }
 
-  addFatherToNameSpace(id: string, idFather: string): Observable<void> {
-    return this.http.post<void>(`${this.nameSpaceApiUrl}/${id}/addfathers/${idFather}`, null).pipe(
-      catchError((error) => throwError(() => error))
-    );
-  }
-
-  removeNameSpace(id: string): Observable<void> {
-    return this.http.delete<void>(`${this.nameSpaceApiUrl}/${id}`).pipe(
-      catchError((error) => throwError(() => error))
-    );
-  }
-
   addChildToNameSpace(parentId: string, childId: string): Observable<void> {
     return this.http.post<void>(`${this.nameSpaceApiUrl}/${parentId}/addchilds/${childId}`, null).pipe(
       catchError((error) => throwError(() => error))

@@ -21,84 +21,6 @@ public class NameSpaceService(
         return nameSpace.Id;
     }
 
-    public void AddFatherToNameSpace(Guid id, Guid idFather)
-    {
-        var nc = nameSpaceRepository.FindAllNamespaceComponents();
-        var nameSpace2 = nc.Select(nct => nct)
-            .FirstOrDefault(ns => ns.Id == id);
-        ValidateNameSpaceComponentExistence(nameSpace2);
-
-        ValidateDiferentNameSpaces(id, idFather);
-        ValidateNoCircularReference(id, idFather);
-        ValidateNameSpaceExistence(idFather);
-        var father = nameSpaceRepository.Find(idFather);
-
-        nameSpace2.Father = father;
-        father.AddChild(nameSpace2);
-        nameSpaceRepository.Update(father);
-    }
-
-    public void AssociateNameSpaceToClass(Guid nameSpaceId, Guid classId)
-    {
-        ValidateNameSpaceExistence(nameSpaceId);
-
-        var nameSpace = nameSpaceRepository.Find(nameSpaceId);
-        var classEntity = classRepository.Find(classId);
-
-        if(classEntity == null)
-        {
-            throw new NameSpaceException("Class does not exist");
-        }
-
-        var existsInChilds = nameSpace.Childs.Any(child => child.Name == classEntity.Name);
-
-        ValidateChilds(existsInChilds, classEntity);
-
-        classEntity.NameSpace = nameSpace;
-        classRepository.Update(classEntity);
-    }
-
-    private static void ValidateChilds(bool existsInChilds, Class classEntity)
-    {
-        if(!existsInChilds)
-        {
-            throw new NameSpaceException($"The namespace does not contain a child with the name '{classEntity.Name}'");
-        }
-    }
-
-    public void AssociateNameSpaceToInterface(Guid nameSpaceId, Guid interfaceId)
-    {
-        ValidateNameSpaceExistence(nameSpaceId);
-
-        var nameSpace = nameSpaceRepository.Find(nameSpaceId);
-        var interfaceEntity = interfaceRepository.Find(interfaceId);
-
-        ValidateInterface(interfaceEntity);
-
-        var existsInChilds = nameSpace.Childs.Any(child => child.Name == interfaceEntity.Name);
-
-        ValidateChildsInterface(existsInChilds, interfaceEntity);
-
-        interfaceEntity.NameSpace = nameSpace;
-        interfaceRepository.Update(interfaceEntity);
-    }
-
-    private static void ValidateChildsInterface(bool existsInChilds, Interface interfaceEntity)
-    {
-        if(!existsInChilds)
-        {
-            throw new NameSpaceException($"The namespace does not contain a child with the name '{interfaceEntity.Name}'");
-        }
-    }
-
-    private static void ValidateInterface(Interface interfaceEntity)
-    {
-        if(interfaceEntity == null)
-        {
-            throw new NameSpaceException("Interface does not exist");
-        }
-    }
-
     public void AddChildToNameSpace(Guid parentId, Guid childId)
     {
         var nc = nameSpaceRepository.FindAllNamespaceComponents();
@@ -110,12 +32,17 @@ public class NameSpaceService(
         ValidateNoCircularReference(parentId, childId);
 
         var parent = nameSpaceRepository.Find(parentId);
-        var child = nameSpaceRepository.Find(childId);
 
-        parent.AddChild(child);
-        child.Father = parent;
+        ValidateAsociateNameSapce(parentId, nameSpace.Name);
+
+        if(nameSpace != null)
+        {
+            parent.AddChild(nameSpace);
+            nameSpace.Father = parent;
+        }
+
         nameSpaceRepository.Update(parent);
-        nameSpaceRepository.Update(child);
+        UpdateNameSpaceComponent(nameSpace);
     }
 
     public void RemoveChildFromNameSpace(Guid parentId, Guid childId)
@@ -128,18 +55,29 @@ public class NameSpaceService(
 
         var parent = nameSpaceRepository.Find(parentId);
 
-        var child = nameSpaceRepository.Find(childId);
-
-        if(!parent.Childs.Contains(child))
+        if(nameSpace != null && !parent.Childs.Contains(nameSpace))
         {
             throw new NameSpaceException("Child is not part of the specified parent");
         }
 
-        parent.RemoveChild(child);
-        child.Father = null;
+        if(nameSpace != null)
+        {
+            parent.RemoveChild(nameSpace);
+            nameSpace.Father = null;
+        }
 
         nameSpaceRepository.Update(parent);
-        nameSpaceRepository.Update(child);
+        UpdateNameSpaceComponent(nameSpace);
+    }
+
+    private void ValidateAsociateNameSapce(Guid parentId, string? name = null)
+    {
+        var parent = nameSpaceRepository.Find(parentId);
+        var existeHijoConMismoNombre = parent.Childs.Any(child => name != null && child.Name == name);
+        if(existeHijoConMismoNombre)
+        {
+            throw new NameSpaceException("This namespace already contains a child with the same name.");
+        }
     }
 
     public List<NameSpace> GetAllNameSpace()
@@ -203,6 +141,22 @@ public class NameSpaceService(
             }
 
             current = current.Father;
+        }
+    }
+
+    private void UpdateNameSpaceComponent(NamespaceComponent? nameSpace)
+    {
+        if(nameSpace is NameSpace ns)
+        {
+            nameSpaceRepository.Update(ns);
+        }
+        else if(nameSpace is Class c)
+        {
+            classRepository.Update(c);
+        }
+        else if(nameSpace is Interface i)
+        {
+            interfaceRepository.Update(i);
         }
     }
 }

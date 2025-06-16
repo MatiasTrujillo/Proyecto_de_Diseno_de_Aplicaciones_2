@@ -250,7 +250,6 @@ public class MethodServiceTest
     public void CreateMethod_ShouldThrowException_WhenMethodIsNull()
     {
         Method nullMethod = null!;
-
         var exception =
             Assert.ThrowsException<MethodNotFoundException>(() => _methodService.CreateMethod(nullMethod));
         Assert.AreEqual("Method cannot be null.", exception.Message);
