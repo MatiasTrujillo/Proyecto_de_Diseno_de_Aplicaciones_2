@@ -6,7 +6,7 @@ using Simulator.UpdateDTO;
 namespace Simulator.WebApi.Controllers;
 
 [ApiController]
-[Route("api/v1/attributes")]
+[Route("api/v2/attributes")]
 public class AttributeController(IAttributeService attributeService) : ControllerBase
 {
     private readonly IAttributeService _attributeService = attributeService;

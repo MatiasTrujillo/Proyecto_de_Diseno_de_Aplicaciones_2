@@ -286,4 +286,20 @@ public class NameSpaceService_Test
 
         _nameSpaceService.AddChildToNameSpace(parent.Id, newChild.Id);
     }
+
+    [TestMethod]
+    [ExpectedException(typeof(NameSpaceException))]
+    public void AddChildToNameSpace_ShouldThrow_WhenChildNameIsObject()
+    {
+        var parent = new NameSpace("Parent", null);
+        var child = new NameSpace("Object", null);
+
+        _mockNameSpaceRepository.Setup(r => r.FindAllNamespaceComponents()).Returns([parent, child]);
+        _mockNameSpaceRepository.Setup(r => r.Find(parent.Id)).Returns(parent);
+        _mockNameSpaceRepository.Setup(r => r.Find(child.Id)).Returns(child);
+        _mockClassRepository.Setup(r => r.FindAll()).Returns([]);
+        _mockInterfaceRepository.Setup(r => r.FindAll()).Returns([]);
+
+        _nameSpaceService.AddChildToNameSpace(parent.Id, child.Id);
+    }
 }

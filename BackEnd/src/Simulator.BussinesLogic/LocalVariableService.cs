@@ -51,7 +51,8 @@ public class LocalVariableService(ILocalVariableRepository localVariableReposito
         var excludedNames = new[] { "Obj" };
         var localVariables = _localVariableRepository.FindAll()
             .Where(p => !excludedNames.Contains(p.Name));
-        return localVariables.ToList();
+        return localVariables.OrderBy(a => a.Name)
+            .ToList();
     }
 
     private void ValidateLocalVariableIsNotNull(LocalVariable parameter)

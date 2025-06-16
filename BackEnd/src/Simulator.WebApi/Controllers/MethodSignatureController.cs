@@ -5,7 +5,7 @@ using Simulator.IBussinesLogic;
 namespace Simulator.WebApi.Controllers;
 
 [ApiController]
-[Route("api/v1/methodSignatures")]
+[Route("api/v2/methodSignatures")]
 public class MethodSignatureController(IMethodService methodService) : ControllerBase
 {
     private readonly IMethodService _amethodService = methodService;

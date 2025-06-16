@@ -597,37 +597,6 @@ public class AttributeServiceTest
     }
 
     [TestMethod]
-    public void SetInvokeMethod_ShouldNotAssignInvokedMethodWhenTypeIsNotPrimitive()
-    {
-        var attributeId = Guid.NewGuid();
-        var invokeId = Guid.NewGuid();
-
-        var attribute = new Attribute
-        {
-            Id = attributeId,
-            Name = "attr1",
-            ReferenceType = new Class
-            {
-                Name = "TestClass"
-            }
-        };
-        var invoked = new InvokedMethod
-        {
-            Id = invokeId,
-            ReferenceName = "refName"
-        };
-
-        _mockAttributeRepository.Setup(r => r.Find(attributeId)).Returns(attribute);
-        _mockInvokeMethodRepository.Setup(r => r.Find(invokeId)).Returns(invoked);
-
-        var exp = Assert.ThrowsException<InvalidAttributeException>(() =>
-        {
-            _attributeService.SetInvokeMethodToAttribute(attributeId, invokeId);
-        });
-        Assert.AreEqual("In v1 of this program only primitive types are accepted.", exp.Message);
-    }
-
-    [TestMethod]
     public void SetInvokeMethod_ShouldNotAssignInvokedMethodWhenInvokedMethodNull()
     {
         var attributeId = Guid.NewGuid();

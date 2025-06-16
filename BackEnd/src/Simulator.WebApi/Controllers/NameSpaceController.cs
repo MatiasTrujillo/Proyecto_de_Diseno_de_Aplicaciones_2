@@ -5,7 +5,7 @@ using Simulator.IBussinesLogic;
 namespace Simulator.WebApi.Controllers;
 
 [ApiController]
-[Route("api/v1/namespaces")]
+[Route("api/v2/namespaces")]
 public class NameSpaceController(INameSpaceService nameSpaceService) : ControllerBase
 {
     private readonly INameSpaceService _nameSpaceService = nameSpaceService;

@@ -5,7 +5,7 @@ using Simulator.IBussinesLogic;
 namespace Simulator.WebApi.Controllers;
 
 [ApiController]
-[Route("api/v1/types")]
+[Route("api/v2/types")]
 public class TypeController(IClassService classService) : ControllerBase
 {
     private readonly IClassService _classService = classService;

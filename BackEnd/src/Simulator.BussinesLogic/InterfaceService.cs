@@ -129,6 +129,8 @@ public class InterfaceService(
 
     public List<Interface> GetInterfaces()
     {
-        return _interfaceRepository.FindAll();
+        return _interfaceRepository.FindAll()
+            .OrderBy(a => a.Name)
+            .ToList();
     }
 }
