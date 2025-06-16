@@ -3336,4 +3336,112 @@ public class MethodServiceTest
         Console.WriteLine(result);
         Assert.AreEqual(res, result);
     }
+
+    [TestMethod]
+    public void ExecuteMethodExample13_ShouldReturnMethodExecuted_WhenValidInputProvided()
+    {
+        var ejecutarSignature = new MethodSignature
+        {
+            Id = Guid.NewGuid(),
+            Name = "Ejecutar",
+            ReturnType = null,
+            Parameters = []
+        };
+
+        var iEstrategia = new Interface
+        {
+            Id = Guid.NewGuid(),
+            Name = "IEstrategia",
+            MethodSignatures = [ejecutarSignature]
+        };
+
+        var ejecutar = new Method
+        {
+            Id = Guid.NewGuid(),
+            Name = "Ejecutar",
+            Accessibility = Accessibility.Public,
+            Methods = [],
+            Parameters = [],
+            LocalVariables = [],
+            ReturnType = null
+        };
+
+        var estrategiaA = new Class
+        {
+            Id = Guid.NewGuid(),
+            Name = "EstrategiaA",
+            Stereotype = null,
+            Parents = [iEstrategia],
+            Attributes = [],
+            Methods = [ejecutar]
+        };
+
+        var attEstrategia = new Attribute
+        {
+            Id = Guid.NewGuid(),
+            Name = "estrategia",
+            Accessibility = Accessibility.Private,
+            ReferenceType = iEstrategia,
+            InstanceType = estrategiaA
+        };
+
+        var paramE = new Parameter
+        {
+            Id = Guid.NewGuid(),
+            Name = "e",
+            ReferenceType = iEstrategia
+        };
+
+        var establecerEstrategia = new Method
+        {
+            Id = Guid.NewGuid(),
+            Name = "EstablecerEstrategia",
+            Accessibility = Accessibility.Public,
+            Methods = [],
+            Parameters = [paramE],
+            LocalVariables = [],
+            ReturnType = null
+        };
+
+        var ejecutarInvoked = new InvokedMethod
+        {
+            Id = Guid.NewGuid(),
+            MethodId = ejecutar.Id,
+            ReferenceName = "estrategia"
+        };
+
+        var ejecutarEstrategia = new Method
+        {
+            Id = Guid.NewGuid(),
+            Name = "EjecutarEstrategia",
+            Accessibility = Accessibility.Public,
+            Methods = [ejecutarInvoked],
+            Parameters = [],
+            LocalVariables = [],
+            ReturnType = null
+        };
+
+        var contexto = new Class
+        {
+            Id = Guid.NewGuid(),
+            Name = "Contexto",
+            Stereotype = null,
+            Parents = [],
+            Attributes = [attEstrategia],
+            Methods = [establecerEstrategia, ejecutarEstrategia]
+        };
+
+        _mockClassRepository.Setup(repo => repo.FindAll()).Returns([contexto, estrategiaA]);
+        _mockClassRepository.Setup(repo => repo.FindAllTypes()).Returns([contexto, estrategiaA, iEstrategia]);
+        _mockMethodRepository.Setup(repo => repo.FindAll()).Returns([ejecutarEstrategia, ejecutarEstrategia, ejecutar]);
+        _mockMethodRepository.Setup(repo => repo.Find(ejecutarInvoked.MethodId)).Returns(ejecutar);
+
+        var result = _methodService.ExecuteMethod(contexto.Id, contexto.Id, ejecutarEstrategia.Id, []);
+
+        var res =
+            "Contexto.EjecutarEstrategia() -> Contexto.EjecutarEstrategia()\n" +
+            "\testrategia.Ejecutar() -> EstrategiaA.Ejecutar()";
+        Console.WriteLine(result);
+        Assert.AreEqual(res, result);
+    }
 }

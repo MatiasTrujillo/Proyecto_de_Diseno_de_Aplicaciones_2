@@ -337,8 +337,6 @@ public class MethodService(
     {
         var result = new List<string>();
         var invokedMethodMethod = _methodRepository.Find(invokedMethod.MethodId);
-        Console.WriteLine(invokedMethod.ReferenceName);
-        Console.WriteLine(refe.Attributes.Count);
 
         var anAttribute = refe.Attributes!.FirstOrDefault(x => x.Name == invokedMethod.ReferenceName);
         if(anAttribute == null)
