@@ -21,43 +21,6 @@ public class NameSpaceService(
         return nameSpace.Id;
     }
 
-    public void AssociateNameSpaceToClass(Guid nameSpaceId, Guid classId)
-    {
-        ValidateNameSpaceExistence(nameSpaceId);
-
-        var nameSpace = nameSpaceRepository.Find(nameSpaceId);
-        var classEntity = classRepository.Find(classId);
-
-        if(classEntity == null)
-        {
-            throw new NameSpaceException("Class does not exist");
-        }
-
-        var existsInChilds = nameSpace.Childs.Any(child => child.Name == classEntity.Name);
-
-        ValidateChilds(existsInChilds, classEntity);
-
-        classEntity.NameSpace = nameSpace;
-        classRepository.Update(classEntity);
-    }
-
-    public void AssociateNameSpaceToInterface(Guid nameSpaceId, Guid interfaceId)
-    {
-        ValidateNameSpaceExistence(nameSpaceId);
-
-        var nameSpace = nameSpaceRepository.Find(nameSpaceId);
-        var interfaceEntity = interfaceRepository.Find(interfaceId);
-
-        ValidateInterface(interfaceEntity);
-
-        var existsInChilds = nameSpace.Childs.Any(child => child.Name == interfaceEntity.Name);
-
-        ValidateChildsInterface(existsInChilds, interfaceEntity);
-
-        interfaceEntity.NameSpace = nameSpace;
-        interfaceRepository.Update(interfaceEntity);
-    }
-
     public void AddChildToNameSpace(Guid parentId, Guid childId)
     {
         var nc = nameSpaceRepository.FindAllNamespaceComponents();
@@ -70,7 +33,7 @@ public class NameSpaceService(
 
         var parent = nameSpaceRepository.Find(parentId);
 
-        ValidateAsociateNameSapce(parentId);
+        ValidateAsociateNameSapce(parentId, nameSpace.Name);
 
         if(nameSpace != null)
         {
@@ -92,8 +55,6 @@ public class NameSpaceService(
 
         var parent = nameSpaceRepository.Find(parentId);
 
-        ValidateAsociateNameSapce(parentId);
-
         if(nameSpace != null && !parent.Childs.Contains(nameSpace))
         {
             throw new NameSpaceException("Child is not part of the specified parent");
@@ -109,18 +70,13 @@ public class NameSpaceService(
         UpdateNameSpaceComponent(nameSpace);
     }
 
-    private void ValidateAsociateNameSapce(Guid parentId)
+    private void ValidateAsociateNameSapce(Guid parentId, string? name = null)
     {
-        var clasesAsociadas = classRepository.FindAll().Any(c => c.NameSpace != null && c.NameSpace.Id == parentId);
-        if(clasesAsociadas)
+        var parent = nameSpaceRepository.Find(parentId);
+        var existeHijoConMismoNombre = parent.Childs.Any(child => name != null && child.Name == name);
+        if(existeHijoConMismoNombre)
         {
-            throw new NameSpaceException("No modifications allowed: the namespace is associated with a class.");
-        }
-
-        var interfacesAsociadas = interfaceRepository.FindAll().Any(i => i.NameSpace != null && i.NameSpace.Id == parentId);
-        if(interfacesAsociadas)
-        {
-            throw new NameSpaceException("No modifications allowed: the namespace is associated with a class.");
+            throw new NameSpaceException("This namespace already contains a child with the same name.");
         }
     }
 
@@ -185,30 +141,6 @@ public class NameSpaceService(
             }
 
             current = current.Father;
-        }
-    }
-
-    private static void ValidateChildsInterface(bool existsInChilds, Interface interfaceEntity)
-    {
-        if(!existsInChilds)
-        {
-            throw new NameSpaceException($"The namespace does not contain a child with the name '{interfaceEntity.Name}'");
-        }
-    }
-
-    private static void ValidateInterface(Interface interfaceEntity)
-    {
-        if(interfaceEntity == null)
-        {
-            throw new NameSpaceException("Interface does not exist");
-        }
-    }
-
-    private static void ValidateChilds(bool existsInChilds, Class classEntity)
-    {
-        if(!existsInChilds)
-        {
-            throw new NameSpaceException($"The namespace does not contain a child with the name '{classEntity.Name}'");
         }
     }
 

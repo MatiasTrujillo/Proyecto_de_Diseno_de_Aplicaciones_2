@@ -24,8 +24,8 @@ public class AttributeService(IAttributeRepository attributeRepository, IClassRe
         ValidateName(attribute.Name, attribute);
         var type = attribute.ReferenceType.Name;
         var instanceType = attribute.InstanceType.Name;
-        var typeT = _classRepository.FindAllTypes().FirstOrDefault(c => c.Name == type);
-        var instanceTypeT = _classRepository.FindAllTypes().FirstOrDefault(c => c.Name == instanceType);
+        var typeT = _classRepository.FindAllTypes().FirstOrDefault(c => c.Name.ToLower() == type.ToLower());
+        var instanceTypeT = _classRepository.FindAllTypes().FirstOrDefault(c => c.Name.ToLower() == instanceType.ToLower());
         ValidateAccesibility(attribute.Accessibility);
         ValidateStereotype(attribute.Stereotype);
         ValidateAttributeType(attribute.ReferenceType);
