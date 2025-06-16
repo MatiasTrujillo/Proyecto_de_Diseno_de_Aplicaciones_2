@@ -6,7 +6,7 @@ using Simulator.WebApi.Filters;
 namespace Simulator.WebApi.Controllers;
 
 [ApiController]
-[Route("api/v1/exporters")]
+[Route("api/v2/exporters")]
 public sealed class ExportersController(IExportService exporterService) : ControllerBase
 {
     [HttpGet]

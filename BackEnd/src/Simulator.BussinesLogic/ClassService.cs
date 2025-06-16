@@ -61,12 +61,16 @@ public class ClassService(
 
     public List<Type> GetTypes()
     {
-        return _classRepository.FindAllTypes();
+        return _classRepository.FindAllTypes()
+            .OrderBy(a => a.Name)
+            .ToList();
     }
 
     public List<Class> GetClasses()
     {
-        return _classRepository.FindAll();
+        return _classRepository.FindAll()
+            .OrderBy(a => a.Name)
+            .ToList();
     }
 
     private void ManageStereotype(UpdateClassDTO uClass, Class classT)

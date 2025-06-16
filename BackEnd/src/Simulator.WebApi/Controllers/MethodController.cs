@@ -5,7 +5,7 @@ using Simulator.IBussinesLogic;
 namespace Simulator.WebApi.Controllers;
 
 [ApiController]
-[Route("api/v1/methods")]
+[Route("api/v2/methods")]
 public class MethodController(IMethodService methodService) : ControllerBase
 {
     private readonly IMethodService _amethodService = methodService;

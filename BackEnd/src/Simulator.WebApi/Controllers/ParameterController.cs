@@ -5,7 +5,7 @@ using Simulator.IBussinesLogic;
 namespace Simulator.WebApi.Controllers;
 
 [ApiController]
-[Route("api/v1/parameters")]
+[Route("api/v2/parameters")]
 public class ParameterController(IParameterService parameterService) : ControllerBase
 {
     private readonly IParameterService _parameterService = parameterService;

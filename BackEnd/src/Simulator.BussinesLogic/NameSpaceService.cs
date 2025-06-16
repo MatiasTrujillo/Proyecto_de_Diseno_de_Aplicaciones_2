@@ -27,10 +27,14 @@ public class NameSpaceService(
         var nameSpace = nc.Select(nct => nct)
             .FirstOrDefault(ns => ns.Id == childId);
         ValidateNameSpaceComponentExistence(nameSpace);
+        if(nameSpace != null && nameSpace.Name == "Object")
+        {
+            throw new NameSpaceException("A namespace cannot have the name 'Object'.");
+        }
+
         ValidateNameSpaceExistence(parentId);
         ValidateDiferentNameSpaces(parentId, childId);
         ValidateNoCircularReference(parentId, childId);
-
         var parent = nameSpaceRepository.Find(parentId);
 
         ValidateAsociateNameSapce(parentId, nameSpace.Name);
@@ -83,14 +87,16 @@ public class NameSpaceService(
     public List<NameSpace> GetAllNameSpace()
     {
         var nameSpaces = nameSpaceRepository.FindAll();
-        return nameSpaces.ToList();
+        return nameSpaces.OrderBy(a => a.Name)
+            .ToList();
     }
 
     public List<NamespaceComponent> GetAllNamespaceComponents()
     {
         var components = nameSpaceRepository.FindAllNamespaceComponents()
             .Where(ns => !(ns is Primitive));
-        return components.ToList();
+        return components.OrderBy(a => a.Name)
+            .ToList();
     }
 
     private void ValidateUniqueNameSpace(string name)

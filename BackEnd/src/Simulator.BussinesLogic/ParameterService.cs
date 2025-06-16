@@ -20,8 +20,8 @@ public class ParameterService(IParameterRepository parameterRepository, IClassRe
         ValidateParameterIsNotNull(parameterT);
         var type = parameterT.ReferenceType.Name;
         var insstance = parameterT.InstanceType.Name;
-        var returnType = _classRepository.FindAllTypes().FirstOrDefault(c => c.Name == type);
-        var instanceType = _classRepository.FindAllTypes().FirstOrDefault(c => c.Name == insstance);
+        var returnType = _classRepository.FindAllTypes().FirstOrDefault(c => c.Name.ToLower() == type.ToLower());
+        var instanceType = _classRepository.FindAllTypes().FirstOrDefault(c => c.Name.ToLower() == insstance.ToLower());
         ValidateInstanceClass(returnType, instanceType);
         parameterT.ReferenceType = returnType;
         parameterT.InstanceType = instanceType;
@@ -46,7 +46,8 @@ public class ParameterService(IParameterRepository parameterRepository, IClassRe
         var excludedNames = new[] { "Obj", "StrToParse", "StrIsNullOrEmpty", "StrToCompare", "a", "adsdas", "Parameterrrr" };
         var parameters = _parameterRepository.FindAll()
             .Where(p => !excludedNames.Contains(p.Name));
-        return parameters.ToList();
+        return parameters.OrderBy(a => a.Name)
+            .ToList();
     }
 
     private void ValidateInvokedMethodExist(InvokedMethod invokedMethod)

@@ -5,7 +5,7 @@ using Simulator.IBussinesLogic;
 namespace Simulator.WebApi.Controllers;
 
 [ApiController]
-[Route("api/v1/localVariables")]
+[Route("api/v2/localVariables")]
 public class LocalVariableController(ILocalVariableService methodService) : ControllerBase
 {
     private readonly ILocalVariableService _amethodService = methodService;

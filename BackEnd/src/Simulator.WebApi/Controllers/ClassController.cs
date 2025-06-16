@@ -6,7 +6,7 @@ using Simulator.UpdateDTO;
 namespace Simulator.WebApi.Controllers;
 
 [ApiController]
-[Route("api/v1/classes")]
+[Route("api/v2/classes")]
 public class ClassController(IClassService classService) : ControllerBase
 {
     private readonly IClassService _classService = classService;

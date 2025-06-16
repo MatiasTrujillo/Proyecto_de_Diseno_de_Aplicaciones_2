@@ -144,12 +144,14 @@ public class MethodService(
 
         return _methodRepository.FindAll()
             .Where(m => !excludedNames.Contains(m.Name))
+            .OrderBy(a => a.Name)
             .ToList();
     }
 
     public List<InvokedMethod> GetInvokedMethodById()
     {
         return _invokedMethodRepository.FindAll()
+            .OrderBy(a => a.ReferenceName)
             .ToList();
     }
 
@@ -978,7 +980,8 @@ public class MethodService(
     public List<MethodSignature> GetMethodSignatures()
     {
         return _methodSignatureRepository.FindAll()
-           .ToList();
+            .OrderBy(a => a.Name)
+            .ToList();
     }
 
     private static void ValidateMethodSignatureNameIsNotNull(MethodSignature methodSignatureDto)
