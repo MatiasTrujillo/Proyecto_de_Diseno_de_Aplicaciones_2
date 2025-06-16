@@ -1,4 +1,3 @@
-using Microsoft.OpenApi.Services;
 using Moq;
 using Simulator.BussinesLogic.Exception;
 using Simulator.Domain;
