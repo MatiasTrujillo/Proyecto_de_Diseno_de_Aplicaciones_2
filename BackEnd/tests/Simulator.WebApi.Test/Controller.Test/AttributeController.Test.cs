@@ -1,8 +1,10 @@
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using Simulator.Domain;
+using Simulator.Domain.Exception;
 using Simulator.DTO;
 using Simulator.IBussinesLogic;
+using Simulator.UpdateDTO;
 using Simulator.WebApi.Controllers;
 using Attribute = Simulator.Domain.Attribute;
 
@@ -17,15 +19,22 @@ public class AttributeControllerTest
     [TestMethod]
     public void CreateAttribute_ShouldReturnCreated_WhenAttributeIsCreated()
     {
-        var attribute = new AttributeDto();
-        AttributeServiceMock.Setup(service => service.CreateAttribute(attribute))
+        var attribute = new AttributeDto
+        {
+            Name = "Attr1",
+            ReferenceType = new TypeDTO { Name = "RefType", Kind = "class" },
+            InstanceType = new TypeDTO { Name = "InstType", Kind = "interface" }
+        };
+
+        AttributeServiceMock.Setup(service => service.CreateAttribute(It.IsAny<Attribute>()))
+            .Returns(Guid.NewGuid())
             .Verifiable();
 
         var result = _controller.CreateAttribute(attribute) as CreatedResult;
 
         Assert.IsNotNull(result);
         Assert.AreEqual(201, result.StatusCode);
-        AttributeServiceMock.Verify(service => service.CreateAttribute(attribute), Times.Once);
+        AttributeServiceMock.Verify();
     }
 
     [TestMethod]
@@ -108,10 +117,10 @@ public class AttributeControllerTest
     public void GetAttributes_ShouldReturnOkWithAllAttributes()
     {
         // Arrange
-        var expectedAttributes = new List<AttributeDto>
+        var expectedAttributes = new List<Attribute>
         {
-            new AttributeDto { Name = "Atributo1" },
-            new AttributeDto { Name = "Atributo2" }
+            new Attribute { Name = "Atributo1" },
+            new Attribute { Name = "Atributo2" }
         };
 
         var mockService = new Mock<IAttributeService>();
@@ -132,5 +141,37 @@ public class AttributeControllerTest
         Assert.AreEqual("Atributo2", value[1].Name);
 
         mockService.Verify(s => s.GetAttributes(), Times.Once);
+    }
+
+    [TestMethod]
+    [ExpectedException(typeof(AttributeException))]
+    public void Constructor_ThrowsException_WhenNameIsNull()
+    {
+        _ = new Attribute(null!, Accessibility.Public, new Primitive(PrimitiveType.Int));
+    }
+
+    [TestMethod]
+    [ExpectedException(typeof(AttributeException))]
+    public void Constructor_ThrowsException_WhenNameIsEmpty()
+    {
+        _ = new Attribute(string.Empty, Accessibility.Public, new Primitive(PrimitiveType.Int));
+    }
+
+    [TestMethod]
+    [ExpectedException(typeof(AttributeException))]
+    public void Constructor_ThrowsException_WhenNameIsTooLong()
+    {
+        var longName = new string('a', 51);
+        _ = new Attribute(longName, Accessibility.Public, new Primitive(PrimitiveType.Int));
+    }
+
+    [DataTestMethod]
+    [DataRow("base")]
+    [DataRow("this")]
+    [DataRow("Object")]
+    [ExpectedException(typeof(AttributeException))]
+    public void Constructor_ThrowsException_WhenNameIsReservedKeyword(string reservedKeyword)
+    {
+        _ = new Attribute(reservedKeyword, Accessibility.Public, new Primitive(PrimitiveType.Int));
     }
 }

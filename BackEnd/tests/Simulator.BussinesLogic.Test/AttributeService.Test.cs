@@ -2,8 +2,8 @@ using Moq;
 using Simulator.BussinesLogic.Exception;
 using Simulator.Domain;
 using Simulator.Domain.Exception;
-using Simulator.DTO;
 using Simulator.IDataAcces;
+using Simulator.UpdateDTO;
 using Attribute = Simulator.Domain.Attribute;
 
 namespace Simulator.BussinesLogic.Test;
@@ -37,12 +37,12 @@ public class AttributeServiceTest
     [TestMethod]
     public void CreateAttribute_ShouldCallRepositoryAdd_WithValidAttribute()
     {
-        var dto = new AttributeDto
+        var dto = new Attribute
         {
             Name = "Agility",
             Accessibility = Accessibility.Public,
-            ReferenceType = new TypeDTO { Name = "TestType", Kind = "class" },
-            InstanceType = new TypeDTO { Name = "TestType", Kind = "class" }
+            ReferenceType = new Class { Name = "TestType" },
+            InstanceType = new Class { Name = "TestType" }
         };
 
         var classReference = new Class { Name = dto.ReferenceType.Name };
@@ -178,12 +178,12 @@ public class AttributeServiceTest
     [TestMethod]
     public void CreateAttribute_ShouldThrowException_WhenClassNotFound()
     {
-        var dto = new AttributeDto
+        var dto = new Attribute
         {
             Name = "Agility",
             Accessibility = Accessibility.Public,
-            ReferenceType = new TypeDTO { Name = "TestType", Kind = "class" },
-            InstanceType = new TypeDTO { Name = "TestType", Kind = "class" }
+            ReferenceType = new Class { Name = "TestType" },
+            InstanceType = new Class { Name = "TestType" }
         };
 
         var classReference = new Class { Name = dto.ReferenceType.Name };
@@ -218,12 +218,12 @@ public class AttributeServiceTest
     [TestMethod]
     public void CreateAttribute_ShouldThrowArgumentException_WhenNameIsEmpty()
     {
-        var dto = new AttributeDto
+        var dto = new Attribute
         {
             Name = string.Empty,
             Accessibility = Accessibility.Public,
-            ReferenceType = new TypeDTO { Name = "TestType", Kind = "class" },
-            InstanceType = new TypeDTO { Name = "TestType", Kind = "class" }
+            ReferenceType = new Class { Name = "TestType" },
+            InstanceType = new Class { Name = "TestType" }
         };
 
         var classEntity = new Class { Id = _classId, Name = "SomeClass", Attributes = [] };
@@ -231,53 +231,28 @@ public class AttributeServiceTest
         _mockClassRepository
             .Setup(repo => repo.Find(_classId))
             .Returns(classEntity);
-
-        var ex = Assert.ThrowsException<AttributeException>(() =>
-        {
-            _attributeService.CreateAttribute(dto);
-        });
-
-        Assert.AreEqual("Name cannot be null or empty", ex.Message);
-    }
-
-    [DataTestMethod]
-    [DataRow("base")]
-    [DataRow("this")]
-    [DataRow("Object")]
-    public void CreateAttribute_ShouldThrowAttributeException_WhenNameIsReservedKeyword(string reservedName)
-    {
-        var dto = new AttributeDto
-        {
-            Name = reservedName,
-            Accessibility = Accessibility.Public,
-            ReferenceType = new TypeDTO { Name = "TestType", Kind = "class" },
-            InstanceType = new TypeDTO { Name = "TestType", Kind = "class" }
-        };
-
-        var classEntity = new Class { Id = _classId, Name = "SomeClass", Attributes = [] };
-
         _mockClassRepository
-            .Setup(repo => repo.Find(_classId))
-            .Returns(classEntity);
+            .Setup(repo => repo.FindAllTypes())
+            .Returns([]);
 
         var ex = Assert.ThrowsException<AttributeException>(() =>
         {
             _attributeService.CreateAttribute(dto);
         });
 
-        Assert.AreEqual("The name is a reserved keyword and is not allowed.", ex.Message);
+        Assert.AreEqual("Name cannot be empty", ex.Message);
     }
 
     [TestMethod]
     public void CreateAttribute_ShouldThrowArgumentException_WhenNameExceedsMaxLength()
     {
         var longName = new string('A', 51);
-        var dto = new AttributeDto
+        var dto = new Attribute
         {
             Name = longName,
             Accessibility = Accessibility.Public,
-            ReferenceType = new TypeDTO { Name = "TestType", Kind = "class" },
-            InstanceType = new TypeDTO { Name = "TestType", Kind = "class" }
+            ReferenceType = new Class { Name = "TestType" },
+            InstanceType = new Class { Name = "TestType" }
         };
 
         var classEntity = new Class { Id = _classId, Name = "SomeClass", Attributes = [] };
@@ -285,6 +260,9 @@ public class AttributeServiceTest
         _mockClassRepository
             .Setup(repo => repo.Find(_classId))
             .Returns(classEntity);
+        _mockClassRepository
+            .Setup(repo => repo.FindAllTypes())
+            .Returns([]);
 
         var ex = Assert.ThrowsException<AttributeException>(() =>
         {
@@ -298,12 +276,13 @@ public class AttributeServiceTest
     public void CreateAttribute_ShouldThrowInvalidAttributeException_WhenAccesibilityIsWrong()
     {
         var invalidAccessibility = (Accessibility)99;
-        var dto = new AttributeDto
+
+        var dto = new Attribute
         {
-            Name = "Name",
+            Name = "Agility",
             Accessibility = invalidAccessibility,
-            ReferenceType = new TypeDTO { Name = "SomeClass", Kind = "class" },
-            InstanceType = new TypeDTO { Name = "SomeClass", Kind = "class" }
+            ReferenceType = new Class { Name = "SomeClass" },
+            InstanceType = new Class { Name = "SomeClass" }
         };
 
         var classEntity = new Class { Id = _classId, Name = "SomeClass", Attributes = [] };
@@ -316,7 +295,7 @@ public class AttributeServiceTest
             .Returns([]);
         _mockClassRepository
             .Setup(repo => repo.FindAllTypes())
-            .Returns([]);
+            .Returns([new Class { Name = "SomeClass" }]);
 
         var ex = Assert.ThrowsException<InvalidAttributeException>(() =>
         {
@@ -618,37 +597,6 @@ public class AttributeServiceTest
     }
 
     [TestMethod]
-    public void SetInvokeMethod_ShouldNotAssignInvokedMethodWhenTypeIsNotPrimitive()
-    {
-        var attributeId = Guid.NewGuid();
-        var invokeId = Guid.NewGuid();
-
-        var attribute = new Attribute
-        {
-            Id = attributeId,
-            Name = "attr1",
-            ReferenceType = new Class
-            {
-                Name = "TestClass"
-            }
-        };
-        var invoked = new InvokedMethod
-        {
-            Id = invokeId,
-            ReferenceName = "refName"
-        };
-
-        _mockAttributeRepository.Setup(r => r.Find(attributeId)).Returns(attribute);
-        _mockInvokeMethodRepository.Setup(r => r.Find(invokeId)).Returns(invoked);
-
-        var exp = Assert.ThrowsException<InvalidAttributeException>(() =>
-        {
-            _attributeService.SetInvokeMethodToAttribute(attributeId, invokeId);
-        });
-        Assert.AreEqual("In v1 of this program only primitive types are accepted.", exp.Message);
-    }
-
-    [TestMethod]
     public void SetInvokeMethod_ShouldNotAssignInvokedMethodWhenInvokedMethodNull()
     {
         var attributeId = Guid.NewGuid();
@@ -677,12 +625,12 @@ public class AttributeServiceTest
     [TestMethod]
     public void CreateAttribute_ShouldCreateAttributeWithStereotype_WithCorrectInput()
     {
-        var dto = new AttributeDto
+        var dto = new Attribute
         {
             Name = "Agility",
             Accessibility = Accessibility.Public,
-            ReferenceType = new TypeDTO { Name = "TestType", Kind = "class" },
-            InstanceType = new TypeDTO { Name = "TestType", Kind = "class" },
+            ReferenceType = new Class { Name = "TestType" },
+            InstanceType = new Class { Name = "TestType" },
             Stereotype = KeyWord.Static
         };
 
@@ -726,12 +674,12 @@ public class AttributeServiceTest
     [TestMethod]
     public void CreateAttribute_ShouldThrowException_WithInvalidStereotype()
     {
-        var dto = new AttributeDto
+        var dto = new Attribute
         {
             Name = "Agility",
             Accessibility = Accessibility.Public,
-            ReferenceType = new TypeDTO { Name = "TestType", Kind = "class" },
-            InstanceType = new TypeDTO { Name = "TestType", Kind = "class" },
+            ReferenceType = new Class { Name = "TestType" },
+            InstanceType = new Class { Name = "TestType" },
             Stereotype = KeyWord.Abstract
         };
 
@@ -948,12 +896,12 @@ public class AttributeServiceTest
     {
         var aClass1 = new Class { Id = Guid.NewGuid(), Name = "Class1" };
         var aClass2 = new Class { Id = Guid.NewGuid(), Name = "Class2" };
-        var dto = new AttributeDto
+        var dto = new Attribute
         {
             Name = "Agility",
             Accessibility = Accessibility.Public,
-            ReferenceType = new TypeDTO { Name = aClass1.Name, Kind = "class" },
-            InstanceType = new TypeDTO { Name = aClass2.Name, Kind = "class" },
+            ReferenceType = new Class { Name = aClass1.Name },
+            InstanceType = new Class { Name = aClass2.Name },
         };
 
         _mockClassRepository
@@ -976,12 +924,12 @@ public class AttributeServiceTest
         var aClass3 = new Class { Id = Guid.NewGuid(), Name = "Class3" };
         var aClass1 = new Class { Id = Guid.NewGuid(), Name = "Class1" };
         var aClass2 = new Class { Id = Guid.NewGuid(), Name = "Class2", Parents = [aClass3] };
-        var dto = new AttributeDto
+        var dto = new Attribute
         {
             Name = "Agility",
             Accessibility = Accessibility.Public,
-            ReferenceType = new TypeDTO { Name = aClass1.Name, Kind = "class" },
-            InstanceType = new TypeDTO { Name = aClass2.Name, Kind = "class" },
+            ReferenceType = new Class { Name = aClass1.Name },
+            InstanceType = new Class { Name = aClass2.Name },
         };
 
         _mockClassRepository
@@ -1003,12 +951,12 @@ public class AttributeServiceTest
     {
         var aClass1 = new Class { Id = Guid.NewGuid(), Name = "Class1" };
         var aPrimitive1 = new Primitive(PrimitiveType.Bool) { Name = "Prim1" };
-        var dto = new AttributeDto
+        var dto = new Attribute
         {
             Name = "Agility",
             Accessibility = Accessibility.Public,
-            ReferenceType = new TypeDTO { Name = aPrimitive1.Name, Kind = "class" },
-            InstanceType = new TypeDTO { Name = aClass1.Name, Kind = "class" },
+            ReferenceType = new Class { Name = aPrimitive1.Name },
+            InstanceType = new Class { Name = aClass1.Name },
         };
 
         _mockClassRepository
@@ -1032,12 +980,12 @@ public class AttributeServiceTest
     {
         var aPrimitive2 = new Primitive(PrimitiveType.Int) { Name = "Prim2" };
         var aPrimitive1 = new Primitive(PrimitiveType.Bool) { Name = "Prim1" };
-        var dto = new AttributeDto
+        var dto = new Attribute
         {
             Name = "Agility",
             Accessibility = Accessibility.Public,
-            ReferenceType = new TypeDTO { Name = aPrimitive1.Name, Kind = "class" },
-            InstanceType = new TypeDTO { Name = aPrimitive2.Name, Kind = "class" },
+            ReferenceType = new Class { Name = aPrimitive1.Name },
+            InstanceType = new Class { Name = aPrimitive2.Name },
         };
 
         _mockClassRepository
@@ -1061,12 +1009,12 @@ public class AttributeServiceTest
     {
         var aPrimitive2 = new Primitive(PrimitiveType.Bool) { Name = "Prim2" };
         var aPrimitive1 = new Primitive(PrimitiveType.Bool) { Name = "Prim1" };
-        var dto = new AttributeDto
+        var dto = new Attribute
         {
             Name = "Agility",
             Accessibility = Accessibility.Public,
-            ReferenceType = new TypeDTO { Name = aPrimitive1.Name, Kind = "class" },
-            InstanceType = new TypeDTO { Name = aPrimitive2.Name, Kind = "class" },
+            ReferenceType = new Class { Name = aPrimitive1.Name },
+            InstanceType = new Class { Name = aPrimitive2.Name },
         };
 
         _mockClassRepository
@@ -1092,12 +1040,12 @@ public class AttributeServiceTest
     {
         var anInterface1 = new Interface { Name = "Inter1" };
         var aClass1 = new Class { Name = "Class1", Parents = [anInterface1] };
-        var dto = new AttributeDto
+        var dto = new Attribute
         {
             Name = "Agility",
             Accessibility = Accessibility.Public,
-            ReferenceType = new TypeDTO { Name = anInterface1.Name, Kind = "interface" },
-            InstanceType = new TypeDTO { Name = aClass1.Name, Kind = "class" },
+            ReferenceType = new Interface { Name = anInterface1.Name },
+            InstanceType = new Class { Name = aClass1.Name },
         };
 
         _mockClassRepository
@@ -1123,12 +1071,12 @@ public class AttributeServiceTest
     {
         var anInterface1 = new Interface { Name = "Inter1" };
         var aClass1 = new Class { Name = "Class1" };
-        var dto = new AttributeDto
+        var dto = new Attribute
         {
             Name = "Agility",
             Accessibility = Accessibility.Public,
-            ReferenceType = new TypeDTO { Name = anInterface1.Name, Kind = "interface" },
-            InstanceType = new TypeDTO { Name = aClass1.Name, Kind = "class" },
+            ReferenceType = new Interface { Name = anInterface1.Name },
+            InstanceType = new Class { Name = aClass1.Name },
         };
 
         _mockClassRepository
@@ -1149,12 +1097,12 @@ public class AttributeServiceTest
     public void CreateAttribute_ShouldCreate_WhenBothAreTheSameInterface()
     {
         var anInterface1 = new Interface { Name = "Inter1" };
-        var dto = new AttributeDto
+        var dto = new Attribute
         {
             Name = "Agility",
             Accessibility = Accessibility.Public,
-            ReferenceType = new TypeDTO { Name = anInterface1.Name, Kind = "interface" },
-            InstanceType = new TypeDTO { Name = anInterface1.Name, Kind = "interface" },
+            ReferenceType = new Interface { Name = anInterface1.Name },
+            InstanceType = new Interface { Name = anInterface1.Name },
         };
 
         _mockClassRepository

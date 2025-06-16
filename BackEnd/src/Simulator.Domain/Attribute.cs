@@ -31,17 +31,6 @@ public class Attribute
         InvokedMethods = [];
     }
 
-    public Attribute(string name, Accessibility accessibility, Type referenceType, KeyWord? stereotype)
-    {
-        ValidateAttributes(name);
-        Id = Guid.NewGuid();
-        Name = name;
-        Accessibility = accessibility;
-        ReferenceType = referenceType;
-        InvokedMethods = [];
-        Stereotype = stereotype;
-    }
-
     public Attribute(string name, Accessibility accessibility, Type referenceType, Type instanceType, KeyWord? stereotype)
     {
         ValidateAttributes(name);

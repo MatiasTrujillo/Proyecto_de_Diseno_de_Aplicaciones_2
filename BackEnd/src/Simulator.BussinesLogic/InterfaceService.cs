@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using Simulator.BussinesLogic.Exception;
 using Simulator.Domain;
-using Simulator.DTO;
 using Simulator.IBussinesLogic;
 using Simulator.IDataAcces;
+using Simulator.UpdateDTO;
 using Type = Simulator.Domain.Type;
 
 namespace Simulator.BussinesLogic;
@@ -18,17 +18,16 @@ public class InterfaceService(
     private readonly IClassRepository _classRepository = classRepository;
     private readonly IMethodSignatureRepository _methodSignatureRepository = methodSignatureRepository;
 
-    public Guid CreateInterface(InterfaceDTO interfaceDto)
+    public Guid CreateInterface(Interface anInterface)
     {
-        var anInterface = interfaceDto.ToEntity();
         var types = _classRepository.FindAllTypes();
-        VerifyName(interfaceDto);
-        VerifyInterfaceNameAlreadyExists(interfaceDto, types);
+        VerifyName(anInterface);
+        VerifyInterfaceNameAlreadyExists(anInterface, types);
         _interfaceRepository.Add(anInterface);
         return anInterface.Id;
     }
 
-    private static void VerifyName(InterfaceDTO interfaceDto)
+    private static void VerifyName(Interface interfaceDto)
     {
         var name = interfaceDto.Name;
         VerifyNameIsNotEmpty(name);
@@ -60,7 +59,7 @@ public class InterfaceService(
         }
     }
 
-    private static void VerifyInterfaceNameAlreadyExists(InterfaceDTO interfaceDto, List<Type> types)
+    private static void VerifyInterfaceNameAlreadyExists(Interface interfaceDto, List<Type> types)
     {
         foreach(var type in types)
         {
@@ -130,6 +129,8 @@ public class InterfaceService(
 
     public List<Interface> GetInterfaces()
     {
-        return _interfaceRepository.FindAll();
+        return _interfaceRepository.FindAll()
+            .OrderBy(a => a.Name)
+            .ToList();
     }
 }

@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Moq;
+using Simulator.Domain;
 using Simulator.DTO;
 using Simulator.IBussinesLogic;
 using Simulator.WebApi.Controllers;
@@ -27,7 +28,7 @@ public class SessionControllerTests
     [TestMethod]
     public void SignIn_ReturnsOkWithToken()
     {
-        _mockSessionService.Setup(s => s.SignIn(_testSessionDto)).Returns(_testToken);
+        _mockSessionService.Setup(s => s.SignIn(It.IsAny<Session>())).Returns(_testToken);
 
         var result = _controller.SignIn(_testSessionDto) as OkObjectResult;
 
@@ -72,15 +73,17 @@ public class SessionControllerTests
     {
         _mockSessionService.Setup(s => s.LogOut(_testToken)).Throws(new UnauthorizedAccessException());
 
-        _controller.LogOut(_testToken); // Should throw
+        _controller.LogOut(_testToken);
     }
 
     [TestMethod]
     [ExpectedException(typeof(InvalidOperationException))]
     public void SignIn_ThrowsInvalidOperationException()
     {
-        _mockSessionService.Setup(s => s.SignIn(_testSessionDto)).Throws(new InvalidOperationException());
+        _mockSessionService
+            .Setup(s => s.SignIn(It.IsAny<Session>()))
+            .Throws(new InvalidOperationException());
 
-        _controller.SignIn(_testSessionDto); // Should throw
+        _controller.SignIn(_testSessionDto);
     }
 }

@@ -18,35 +18,34 @@ public class MethodServiceTest
     private Mock<ILocalVariableRepository> _mockLocalVariableRepository = null!;
     private Mock<IInvokedMethodRepository> _mockInvokedMethodRepository = null!;
     private MethodService _methodService = null!;
-    private MethodDTO _methodDto = new MethodDTO();
-    private MethodDTO _otherMethodDto = new MethodDTO();
-    private ParameterDTO _parameterDto = new ParameterDTO();
+    private Method _methodDto = new Method();
+    private Method _otherMethodDto = new Method();
+    private Parameter _parameterDto = new Parameter();
     private Mock<IMethodSignatureRepository> _mockMethodSignatureRepository = null!;
 
     [TestInitialize]
     public void Initialize()
     {
-        _methodDto = new MethodDTO()
+        _methodDto = new Method()
         {
             Name = "FirstMethodDto",
             Accessibility = Accessibility.Private,
             Stereotype = null,
-            ReturnType = new TypeDTO { Name = "TestClass", Kind = "class" }
+            ReturnType = new Class { Name = "TestClass" }
         };
-        _otherMethodDto = new MethodDTO()
+        _otherMethodDto = new Method()
         {
             Name = "SecondMethodDto",
             Accessibility = Accessibility.Public,
             Stereotype = KeyWord.Abstract
         };
 
-        _parameterDto = new ParameterDTO
+        _parameterDto = new Parameter
         {
             Name = "TestParameter",
-            ReferenceType = new TypeDTO
+            ReferenceType = new Class
             {
                 Name = "TestClass",
-                Kind = "class"
             }
         };
         _mockMethodRepository = new Mock<IMethodRepository>(MockBehavior.Strict);
@@ -91,15 +90,14 @@ public class MethodServiceTest
         _mockClassRepository.Setup(repo => repo.FindAllTypes()).Returns(classes);
 
         var primitiveTypeName = "int";
-        var methodDto = new MethodDTO
+        var methodDto = new Method
         {
             Name = "TestMethod",
             Accessibility = Accessibility.Public,
             Stereotype = null,
-            ReturnType = new TypeDTO
+            ReturnType = new Primitive
             {
                 Name = primitiveTypeName,
-                Kind = "primitive"
             }
         };
 
@@ -120,8 +118,8 @@ public class MethodServiceTest
     [TestMethod]
     public void CreateMethod_ShouldThrowException_WhenReturnTypeIsNull()
     {
-        var classT = new TypeDTO { Name = "TestClass", Kind = "class" };
-        var method = new MethodDTO
+        var classT = new Class { Name = "TestClass" };
+        var method = new Method
         {
             Name = "TestMethod",
             Accessibility = Accessibility.Public,
@@ -136,47 +134,11 @@ public class MethodServiceTest
     }
 
     [TestMethod]
-    public void CreateMethod_ShouldThrowException_WhenReturnTypePrimitiveIsNull()
-    {
-        var primitive = new TypeDTO { Name = "not", Kind = "primitive" };
-        var method = new MethodDTO
-        {
-            Name = "TestMethod",
-            Accessibility = Accessibility.Public,
-            Stereotype = null,
-            ReturnType = primitive
-        };
-        var classes = new List<Type>();
-        _mockClassRepository.Setup(repo => repo.FindAllTypes()).Returns(classes);
-
-        var exception = Assert.ThrowsException<InvalidOperationException>(() => _methodService.CreateMethod(method));
-        Assert.AreEqual("Invalid primitive type name: not", exception.Message);
-    }
-
-    [TestMethod]
-    public void CreateMethod_ShouldThrowException_WhenReturnTypeIsInvalid()
-    {
-        var classT = new TypeDTO { Name = "TestClass", Kind = "wrong" };
-        var method = new MethodDTO
-        {
-            Name = "TestMethod",
-            Accessibility = Accessibility.Public,
-            Stereotype = null,
-            ReturnType = classT
-        };
-        var classes = new List<Type>();
-        _mockClassRepository.Setup(repo => repo.FindAllTypes()).Returns(classes);
-
-        var exception = Assert.ThrowsException<InvalidOperationException>(() => _methodService.CreateMethod(method));
-        Assert.AreEqual($"Unknown type kind: {classT.Kind}", exception.Message);
-    }
-
-    [TestMethod]
     public void CreateMethod_ShouldThrowException_WhenKeyAccessibilityIsNotValid()
     {
         var invalidAccessibility = (Accessibility)100;
-        var classT = new TypeDTO { Name = "TestClass", Kind = "class" };
-        var method = new MethodDTO
+        var classT = new Class { Name = "TestClass" };
+        var method = new Method
         {
             Name = "TestMethod",
             Accessibility = invalidAccessibility,
@@ -193,8 +155,8 @@ public class MethodServiceTest
     public void CreateMethod_ShouldThrowExcepton_WhenKeyWordIsNotValid()
     {
         var invalidStereotype = (KeyWord)100;
-        var classT = new TypeDTO { Name = "TestClass", Kind = "class" };
-        var method = new MethodDTO
+        var classT = new Class { Name = "TestClass" };
+        var method = new Method
         {
             Name = "TestMethod",
             Accessibility = Accessibility.Public,
@@ -287,10 +249,9 @@ public class MethodServiceTest
     [TestMethod]
     public void CreateMethod_ShouldThrowException_WhenMethodIsNull()
     {
-        MethodDTO nullMethodDto = null!;
-
+        Method nullMethod = null!;
         var exception =
-            Assert.ThrowsException<MethodNotFoundException>(() => _methodService.CreateMethod(nullMethodDto));
+            Assert.ThrowsException<MethodNotFoundException>(() => _methodService.CreateMethod(nullMethod));
         Assert.AreEqual("Method cannot be null.", exception.Message);
     }
 
@@ -573,7 +534,7 @@ public class MethodServiceTest
     public void AssociateInvokeMethod_ShouldReturnId_WhenValidInput()
     {
         var methodId = Guid.NewGuid();
-        var invokedMethodDto = new InvokedMethodDTO { MethodId = methodId, ReferenceName = "someVariable" };
+        var invokedMethodDto = new InvokedMethod { MethodId = methodId, ReferenceName = "someVariable" };
 
         var method = new Method
         {
@@ -600,7 +561,7 @@ public class MethodServiceTest
     [TestMethod]
     public void AssociateInvokeMethod_ShouldThrow_WhenDTOIsNull()
     {
-        InvokedMethodDTO? invokedMethodDto = null;
+        InvokedMethod? invokedMethodDto = null;
 
         var exception = Assert.ThrowsException<InvokedMethodNotFoundException>(() =>
             _methodService.AssociateInvokeMethod(invokedMethodDto!));
@@ -611,7 +572,7 @@ public class MethodServiceTest
     [TestMethod]
     public void AssociateInvokeMethod_ShouldThrow_WhenDTOReferenceNameISEmpty()
     {
-        var invoked = new InvokedMethodDTO { MethodId = Guid.NewGuid(), ReferenceName = string.Empty };
+        var invoked = new InvokedMethod { MethodId = Guid.NewGuid(), ReferenceName = string.Empty };
 
         _mockMethodRepository
             .Setup(r => r.Find(invoked.MethodId))
@@ -626,7 +587,7 @@ public class MethodServiceTest
     [TestMethod]
     public void AssociateInvokeMethod_ShouldThrow_WhenReferenceNameIsNullOrEmpty()
     {
-        var invokedMethodDto = new InvokedMethodDTO { MethodId = Guid.NewGuid(), ReferenceName = null };
+        var invokedMethodDto = new InvokedMethod { MethodId = Guid.NewGuid(), ReferenceName = null };
 
         _mockMethodRepository.Setup(repo => repo.Find(It.IsAny<Guid>()))
             .Returns(new Method());
@@ -640,7 +601,7 @@ public class MethodServiceTest
     [TestMethod]
     public void AssociateInvokeMethod_ShouldThrow_WhenMethodNotFound()
     {
-        var invokedMethodDto = new InvokedMethodDTO
+        var invokedMethodDto = new InvokedMethod
         {
             MethodId = Guid.NewGuid(),
             ReferenceName = "validReference"
@@ -1111,7 +1072,6 @@ public class MethodServiceTest
         var result = _methodService.GetMethods();
 
         Assert.AreEqual(1, result.Count);
-        Assert.AreEqual(methods[0].Id.ToString(), result[0].Id);
         Assert.AreEqual("TestMethod", result[0].Name);
         Assert.AreEqual(Accessibility.Public, result[0].Accessibility);
         Assert.AreEqual(null, result[0].Stereotype);
@@ -2066,9 +2026,9 @@ public class MethodServiceTest
     [TestMethod]
     public void CreateMethodSignature_ShouldAddMethodSignature_WhenMethodSignatureIsValid()
     {
-        var classT = new TypeDTO { Name = "TestClass", Kind = "class" };
+        var classT = new Class { Name = "TestClass" };
 
-        var methodSignatureDto = new MethodSignatureDTO { Name = "Signature", ReturnType = classT };
+        var methodSignatureDto = new MethodSignature { Name = "Signature", ReturnType = classT };
 
         _mockMethodSignatureRepository
             .Setup(r => r.Add(It.Is<MethodSignature>(s =>
@@ -2097,7 +2057,7 @@ public class MethodServiceTest
     public void CreateMethodSignature_ShouldThrowException_WhenMethodSignatureNameIsNotValid()
     {
         var exception =
-            Assert.ThrowsException<InvalidMethodSignatureException>(() => _methodService.CreateMethodSignature(new MethodSignatureDTO()));
+            Assert.ThrowsException<InvalidMethodSignatureException>(() => _methodService.CreateMethodSignature(new MethodSignature()));
 
         Assert.AreEqual("MethodSignature name cannot be null.", exception.Message);
     }
@@ -2118,7 +2078,7 @@ public class MethodServiceTest
         Assert.AreEqual(invokedMethods.Count, result.Count);
         for(var i = 0; i < invokedMethods.Count; i++)
         {
-            Assert.AreEqual(invokedMethods[i].Id.ToString(), result[i].Id);
+            Assert.AreEqual(invokedMethods[i].Id, result[i].Id);
             Assert.AreEqual(invokedMethods[i].ReferenceName, result[i].ReferenceName);
             Assert.AreEqual(invokedMethods[i].MethodId, result[i].MethodId);
         }
@@ -2150,7 +2110,7 @@ public class MethodServiceTest
         Assert.AreEqual(methodSignatures.Count, result.Count);
         for(var i = 0; i < methodSignatures.Count; i++)
         {
-            Assert.AreEqual(methodSignatures[i].Id.ToString(), result[i].Id);
+            Assert.AreEqual(methodSignatures[i].Id, result[i].Id);
             Assert.AreEqual(methodSignatures[i].Name, result[i].Name);
             Assert.IsNotNull(result[i].ReturnType);
             Assert.AreEqual(methodSignatures[i].ReturnType.Name, result[i].ReturnType.Name);

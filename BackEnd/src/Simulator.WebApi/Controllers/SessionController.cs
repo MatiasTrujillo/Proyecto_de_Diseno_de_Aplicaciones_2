@@ -5,7 +5,7 @@ using Simulator.IBussinesLogic;
 namespace Simulator.WebApi.Controllers;
 
 [ApiController]
-[Route("api/v1/sessions")]
+[Route("api/v2/sessions")]
 public class SessionController(ISessionService sessionService) : ControllerBase
 {
     private readonly ISessionService _amethodService = sessionService;
@@ -13,7 +13,7 @@ public class SessionController(ISessionService sessionService) : ControllerBase
     [HttpPost]
     public IActionResult SignIn([FromBody] SessionDTO sessionDto)
     {
-        var token = _amethodService.SignIn(sessionDto);
+        var token = _amethodService.SignIn(sessionDto.ToEntity());
         return Ok(new { Token = token });
     }
 

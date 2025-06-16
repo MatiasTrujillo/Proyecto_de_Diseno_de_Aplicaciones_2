@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using Simulator.BussinesLogic.Exception;
 using Simulator.Domain;
-using Simulator.DTO;
 using Simulator.IBussinesLogic;
 using Simulator.IDataAcces;
+using Simulator.UpdateDTO;
 using Type = Simulator.Domain.Type;
 
 namespace Simulator.BussinesLogic;
@@ -20,9 +20,8 @@ public class ClassService(
     private readonly IMethodRepository _methodRepository = methodRepository;
     private readonly IInterfaceRepository _interfaceRepository = interfaceRepository;
 
-    public Guid CreateClass(ClassDTO classDto)
+    public Guid CreateClass(Class aClass)
     {
-        var aClass = classDto.ToEntity();
         var classes = _classRepository.FindAllTypes();
         var objectClass = classes.FirstOrDefault(c => c.Name == "Object") as Class;
         ValidateStereotypeInCreate(aClass.Stereotype);
@@ -62,25 +61,16 @@ public class ClassService(
 
     public List<Type> GetTypes()
     {
-        return _classRepository.FindAllTypes();
+        return _classRepository.FindAllTypes()
+            .OrderBy(a => a.Name)
+            .ToList();
     }
 
     public List<Class> GetClasses()
     {
-        return _classRepository.FindAll();
-    }
-
-    public ClassDTO GetClassId(Guid id)
-    {
-        ValidateClassIdExists(id);
-        var classT = _classRepository.Find(id);
-        var clasDto = new ClassDTO
-        {
-            Name = classT.Name,
-            Stereotype = classT.Stereotype,
-            Id = classT.Parents?.FirstOrDefault()?.Id.ToString()
-        };
-        return clasDto;
+        return _classRepository.FindAll()
+            .OrderBy(a => a.Name)
+            .ToList();
     }
 
     private void ManageStereotype(UpdateClassDTO uClass, Class classT)

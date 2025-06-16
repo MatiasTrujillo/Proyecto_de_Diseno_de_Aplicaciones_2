@@ -1,6 +1,5 @@
 using Moq;
 using Simulator.Domain;
-using Simulator.DTO;
 using Simulator.IDataAcces;
 
 namespace Simulator.BussinesLogic.Test;
@@ -10,7 +9,7 @@ public class SessionServiceTests
 {
     private Mock<ISessionRepository> _mockSessionRepository = null!;
     private SessionService _sessionService = null!;
-    private SessionDTO _sessionDto = null!;
+    private Session _sessionDto = null!;
     private Session _sessionEntity = null!;
 
     [TestInitialize]
@@ -19,7 +18,7 @@ public class SessionServiceTests
         _mockSessionRepository = new Mock<ISessionRepository>(MockBehavior.Strict);
         _sessionService = new SessionService(_mockSessionRepository.Object);
 
-        _sessionDto = new SessionDTO
+        _sessionDto = new Session
         {
             Token = Guid.NewGuid()
         };

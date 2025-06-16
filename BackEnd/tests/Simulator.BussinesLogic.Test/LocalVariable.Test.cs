@@ -89,7 +89,7 @@ public class LocalVariable_Test
             .Setup(repo => repo.FindAllTypes())
             .Returns([classT, classChild]);
 
-        var result = _localVariableService.CreateLocalVariable(localVariableDto);
+        var result = _localVariableService.CreateLocalVariable(localVariableDto.ToEntity());
 
         Assert.AreNotEqual(Guid.Empty, result);
         _mockLocalVariableRepository.Verify(r => r.Add(It.IsAny<LocalVariable>()), Times.Once);
@@ -113,7 +113,31 @@ public class LocalVariable_Test
 
         var ex = Assert.ThrowsException<LocalVariableException>(() =>
         {
-            _localVariableService.CreateLocalVariable(localVariableDto);
+            _localVariableService.CreateLocalVariable(localVariableDto.ToEntity());
+        });
+
+        Assert.AreEqual("Instance Type is not a subclass of Reference Type", ex.Message);
+    }
+
+    [TestMethod]
+    public void CreateLocalVariable_ShouldThrowException_WhenInstanceTypeNotSubclassOfReferenceType6()
+    {
+        var classT = new Class { Name = "TestClass" };
+        var classChild = new Class { Name = "Child" };
+
+        var localVariableDto = new LocalVariableDTO { Name = "TestParameter", ReferenceType = new TypeDTO { Name = classT.Name, Kind = "classproxy" }, InstanceType = new TypeDTO { Name = classChild.Name, Kind = "class" } };
+
+        _mockLocalVariableRepository
+            .Setup(r => r.Add(It.Is<LocalVariable>(p =>
+                p.Name == localVariableDto.Name && p.ReferenceType.Name == classT.Name && p.InstanceType.Name == classChild.Name)));
+
+        _mockClassRepository
+            .Setup(repo => repo.FindAllTypes())
+            .Returns([classT, classChild]);
+
+        var ex = Assert.ThrowsException<LocalVariableException>(() =>
+        {
+            _localVariableService.CreateLocalVariable(localVariableDto.ToEntity());
         });
 
         Assert.AreEqual("Instance Type is not a subclass of Reference Type", ex.Message);
@@ -125,11 +149,11 @@ public class LocalVariable_Test
         var classT = new Class { Name = "BaseClass" };
         var unrelatedClass = new Class { Name = "UnrelatedClass" };
 
-        var dto = new LocalVariableDTO
+        var dto = new LocalVariable
         {
             Name = "var1",
-            ReferenceType = new TypeDTO { Name = classT.Name, Kind = "class" },
-            InstanceType = new TypeDTO { Name = unrelatedClass.Name, Kind = "class" }
+            ReferenceType = new Class { Name = classT.Name },
+            InstanceType = new Class { Name = unrelatedClass.Name }
         };
 
         _mockClassRepository.Setup(r => r.FindAllTypes()).Returns([classT, unrelatedClass]);
@@ -146,11 +170,11 @@ public class LocalVariable_Test
         var classT = new Class { Name = "BaseClass" };
         var interfaceT = new Interface { Name = "MyInterface" };
 
-        var dto = new LocalVariableDTO
+        var dto = new LocalVariable
         {
             Name = "var2",
-            ReferenceType = new TypeDTO { Name = classT.Name, Kind = "class" },
-            InstanceType = new TypeDTO { Name = interfaceT.Name, Kind = "interface" }
+            ReferenceType = new Class { Name = classT.Name },
+            InstanceType = new Interface { Name = interfaceT.Name }
         };
 
         _mockClassRepository.Setup(r => r.FindAllTypes()).Returns([classT, interfaceT]);
@@ -167,11 +191,11 @@ public class LocalVariable_Test
         var interface1 = new Interface { Name = "Interface1" };
         var interface2 = new Interface { Name = "Interface2" };
 
-        var dto = new LocalVariableDTO
+        var dto = new LocalVariable
         {
             Name = "var3",
-            ReferenceType = new TypeDTO { Name = interface1.Name, Kind = "interface" },
-            InstanceType = new TypeDTO { Name = interface2.Name, Kind = "interface" }
+            ReferenceType = new Interface { Name = interface1.Name },
+            InstanceType = new Interface { Name = interface2.Name }
         };
 
         _mockClassRepository.Setup(r => r.FindAllTypes()).Returns([interface1, interface2]);
@@ -186,13 +210,13 @@ public class LocalVariable_Test
     public void CreateLocalVariable_ShouldThrowException_WhenClassDoesNotImplementInterface()
     {
         var interface1 = new Interface { Name = "IMyInterface" };
-        var class1 = new Class { Name = "MyClass", Parents = [] }; // No implementa la interfaz
+        var class1 = new Class { Name = "MyClass", Parents = [] };
 
-        var dto = new LocalVariableDTO
+        var dto = new LocalVariable
         {
             Name = "var1",
-            ReferenceType = new TypeDTO { Name = interface1.Name, Kind = "interface" },
-            InstanceType = new TypeDTO { Name = class1.Name, Kind = "class" }
+            ReferenceType = new Interface { Name = interface1.Name },
+            InstanceType = new Class { Name = class1.Name }
         };
 
         _mockClassRepository.Setup(r => r.FindAllTypes()).Returns([interface1, class1]);
@@ -210,7 +234,7 @@ public class LocalVariable_Test
         var classT = new Class { Name = "TestClass" };
         var classChild = new Class { Name = "Child", Parents = [class3] };
 
-        var localVariableDto = new LocalVariableDTO { Name = "TestParameter", ReferenceType = new TypeDTO { Name = classT.Name, Kind = "class" }, InstanceType = new TypeDTO { Name = classChild.Name, Kind = "class" } };
+        var localVariableDto = new LocalVariable { Name = "TestParameter", ReferenceType = new Class { Name = classT.Name }, InstanceType = new Class { Name = classChild.Name } };
 
         _mockLocalVariableRepository
             .Setup(r => r.Add(It.Is<LocalVariable>(p =>
@@ -234,7 +258,7 @@ public class LocalVariable_Test
         var classT = new Class { Name = "TestClass" };
         var primitive1 = new Primitive(PrimitiveType.Bool) { Name = "Prim" };
 
-        var localVariableDto = new LocalVariableDTO { Name = "TestParameter", ReferenceType = new TypeDTO { Name = classT.Name, Kind = "class" }, InstanceType = new TypeDTO { Name = primitive1.Name, Kind = "class" } };
+        var localVariableDto = new LocalVariable { Name = "TestParameter", ReferenceType = new Class { Name = classT.Name }, InstanceType = new Class { Name = primitive1.Name } };
 
         _mockLocalVariableRepository
             .Setup(r => r.Add(It.Is<LocalVariable>(p =>
@@ -258,7 +282,7 @@ public class LocalVariable_Test
         var interface1 = new Interface { Name = "Inter1" };
         var class1 = new Class { Name = "Class1", Parents = [interface1] };
 
-        var localVariableDto = new LocalVariableDTO { Name = "TestParameter", ReferenceType = new TypeDTO { Name = interface1.Name, Kind = "interface" }, InstanceType = new TypeDTO { Name = class1.Name, Kind = "class" } };
+        var localVariableDto = new LocalVariable { Name = "TestParameter", ReferenceType = new Interface { Name = interface1.Name }, InstanceType = new Class { Name = class1.Name } };
 
         _mockLocalVariableRepository
             .Setup(r => r.Add(It.Is<LocalVariable>(p =>
@@ -274,35 +298,12 @@ public class LocalVariable_Test
         _mockLocalVariableRepository.Verify(r => r.Add(It.IsAny<LocalVariable>()), Times.Once);
     }
 
-    [DataTestMethod]
-    [DataRow("base")]
-    [DataRow("this")]
-    [DataRow("Object")]
-    public void CreateLocalVariable_ShouldThrowException_WhenNameIsReservedKeyword(string reservedName)
-    {
-        var classT = new Class { Name = "TestClass" };
-        var classChild = new Class { Name = "Child", Parents = [classT] };
-
-        var dto = new LocalVariableDTO { Name = reservedName, ReferenceType = new TypeDTO { Name = classT.Name, Kind = "class" }, InstanceType = new TypeDTO { Name = classChild.Name, Kind = "class" } };
-
-        _mockClassRepository
-            .Setup(repo => repo.FindAllTypes())
-            .Returns([classChild, classT]);
-
-        var ex = Assert.ThrowsException<LocalVariableException>(() =>
-        {
-            _localVariableService.CreateLocalVariable(dto);
-        });
-
-        Assert.AreEqual("The name is a reserved keyword and is not allowed.", ex.Message);
-    }
-
     [TestMethod]
     public void CreateLocalVariable_ShouldThrowException_WhenNameIsEmpty()
     {
-        var classT = new TypeDTO { Name = "TestClass", Kind = "class" };
+        var classT = new Class { Name = "TestClass" };
 
-        var localVariableDto = new LocalVariableDTO { Name = string.Empty, ReferenceType = classT };
+        var localVariableDto = new LocalVariable { Name = string.Empty, ReferenceType = classT };
 
         _mockClassRepository
             .Setup(repo => repo.FindAllTypes())

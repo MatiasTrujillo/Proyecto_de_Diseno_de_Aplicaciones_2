@@ -1,11 +1,12 @@
 using Microsoft.AspNetCore.Mvc;
 using Simulator.DTO;
 using Simulator.IBussinesLogic;
+using Simulator.UpdateDTO;
 
 namespace Simulator.WebApi.Controllers;
 
 [ApiController]
-[Route("api/v1/interfaces")]
+[Route("api/v2/interfaces")]
 public class InterfaceController(IInterfaceService interfaceService) : ControllerBase
 {
     private readonly IInterfaceService _interfaceService = interfaceService;
@@ -13,7 +14,7 @@ public class InterfaceController(IInterfaceService interfaceService) : Controlle
     [HttpPost]
     public IActionResult CreateInterface([FromBody] InterfaceDTO interfaceDto)
     {
-        var interfaceId = _interfaceService.CreateInterface(interfaceDto);
+        var interfaceId = _interfaceService.CreateInterface(interfaceDto.ToEntity());
         return Created(string.Empty, new { id = interfaceId });
     }
 

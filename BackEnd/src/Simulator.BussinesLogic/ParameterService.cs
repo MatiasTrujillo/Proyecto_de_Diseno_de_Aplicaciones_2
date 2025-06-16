@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Simulator.BussinesLogic.Exception;
 using Simulator.Domain;
-using Simulator.DTO;
 using Simulator.IBussinesLogic;
 using Simulator.IDataAcces;
 using Type = Simulator.Domain.Type;
@@ -16,14 +15,13 @@ public class ParameterService(IParameterRepository parameterRepository, IClassRe
     private readonly IClassRepository _classRepository = classRepository;
     private readonly IInvokedMethodRepository _invokedMethodRepository = invokedMethodRepository;
 
-    public Guid CreateParameter(ParameterDTO parameter)
+    public Guid CreateParameter(Parameter parameterT)
     {
-        ValidateParameterIsNotNull(parameter);
-        var parameterT = parameter.ToEntity();
+        ValidateParameterIsNotNull(parameterT);
         var type = parameterT.ReferenceType.Name;
         var insstance = parameterT.InstanceType.Name;
-        var returnType = _classRepository.FindAllTypes().FirstOrDefault(c => c.Name == type);
-        var instanceType = _classRepository.FindAllTypes().FirstOrDefault(c => c.Name == insstance);
+        var returnType = _classRepository.FindAllTypes().FirstOrDefault(c => c.Name.ToLower() == type.ToLower());
+        var instanceType = _classRepository.FindAllTypes().FirstOrDefault(c => c.Name.ToLower() == insstance.ToLower());
         ValidateInstanceClass(returnType, instanceType);
         parameterT.ReferenceType = returnType;
         parameterT.InstanceType = instanceType;
@@ -43,26 +41,13 @@ public class ParameterService(IParameterRepository parameterRepository, IClassRe
         _parameterRepository.Update(parameter);
     }
 
-    public List<ParameterDTO> GetAllParameters()
+    public List<Parameter> GetAllParameters()
     {
         var excludedNames = new[] { "Obj", "StrToParse", "StrIsNullOrEmpty", "StrToCompare", "a", "adsdas", "Parameterrrr" };
         var parameters = _parameterRepository.FindAll()
             .Where(p => !excludedNames.Contains(p.Name));
-        return parameters.Select(p => new ParameterDTO
-        {
-            Id = p.Id.ToString(),
-            Name = p.Name,
-            ReferenceType = new TypeDTO
-            {
-                Name = p.ReferenceType.Name,
-                Kind = p.ReferenceType.GetType().Name.ToLower()
-            },
-            InstanceType = new TypeDTO
-            {
-                Name = p.InstanceType.Name,
-                Kind = p.InstanceType.GetType().Name.ToLower()
-            }
-        }).ToList();
+        return parameters.OrderBy(a => a.Name)
+            .ToList();
     }
 
     private void ValidateInvokedMethodExist(InvokedMethod invokedMethod)
@@ -81,7 +66,7 @@ public class ParameterService(IParameterRepository parameterRepository, IClassRe
         }
     }
 
-    private void ValidateParameterIsNotNull(ParameterDTO parameter)
+    private void ValidateParameterIsNotNull(Parameter parameter)
     {
         if(parameter == null)
         {

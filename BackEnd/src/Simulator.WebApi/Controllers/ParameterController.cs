@@ -5,7 +5,7 @@ using Simulator.IBussinesLogic;
 namespace Simulator.WebApi.Controllers;
 
 [ApiController]
-[Route("api/v1/parameters")]
+[Route("api/v2/parameters")]
 public class ParameterController(IParameterService parameterService) : ControllerBase
 {
     private readonly IParameterService _parameterService = parameterService;
@@ -13,7 +13,7 @@ public class ParameterController(IParameterService parameterService) : Controlle
     [HttpPost]
     public IActionResult CreateParameter([FromBody] ParameterDTO parameter)
     {
-        var parameterId = _parameterService.CreateParameter(parameter);
+        var parameterId = _parameterService.CreateParameter(parameter.ToEntity());
         return Created(string.Empty, new { id = parameterId });
     }
 
@@ -27,7 +27,21 @@ public class ParameterController(IParameterService parameterService) : Controlle
     [HttpGet]
     public IActionResult GetAllParameters()
     {
-        var parameters = _parameterService.GetAllParameters();
+        var parameters = _parameterService.GetAllParameters().Select(p => new ParameterDTO
+        {
+            Id = p.Id.ToString(),
+            Name = p.Name,
+            ReferenceType = new TypeDTO
+            {
+                Name = p.ReferenceType.Name,
+                Kind = p.ReferenceType.GetType().Name.ToLower()
+            },
+            InstanceType = new TypeDTO
+            {
+                Name = p.InstanceType.Name,
+                Kind = p.InstanceType.GetType().Name.ToLower()
+            }
+        }).ToList();
         return Ok(parameters);
     }
 }

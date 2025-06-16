@@ -4,9 +4,9 @@ using System.Linq;
 using Simulator.BussinesLogic.Exception;
 using Simulator.Domain;
 using Simulator.Domain.Exception;
-using Simulator.DTO;
 using Simulator.IBussinesLogic;
 using Simulator.IDataAcces;
+using Simulator.UpdateDTO;
 using Attribute = Simulator.Domain.Attribute;
 using Type = Simulator.Domain.Type;
 
@@ -19,13 +19,13 @@ public class AttributeService(IAttributeRepository attributeRepository, IClassRe
     private readonly IClassRepository _classRepository = classRepository;
     private readonly IInvokedMethodRepository _invokeMethodRepository = invokeMethodRepository;
 
-    public Guid CreateAttribute(AttributeDto aDTO)
+    public Guid CreateAttribute(Attribute attribute)
     {
-        var attribute = aDTO.ToEntity();
-        var type = aDTO.ReferenceType.Name;
-        var instanceType = aDTO.InstanceType.Name;
-        var typeT = _classRepository.FindAllTypes().FirstOrDefault(c => c.Name == type);
-        var instanceTypeT = _classRepository.FindAllTypes().FirstOrDefault(c => c.Name == instanceType);
+        ValidateName(attribute.Name, attribute);
+        var type = attribute.ReferenceType.Name;
+        var instanceType = attribute.InstanceType.Name;
+        var typeT = _classRepository.FindAllTypes().FirstOrDefault(c => c.Name.ToLower() == type.ToLower());
+        var instanceTypeT = _classRepository.FindAllTypes().FirstOrDefault(c => c.Name.ToLower() == instanceType.ToLower());
         ValidateAccesibility(attribute.Accessibility);
         ValidateStereotype(attribute.Stereotype);
         ValidateAttributeType(attribute.ReferenceType);
@@ -77,31 +77,15 @@ public class AttributeService(IAttributeRepository attributeRepository, IClassRe
         var invokeT = _invokeMethodRepository.Find(idInvokeGuid);
         ValidateAttributeExist(attributeT);
         ValidateInvokedMethodExist(invokeT);
-        ValidateTypeIsPrimitive(attributeT.ReferenceType);
         attributeT.InvokedMethods.Add(invokeT);
         _attributeRepository.Update(attributeT);
     }
 
-    public List<AttributeDto> GetAttributes()
+    public List<Attribute> GetAttributes()
     {
         return _attributeRepository.FindAll()
-            .Select(a => new AttributeDto
-            {
-                Id = a.Id.ToString(),
-                Name = a.Name,
-                Accessibility = a.Accessibility,
-                ReferenceType = a.ReferenceType?.ToDTO(),
-                InstanceType = a.InstanceType?.ToDTO(),
-                Stereotype = a.Stereotype
-            }).ToList();
-    }
-
-    private void ValidateTypeIsPrimitive(Type? attributeTType)
-    {
-        if(attributeTType?.GetType() != typeof(Primitive))
-        {
-            throw new InvalidAttributeException("In v1 of this program only primitive types are accepted.");
-        }
+            .OrderBy(a => a.Name)
+            .ToList();
     }
 
     private void ValidateInvokedMethodExist(InvokedMethod invokedMethod)

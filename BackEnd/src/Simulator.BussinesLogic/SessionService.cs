@@ -1,6 +1,5 @@
 using System;
 using Simulator.Domain;
-using Simulator.DTO;
 using Simulator.IBussinesLogic;
 using Simulator.IDataAcces;
 
@@ -8,15 +7,14 @@ namespace Simulator.BussinesLogic;
 
 public class SessionService(ISessionRepository sessionRepository) : ISessionService
 {
-    public Guid SignIn(SessionDTO sessionDto)
+    public Guid SignIn(Session session)
     {
-        var existingSession = sessionRepository.Find(sessionDto.Token);
+        var existingSession = sessionRepository.Find(session.Token);
         if(existingSession != null)
         {
             throw new InvalidOperationException("A session with this token already exists.");
         }
 
-        var session = sessionDto.ToEntity();
         sessionRepository.Add(session);
         return session.Token;
     }
