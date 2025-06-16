@@ -223,8 +223,7 @@ public class NameSpaceService_Test
         _mockInterfaceRepository.Setup(r => r.FindAll()).Returns([]);
 
         Assert.ThrowsException<NameSpaceException>(() =>
-            _nameSpaceService.AddChildToNameSpace(a.Id, b.Id)
-        );
+            _nameSpaceService.AddChildToNameSpace(a.Id, b.Id));
     }
 
     [TestMethod]
