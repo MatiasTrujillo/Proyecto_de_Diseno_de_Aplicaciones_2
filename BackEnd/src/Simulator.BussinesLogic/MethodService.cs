@@ -179,25 +179,25 @@ public class MethodService(
 
     public string ExecuteMethod(Guid referenceId, Guid objectToCreateId, Guid methodId, List<TypeDTO> parameterInstanceTypes)
     {
-        var reference = _classRepository.FindAll().FirstOrDefault(x => x.Id == referenceId);
+        var reference = _classRepository.FindAllTypes().FirstOrDefault(x => x.Id == referenceId);
         var objectToCreate = _classRepository.FindAll().FirstOrDefault(x => x.Id == objectToCreateId);
         var method = _methodRepository.FindAll().FirstOrDefault(x => x.Id == methodId);
         var result = new List<string>();
         _identation = 0;
 
-        ValidateClassExist(reference!);
+        ValidateTypeExist(reference!);
         ValidateClassExist(objectToCreate!);
         ValidateMethodExist(method!);
 
         ValidateParameterInstanceType(method.Parameters, parameterInstanceTypes);
 
         result = result.Concat(FirstLine(reference!, objectToCreate!, method)).ToList();
-        result = result.Concat(WriteOtherLines(reference, objectToCreate!, method, method)).ToList();
+        result = result.Concat(WriteOtherLines(objectToCreate!, method, method)).ToList();
 
         return string.Join("\n", result);
     }
 
-    private List<string> WriteOtherLines(Class? refe, Class? oTC, Method method, Method originalMethod)
+    private List<string> WriteOtherLines(Class? oTC, Method method, Method originalMethod)
     {
         var result = new List<string>();
         for(var i = 0; i < method.Methods.Count; i++)
@@ -271,7 +271,7 @@ public class MethodService(
             }
 
             invokedMethodMethod = oTc.Methods.Find(x => x.Name == invokedMethodMethod.Name);
-            result = result.Concat(ConcatNext(oTc, oTc, invokedMethodMethod!, originalMethod)).ToList();
+            result = result.Concat(ConcatNext(oTc, invokedMethodMethod!, originalMethod)).ToList();
         }
         else
         {
@@ -309,7 +309,7 @@ public class MethodService(
                     return result;
                 }
 
-                result = result.Concat(ConcatNext(oTC, oTC, invokedMethodMethod, originalMethod)).ToList();
+                result = result.Concat(ConcatNext(oTC, invokedMethodMethod, originalMethod)).ToList();
             }
         }
 
@@ -328,7 +328,7 @@ public class MethodService(
             return result;
         }
 
-        result = result.Concat(ConcatNext(aRefe.Parents[0] as Class, aRefe.Parents[0] as Class, invokedMethodMethod, originalMethod)).ToList();
+        result = result.Concat(ConcatNext(aRefe.Parents[0] as Class, invokedMethodMethod, originalMethod)).ToList();
 
         return result;
     }
@@ -364,7 +364,7 @@ public class MethodService(
                         return result;
                     }
 
-                    result = result.Concat(ConcatNext(aClass, aClass, invokedMethodMethod, originalMethod))
+                    result = result.Concat(ConcatNext(aClass, invokedMethodMethod, originalMethod))
                         .ToList();
                 }
             }
@@ -404,7 +404,7 @@ public class MethodService(
                         return result;
                     }
 
-                    result = result.Concat(ConcatNext(aClass, aClass, invokedMethodMethod, originalMethod))
+                    result = result.Concat(ConcatNext(aClass, invokedMethodMethod, originalMethod))
                         .ToList();
                 }
             }
@@ -433,7 +433,7 @@ public class MethodService(
                         return result;
                     }
 
-                    result = result.Concat(ConcatNext(aClass, aClass, invokedMethodMethod, originalMethod))
+                    result = result.Concat(ConcatNext(aClass, invokedMethodMethod, originalMethod))
                         .ToList();
                 }
             }
@@ -442,7 +442,7 @@ public class MethodService(
         return result;
     }
 
-    private List<string> FirstLine(Class refe, Class oTC, Method method)
+    private List<string> FirstLine(Type refe, Class oTC, Method method)
     {
         var result = new List<string>();
 
@@ -609,12 +609,12 @@ public class MethodService(
         return actualMethod.Equals(originalMethod);
     }
 
-    private List<string> ConcatNext(Class? refe, Class? oTC, Method method, Method originalMethod)
+    private List<string> ConcatNext(Class? oTC, Method method, Method originalMethod)
     {
         List<string> result;
 
         _identation++;
-        result = WriteOtherLines(refe, oTC, method, originalMethod);
+        result = WriteOtherLines(oTC, method, originalMethod);
         _identation--;
 
         return result;
@@ -728,6 +728,14 @@ public class MethodService(
         if(classT == null)
         {
             throw new ClassNotFoundException("Class not found.");
+        }
+    }
+
+    private static void ValidateTypeExist(Type type)
+    {
+        if(type == null)
+        {
+            throw new TypeNotFoundException("Type not found.");
         }
     }
 
