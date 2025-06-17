@@ -14,7 +14,7 @@ public class LocalVariable
     {
         Id = Guid.NewGuid();
         Name = string.Empty;
-        ReferenceType = new Primitive();
+        ReferenceType = null;
         InvokedMethods = [];
     }
 

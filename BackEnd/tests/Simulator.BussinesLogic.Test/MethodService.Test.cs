@@ -2071,6 +2071,31 @@ public class MethodServiceTest
     }
 
     [TestMethod]
+    public void CreateMethodSignature_ShouldAddMethodSignature_WhenMethodSignatureIsValidAndHasParameters()
+    {
+        var classT = new Class { Name = "TestClass" };
+        var parameter1 = new Parameter { Id = Guid.NewGuid() };
+        var parameters = new List<Parameter> { parameter1 };
+        var methodSignatureDto = new MethodSignature { Name = "Signature", ReturnType = classT, Parameters = parameters };
+
+        _mockMethodSignatureRepository
+            .Setup(r => r.Add(It.Is<MethodSignature>(s =>
+                s.Name == methodSignatureDto.Name && s.ReturnType.Name == classT.Name)));
+
+        _mockClassRepository
+            .Setup(repo => repo.FindAllTypes())
+            .Returns([new Class { Name = "TestClass" }]);
+        _mockParameterRepository
+            .Setup(repo => repo.FindAll())
+            .Returns([parameter1]);
+
+        var result = _methodService.CreateMethodSignature(methodSignatureDto);
+
+        Assert.AreNotEqual(Guid.Empty, result);
+        _mockMethodSignatureRepository.Verify(r => r.Add(It.IsAny<MethodSignature>()), Times.Once);
+    }
+
+    [TestMethod]
     public void CreateMethodSignature_ShouldThrowException_WhenMethodSignatureIsNotValid()
     {
         var exception =

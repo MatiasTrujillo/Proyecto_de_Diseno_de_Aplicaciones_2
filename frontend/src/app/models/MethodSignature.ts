@@ -4,6 +4,6 @@ import { Parameter } from './Parameter';
 export interface MethodSignature {
     id: string;
     name: string;
-    returnType: Type;
+    returnType: Type | null;
     parameters: Parameter[];
 }
