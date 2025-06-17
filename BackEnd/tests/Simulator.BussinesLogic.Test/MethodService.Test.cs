@@ -119,7 +119,6 @@ public class MethodServiceTest
     [ExpectedException(typeof(ParameterNotFoundException))]
     public void AddParameterToMethod_ShouldThrow_WhenParameterDoesNotExist()
     {
-        // Arrange
         var methodId = Guid.NewGuid();
         var parameterId = Guid.NewGuid();
         var method = new Method
@@ -143,13 +142,9 @@ public class MethodServiceTest
             mockParameterRepo.Object,
             Mock.Of<ILocalVariableRepository>(),
             Mock.Of<IInvokedMethodRepository>(),
-            Mock.Of<IMethodSignatureRepository>()
-        );
+            Mock.Of<IMethodSignatureRepository>());
 
-        // Act
         service.AddParameterToMethod(methodId, parameterId);
-
-        // Assert: handled by ExpectedException
     }
 
     [TestMethod]
@@ -176,8 +171,7 @@ public class MethodServiceTest
             Mock.Of<IParameterRepository>(),
             mockLocalVarRepo.Object,
             Mock.Of<IInvokedMethodRepository>(),
-            Mock.Of<IMethodSignatureRepository>()
-        );
+            Mock.Of<IMethodSignatureRepository>());
         service.AddLocalVariableToMethod(methodId, localVarId);
     }
 
