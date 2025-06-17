@@ -113,6 +113,7 @@ public class ClassService(
                     if(NotHasImplementedThisSignature(classT, signature))
                     {
                         var methodT = new Method(signature.Name, Accessibility.Public, null, [], signature.Parameters, [], signature.ReturnType, false);
+                        _methodRepository.Add(methodT);
                         classT.Methods.Add(methodT);
                     }
                 }
