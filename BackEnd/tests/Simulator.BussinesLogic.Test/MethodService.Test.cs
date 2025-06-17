@@ -2075,8 +2075,8 @@ public class MethodServiceTest
     {
         var classT = new Class { Name = "TestClass" };
         var parameter1 = new Parameter { Id = Guid.NewGuid() };
-        List<Parameter> parameters = [parameter1];
-        var methodSignatureDto = new MethodSignature { Name = "Signature", ReturnType = classT, Parameters = parameters};
+        var parameters = new List<Parameter> { parameter1 };
+        var methodSignatureDto = new MethodSignature { Name = "Signature", ReturnType = classT, Parameters = parameters };
 
         _mockMethodSignatureRepository
             .Setup(r => r.Add(It.Is<MethodSignature>(s =>
