@@ -33,12 +33,12 @@ public class ParameterController(IParameterService parameterService) : Controlle
             Name = p.Name,
             ReferenceType = new TypeDTO
             {
-                Name = p.ReferenceType.Name,
-                Kind = p.ReferenceType.GetType().Name.ToLower()
+                Name = p.ReferenceType?.Name!,
+                Kind = p.ReferenceType!.GetType().Name.ToLower()
             },
             InstanceType = new TypeDTO
             {
-                Name = p.InstanceType.Name,
+                Name = p.InstanceType!.Name,
                 Kind = p.InstanceType.GetType().Name.ToLower()
             }
         }).ToList();

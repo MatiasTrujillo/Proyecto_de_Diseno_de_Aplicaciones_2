@@ -698,4 +698,16 @@ public class ClassServiceTest
 
         _mockClassRepository.Verify(repo => repo.FindAll(), Times.Once);
     }
+
+    [TestMethod]
+    [ExpectedException(typeof(InvalidOperationException))]
+    public void ToEntity_ShouldThrow_WhenPrimitiveTypeNameIsInvalid()
+    {
+        var dto = new TypeDTO
+        {
+            Kind = "primitive",
+            Name = "TipoInexistente"
+        };
+        dto.ToEntity();
+    }
 }
