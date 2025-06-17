@@ -772,8 +772,8 @@ public class MethodService(
         var classT = _classRepository.FindAll()
             .FirstOrDefault(c => c.Methods != null && c.Methods.Any(m => m.Id == methodR.Id));
 
-        var existsInParameters = method.Parameters?.Any(p => p.Name == invokedMethodReferenceName) ?? false;
-        var existsInLocalVariables = method.LocalVariables?.Any(lv => lv.Name == invokedMethodReferenceName) ?? false;
+        var existsInParameters = methodR.Parameters?.Any(p => p.Name == invokedMethodReferenceName) ?? false;
+        var existsInLocalVariables = methodR.LocalVariables?.Any(lv => lv.Name == invokedMethodReferenceName) ?? false;
 
         var existsInAttributes = false;
         var existsInMethods = false;
