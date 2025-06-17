@@ -11,7 +11,7 @@
   <label for="method">Method:</label>
   <select [(ngModel)]="selectedMethodId" class="form-control">
     <option value="">-- Select Method --</option>
-    <option *ngFor="let method of methods" [value]="method.id">{{ method.referenceName }}</option>
+    <option *ngFor="let method of methods" [value]="method.id">Reference Name:{{ method.referenceName }}Method ID: {{ method.methodId }}</option>
   </select>
 </div>
 

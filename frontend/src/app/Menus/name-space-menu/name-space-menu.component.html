@@ -37,26 +37,6 @@
   </div>
 </div>
 
-<div class="modal" *ngIf="activeModal === 'associatewithclass'">
-  <div class="modal-content">
-    <button class="close" (click)="closeModal()">×</button>
-    <app-associatenamespacetoclass
-      [nameSpaceData]="selectedNameSpace!"
-      (close)="closeModal()"
-    ></app-associatenamespacetoclass>
-  </div>
-</div>
-
-<div class="modal" *ngIf="activeModal === 'associatewithinterface'">
-  <div class="modal-content">
-    <button class="close" (click)="closeModal()">×</button>
-    <app-associatenamespacetointerface
-      [nameSpaceData]="selectedNameSpace!"
-      (close)="closeModal()"
-    ></app-associatenamespacetointerface>
-  </div>
-</div>
-
 <div class="modal" *ngIf="activeModal === 'addChill'">
   <div class="modal-content">
     <button class="close" (click)="closeModal()">×</button>

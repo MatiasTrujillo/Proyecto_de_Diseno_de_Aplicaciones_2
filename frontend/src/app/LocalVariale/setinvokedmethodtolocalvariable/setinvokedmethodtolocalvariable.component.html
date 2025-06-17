@@ -6,7 +6,7 @@
     <label for="invokedMethod">Invoked Method:</label>
     <select id="invokedMethod" [(ngModel)]="selectedInvokedMethodId">
       <option [ngValue]="''">-- Select Invoked Method --</option>
-      <option *ngFor="let method of invokedMethods" [value]="method.id">{{ method.referenceName }}</option>
+      <option *ngFor="let method of invokedMethods" [value]="method.id">Reference Name:{{ method.referenceName }}Method ID: {{ method.methodId }}</option>
     </select>
   </div>
 
