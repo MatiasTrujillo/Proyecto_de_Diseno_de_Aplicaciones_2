@@ -127,23 +127,7 @@ public class MethodService(
 
     public List<Method> GetMethods()
     {
-        var excludedNames = new List<string>
-        {
-            "ToString",
-            "Equals",
-            "GetHashCode",
-            "Parse",
-            "MaxValue",
-            "MinValue",
-            "CompareTo",
-            "IsNullOrEmpty",
-            "IsNullOrWhiteSpace",
-            "ToLowerCase",
-            "ToUpperCase"
-        };
-
         return _methodRepository.FindAll()
-            .Where(m => !excludedNames.Contains(m.Name))
             .OrderBy(a => a.Name)
             .ToList();
     }
