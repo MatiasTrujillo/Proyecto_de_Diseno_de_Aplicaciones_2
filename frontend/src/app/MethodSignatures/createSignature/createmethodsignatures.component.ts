@@ -30,7 +30,7 @@ export class CreateMethodSignaturesComponent implements OnInit {
   ngOnInit(): void {
     this.methodForm = this.fb.group({
       name: ['', Validators.required],
-      returnType: ['', Validators.required],
+      returnType: [''],
       parameters: [[]]
     });
 
@@ -57,7 +57,7 @@ export class CreateMethodSignaturesComponent implements OnInit {
     const methodSignature: MethodSignature = {
       id: '',
       name: formValue.name,
-      returnType: this.types.find(t => t.name === formValue.returnType)!,
+      returnType: formValue.returnType === '' ? null : this.types.find(t => t.name === formValue.returnType)!,
       parameters: this.parameters.filter(p => formValue.parameters.includes(p.id))
     };
     this.simulatorService.createMethodSignature(methodSignature).subscribe({
