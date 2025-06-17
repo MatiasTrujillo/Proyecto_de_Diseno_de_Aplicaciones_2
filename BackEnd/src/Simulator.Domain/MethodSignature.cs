@@ -11,7 +11,7 @@ public class MethodSignature
     {
         Id = Guid.NewGuid();
         Name = string.Empty;
-        ReturnType = new Primitive();
+        ReturnType = null;
     }
 
     public MethodSignature(string name, Type? returnType)
