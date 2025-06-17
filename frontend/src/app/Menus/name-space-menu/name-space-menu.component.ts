@@ -3,15 +3,13 @@ import { Router, RouterModule } from '@angular/router';
 import { SimulatorService } from '../../services/simulator.service';
 import { NameSpace } from '../../models/NameSpace';
 import { CommonModule } from '@angular/common';
-import { AssociatenamespacetointerfaceComponent } from '../../NameSpace/associatenamespacetointerface/associatenamespacetointerface.component';
-import { AssociatenamespacetoclassComponent } from '../../NameSpace/associatenamespacetoclass/associatenamespacetoclass.component';
 import { AddChildToNameSpaceComponent } from '../../NameSpace/add-child-to-name-space/add-child-to-name-space.component';
 import { RemovechildComponent } from '../../NameSpace/removechild/removechild.component';
 
 @Component({
   selector: 'app-name-space-menu',
   standalone: true,
-  imports: [RouterModule, CommonModule, AssociatenamespacetointerfaceComponent,AssociatenamespacetoclassComponent, AddChildToNameSpaceComponent, RemovechildComponent],
+  imports: [RouterModule, CommonModule, AddChildToNameSpaceComponent, RemovechildComponent],
   templateUrl: './name-space-menu.component.html',
   styleUrl: './name-space-menu.component.css'
 })

@@ -39,11 +39,27 @@ export class MethodmenuComponent implements OnInit {
   }
 
   loadMethods(): void {
-    this.simulatorService.getMethods().subscribe({
-      next: (data) => this.methods = data,
-      error: (err) => console.error('Error loading methods:', err)
-    });
-  }
+  const excludedNames = [
+    "ToString",
+    "Equals",
+    "GetHashCode",
+    "Parse",
+    "MaxValue",
+    "MinValue",
+    "CompareTo",
+    "IsNullOrEmpty",
+    "IsNullOrWhiteSpace",
+    "ToLowerCase",
+    "ToUpperCase"
+  ];
+
+  this.simulatorService.getMethods().subscribe({
+    next: (data) => {
+      this.methods = data.filter(m => !excludedNames.includes(m.name));
+    },
+    error: (err) => console.error('Error loading methods:', err)
+  });
+}
 
   openModal(modalName: string, selectedMethod: Method): void {
     this.activeModal = modalName;
