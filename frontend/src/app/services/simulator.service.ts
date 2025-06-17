@@ -365,4 +365,22 @@ private localsApiUrl = `${this.apiUrl}/localVariables`;
       catchError((error) => throwError(() => error))
     );
   }
+
+    addLocalVariableToMethod(methodId: string, localVariableId: string): Observable<{ message: string }> {
+    return this.http.post<{ message: string }>(
+      `${this.apiUrl}/methods/${methodId}/localVariables/${localVariableId}`,
+      null
+    ).pipe(
+      catchError((error) => throwError(() => error))
+    );
+  }
+
+  addParameterToMethod(methodId: string, parameterId: string): Observable<{ message: string }> {
+    return this.http.post<{ message: string }>(
+      `${this.apiUrl}/methods/${methodId}/parameters/${parameterId}`,
+      null
+    ).pipe(
+      catchError((error) => throwError(() => error))
+    );
+  }
 }

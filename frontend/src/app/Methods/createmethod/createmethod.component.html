@@ -4,10 +4,11 @@
     <label for="name">Method Name</label>
     <input id="name" formControlName="name" />
 
-    <label for="returnType">Return Type</label>
-    <select id="returnType" formControlName="returnType">
-      <option *ngFor="let type of types" [value]="type.name">{{ type.name }}</option>
-    </select>
+  <label for="returnType">Return Type</label>
+  <select id="returnType" formControlName="returnType">
+    <option value="">None</option>
+    <option *ngFor="let type of types" [value]="type.name">{{ type.name }}</option>
+  </select>
 
     <label for="accessibility">Accessibility</label>
     <select id="accessibility" formControlName="accessibility">

@@ -27,7 +27,6 @@ export class AssociateattributewithclassComponent implements OnInit {
   constructor(private simulatorService: SimulatorService) {}
 
   ngOnInit(): void {
-    // Se asigna el ID del atributo directamente
     if (this.attributeData) {
       this.selectedAttributeId = this.attributeData.id;
     }

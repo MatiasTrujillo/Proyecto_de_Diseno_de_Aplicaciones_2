@@ -2,7 +2,7 @@ import { Component, Input, Output, EventEmitter, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { NameSpace } from '../../models/NameSpace';
-import { Interface } from '../../models/Interface'; // Asegúrate de tener este modelo
+import { Interface } from '../../models/Interface';
 import { SimulatorService } from '../../services/simulator.service';
 
 @Component({

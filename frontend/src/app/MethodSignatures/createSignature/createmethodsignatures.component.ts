@@ -3,7 +3,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { SimulatorService } from '../../services/simulator.service';
 import { Type } from '../../models/Type';
 import { MethodSignature } from '../../models/MethodSignature';
-import { Parameter } from '../../models/Parameter'; // Asegúrate de tener este modelo
+import { Parameter } from '../../models/Parameter';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule } from '@angular/forms';
 
@@ -20,7 +20,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 export class CreateMethodSignaturesComponent implements OnInit {
   methodForm!: FormGroup;
   types: Type[] = [];
-  parameters: Parameter[] = []; // Todos los parámetros disponibles
+  parameters: Parameter[] = [];
 
   constructor(
     private fb: FormBuilder,
@@ -31,7 +31,7 @@ export class CreateMethodSignaturesComponent implements OnInit {
     this.methodForm = this.fb.group({
       name: ['', Validators.required],
       returnType: ['', Validators.required],
-      parameters: [[]] // Para selección múltiple
+      parameters: [[]]
     });
 
     this.simulatorService.getTypes().subscribe({

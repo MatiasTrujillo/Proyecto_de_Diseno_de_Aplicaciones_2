@@ -22,33 +22,28 @@
   <button (click)="goTo('/LocalVariableMenuComponent')">Local Variable</button>
   <button (click)="goTo('/InterfaceMenuComponent')">Interface</button>
   <button (click)="goTo('/ExportdataComponent')">Go To Export</button>
-  <button (click)="goTo('/database')">Data Base</button>
 </div>
 
 
 
 <div class="card-container">
   <div class="card" *ngFor="let attributeItem of attributes">
-    <!-- Botón info en la esquina superior derecha -->
     <button class="info-btn" (click)="openModal('infoattribute', attributeItem)" title="Info">ℹ️</button>
     <h3>{{ attributeItem.name }}</h3>
     <div class="button-group">
       <button class="secondary" (click)="openModal('updateattribute', attributeItem)">Update</button>
       <button class="danger" (click)="openModal('deleteattribute', attributeItem)">Delete</button>
-      <button class="secondary" (click)="openModal('asociate', attributeItem)">With Class</button>
-      <button class="secondary" (click)="openModal('set', attributeItem)">With InvokedMethod</button>
+      <button class="secondary" (click)="openModal('asociate', attributeItem)">Associate With Class</button>
+      <button class="secondary" (click)="openModal('set', attributeItem)">Associate With InvokedMethod</button>
     </div>
   </div>
 </div>
 
-<!-- Modal para info de atributo -->
 <div class="modal" *ngIf="activeModal === 'infoattribute'">
   <div class="modal-content">
     <button class="close" (click)="closeModal()">×</button>
     <h2>Attribute Info</h2>
     <div *ngIf="selectedAttribute">
-      <pre>{{ selectedAttribute | json }}</pre>
-      <p><strong>ID:</strong> {{ selectedAttribute.id }}</p>
       <p><strong>Name:</strong> {{ selectedAttribute.name }}</p>
       <p><strong>Accessibility:</strong> {{ selectedAttribute.accessibility }}</p>
       <p><strong>Reference Type:</strong> {{ selectedAttribute.referenceType.name }}</p>
@@ -58,7 +53,6 @@
   </div>
 </div>
 
-<!-- Delete Attribute Modal -->
 <div class="modal" *ngIf="activeModal === 'deleteattribute'">
   <div class="modal-content">
     <button class="close" (click)="closeModal()">×</button>
@@ -69,7 +63,6 @@
   </div>
 </div>
 
-<!-- Update Attribute Modal -->
 <div class="modal" *ngIf="activeModal === 'updateattribute'">
   <div class="modal-content">
     <button class="close" (click)="closeModal()">×</button>
@@ -80,7 +73,6 @@
   </div>
 </div>
 
-<!-- Associate with Class Modal -->
 <div class="modal" *ngIf="activeModal === 'asociate'">
   <div class="modal-content">
     <button class="close" (click)="closeModal()">×</button>
@@ -91,7 +83,6 @@
   </div>
 </div>
 
-<!-- Set Invoked Method Modal -->
 <div class="modal" *ngIf="activeModal === 'set'">
   <div class="modal-content">
     <button class="close" (click)="closeModal()">×</button>

@@ -29,27 +29,43 @@ export class UpdateclassComponent implements OnInit {
     private simulatorService: SimulatorService
   ) {}
 
-  ngOnInit(): void {
-    this.updateForm = this.fb.group({
-      classToUpdate: [this.classData?.id || ''],
-      idClass: [this.classData?.id || null],
-      name: [this.classData?.name || ''],
-      stereotype: ['no change']
-    });
+ngOnInit(): void {
+  this.updateForm = this.fb.group({
+    classToUpdate: [this.classData?.id || ''],
+    idClass: [this.classData?.id || null],
+    name: [this.classData?.name || ''],
+    stereotype: ['no change']
+  });
 
-    this.simulatorService.getClasses().subscribe({
-      next: (res) => {
-        this.classes = res.filter(c => c.id !== this.classData?.id);
-        const objectClass = this.classes.find(c => c.name === 'Object');
-        if (objectClass) {
-          this.updateForm.patchValue({ idClass: objectClass.id });
+  this.simulatorService.getClasses().subscribe({
+    next: (classRes) => {
+      this.simulatorService.getInterfaces().subscribe({
+        next: (interfaceRes) => {
+          this.classes = [
+            ...classRes.filter(c => c.id !== this.classData?.id),
+            ...interfaceRes
+              .filter(i => i.id !== this.classData?.id)
+              .map(i => ({
+                name: i.name,
+                id: i.id,
+                stereotype: null
+              }))
+          ];
+          const objectClass = this.classes.find(c => c.name === 'Object');
+          if (objectClass) {
+            this.updateForm.patchValue({ idClass: objectClass.id });
+          }
+        },
+        error: (err) => {
+          this.error = 'Error loading interfaces: ' + (err.message || 'Unknown error');
         }
-      },
-      error: (err) => {
-        this.error = 'Error loading classes: ' + (err.message || 'Unknown error');
-      }
-    });
-  }
+      });
+    },
+    error: (err) => {
+      this.error = 'Error loading classes: ' + (err.message || 'Unknown error');
+    }
+  });
+}
 
   onSubmit(): void {
     const form = this.updateForm.value;
@@ -64,7 +80,7 @@ export class UpdateclassComponent implements OnInit {
       next: () => {
         this.message = 'Class updated successfully';
         this.error = null;
-        this.close.emit(); // cerrar modal
+        this.close.emit();
       },
       error: (err) => {
         this.error = 'Error updating class: ' + (err?.error?.message || err.message || 'Unknown error');

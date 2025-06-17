@@ -23,7 +23,7 @@ public class Method
         Parameters = [];
         LocalVariables = [];
         Stereotype = null;
-        ReturnType = new Primitive();
+        ReturnType = null;
         IsOverride = false;
     }
 

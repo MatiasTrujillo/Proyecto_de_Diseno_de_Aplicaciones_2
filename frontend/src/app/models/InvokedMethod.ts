@@ -1,5 +1,5 @@
 export interface InvokedMethod {
     referenceName: string;
-    methodID: string;
+    methodId: string;
     id: string | null;
 }

@@ -799,7 +799,11 @@ public class MethodService(
         {
             var attribute = classT.Attributes?.FirstOrDefault(a => a.Name == invokedMethodReferenceName);
             existsInAttributes = attribute != null;
-            ManageAttribute(methodR, attribute);
+            if(!existsInAttributes)
+            {
+                ManageAttribute(methodR, attribute);
+            }
+
             existsInMethods = InvokeMethodReferenceThis(invokedMethodReferenceName, method, existsInMethods, classT);
             existingInHeredity = InvokeMethodReferenceBase(invokedMethodReferenceName, method, classT, existingInHeredity);
         }
@@ -858,15 +862,14 @@ public class MethodService(
 
     private bool HasMethodInHierarchy(Type targetClass, Guid methodId)
     {
-        var aTargetClass = targetClass as Class;
-        while(targetClass != null)
+        while(targetClass is Class currentClass)
         {
-            if(targetClass.Methods?.Any(m => m.Id == methodId) == true)
+            if(currentClass.Methods?.Any(m => m.Id == methodId) == true)
             {
                 return true;
             }
 
-            targetClass = aTargetClass?.Parents?.FirstOrDefault();
+            targetClass = currentClass.Parents?.FirstOrDefault();
         }
 
         return false;
