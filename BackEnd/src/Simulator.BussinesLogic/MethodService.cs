@@ -944,11 +944,14 @@ public class MethodService(
         ValidateMethodSignatureNameIsNotNull(methodSignatureT);
         var type = methodSignatureT!.ReturnType?.Name;
         var returnType = _classRepository.FindAllTypes().FirstOrDefault(t => t.Name == type);
-        for(var i = 0; i < methodSignatureT.Parameters.Count; i++)
+        if(methodSignatureT.Parameters != null)
         {
-            var p = _parameterRepository.FindAll().FirstOrDefault(p => p.Id == methodSignatureT.Parameters[i].Id);
-            ValidateParameterExist(p);
-            methodSignatureT.Parameters[i] = p;
+            for(var i = 0; i < methodSignatureT.Parameters.Count; i++)
+            {
+                var p = _parameterRepository.FindAll().FirstOrDefault(p => p.Id == methodSignatureT.Parameters[i].Id);
+                ValidateParameterExist(p);
+                methodSignatureT.Parameters[i] = p;
+            }
         }
 
         methodSignatureT.ReturnType = returnType;
