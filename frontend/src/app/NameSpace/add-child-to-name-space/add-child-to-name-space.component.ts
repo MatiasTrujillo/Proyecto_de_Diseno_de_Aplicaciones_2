@@ -32,7 +32,7 @@ export class AddChildToNameSpaceComponent implements OnInit {
     this.simulatorService.getNameSpaceComponents().subscribe({
       next: (components) => {
         this.nameSpaceComponents = components.filter(
-          c => c.id !== this.nameSpaceData.id // evitar seleccionarse a sí mismo como hijo
+          c => c.id !== this.nameSpaceData.id
         );
       },
       error: (err) => {

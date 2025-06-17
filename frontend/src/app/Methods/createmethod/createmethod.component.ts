@@ -34,7 +34,7 @@ export class CreateMethodComponent implements OnInit {
     this.methodForm = this.fb.group({
       id : [''],
       name: ['', Validators.required],
-      returnType: ['', Validators.required],
+      returnType: [''],
       accessibility: ['', Validators.required],
       stereotype: [''],
       isOverride: [false]
@@ -54,7 +54,7 @@ export class CreateMethodComponent implements OnInit {
     const method: Method = {
       id: '',
       name: formValue.name,
-      returnType: this.types.find(t => t.name === formValue.returnType)!,
+      returnType: formValue.returnType === '' ? null : this.types.find(t => t.name === formValue.returnType)!,
       accessibility: +formValue.accessibility,
       stereotype: formValue.stereotype !== '' ? +formValue.stereotype : null,
       IsOverride: formValue.isOverride

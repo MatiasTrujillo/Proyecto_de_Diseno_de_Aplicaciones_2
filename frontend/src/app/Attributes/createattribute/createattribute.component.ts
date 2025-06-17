@@ -61,7 +61,7 @@ onSubmit(): void {
       : null,
   };
 
-  this.error = null; // limpia error anterior
+  this.error = null;
 
   this.simulatorService.createAttribute(attribute).subscribe({
     next: (res) => alert(`Attribute created with ID: ${res.id}`),

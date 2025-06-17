@@ -39,7 +39,7 @@ export class CreateinvokedmethodComponent implements OnInit {
 
     const invokedMethod: InvokedMethod = {
       referenceName: this.name,
-      methodID: this.selectedMethodId,
+      methodId: this.selectedMethodId,
       id: null
     };
 

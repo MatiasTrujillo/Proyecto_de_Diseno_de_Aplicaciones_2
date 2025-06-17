@@ -67,9 +67,9 @@
     <p>{{ exportMessage }}</p>
   </div>
 
-  <div class="result" *ngIf="result && result.exporterTypes">
-    <div [innerHTML]="result.exporterTypes"></div>
-  </div>
+<div class="result" *ngIf="result && result.exporterTypes">
+  <pre>{{ result.exporterTypes }}</pre>
+</div>
 
   <div class="error" *ngIf="error">
     <p>{{ error }}</p>

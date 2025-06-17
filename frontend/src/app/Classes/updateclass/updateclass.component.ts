@@ -37,12 +37,10 @@ ngOnInit(): void {
     stereotype: ['no change']
   });
 
-  // Llama a ambos servicios y combina los resultados
   this.simulatorService.getClasses().subscribe({
     next: (classRes) => {
       this.simulatorService.getInterfaces().subscribe({
         next: (interfaceRes) => {
-          // Combina clases e interfaces en un solo array, mapeando interfaces a objetos Class válidos
           this.classes = [
             ...classRes.filter(c => c.id !== this.classData?.id),
             ...interfaceRes
@@ -50,7 +48,7 @@ ngOnInit(): void {
               .map(i => ({
                 name: i.name,
                 id: i.id,
-                stereotype: null // o asigna un valor adecuado si corresponde
+                stereotype: null
               }))
           ];
           const objectClass = this.classes.find(c => c.name === 'Object');
@@ -82,7 +80,7 @@ ngOnInit(): void {
       next: () => {
         this.message = 'Class updated successfully';
         this.error = null;
-        this.close.emit(); // cerrar modal
+        this.close.emit();
       },
       error: (err) => {
         this.error = 'Error updating class: ' + (err?.error?.message || err.message || 'Unknown error');

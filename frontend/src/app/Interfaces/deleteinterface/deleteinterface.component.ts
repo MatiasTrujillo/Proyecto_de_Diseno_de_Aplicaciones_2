@@ -31,7 +31,7 @@ export class DeleteinterfaceComponent implements OnInit {
       next: () => {
         this.message = 'Interface deleted successfully.';
         this.error = null;
-        setTimeout(() => this.close.emit(), 1200); // Opcional: cerrar modal tras éxito
+        setTimeout(() => this.close.emit(), 1200);
       },
       error: (err) => {
         this.error = 'Error deleting interface: ' + (err?.error?.message || err.message || 'Unknown error');

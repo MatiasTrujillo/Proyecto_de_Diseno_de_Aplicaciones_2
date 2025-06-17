@@ -31,6 +31,9 @@
     <h3>{{ methodItem.name }}</h3>
     <div class="button-group">
       <button class="secondary" (click)="openModal('associatewithclass', methodItem)">Associate With Class</button>
+      <button class="secondary" (click)="openModal('associatewithinvokedMethod', methodItem)">Associate With InvokedMethod</button>
+      <button class="secondary" (click)="openModal('associatemethodwhitlocalvariable', methodItem)">Add Local Variable</button>
+      <button class="secondary" (click)="openModal('associatemethodwhitparameter', methodItem)">Add Parameter</button>
       <button class="danger" (click)="openModal('deletemethod', methodItem)">Delete</button>
     </div>
   </div>
@@ -41,9 +44,8 @@
     <button class="close" (click)="closeModal()">×</button>
     <h2>Method Info</h2>
     <div *ngIf="selectedMethod">
-      <p><strong>ID:</strong> {{ selectedMethod.id }}</p>
       <p><strong>Name:</strong> {{ selectedMethod.name }}</p>
-      <p><strong>Return Type:</strong> {{ selectedMethod.returnType.name || '-' }}</p>
+      <p><strong>Return Type:</strong> {{ selectedMethod.returnType?.name || '-' }}</p>
       <p><strong>Stereotype:</strong> {{ getStereotypeName(selectedMethod.stereotype) }}</p>
       <p><strong>Accesibility:</strong> {{ getAccesibilityName(selectedMethod.accessibility) }}</p>
     </div>
@@ -69,6 +71,37 @@
     ></app-deletemethod>
   </div>
 </div>
+
+<div class="modal" *ngIf="activeModal === 'associatewithinvokedMethod'">
+  <div class="modal-content">
+    <button class="close" (click)="closeModal()">×</button>
+    <app-addmethod
+      [methodData]="selectedMethod!"
+      (close)="onMethodChanged()"
+    ></app-addmethod>
+  </div>
+</div>
+
+<div class="modal" *ngIf="activeModal === 'associatemethodwhitlocalvariable'">
+  <div class="modal-content">
+    <button class="close" (click)="closeModal()">×</button>
+    <app-associatemethodwhit-local-variable
+      [methodData]="selectedMethod!"
+      (close)="onMethodChanged()"
+    ></app-associatemethodwhit-local-variable>
+  </div>
+</div>
+
+<div class="modal" *ngIf="activeModal === 'associatemethodwhitparameter'">
+  <div class="modal-content">
+    <button class="close" (click)="closeModal()">×</button>
+    <app-associatemethodwhit-parameter
+      [methodData]="selectedMethod!"
+      (close)="onMethodChanged()"
+    ></app-associatemethodwhit-parameter>
+  </div>
+</div>
+
 
 <style>
 .info-btn {

@@ -45,7 +45,7 @@ export class ClassMenuComponent implements OnInit {
 
   onClassChanged(): void {
     this.closeModal();
-    this.loadClasses(); // Recargar la lista al cerrar
+    this.loadClasses();
   }
 
   goTo(path: string): void {

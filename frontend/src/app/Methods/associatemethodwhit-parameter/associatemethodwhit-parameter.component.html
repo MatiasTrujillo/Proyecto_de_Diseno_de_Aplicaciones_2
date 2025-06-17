@@ -1,0 +1,16 @@
+<div class="form-container">
+  <h2>Associate Parameter to Method</h2>
+  <div *ngIf="error" class="error">{{ error }}</div>
+  <div *ngIf="message" class="message">{{ message }}</div>
+
+  <div>
+    <label for="parameter">Select Parameter:</label>
+    <select id="parameter" [(ngModel)]="selectedParameterId">
+      <option value="">-- Select Parameter --</option>
+      <option *ngFor="let param of parameters" [value]="param.id">{{ param.name }}</option>
+    </select>
+  </div>
+
+  <button class="primary" (click)="associate()">Associate</button>
+  <button class="close" (click)="closeModal()" type="button">Cancel</button>
+</div>

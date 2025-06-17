@@ -7,6 +7,6 @@ export interface Method {
   name: string;
   stereotype: KeyWord | null;
   accessibility: Accessibility;
-  returnType: Type;
+  returnType: Type | null;
   IsOverride: boolean;
 }

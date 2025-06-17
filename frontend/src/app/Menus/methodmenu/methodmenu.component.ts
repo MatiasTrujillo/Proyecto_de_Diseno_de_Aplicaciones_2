@@ -7,6 +7,9 @@ import { SimulatorService } from '../../services/simulator.service';
 import { Method } from '../../models/method';
 import { KeyWord } from '../../models/KeyWord';
 import { Accessibility } from '../../models/Accessibility';
+import { AddmethodComponent } from '../../Methods/addmethod/addmethod.component';
+import { AssociatemethodwhitLocalVariableComponent } from '../../Methods/associatemethodwhit-local-variable/associatemethodwhit-local-variable.component';
+import { AssociatemethodwhitParameterComponent } from '../../Methods/associatemethodwhit-parameter/associatemethodwhit-parameter.component';
 
 @Component({
   selector: 'app-methodmenu',
@@ -15,7 +18,10 @@ import { Accessibility } from '../../models/Accessibility';
     CommonModule,
     RouterModule,
     AssociatemethodwithclassComponent,
-    DeletemethodComponent
+    DeletemethodComponent,
+    AddmethodComponent,
+    AssociatemethodwhitLocalVariableComponent,
+    AssociatemethodwhitParameterComponent
   ],
   templateUrl: './methodmenu.component.html',
   styleUrl: './methodmenu.component.css'
@@ -51,7 +57,7 @@ export class MethodmenuComponent implements OnInit {
 
   onMethodChanged(): void {
     this.closeModal();
-    this.loadMethods(); // Recargar métodos después de una acción
+    this.loadMethods();
   }
 
   goTo(path: string): void {

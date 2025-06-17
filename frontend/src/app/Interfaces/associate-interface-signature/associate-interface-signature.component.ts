@@ -50,7 +50,6 @@ export class AssociateInterfaceSignatureComponent implements OnInit {
     this.selectedMethodSignatureId = '';
   },
   error: (err) => {
-    // Intenta mostrar el mensaje del backend si existe
     this.error = err?.error?.message || err?.error?.detail || err?.message || 'Error associating method signature.';
   }
 });

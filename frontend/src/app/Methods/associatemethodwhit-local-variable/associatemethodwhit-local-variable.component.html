@@ -1,0 +1,16 @@
+<div class="form-container">
+  <h2>Associate Local Variable to Method</h2>
+  <div *ngIf="error" class="error">{{ error }}</div>
+  <div *ngIf="message" class="message">{{ message }}</div>
+
+  <div>
+    <label for="localVariable">Select Local Variable:</label>
+    <select id="localVariable" [(ngModel)]="selectedLocalVariableId">
+      <option value="">-- Select Local Variable --</option>
+      <option *ngFor="let lv of localVariables" [value]="lv.id">{{ lv.name }}</option>
+    </select>
+  </div>
+
+  <button class="primary" (click)="associate()">Associate</button>
+  <button class="close" (click)="closeModal()" type="button">Cancel</button>
+</div>
