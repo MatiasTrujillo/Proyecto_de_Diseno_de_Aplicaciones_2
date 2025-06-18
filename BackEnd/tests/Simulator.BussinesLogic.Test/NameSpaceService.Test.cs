@@ -227,7 +227,7 @@ public class NameSpaceService_Test
     }
 
     [TestMethod]
-    [ExpectedException(typeof(NameSpaceException))]
+    [ExpectedException(typeof(NameSpaceNotFoundException))]
     public void AddChildToNameSpace_ShouldThrow_WhenChildComponentDoesNotExist()
     {
         var parent = new NameSpace("Parent", null);
@@ -240,7 +240,7 @@ public class NameSpaceService_Test
     }
 
     [TestMethod]
-    [ExpectedException(typeof(NameSpaceException))]
+    [ExpectedException(typeof(NameSpaceNotFoundException))]
     public void AddChildToNameSpace_ShouldThrow_WhenParentDoesNotExist()
     {
         var child = new NameSpace("Child", null);

@@ -417,4 +417,72 @@ public class ExceptionFilterTest
         var message = result?.Value?.GetType().GetProperty("Message")?.GetValue(result.Value)?.ToString();
         Assert.AreEqual("MethodSignature name cannot be null.", message);
     }
+
+    [TestMethod]
+    public void OnException_ShouldSetResultTo404_AndHandleANameSpaceNotFoundException_WhenNameSpaceNotFoundExceptionIsThrown()
+    {
+        var exception = new NameSpaceNotFoundException("Namespace not found exception");
+        _context.Exception = exception;
+
+        _filter.OnException(_context);
+
+        Assert.IsInstanceOfType(_context.Result, typeof(ObjectResult));
+        var result = _context.Result as ObjectResult;
+        Assert.AreEqual(404, result?.StatusCode);
+        Assert.IsTrue(_context.ExceptionHandled);
+
+        var message = result?.Value?.GetType().GetProperty("Message")?.GetValue(result.Value)?.ToString();
+        Assert.AreEqual("Namespace not found exception", message);
+    }
+
+    [TestMethod]
+    public void OnException_ShouldSetResultTo400_AndHandleANameSpaceException_WhenNameSpaceExceptionIsThrown()
+    {
+        var exception = new NameSpaceException("Namespace exception");
+        _context.Exception = exception;
+
+        _filter.OnException(_context);
+
+        Assert.IsInstanceOfType(_context.Result, typeof(ObjectResult));
+        var result = _context.Result as ObjectResult;
+        Assert.AreEqual(400, result?.StatusCode);
+        Assert.IsTrue(_context.ExceptionHandled);
+
+        var message = result?.Value?.GetType().GetProperty("Message")?.GetValue(result.Value)?.ToString();
+        Assert.AreEqual("Namespace exception", message);
+    }
+
+    [TestMethod]
+    public void OnException_ShouldSetResultTo404_AndHandleALocalVariableNotFoundException_WhenLocalVariableNotFoundExceptionIsThrown()
+    {
+        var exception = new LocalVariableNotFoundException("Local variable not found exception");
+        _context.Exception = exception;
+
+        _filter.OnException(_context);
+
+        Assert.IsInstanceOfType(_context.Result, typeof(ObjectResult));
+        var result = _context.Result as ObjectResult;
+        Assert.AreEqual(404, result?.StatusCode);
+        Assert.IsTrue(_context.ExceptionHandled);
+
+        var message = result?.Value?.GetType().GetProperty("Message")?.GetValue(result.Value)?.ToString();
+        Assert.AreEqual("Local variable not found exception", message);
+    }
+
+    [TestMethod]
+    public void OnException_ShouldSetResultTo400_AndHandleATypeNullException_WhenTypeNullExceptionIsThrown()
+    {
+        var exception = new TypeNullException("Type is null exception");
+        _context.Exception = exception;
+
+        _filter.OnException(_context);
+
+        Assert.IsInstanceOfType(_context.Result, typeof(ObjectResult));
+        var result = _context.Result as ObjectResult;
+        Assert.AreEqual(400, result?.StatusCode);
+        Assert.IsTrue(_context.ExceptionHandled);
+
+        var message = result?.Value?.GetType().GetProperty("Message")?.GetValue(result.Value)?.ToString();
+        Assert.AreEqual("Type is null exception", message);
+    }
 }

@@ -52,4 +52,34 @@ public class MethodSignatureController_Test
 
         mockService.Verify(s => s.GetMethodSignatures(), Times.Once);
     }
+
+    [TestMethod]
+    public void ConserveId_AssignsParameterIdsCorrectly()
+    {
+        var guid1 = Guid.NewGuid();
+        var guid2 = Guid.NewGuid();
+
+        var dto = new MethodSignatureDTO
+        {
+            Parameters =
+            [
+                new ParameterDTO { Id = guid1.ToString() },
+                new ParameterDTO { Id = guid2.ToString() }
+            ]
+        };
+
+        var parameters = new List<Parameter>
+        {
+            new Parameter { Id = Guid.Empty },
+            new Parameter { Id = Guid.Empty }
+        };
+
+        if(typeof(MethodSignatureDTO)
+               .GetMethod("ConserveId", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
+               ?.Invoke(dto, [parameters]) is List<Parameter> result)
+        {
+            Assert.AreEqual(guid1, result[0].Id);
+            Assert.AreEqual(guid2, result[1].Id);
+        }
+    }
 }

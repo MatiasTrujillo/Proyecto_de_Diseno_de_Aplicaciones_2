@@ -90,4 +90,16 @@ public class NameSpaceControllerTest
 
         mockService.Verify(s => s.GetAllNameSpace(), Times.Once);
     }
+
+    [TestMethod]
+    public void Properties_GetSet_ShouldBeCoveredByCoverage()
+    {
+        var dto = new NamespaceComponentDTO();
+        dto.Id = "123";
+        dto.Name = "TestName";
+
+        // Acceso a los getters
+        Assert.AreEqual("123", dto.Id);
+        Assert.AreEqual("TestName", dto.Name);
+    }
 }
