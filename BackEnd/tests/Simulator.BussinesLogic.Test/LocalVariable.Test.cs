@@ -96,6 +96,28 @@ public class LocalVariable_Test
     }
 
     [TestMethod]
+    public void CreateLocalVariable_ShouldAddLocalVariable_WhenLocalVariableIsValid2()
+    {
+        var classT = new Interface { Name = "TestClass" };
+        var classChild = new Class { Name = "Child", Parents = [classT] };
+
+        var localVariableDto = new LocalVariableDTO { Name = "TestParameter", ReferenceType = new TypeDTO { Name = classT.Name, Kind = "interface" }, InstanceType = new TypeDTO { Name = classChild.Name, Kind = "class" } };
+
+        _mockLocalVariableRepository
+            .Setup(r => r.Add(It.Is<LocalVariable>(p =>
+                p.Name == localVariableDto.Name && p.ReferenceType.Name == classT.Name)));
+
+        _mockClassRepository
+            .Setup(repo => repo.FindAllTypes())
+            .Returns([classT, classChild]);
+
+        var result = _localVariableService.CreateLocalVariable(localVariableDto.ToEntity());
+
+        Assert.AreNotEqual(Guid.Empty, result);
+        _mockLocalVariableRepository.Verify(r => r.Add(It.IsAny<LocalVariable>()), Times.Once);
+    }
+
+    [TestMethod]
     public void CreateLocalVariable_ShouldThrowException_WhenInstanceTypeNotSubclassOfReferenceType()
     {
         var classT = new Class { Name = "TestClass" };

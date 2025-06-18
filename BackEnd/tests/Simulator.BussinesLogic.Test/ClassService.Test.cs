@@ -710,4 +710,27 @@ public class ClassServiceTest
         };
         dto.ToEntity();
     }
+
+    [TestMethod]
+    [ExpectedException(typeof(InvalidOperationException))]
+    public void ToEntity_ShouldThrow_WhenPrimitiveTypeNameIsInvalid2()
+    {
+        var dto = new TypeDTO
+        {
+            Kind = "a",
+            Name = "int"
+        };
+        dto.ToEntity();
+    }
+
+    [TestMethod]
+    public void ToEntity_ShouldPass_WhenPrimitiveTypeNameIsValid()
+    {
+        var dto = new TypeDTO
+        {
+            Kind = "primitive",
+            Name = "int"
+        };
+        dto.ToEntity();
+    }
 }

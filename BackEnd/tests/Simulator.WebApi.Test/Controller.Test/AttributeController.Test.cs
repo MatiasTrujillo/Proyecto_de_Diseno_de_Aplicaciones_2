@@ -144,6 +144,38 @@ public class AttributeControllerTest
     }
 
     [TestMethod]
+    public void GetAttributes_ShouldReturnOkWithAllAttributes2()
+    {
+        // Arrange
+        var expectedAttributes = new List<Attribute>
+        {
+            new Attribute { Name = "Atributo1", ReferenceType = new Class { Id = Guid.NewGuid(), Name = "clase1" } },
+            new Attribute { Name = "Atributo2", ReferenceType = new Primitive { Id = Guid.NewGuid(), Name = "int" } },
+            new Attribute { Name = "Atributo3", ReferenceType = new Interface { Id = Guid.NewGuid(), Name = "interface1" } }
+        };
+
+        var mockService = new Mock<IAttributeService>();
+        mockService.Setup(s => s.GetAttributes()).Returns(expectedAttributes);
+
+        var controller = new AttributeController(mockService.Object);
+
+        // Act
+        var result = controller.GetAttributes() as OkObjectResult;
+
+        // Assert
+        Assert.IsNotNull(result);
+        Assert.AreEqual(200, result.StatusCode);
+        var value = result.Value as List<AttributeDto>;
+        Assert.IsNotNull(value);
+        Assert.AreEqual(3, value.Count);
+        Assert.AreEqual("Atributo1", value[0].Name);
+        Assert.AreEqual("Atributo2", value[1].Name);
+        Assert.AreEqual("Atributo3", value[2].Name);
+
+        mockService.Verify(s => s.GetAttributes(), Times.Once);
+    }
+
+    [TestMethod]
     [ExpectedException(typeof(AttributeException))]
     public void Constructor_ThrowsException_WhenNameIsNull()
     {
