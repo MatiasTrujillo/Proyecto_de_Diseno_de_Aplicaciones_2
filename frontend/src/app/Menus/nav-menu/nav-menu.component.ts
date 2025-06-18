@@ -36,11 +36,11 @@ export class NavMenuComponent {
     private simulatorService: SimulatorService,
     private router: Router
   ) {}
-
-  logout(): void {
+logout(): void {
   const token = localStorage.getItem('authToken');
   if (!token) {
     console.error('No token found in localStorage.');
+    this.router.navigate(['**']);
     return;
   }
 
@@ -48,14 +48,14 @@ export class NavMenuComponent {
     () => {
       localStorage.removeItem('authToken');
       localStorage.removeItem('roles');
-      this.router.navigate(['']);
+      this.router.navigate(['**']);
     },
     (error) => {
       console.error('Error logging out', error);
+      this.router.navigate(['**']);
     }
   );
 }
-
 activeModal: string | null = null;
 
 openModal(modalName: string): void {
