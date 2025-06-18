@@ -1,0 +1,16 @@
+<div class="form-container">
+  <h2>Associate Method Signature to Interface</h2>
+  <div *ngIf="error" class="error">{{ error }}</div>
+  <div *ngIf="message" class="message">{{ message }}</div>
+
+  <div>
+    <label for="methodSignature">Method Signature:</label>
+    <select id="methodSignature" [(ngModel)]="selectedMethodSignatureId">
+      <option value="">-- Select Method Signature --</option>
+      <option *ngFor="let ms of methodSignatures" [value]="ms.id">{{ ms.name }}</option>
+    </select>
+  </div>
+
+  <button class="primary" (click)="associate()">Associate</button>
+  <button class="close" (click)="closeModal()" type="button">Cancel</button>
+</div>

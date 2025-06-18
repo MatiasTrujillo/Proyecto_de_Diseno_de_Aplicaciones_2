@@ -1,0 +1,39 @@
+
+<form [formGroup]="updateForm" (ngSubmit)="onSubmit()">
+  <label for="classToUpdate">Class to update:</label>
+  <br />
+
+  <label for="idClass">Inherits from (idClass):</label>
+  <select formControlName="idClass">
+    <option [value]="null">-- None --</option>
+    <option *ngFor="let c of classes" [value]="c.id">{{ c.name }}{{ c.stereotype }}</option>
+  </select>
+
+  <br />
+
+  <label for="name">Name:</label>
+  <input type="text" formControlName="name" />
+
+  <br />
+
+  <div class="form-group">
+    <label for="stereotype">Stereotype</label>
+    <select id="stereotype" formControlName="stereotype">
+      <option [ngValue]="'no change'">No change</option>
+      <option [ngValue]='null'>Void</option>
+      <option *ngFor="let kw of keyWords" [ngValue]="kw">{{ kw }}</option>
+    </select>
+  </div>
+
+  <br /><br />
+  <button type="submit">Update Class</button>
+
+  <div *ngIf="message" class="success-message">
+  {{ message }}
+</div>
+
+<!-- Mensaje de error -->
+<div *ngIf="error" class="error-message">
+  {{ error }}
+</div>
+</form>

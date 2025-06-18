@@ -1,0 +1,31 @@
+<div class="container">
+  <h2>Create a Method</h2>
+  <form [formGroup]="methodForm" (ngSubmit)="onSubmit()">
+    <label for="name">Method Name</label>
+    <input id="name" formControlName="name" />
+
+  <label for="returnType">Return Type</label>
+  <select id="returnType" formControlName="returnType">
+    <option value="">None</option>
+    <option *ngFor="let type of types" [value]="type.name">{{ type.name }}</option>
+  </select>
+
+    <label for="accessibility">Accessibility</label>
+    <select id="accessibility" formControlName="accessibility">
+      <option *ngFor="let acc of accessibilities; let i = index" [value]="i">{{ acc }}</option>
+    </select>
+
+    <label for="stereotype">Stereotype (optional)</label>
+    <select id="stereotype" formControlName="stereotype">
+      <option value="">None</option>
+      <option *ngFor="let kw of keyWords; let i = index" [value]="i">{{ kw }}</option>
+    </select>
+
+    <label>
+      <input type="checkbox" formControlName="isOverride" />
+      Override
+    </label>
+
+    <button type="submit" [disabled]="methodForm.invalid">Create Method</button>
+  </form>
+</div>

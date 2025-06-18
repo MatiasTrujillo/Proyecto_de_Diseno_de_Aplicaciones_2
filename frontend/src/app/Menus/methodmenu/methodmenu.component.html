@@ -1,0 +1,119 @@
+<nav class="navbar">
+  <div class="nav-left">
+    <a routerLink="/" class="logo">Simulator</a>
+  </div>
+  <div class="nav-right">
+    <button (click)="goToNavMenu()" class="logout-button">Go To Menu</button>
+  </div>
+</nav>
+
+
+<div class="manage-interface-header">
+  <h1>Manage Methods</h1>
+  <div class="header-underline"></div>
+</div>
+
+<div class="sidebar">
+  <h2>Manage your entities</h2>
+  <button (click)="goTo('/ClassMenuComponent')">Class</button>
+  <button (click)="goTo('/MethodMenuComponent')">Method</button>
+  <button (click)="goTo('/AttributeMenuComponent')">Attribute</button>
+  <button (click)="goTo('/NameSpaceMenuComponent')">NameSpace</button>
+  <button (click)="goTo('/ParameterMenuComponent')">Parameter</button>
+  <button (click)="goTo('/LocalVariableMenuComponent')">Local Variable</button>
+  <button (click)="goTo('/InterfaceMenuComponent')">Interface</button>
+  <button (click)="goTo('/ExportdataComponent')">Go To Export</button>
+</div>
+
+<div class="card-container">
+  <div class="card" *ngFor="let methodItem of methods">
+    <button class="info-btn" (click)="openModal('infomethod', methodItem)" title="Info">ℹ️</button>
+    <h3>{{ methodItem.name }}</h3>
+    <div class="button-group">
+      <button class="secondary" (click)="openModal('associatewithclass', methodItem)">Associate With Class</button>
+      <button class="secondary" (click)="openModal('associatewithinvokedMethod', methodItem)">Associate With InvokedMethod</button>
+      <button class="secondary" (click)="openModal('associatemethodwhitlocalvariable', methodItem)">Add Local Variable</button>
+      <button class="secondary" (click)="openModal('associatemethodwhitparameter', methodItem)">Add Parameter</button>
+      <button class="danger" (click)="openModal('deletemethod', methodItem)">Delete</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal" *ngIf="activeModal === 'infomethod'">
+  <div class="modal-content">
+    <button class="close" (click)="closeModal()">×</button>
+    <h2>Method Info</h2>
+    <div *ngIf="selectedMethod">
+      <p><strong>Name:</strong> {{ selectedMethod.name }}</p>
+      <p><strong>Return Type:</strong> {{ selectedMethod.returnType?.name || '-' }}</p>
+      <p><strong>Stereotype:</strong> {{ getStereotypeName(selectedMethod.stereotype) }}</p>
+      <p><strong>Accesibility:</strong> {{ getAccesibilityName(selectedMethod.accessibility) }}</p>
+    </div>
+  </div>
+</div>
+
+<div class="modal" *ngIf="activeModal === 'associatewithclass'">
+  <div class="modal-content">
+    <button class="close" (click)="closeModal()">×</button>
+    <app-associatemethodwithclass
+      [methodData]="selectedMethod!"
+      (close)="onMethodChanged()"
+    ></app-associatemethodwithclass>
+  </div>
+</div>
+
+<div class="modal" *ngIf="activeModal === 'deletemethod'">
+  <div class="modal-content">
+    <button class="close" (click)="closeModal()">×</button>
+    <app-deletemethod
+      [methodData]="selectedMethod!"
+      (close)="onMethodChanged()"
+    ></app-deletemethod>
+  </div>
+</div>
+
+<div class="modal" *ngIf="activeModal === 'associatewithinvokedMethod'">
+  <div class="modal-content">
+    <button class="close" (click)="closeModal()">×</button>
+    <app-addmethod
+      [methodData]="selectedMethod!"
+      (close)="onMethodChanged()"
+    ></app-addmethod>
+  </div>
+</div>
+
+<div class="modal" *ngIf="activeModal === 'associatemethodwhitlocalvariable'">
+  <div class="modal-content">
+    <button class="close" (click)="closeModal()">×</button>
+    <app-associatemethodwhit-local-variable
+      [methodData]="selectedMethod!"
+      (close)="onMethodChanged()"
+    ></app-associatemethodwhit-local-variable>
+  </div>
+</div>
+
+<div class="modal" *ngIf="activeModal === 'associatemethodwhitparameter'">
+  <div class="modal-content">
+    <button class="close" (click)="closeModal()">×</button>
+    <app-associatemethodwhit-parameter
+      [methodData]="selectedMethod!"
+      (close)="onMethodChanged()"
+    ></app-associatemethodwhit-parameter>
+  </div>
+</div>
+
+
+<style>
+.info-btn {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: transparent;
+  border: none;
+  font-size: 1.2em;
+  cursor: pointer;
+}
+.card {
+  position: relative;
+}
+</style>

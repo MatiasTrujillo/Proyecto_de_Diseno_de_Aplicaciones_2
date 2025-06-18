@@ -1,0 +1,43 @@
+<nav class="navbar">
+  <div class="nav-left">
+    <a routerLink="/" class="logo">Simulator</a>
+  </div>
+  <div class="nav-right">
+    <button (click)="goToNavMenu()" class="logout-button">Go To Menu</button>
+  </div>
+</nav>
+
+
+<div class="manage-interface-header">
+  <h1>Manage Parameters</h1>
+  <div class="header-underline"></div>
+</div>
+
+<div class="sidebar">
+  <h2>Manage your entities</h2>
+  <button (click)="goTo('/ClassMenuComponent')">Class</button>
+  <button (click)="goTo('/MethodMenuComponent')">Method</button>
+  <button (click)="goTo('/AttributeMenuComponent')">Attribute</button>
+  <button (click)="goTo('/NameSpaceMenuComponent')">NameSpace</button>
+  <button (click)="goTo('/ParameterMenuComponent')">Parameter</button>
+  <button (click)="goTo('/LocalVariableMenuComponent')">Local Variable</button>
+  <button (click)="goTo('/InterfaceMenuComponent')">Interface</button>
+  <button (click)="goTo('/ExportdataComponent')">Go To Export</button>
+</div>
+
+<div class="card-container">
+  <div class="card" *ngFor="let paramItem of parameters">
+    <h3>{{ paramItem.name }}</h3>
+    <button class="secondary" (click)="openModal('setToClass', paramItem)">Asociate With InvokedMethod</button>
+  </div>
+</div>
+
+<div class="modal" *ngIf="activeModal === 'setToClass'">
+  <div class="modal-content">
+    <button class="close" (click)="closeModal()">×</button>
+    <app-set-invoke-method-to-parameter
+      [parameterData]="selectedParameter!"
+      (close)="closeModal()"
+    ></app-set-invoke-method-to-parameter>
+  </div>
+</div>

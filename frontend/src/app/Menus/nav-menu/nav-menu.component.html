@@ -1,0 +1,137 @@
+<nav class="navbar">
+  <div class="nav-left">
+    <a routerLink="/" class="logo">Simulator</a>
+  </div>
+  <div class="nav-right">
+   <button (click)="logout()" class="logout-button">log out</button>
+  </div>
+</nav>
+
+<div class="sidebar">
+  <h2>Manage your entities</h2>
+  <button (click)="goTo('/ClassMenuComponent')">Class</button>
+  <button (click)="goTo('/MethodMenuComponent')">Method</button>
+  <button (click)="goTo('/AttributeMenuComponent')">Attribute</button>
+  <button (click)="goTo('/NameSpaceMenuComponent')">NameSpace</button>
+  <button (click)="goTo('/ParameterMenuComponent')">Parameter</button>
+  <button (click)="goTo('/LocalVariableMenuComponent')">Local Variable</button>
+  <button (click)="goTo('/InterfaceMenuComponent')">Interface</button>
+  <button (click)="goTo('/ExportdataComponent')">Go To Export</button>
+</div>
+
+
+<div class="card-container">
+  <!-- Class -->
+  <div class="card">
+    <h3>Create Class</h3>
+    <p>Define a new class for your simulation logic.</p>
+    <div class="button-group">
+      <button class="primary" (click)="openModal('class')">Open</button>
+    </div>
+  </div>
+
+  <!-- Method -->
+  <div class="card">
+    <h3>Create Method</h3>
+    <p>Create a method and associate it with a class.</p>
+    <div class="button-group">
+      <button class="primary" (click)="openModal('method')">Open</button>
+    </div>
+  </div>
+
+  <!-- Attribute -->
+  <div class="card">
+    <h3>Attribute</h3>
+    <p>Add a new attribute to your simulation class.</p>
+    <div class="button-group">
+      <button class="primary" (click)="openModal('attribute')">Open</button>
+    </div>
+  </div>
+
+    <!-- NameSpace -->
+  <div class="card">
+    <h3>NameSpace</h3>
+    <p>Add a new NameSpace to your simulation class.</p>
+    <div class="button-group">
+      <button class="primary" (click)="openModal('nameSpace')">Open</button>
+    </div>
+  </div>
+
+  <!-- Local Variable -->
+  <div class="card">
+    <h3>Local Variable</h3>
+    <p>Assign a local variable to your methods.</p>
+    <button class="primary" (click)="openModal('localVariable')">Open</button>
+  </div>
+
+  <!-- Parameter -->
+  <div class="card">
+    <h3>Create Parameter</h3>
+    <p>Define a new class for your simulation logic.</p>
+    <div class="button-group">
+      <button class="primary" (click)="openModal('parameter')">Open</button>
+    </div>
+  </div>
+
+  <!-- Interface -->
+  <div class="card">
+    <h3>Interface</h3>
+    <p>Define a new interface for your simulation logic.</p>
+    <button class="primary" (click)="openModal('interface')">Open</button>
+  </div>
+
+  <!-- Method Signature -->
+  <div class="card">
+    <h3>Method Signature</h3>
+    <p>Define a new Method Signature for your simulation logic.</p>
+    <button class="primary" (click)="openModal('methodSignature')">Create</button>
+  </div>
+
+  <!-- Invoked Method -->
+    <div class="card">
+    <h3>Invoked Method</h3>
+    <p>Define a new Method Signature for your simulation logic.</p>
+    <button class="primary" (click)="openModal('invokedmethod')">Create</button>
+  </div>
+</div>
+
+<!-- Modals -->
+<div class="modal" *ngIf="activeModal === 'class'">
+  <div class="modal-content"><button class="close" (click)="closeModal()">×</button><app-create-class></app-create-class></div>
+</div>
+
+<div class="modal" *ngIf="activeModal === 'method'">
+  <div class="modal-content"><button class="close" (click)="closeModal()">×</button><app-create-method></app-create-method></div>
+</div>
+
+<div class="modal" *ngIf="activeModal === 'attribute'">
+  <div class="modal-content"><button class="close" (click)="closeModal()">×</button><app-createattribute></app-createattribute></div>
+</div>
+
+<div class="modal" *ngIf="activeModal === 'nameSpace'">
+  <div class="modal-content"><button class="close" (click)="closeModal()">×</button><app-createnamespace></app-createnamespace></div>
+</div>
+
+<div class="modal" *ngIf="activeModal === 'localVariable'">
+  <div class="modal-content"><button class="close" (click)="closeModal()">×</button><app-createlocalvariable></app-createlocalvariable></div>
+</div>
+
+<div class="modal" *ngIf="activeModal === 'parameter'">
+  <div class="modal-content"><button class="close" (click)="closeModal()">×</button><app-createparameter></app-createparameter></div>
+</div>
+
+<div class="modal" *ngIf="activeModal === 'interface'">
+  <div class="modal-content"><button class="close" (click)="closeModal()">×</button><app-createinterface></app-createinterface></div>
+</div>
+
+<div class="modal" *ngIf="activeModal === 'deleteinterface'">
+  <div class="modal-content"><button class="close" (click)="closeModal()">×</button><app-deleteinterface></app-deleteinterface></div>
+</div>
+
+<div class="modal" *ngIf="activeModal === 'methodSignature'">
+  <div class="modal-content"><button class="close" (click)="closeModal()">×</button><app-createmethodsignatures></app-createmethodsignatures></div>
+</div>
+
+<div class="modal" *ngIf="activeModal === 'invokedmethod'">
+  <div class="modal-content"><button class="close" (click)="closeModal()">×</button><app-createinvokedmethod></app-createinvokedmethod></div>
+</div>

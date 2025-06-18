@@ -1,0 +1,109 @@
+<nav class="navbar">
+  <div class="nav-left">
+    <a routerLink="/" class="logo">Simulator</a>
+  </div>
+  <div class="nav-right">
+    <button (click)="goToNavMenu()" class="logout-button">Go To Menu</button>
+  </div>
+</nav>
+
+<div class="manage-interface-header">
+  <h1>Manage Attributes</h1>
+  <div class="header-underline"></div>
+</div>
+
+<div class="sidebar">
+  <h2>Manage your entities</h2>
+  <button (click)="goTo('/ClassMenuComponent')">Class</button>
+  <button (click)="goTo('/MethodMenuComponent')">Method</button>
+  <button (click)="goTo('/AttributeMenuComponent')">Attribute</button>
+  <button (click)="goTo('/NameSpaceMenuComponent')">NameSpace</button>
+  <button (click)="goTo('/ParameterMenuComponent')">Parameter</button>
+  <button (click)="goTo('/LocalVariableMenuComponent')">Local Variable</button>
+  <button (click)="goTo('/InterfaceMenuComponent')">Interface</button>
+  <button (click)="goTo('/ExportdataComponent')">Go To Export</button>
+</div>
+
+
+
+<div class="card-container">
+  <div class="card" *ngFor="let attributeItem of attributes">
+    <button class="info-btn" (click)="openModal('infoattribute', attributeItem)" title="Info">ℹ️</button>
+    <h3>{{ attributeItem.name }}</h3>
+    <div class="button-group">
+      <button class="secondary" (click)="openModal('updateattribute', attributeItem)">Update</button>
+      <button class="danger" (click)="openModal('deleteattribute', attributeItem)">Delete</button>
+      <button class="secondary" (click)="openModal('asociate', attributeItem)">Associate With Class</button>
+      <button class="secondary" (click)="openModal('set', attributeItem)">Associate With InvokedMethod</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal" *ngIf="activeModal === 'infoattribute'">
+  <div class="modal-content">
+    <button class="close" (click)="closeModal()">×</button>
+    <h2>Attribute Info</h2>
+    <div *ngIf="selectedAttribute">
+      <p><strong>Name:</strong> {{ selectedAttribute.name }}</p>
+      <p><strong>Accessibility:</strong> {{ selectedAttribute.accessibility }}</p>
+      <p><strong>Reference Type:</strong> {{ selectedAttribute.referenceType.name }}</p>
+      <p><strong>Instance Type:</strong> {{ selectedAttribute.instanceType?.name }}</p>
+      <p><strong>Stereotype:</strong> {{ selectedAttribute.stereotype }}</p>
+    </div>
+  </div>
+</div>
+
+<div class="modal" *ngIf="activeModal === 'deleteattribute'">
+  <div class="modal-content">
+    <button class="close" (click)="closeModal()">×</button>
+    <app-deleteattribute
+      [attributeData]="selectedAttribute!"
+      (close)="onAttributeChanged()"
+    ></app-deleteattribute>
+  </div>
+</div>
+
+<div class="modal" *ngIf="activeModal === 'updateattribute'">
+  <div class="modal-content">
+    <button class="close" (click)="closeModal()">×</button>
+    <app-updateattribute
+      [attributeData]="selectedAttribute!"
+      (close)="onAttributeChanged()"
+    ></app-updateattribute>
+  </div>
+</div>
+
+<div class="modal" *ngIf="activeModal === 'asociate'">
+  <div class="modal-content">
+    <button class="close" (click)="closeModal()">×</button>
+    <app-associateattributewithclass
+      [attributeData]="selectedAttribute!"
+      (close)="onAttributeChanged()"
+    ></app-associateattributewithclass>
+  </div>
+</div>
+
+<div class="modal" *ngIf="activeModal === 'set'">
+  <div class="modal-content">
+    <button class="close" (click)="closeModal()">×</button>
+    <app-set-invoke-method
+      [attributeData]="selectedAttribute!"
+      (close)="onAttributeChanged()"
+    ></app-set-invoke-method>
+  </div>
+</div>
+
+<style>
+.info-btn {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: transparent;
+  border: none;
+  font-size: 1.2em;
+  cursor: pointer;
+}
+.card {
+  position: relative;
+}
+</style>

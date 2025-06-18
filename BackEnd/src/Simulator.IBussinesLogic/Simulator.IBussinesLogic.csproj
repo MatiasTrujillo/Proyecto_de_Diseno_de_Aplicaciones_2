@@ -1,0 +1,15 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\Simulator.DTO\Simulator.DTO.csproj" />
+        <ProjectReference Include="..\Simulator.Exporters.Abstractions\Simulator.Exporters.Abstractions.csproj" />
+        <ProjectReference Include="..\Simulator.UpdateDTO\Simulator.UpdateDTO.csproj" />
+    </ItemGroup>
+    
+</Project>

@@ -1,0 +1,24 @@
+<div class="session-container">
+  <h2>Session Management</h2>
+
+  <div class="input-group">
+    <label for="token">Token</label>
+    <input
+        type="text"
+        [(ngModel)]="token"
+        name="token"
+        required
+        pattern="[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}"
+        title="Please enter a valid GUID (e.g. 123e4567-e89b-12d3-a456-426614174000)"
+        />
+  </div>
+
+  <div class="button-group">
+    <button (click)="signIn()">Sign In</button>
+    <button (click)="logIn()">Log In</button>
+  </div>
+
+  <div class="message" [class.error]="isError">
+    {{ message }}
+  </div>
+</div>

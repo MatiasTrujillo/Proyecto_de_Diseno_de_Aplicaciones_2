@@ -1,0 +1,20 @@
+<div class="container">
+  <h2>Create a MethodSignature</h2>
+  <form [formGroup]="methodForm" (ngSubmit)="onSubmit()">
+    <label for="name">MethodSignature Name</label>
+    <input id="name" formControlName="name" />
+
+  <label for="returnType">Return Type</label>
+  <select id="returnType" formControlName="returnType">
+    <option value="">None</option>
+    <option *ngFor="let type of types" [value]="type.name">{{ type.name }}</option>
+  </select>
+
+  <label for="parameters">Parameters</label>
+  <select id="parameters" formControlName="parameters" multiple size="5">
+    <option *ngFor="let param of parameters" [value]="param.id">{{ param.name }}</option>
+  </select>
+
+    <button type="submit" [disabled]="methodForm.invalid">Create MethodSignature</button>
+  </form>
+</div> 

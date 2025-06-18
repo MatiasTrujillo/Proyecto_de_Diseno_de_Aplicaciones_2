@@ -1,0 +1,23 @@
+<h2>Associate Method Invocation to Attribute</h2>
+
+<!-- Mostrar el atributo, no seleccionarlo -->
+<div class="form-group">
+  <label>Attribute:</label>
+  <span>{{ attributeData.name }}</span>
+</div>
+
+<!-- Selector de método -->
+<div class="form-group">
+  <label for="method">Method:</label>
+  <select [(ngModel)]="selectedMethodId" class="form-control">
+    <option value="">-- Select Method --</option>
+    <option *ngFor="let method of methods" [value]="method.id">Reference Name:{{ method.referenceName }}Method ID: {{ method.methodId }}</option>
+  </select>
+</div>
+
+<!-- Botón de asociación -->
+<button (click)="associate()" class="primary">Associate</button>
+
+<!-- Mensajes -->
+<div *ngIf="message" class="success">{{ message }}</div>
+<div *ngIf="error" class="error">{{ error }}</div>

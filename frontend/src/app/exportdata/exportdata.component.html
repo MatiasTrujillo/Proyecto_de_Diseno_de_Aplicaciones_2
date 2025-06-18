@@ -1,0 +1,77 @@
+<nav class="navbar">
+  <div class="nav-left">
+    <a routerLink="/" class="logo">Simulator</a>
+  </div>
+  <div class="nav-right">
+    <button (click)="goToNavMenu()" class="logout-button">Go To Menu</button>
+  </div>
+</nav>
+
+<div class="sidebar">
+  <h2>Manage your entities</h2>
+  <button (click)="goTo('/ClassMenuComponent')">Class</button>
+  <button (click)="goTo('/MethodMenuComponent')">Method</button>
+  <button (click)="goTo('/AttributeMenuComponent')">Attribute</button>
+  <button (click)="goTo('/NameSpaceMenuComponent')">NameSpace</button>
+  <button (click)="goTo('/ParameterMenuComponent')">Parameter</button>
+  <button (click)="goTo('/LocalVariableMenuComponent')">Local Variable</button>
+  <button (click)="goTo('/InterfaceMenuComponent')">Interface</button>
+  <button (click)="goTo('/ExportdataComponent')">Go To Export</button>
+  <button (click)="goTo('/database')">Data Base</button>
+</div>
+
+<div class="export-container">
+  <h2>Export Data</h2>
+
+  <label>
+    Exporter Name:
+    <select [(ngModel)]="exporterName">
+      <option *ngFor="let exporter of availableExporters" [value]="exporter">{{ exporter }}</option>
+    </select>
+  </label>
+
+  <label>
+    Reference Type:
+    <select [(ngModel)]="referenceId">
+      <option [ngValue]="null">-- Select --</option>
+      <option *ngFor="let type of types" [value]="type.id">{{ type.name }}</option>
+    </select>
+  </label>
+
+  <label>
+    Object to Create:
+    <select [(ngModel)]="objectToCreateId">
+      <option [ngValue]="null">-- Select --</option>
+      <option *ngFor="let type of types" [value]="type.id">{{ type.name }}</option>
+    </select>
+  </label>
+
+  <label>
+    Method:
+    <select [(ngModel)]="methodId">
+      <option [ngValue]="null">-- Select --</option>
+      <option *ngFor="let method of methods" [value]="method.id">{{ method.name }}</option>
+    </select>
+  </label>
+
+  <label>
+    Parameter Types:
+    <select multiple [(ngModel)]="selectedParameterTypes">
+      <option *ngFor="let type of types" [value]="type.id">{{ type.name }}</option>
+    </select>
+  </label>
+
+  <button (click)="exportData()">Export</button>
+
+  <div class="result" *ngIf="exportMessage">
+    <p>{{ exportMessage }}</p>
+  </div>
+
+<div class="result" *ngIf="result && result.exporterTypes">
+  <pre>{{ result.exporterTypes }}</pre>
+</div>
+
+  <div class="error" *ngIf="error">
+    <p>{{ error }}</p>
+  </div>
+</div>

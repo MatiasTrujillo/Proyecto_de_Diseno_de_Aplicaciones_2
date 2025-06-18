@@ -1,0 +1,57 @@
+<nav class="navbar">
+  <div class="nav-left">
+    <a routerLink="/" class="logo">Simulator</a>
+  </div>
+  <div class="nav-right">
+    <button (click)="goToNavMenu()" class="logout-button">Go To Menu</button>
+  </div>
+</nav>
+
+
+<div class="manage-interface-header">
+  <h1>Manage Name Spaces</h1>
+  <div class="header-underline"></div>
+</div>
+
+
+<div class="sidebar">
+  <h2>Manage your entities</h2>
+  <button (click)="goTo('/ClassMenuComponent')">Class</button>
+  <button (click)="goTo('/MethodMenuComponent')">Method</button>
+  <button (click)="goTo('/AttributeMenuComponent')">Attribute</button>
+  <button (click)="goTo('/NameSpaceMenuComponent')">NameSpace</button>
+  <button (click)="goTo('/ParameterMenuComponent')">Parameter</button>
+  <button (click)="goTo('/LocalVariableMenuComponent')">Local Variable</button>
+  <button (click)="goTo('/InterfaceMenuComponent')">Interface</button>
+  <button (click)="goTo('/ExportdataComponent')">Go To Export</button>
+</div>
+
+
+ <div class="card-container">
+  <div class="card" *ngFor="let nameSpaceItem of nameSpaces">
+    <h3>{{ nameSpaceItem.name }}</h3>
+    <div class="button-group"> 
+      <button class="secondary" (click)="openModal('addChill', nameSpaceItem)">Add Chilld</button>
+      <button class="secondary" (click)="openModal('removeChild', nameSpaceItem)">Remove Child</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal" *ngIf="activeModal === 'addChill'">
+  <div class="modal-content">
+    <button class="close" (click)="closeModal()">×</button>
+    <app-add-child-to-name-space
+      [nameSpaceData]="selectedNameSpace!"
+      (close)="closeModal()"
+    ></app-add-child-to-name-space>
+  </div>
+</div>
+
+<div class="modal" *ngIf="activeModal === 'removeChild'">
+  <div class="modal-content">
+    <button class="close" (click)="closeModal()">×</button>
+    <app-removechild
+      [nameSpaceData]="selectedNameSpace!"
+      (close)="closeModal()"
+    ></app-removechild>
+  </div>

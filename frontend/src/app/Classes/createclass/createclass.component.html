@@ -1,0 +1,40 @@
+<div class="class-form">
+  <mat-card class="class-card">
+    <mat-card-header>
+      <mat-card-title>Crear Nueva Clase</mat-card-title>
+    </mat-card-header>
+
+    <mat-card-content>
+      <form (ngSubmit)="createClass()" class="form-fields">
+        <div class="form-group">
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Nombre de la Clase</mat-label>
+            <input matInput [(ngModel)]="className" name="className" required />
+          </mat-form-field>
+        </div>
+
+        <div class="form-group">
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Estereotipo</mat-label>
+            <mat-select [(ngModel)]="stereotype" name="stereotype">
+              <mat-option [value]="null">-- Ninguno --</mat-option>
+              <mat-option *ngFor="let label of keyWords" [value]="getKeyValue(label)">
+                {{ label }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+
+        <div class="button-container">
+          <button mat-raised-button color="primary" type="submit">
+            Crear Clase
+          </button>
+        </div>
+
+        <mat-hint *ngIf="message" [ngClass]="{ 'error-msg': isError, 'success-msg': !isError }">
+          {{ message }}
+        </mat-hint>
+      </form>
+    </mat-card-content>
+  </mat-card>
+</div>

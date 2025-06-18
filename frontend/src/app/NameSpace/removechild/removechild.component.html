@@ -1,0 +1,16 @@
+<div class="form-container">
+  <h2>Remove Child from Namespace</h2>
+  <div *ngIf="error" class="error">{{ error }}</div>
+  <div *ngIf="message" class="message">{{ message }}</div>
+
+  <div>
+    <label for="childSelect">Select Child (Namespace Component):</label>
+    <select id="childSelect" [(ngModel)]="selectedChildId">
+      <option value="">-- Select Child --</option>
+      <option *ngFor="let comp of nameSpaceComponents" [value]="comp.id">{{ comp.name }}</option>
+    </select>
+  </div>
+
+  <button class="danger" (click)="removeChild()">Remove Child</button>
+  <button class="close" (click)="closeModal()" type="button">Cancel</button>
+</div>
