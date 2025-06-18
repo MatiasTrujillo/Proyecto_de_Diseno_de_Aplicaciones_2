@@ -3803,6 +3803,211 @@ public class MethodServiceTest
 
     [TestMethod]
     [ExpectedException(typeof(LocalVariableException))]
+    public void ValidateInstanceCLass_ShouldThrowException_WhenParameterInstanceTypeIsClassButNotChildAndReferenceTypeIsInterface()
+    {
+        var persona = new Interface
+        {
+            Id = Guid.NewGuid(),
+            Name = "Persona"
+        };
+
+        var usuario = new Class
+        {
+            Id = Guid.NewGuid(),
+            Name = "Usuario",
+            Methods = [],
+        };
+
+        var usuarioParamForFirst = new Parameter
+        {
+            Id = Guid.NewGuid(),
+            Name = "usuario",
+            ReferenceType = persona
+        };
+
+        var autenticar = new Method
+        {
+            Id = Guid.NewGuid(),
+            Name = "Autenticar",
+            Accessibility = Accessibility.Public,
+            Methods = [],
+            Parameters = [usuarioParamForFirst],
+            LocalVariables = [],
+            ReturnType = new Primitive(PrimitiveType.Bool),
+        };
+
+        var autenticador = new Class
+        {
+            Id = Guid.NewGuid(),
+            Name = "Autenticador",
+            Stereotype = KeyWord.Abstract,
+            Attributes = [],
+            Methods = [autenticar],
+        };
+
+        var autenticadorPassword = new Class
+        {
+            Id = Guid.NewGuid(),
+            Name = "AutenticadorPassword",
+            Stereotype = KeyWord.Sealed,
+            Attributes = [],
+            Methods = [],
+            Parents = [autenticador]
+        };
+
+        var usuarioType = new TypeDTO
+        {
+            Id = Guid.NewGuid(),
+            Name = "Usuario",
+        };
+
+        var stringPrimitive = new Primitive(PrimitiveType.String);
+
+        _mockClassRepository.Setup(repo => repo.FindAll()).Returns([autenticador, autenticadorPassword]);
+        _mockClassRepository.Setup(repo => repo.FindAllTypes()).Returns([usuario, autenticador, autenticadorPassword, stringPrimitive, persona]);
+        _mockMethodRepository.Setup(repo => repo.FindAll()).Returns([autenticar]);
+
+        _methodService.ExecuteMethod(autenticador.Id, autenticadorPassword.Id, autenticar.Id, [usuarioType]);
+    }
+
+    [TestMethod]
+    [ExpectedException(typeof(LocalVariableException))]
+    public void ValidateInstanceCLass_ShouldThrowException_WhenParameterInstanceTypeIsPrimitiveAndReferenceTypeIsAnotherPrimitive()
+    {
+        var persona = new Primitive
+        {
+            Id = Guid.NewGuid(),
+            Name = "bool"
+        };
+
+        var usuario = new Primitive
+        {
+            Id = Guid.NewGuid(),
+            Name = "int"
+        };
+
+        var usuarioParamForFirst = new Parameter
+        {
+            Id = Guid.NewGuid(),
+            Name = "usuario",
+            ReferenceType = persona
+        };
+
+        var autenticar = new Method
+        {
+            Id = Guid.NewGuid(),
+            Name = "Autenticar",
+            Accessibility = Accessibility.Public,
+            Methods = [],
+            Parameters = [usuarioParamForFirst],
+            LocalVariables = [],
+            ReturnType = new Primitive(PrimitiveType.Bool),
+        };
+
+        var autenticador = new Class
+        {
+            Id = Guid.NewGuid(),
+            Name = "Autenticador",
+            Stereotype = KeyWord.Abstract,
+            Attributes = [],
+            Methods = [autenticar],
+        };
+
+        var autenticadorPassword = new Class
+        {
+            Id = Guid.NewGuid(),
+            Name = "AutenticadorPassword",
+            Stereotype = KeyWord.Sealed,
+            Attributes = [],
+            Methods = [],
+            Parents = [autenticador]
+        };
+
+        var usuarioType = new TypeDTO
+        {
+            Id = Guid.NewGuid(),
+            Name = "Usuario",
+        };
+
+        var stringPrimitive = new Primitive(PrimitiveType.String);
+
+        _mockClassRepository.Setup(repo => repo.FindAll()).Returns([autenticador, autenticadorPassword]);
+        _mockClassRepository.Setup(repo => repo.FindAllTypes()).Returns([usuario, autenticador, autenticadorPassword, stringPrimitive, persona]);
+        _mockMethodRepository.Setup(repo => repo.FindAll()).Returns([autenticar]);
+
+        _methodService.ExecuteMethod(autenticador.Id, autenticadorPassword.Id, autenticar.Id, [usuarioType]);
+    }
+
+    [TestMethod]
+    [ExpectedException(typeof(LocalVariableException))]
+    public void ValidateInstanceCLass_ShouldThrowException_WhenParameterInstanceTypeIsNotPrimitiveAndReferenceTypeIsPrimitive()
+    {
+        var persona = new Primitive
+        {
+            Id = Guid.NewGuid(),
+            Name = "bool"
+        };
+
+        var usuario = new Class
+        {
+            Id = Guid.NewGuid(),
+            Name = "Name"
+        };
+
+        var usuarioParamForFirst = new Parameter
+        {
+            Id = Guid.NewGuid(),
+            Name = "usuario",
+            ReferenceType = persona
+        };
+
+        var autenticar = new Method
+        {
+            Id = Guid.NewGuid(),
+            Name = "Autenticar",
+            Accessibility = Accessibility.Public,
+            Methods = [],
+            Parameters = [usuarioParamForFirst],
+            LocalVariables = [],
+            ReturnType = new Primitive(PrimitiveType.Bool),
+        };
+
+        var autenticador = new Class
+        {
+            Id = Guid.NewGuid(),
+            Name = "Autenticador",
+            Stereotype = KeyWord.Abstract,
+            Attributes = [],
+            Methods = [autenticar],
+        };
+
+        var autenticadorPassword = new Class
+        {
+            Id = Guid.NewGuid(),
+            Name = "AutenticadorPassword",
+            Stereotype = KeyWord.Sealed,
+            Attributes = [],
+            Methods = [],
+            Parents = [autenticador]
+        };
+
+        var usuarioType = new TypeDTO
+        {
+            Id = Guid.NewGuid(),
+            Name = "Usuario",
+        };
+
+        var stringPrimitive = new Primitive(PrimitiveType.String);
+
+        _mockClassRepository.Setup(repo => repo.FindAll()).Returns([autenticador, autenticadorPassword]);
+        _mockClassRepository.Setup(repo => repo.FindAllTypes()).Returns([usuario, autenticador, autenticadorPassword, stringPrimitive, persona]);
+        _mockMethodRepository.Setup(repo => repo.FindAll()).Returns([autenticar]);
+
+        _methodService.ExecuteMethod(autenticador.Id, autenticadorPassword.Id, autenticar.Id, [usuarioType]);
+    }
+
+    [TestMethod]
+    [ExpectedException(typeof(LocalVariableException))]
     public void ValidateInstanceCLass_ShouldThrowException_WhenParameterInstanceTypeIsInterfaceAndReferenceTypeIsClass()
     {
         var persona = new Class
