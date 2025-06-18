@@ -392,10 +392,10 @@ public class ParameterService_Test
 
     private static bool InvokeCaseReferenceClassRecursive(Class reference, Class instance)
     {
-        var service = new ParameterService(null!, null!, null!);
+        var service = new ParameterService(null!, null!, null);
         return (bool)typeof(ParameterService)
             .GetMethod("CaseReferenceClassRecursive", BindingFlags.NonPublic | BindingFlags.Instance)!
-            .Invoke(service, new object[] { reference, instance })!;
+            .Invoke(service, [reference, instance]);
     }
 
     [TestMethod]
