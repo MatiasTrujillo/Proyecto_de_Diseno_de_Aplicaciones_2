@@ -36,6 +36,27 @@ export class NameSpaceMenuComponent {
     this.activeModal = null;
   }
 
+  logout(): void {
+  const token = localStorage.getItem('authToken');
+  if (!token) {
+    console.error('No token found in localStorage.');
+    this.router.navigate(['**']);
+    return;
+  }
+
+  this.simulatorService.logOut(token).subscribe(
+    () => {
+      localStorage.removeItem('authToken');
+      localStorage.removeItem('roles');
+      this.router.navigate(['**']);
+    },
+    (error) => {
+      console.error('Error logging out', error);
+      this.router.navigate(['**']);
+    }
+  );
+}
+
   goTo(path: string): void {
     window.location.href = path;
   }
