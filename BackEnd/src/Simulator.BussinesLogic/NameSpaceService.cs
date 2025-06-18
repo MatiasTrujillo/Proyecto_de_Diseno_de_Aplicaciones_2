@@ -115,7 +115,7 @@ public class NameSpaceService(
     {
         if(nameSpace == null)
         {
-            throw new NameSpaceException("NameSpace does not exist");
+            throw new NameSpaceNotFoundException("NameSpace does not exist");
         }
     }
 
@@ -124,7 +124,7 @@ public class NameSpaceService(
         var nc = nameSpaceRepository.Find(id);
         if(nc == null)
         {
-            throw new NameSpaceException("NameSpace does not exist");
+            throw new NameSpaceNotFoundException("NameSpace does not exist");
         }
     }
 

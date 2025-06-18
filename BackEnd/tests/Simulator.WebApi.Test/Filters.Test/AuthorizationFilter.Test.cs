@@ -81,4 +81,15 @@ public class AuthorizationFilterTests
 
         return new AuthorizationFilterContext(actionContext, []);
     }
+
+    [TestMethod]
+    public void OnAuthorization_BearerPrefix_ValidToken_AllowsAccess()
+    {
+        var validToken = "b142d2d6-ac0c-4af1-b272-c03e431555f3";
+        var context = CreateAuthContextWithHeader("Authorization", "Bearer " + validToken);
+
+        _filter.OnAuthorization(context);
+
+        Assert.IsNull(context.Result);
+    }
 }

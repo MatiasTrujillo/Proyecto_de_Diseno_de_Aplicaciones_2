@@ -389,4 +389,53 @@ public class ParameterService_Test
 
         Assert.IsFalse(result);
     }
+
+    private static bool InvokeCaseReferenceClassRecursive(Class reference, Class instance)
+    {
+        var service = new ParameterService(null!, null!, null!);
+        return (bool)typeof(ParameterService)
+            .GetMethod("CaseReferenceClassRecursive", BindingFlags.NonPublic | BindingFlags.Instance)!
+            .Invoke(service, new object[] { reference, instance })!;
+    }
+
+    [TestMethod]
+    public void ReturnsTrue_WhenReferenceEqualsInstance()
+    {
+        var c = new Class { Name = "A" };
+        Assert.IsTrue(InvokeCaseReferenceClassRecursive(c, c));
+    }
+
+    [TestMethod]
+    public void ReturnsFalse_WhenInstanceParentsIsNull()
+    {
+        var reference = new Class { Name = "A" };
+        var instance = new Class { Name = "B", Parents = null };
+        Assert.IsFalse(InvokeCaseReferenceClassRecursive(reference, instance));
+    }
+
+    [TestMethod]
+    public void ReturnsFalse_WhenNoParentMatchesReference()
+    {
+        var reference = new Class { Name = "A" };
+        var parent = new Class { Name = "C" };
+        var instance = new Class { Name = "B", Parents = [parent] };
+        Assert.IsFalse(InvokeCaseReferenceClassRecursive(reference, instance));
+    }
+
+    [TestMethod]
+    public void ReturnsTrue_WhenParentMatchesReference()
+    {
+        var reference = new Class { Name = "A" };
+        var instance = new Class { Name = "B", Parents = [reference] };
+        Assert.IsTrue(InvokeCaseReferenceClassRecursive(reference, instance));
+    }
+
+    [TestMethod]
+    public void ReturnsTrue_WhenGrandparentMatchesReference()
+    {
+        var reference = new Class { Name = "A" };
+        var parent = new Class { Name = "C", Parents = [reference] };
+        var instance = new Class { Name = "B", Parents = [parent] };
+        Assert.IsTrue(InvokeCaseReferenceClassRecursive(reference, instance));
+    }
 }
